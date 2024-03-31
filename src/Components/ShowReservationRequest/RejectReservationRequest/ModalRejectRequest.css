@@ -1,0 +1,38 @@
+/*Scrol principal derecha*/
+.scrollable-list {
+    max-height: 200px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(213, 213, 213) rgb(255, 255, 255);
+    border-radius: 4px;
+
+}
+
+/*scrol inferior
+.scrollable-list ul {
+    margin-right: -16px;
+    padding-right: 16px;
+}*/
+
+
+@media (max-width: 320px) {
+    .modal-dialog {
+        max-width: 90vw;
+        padding: 15px;
+    }
+
+    .modal-content {
+        font-size: 16px;
+    }
+}
+
+@media (min-width: 320px) {
+    .modal-dialog {
+        max-width: 500px;
+        padding: 30px;
+    }
+
+    .modal-content {
+        font-size: 18px;
+    }
+}

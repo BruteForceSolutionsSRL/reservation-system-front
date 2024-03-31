@@ -4,6 +4,7 @@ import Homepage from "./Pages/User/Homepage/Homepage";
 import Sidebar from "./Components/Sidebar.jsx/Sidebar";
 import EnvironmentRequest from "./Pages/EnvironmentRequest/EnvironmentRequest";
 import LandingPage from "./Pages/LandingPage/LandingPage";
+import ReservationList from "./Pages/User/ReservationsList/ReservationList";
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
             path="user-manual"
             element={<div>Pagina para manual de usuario</div>}
           ></Route>
+          <Route path="reservations-list-user" element={<ReservationList />} />
         </Route>
         <Route path="/superuser" element={<Sidebar user="superuser" />}>
           <Route path="home" element={<Homepage />}></Route>
@@ -31,6 +33,10 @@ export default function App() {
             path="superuser-manual"
             element={<div>Pagina para manual de superusuario</div>}
           ></Route>
+          <Route
+            path="reservations-list-superuser"
+            element={<ReservationList />}
+          />
         </Route>
         <Route path="*" element={<ErrorPage />}></Route>
       </Routes>

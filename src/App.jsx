@@ -4,6 +4,7 @@ import Homepage from "./Pages/User/Homepage/Homepage";
 import Sidebar from "./Components/Sidebar.jsx/Sidebar";
 import EnvironmentRequest from "./Pages/EnvironmentRequest/EnvironmentRequest";
 import LandingPage from "./Pages/LandingPage/LandingPage";
+import EnvironmentRegistration from "./Pages/SuperUser/EnvironmentRegistration/EnvironmentRegistration";
 
 export default function App() {
   return (
@@ -30,6 +31,10 @@ export default function App() {
           <Route
             path="superuser-manual"
             element={<div>Pagina para manual de superusuario</div>}
+          ></Route>
+          <Route
+            path="environment-register"
+            element={<EnvironmentRegistration />}
           ></Route>
         </Route>
         <Route path="*" element={<ErrorPage />}></Route>

@@ -5,6 +5,8 @@ import Sidebar from "./Components/Sidebar.jsx/Sidebar";
 import EnvironmentRequest from "./Pages/EnvironmentRequest/EnvironmentRequest";
 import LandingPage from "./Pages/LandingPage/LandingPage";
 import ReservationList from "./Pages/User/ReservationsList/ReservationList";
+import RequestsList from "./Pages/SuperUser/RequestsList/RequestsList";
+import ReservationInformation from "./Pages/SuperUser/ReservationInformation/ReservationInformation";
 
 export default function App() {
   return (
@@ -35,7 +37,7 @@ export default function App() {
           ></Route>
           <Route
             path="reservations-list-superuser"
-            element={<ReservationList />}
+            element={<RequestsList />}
           />
         </Route>
         <Route path="*" element={<ErrorPage />}></Route>

@@ -1,0 +1,21 @@
+#reservation-information-card:hover {
+  background-color: #ccc;
+}
+
+#reservation-information-card {
+  cursor: pointer;
+}
+.scroll-modal {
+  height: 25vh;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  width: 100%;
+}
+@media (max-width: 767px) {
+  .scroll-modal {
+    height: 40vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    width: 100%;
+  }
+}

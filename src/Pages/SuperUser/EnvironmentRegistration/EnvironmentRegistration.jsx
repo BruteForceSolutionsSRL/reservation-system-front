@@ -44,14 +44,36 @@ export default function EnvironmentRegistration() {
     });
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log("Datos del formulario:", {
-      environmentName,
-      environmentType,
-      environmentCapacity,
-      environmentLocation,
-    });
+  const handleSubmit = () => {
+    const formData = {
+      name: environmentName,
+      capacity: environmentCapacity,
+      classroomTypeID: environmentType,
+      blockID: environmentLocation.building,
+      floor: environmentLocation.floor,
+    };
+
+    const url = "http://localhost:8000/api/classroom";
+
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "aplication/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Request error");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("response", data);
+      })
+      .catch((error) => {
+        console.log("response error", error);
+      });
   };
 
   const handleCancelClick = () => {
@@ -60,7 +82,7 @@ export default function EnvironmentRegistration() {
 
   const handleEnvironmentNameChange = (event) => {
     const value = event.target.value;
-    if (value.length > 3) {
+    if (value.length < 5) {
       setEnvironmentName(value);
       setNameError(false); // valor válido, no mostramos el mensaje de error
     } else {
@@ -87,7 +109,7 @@ export default function EnvironmentRegistration() {
             />
             {nameError && (
               <Form.Text className="text-danger">
-                El nombre debe tener al menos 4 caracteres.
+                El nombre debe tener menos de 4 caracteres.
               </Form.Text>
             )}
           </Col>
@@ -105,10 +127,10 @@ export default function EnvironmentRegistration() {
               onChange={handleEnvironmentTypeChange}
             >
               <option value="">Seleccione...</option>
-              <option value="Auditory">Auditorio</option>
-              <option value="Laboratory">Laboratorio</option>
-              <option value="Classroom">Aula</option>
-              <option value="Other">Otro</option>
+              <option value="1">Auditorio</option>
+              <option value="2">Laboratorio</option>
+              <option value="3">Aula</option>
+              <option value="0">Otro</option>
             </Form.Select>
           </Col>
         </Row>
@@ -140,11 +162,9 @@ export default function EnvironmentRegistration() {
                     onChange={handleBuildingChange}
                   >
                     <option value="">Seleccione...</option>
-                    <option value="Edificio Nuevo">Edificio Nuevo</option>
-                    <option value="Multiacademico">Multiacademico</option>
-                    <option value="Edificio Academico">
-                      Edificio Academico
-                    </option>
+                    <option value="1">Edificio Nuevo</option>
+                    <option value="2">Multiacademico</option>
+                    <option value="0">Edificio Academico</option>
                     <option value="Trencito">Trencito</option>
                   </Form.Select>
                 </Form.Group>
@@ -170,7 +190,7 @@ export default function EnvironmentRegistration() {
         >
           Cancelar
         </Button>
-        <Button variant="primary" type="submit">
+        <Button variant="primary" onClick={handleSubmit}>
           Registrar
         </Button>
       </Form>

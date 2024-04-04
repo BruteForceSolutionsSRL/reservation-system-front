@@ -1,0 +1,59 @@
+.input-materia {
+    width: 100%;
+    max-width: 400px;
+    margin-right: 100px;
+}
+
+
+.input-cant {
+    width: 120px;
+}
+
+
+.input-cal {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    margin-left: 100px;
+    margin-top: -50px;
+}
+
+/* Media query para pantallas más pequeñas */
+@media (max-width: 768px) {
+    .input-cal {
+        max-width: 90%;
+        /* Reduzca el ancho máximo para pantallas más pequeñas */
+        padding: 10px;
+        /* Reduzca el espacio interno */
+    }
+}
+
+
+.formulario-principal {
+    background-color: #e7e6e6;
+    border-radius: 15px;
+    margin: 25px auto;
+    padding: 20px;
+
+}
+
+/*seting color icon timePiker*/
+input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(100%);
+    background-color: rgb(223, 235, 231);
+}
+
+
+.hour-start {
+    margin-left: 10px;
+    width: 120px;
+}
+
+.hour-end {
+    margin-left: 10px;
+    width: 120px;
+}
+
+.label-end {
+    margin-left: 100px;
+}

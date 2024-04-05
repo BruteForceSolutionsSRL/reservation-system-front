@@ -80,7 +80,7 @@ export default function ReservationInformation(props) {
         >
           <Toast.Body>
             <i
-              class="fal fa-exclamation-triangle"
+              className="fal fa-exclamation-triangle"
               style={{ color: "white" }}
             ></i>{" "}
             <i

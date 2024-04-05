@@ -6,18 +6,18 @@ export default function RequestInformation(props, key) {
   const [show, setShow] = useState(false);
   const [color, setColor] = useState("");
   const [stateRequest, setStateRequest] = useState("");
+
   const {
-    resevationId,
-    asignament,
-    teachers,
-    groups,
+    id,
+    numberOfStudents,
+    date,
     reason,
-    environment,
-    reservationDate,
+    createdAt,
+    updatedAt,
+    reservationStatus,
     schedule,
-    academicPeriods,
-    state,
-    capacity,
+    asignament,
+    classrooms,
   } = props;
 
   useEffect(() => {
@@ -25,22 +25,22 @@ export default function RequestInformation(props, key) {
   }, []);
 
   const showState = () => {
-    switch (state) {
-      case -1:
-        setColor("#feffa7");
-        setStateRequest("En espera");
-        break;
-      case 0:
-        setColor("#ffc695");
-        setStateRequest("Rechazado");
-        break;
+    switch (reservationStatus.id) {
       case 1:
         setColor("#d1e8a1");
         setStateRequest("Aceptado");
         break;
-      default:
+      case 2:
+        setColor("#ffc695");
+        setStateRequest("Rechazado");
+        break;
+      case 3:
+        setColor("#feffa7");
+        setStateRequest("En espera");
+        break;
+      case 4:
         setColor("#f5f5f5");
-        setStateRequest("Sin estado");
+        setStateRequest("Cancelado");
         break;
     }
   };
@@ -52,16 +52,19 @@ export default function RequestInformation(props, key) {
         style={{ background: color }}
       >
         <div className="row p-1">
-          <h6 className="d-flex align-items-start  col-3">{`ID: ${resevationId}`}</h6>
-          <h3 className="align-self-baseline col-6">{asignament}</h3>
+          <h6 className="d-flex align-items-start  col-3">{`ID: ${id}`}</h6>
+          <h3 className="align-self-baseline col-6">
+            {asignament[0].universitySubject.name}
+          </h3>
         </div>
         <div className="row">
-          <h3 className="col-3">{environment}</h3>
-          <p className="col-6">{reservationDate}</p>
+          <h3 className="col-3">{classrooms[0].name}</h3>
+          <p className="col-6">{date}</p>
           <h5 className="col">{stateRequest}</h5>
         </div>
         <div className="row">
-          <p className="col-12">{schedule}</p>
+          <p className="col-12">{schedule[0].time}</p>
+          <p className="col-12">{schedule[1].time}</p>
         </div>
         <div className="row">
           <Button variant="btn btn-outline-dark " onClick={() => setShow(true)}>
@@ -82,17 +85,24 @@ export default function RequestInformation(props, key) {
         <Modal.Body>
           <div className="row">
             <div className="col">
-              <p>{`Docente(s): ${teachers}`}</p>
-              <p>{`Ambiente: ${environment}`}</p>
-              <p>{`Materia: ${asignament}`}</p>
+              <p>{`Docente(s): ${asignament.map((teacher) => {
+                console.log(teacher.teacher.person.name);
+                return teacher.teacher.person.name + " ";
+              })}`}</p>
+              <p>{`Ambiente: ${classrooms.map((room) => {
+                return room.name + " ";
+              })}`}</p>
+              <p>{`Materia: ${asignament[0].universitySubject.name}`}</p>
               <p>{`Motivo: ${reason}`}</p>
             </div>
             <div className="col">
-              <p>{`Fecha: ${reservationDate}`}</p>
-              <p>{`Hora: ${schedule}`}</p>
-              <p>{`Periodos academicos: ${academicPeriods}`}</p>
-              <p>{`Grupo: ${groups}`}</p>
-              <p>{`Cantidad de estudiantes: ${capacity}`}</p>
+              <p>{`Fecha: ${date}`}</p>
+              <p>{`Hora: ${schedule[0].time + "-" + schedule[1].time}`}</p>
+              <p>{`Periodos academicos: ${1}`}</p>
+              <p>{`Grupo: ${asignament.map((group) => {
+                return group.groupNumber + " ";
+              })}`}</p>
+              <p>{`Cantidad de estudiantes: ${numberOfStudents}`}</p>
             </div>
           </div>
         </Modal.Body>

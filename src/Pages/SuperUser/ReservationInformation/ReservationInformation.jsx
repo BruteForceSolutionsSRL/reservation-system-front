@@ -8,18 +8,18 @@ export default function ReservationInformation(props) {
   const [show, setShow] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [bg, setBg] = useState("");
+
   const {
-    resevationId,
-    asignament,
-    teachers,
-    groups,
+    id,
+    numberOfStudents,
+    date,
     reason,
-    environment,
-    reservationDate,
+    createdAt,
+    updatedAt,
+    reservationStatus,
     schedule,
-    academicPeriods,
-    state,
-    capacity,
+    asignament,
+    classrooms,
   } = props;
 
   const handleAcceptModal = () => {
@@ -44,24 +44,30 @@ export default function ReservationInformation(props) {
           <div
             className="col-sm-auto"
             style={
-              state === -1
+              reservationStatus.id === 1
+                ? { backgroundColor: "green" }
+                : reservationStatus.id === 2
+                ? { backgroundColor: "red" }
+                : reservationStatus.id === 3
                 ? { backgroundColor: "yellow" }
-                : state === 0
-                ? { background: "red" }
-                : { background: "green" }
+                : { backgroundColor: "#f5f5f5" }
             }
           ></div>
           <div className="col-3 d-flex justify-content-center align-items-center">
-            {environment}
+            {classrooms.map((environment) => {
+              return environment.name + " ";
+            })}
           </div>
-          <div className="col-6 d-flex justify-content-center align-items-center">
-            {teachers}
+          <div className="col-5 d-flex justify-content-center align-items-center">
+            {asignament.map((teacher) => {
+              return teacher.teacher.person.name + " ";
+            })}
           </div>
           <div className="col-sm-auto d-flex justify-content-center align-items-center">
-            {schedule}
+            {schedule[0].time + " - " + schedule[1].time}
           </div>
           <div className="col-sm-auto d-flex justify-content-center align-items-center">
-            {reservationDate}
+            {date}
           </div>
         </div>
       </div>
@@ -83,12 +89,11 @@ export default function ReservationInformation(props) {
               className="fal fa-exclamation-triangle"
               style={{ color: "white" }}
             ></i>{" "}
-            <i
-              style={{ color: "white" }}
-            >{`Solicitud ID: ${resevationId} rechazada`}</i>
+            <i style={{ color: "white" }}>{`Solicitud ID: ${id} rechazada`}</i>
           </Toast.Body>
         </Toast>
       </ToastContainer>
+
       <Modal
         show={show}
         onHide={() => setShow(false)}
@@ -99,7 +104,7 @@ export default function ReservationInformation(props) {
       >
         <Modal.Header closeButton>
           <Modal.Title id="reservation-info-modal">
-            {`Materia: ${asignament}`}
+            {`Materia: ${asignament[0].universitySubject.name}`}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -113,26 +118,15 @@ export default function ReservationInformation(props) {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>Mark</td>
-                  <td>2</td>
-                </tr>
-                <tr>
-                  <th scope="row">2</th>
-                  <td>Jacob</td>
-                  <td>10</td>
-                </tr>
-                <tr>
-                  <th scope="row">3</th>
-                  <td>Felix</td>
-                  <td>40</td>
-                </tr>
-                <tr>
-                  <th scope="row">4</th>
-                  <td>Felix</td>
-                  <td>20</td>
-                </tr>
+                {asignament.map((teacher, index) => {
+                  return (
+                    <tr>
+                      <th scope="row">{++index}</th>
+                      <td>{teacher.teacher.person.name}</td>
+                      <td>{teacher.groupNumber}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -140,18 +134,22 @@ export default function ReservationInformation(props) {
             <div className="col">
               <h6>Motivo:</h6>
               <p>{reason}</p>
-              <h6>Ambiente: </h6>
-              <p>{environment}</p>
+              <h6>Ambiente(s): </h6>
+              <p>
+                {classrooms.map((environment) => {
+                  return <li>{environment.name}</li>;
+                })}
+              </p>
             </div>
             <div className="col">
               <h6>Fecha de la reserva: </h6>
-              <p>{reservationDate}</p>
+              <p>{date}</p>
               <h6>Horario: </h6>
-              <p>{schedule}</p>
+              <p>{schedule[0].time + " - " + schedule[1].time}</p>
             </div>
             <div className="col">
-              <h6>Periodos academicos: </h6>
-              <p>{academicPeriods}</p>
+              <h6>Cantidad de estudiantes</h6>
+              <p>{numberOfStudents}</p>
             </div>
           </div>
         </Modal.Body>

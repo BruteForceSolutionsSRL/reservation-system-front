@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "./RequestInformation.css";
-export default function RequestInformation(props, key) {
+export default function RequestInformation(props) {
   const [show, setShow] = useState(false);
   const [color, setColor] = useState("");
   const [stateRequest, setStateRequest] = useState("");
@@ -86,7 +86,6 @@ export default function RequestInformation(props, key) {
           <div className="row">
             <div className="col">
               <p>{`Docente(s): ${asignament.map((teacher) => {
-                console.log(teacher.teacher.person.name);
                 return teacher.teacher.person.name + " ";
               })}`}</p>
               <p>{`Ambiente: ${classrooms.map((room) => {

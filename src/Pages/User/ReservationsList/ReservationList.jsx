@@ -16,7 +16,6 @@ export default function ReservationList() {
       })
       .then((data) => {
         setReservations(data);
-        console.log(data);
       })
       .catch((err) => {
         if (err) throw console.error(err);
@@ -40,7 +39,7 @@ export default function ReservationList() {
       {waitingList.map((element) => {
         return (
           <div key={element.id}>
-            <RequestInformation {...element} key={element.id} />
+            <RequestInformation {...element} />
           </div>
         );
       })}
@@ -48,7 +47,7 @@ export default function ReservationList() {
       {acceptedList.map((element) => {
         return (
           <div key={element.id}>
-            <RequestInformation {...element} key={element.id} />
+            <RequestInformation {...element} />
           </div>
         );
       })}
@@ -56,7 +55,7 @@ export default function ReservationList() {
       {refusedList.map((element) => {
         return (
           <div key={element.id}>
-            <RequestInformation {...element} key={element.id} />
+            <RequestInformation {...element} />
           </div>
         );
       })}
@@ -64,7 +63,7 @@ export default function ReservationList() {
       {cancelledList.map((element) => {
         return (
           <div key={element.id}>
-            <RequestInformation {...element} key={element.id} />
+            <RequestInformation {...element} />
           </div>
         );
       })}

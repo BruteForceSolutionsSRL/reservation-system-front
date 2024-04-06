@@ -120,7 +120,7 @@ export default function ReservationInformation(props) {
               <tbody>
                 {asignament.map((teacher, index) => {
                   return (
-                    <tr>
+                    <tr key={teacher.id}>
                       <th scope="row">{++index}</th>
                       <td>{teacher.teacher.person.name}</td>
                       <td>{teacher.groupNumber}</td>
@@ -137,7 +137,7 @@ export default function ReservationInformation(props) {
               <h6>Ambiente(s): </h6>
               <p>
                 {classrooms.map((environment) => {
-                  return <li>{environment.name}</li>;
+                  return <li key={environment.id}>{environment.name}</li>;
                 })}
               </p>
             </div>

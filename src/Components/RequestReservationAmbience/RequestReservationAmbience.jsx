@@ -1,5 +1,14 @@
-import React, { useState } from "react";
-import { Form, Container, Row, Col, Button, InputGroup } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+// import React, { useState } from "react";
+import {
+  Form,
+  Container,
+  Row,
+  Col,
+  Button,
+  InputGroup,
+  Table,
+} from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-time-picker/dist/TimePicker.css";
@@ -10,8 +19,6 @@ import TimePicker from "./Calendar/TimePicker";
 import "./RequestReservationAmbience.css";
 
 function RequestReservationAmbience() {
-  //const [opciones, setOpciones] = useState([]);
-
   const [formData, setFormData] = useState({
     materia: "",
     cantidadEstudiantes: "",
@@ -23,6 +30,11 @@ function RequestReservationAmbience() {
     motivoReserva: "",
     docentes: "",
   });
+
+  const [opcionSeleccionadaBloque, setOpcionSeleccionadaBloque] = useState("");
+  const [blockOption, setBlockOption] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedItemsTeacher, setSelectedItemsTeacher] = useState([]);
 
   //validar campos del form
   const handleSubmit = (event) => {
@@ -90,10 +102,174 @@ function RequestReservationAmbience() {
       return null; // Devuelve null cuando la validación es exitosa
     }
   };
+  // test data
+  const bloque = [
+    {
+      block_id: 1,
+      name: "Edificio Nuevo",
+    },
+    {
+      block_id: 2,
+      name: "Biblioteca FCYT",
+    },
+  ];
+
+  // test data
+  const classroom = [
+    {
+      classroom_id: 1,
+      name: "691a",
+      capacity: 75,
+      floor: 0,
+    },
+    {
+      classroom_id: 2,
+      name: "691b",
+      capacity: 75,
+      floor: 0,
+    },
+    {
+      classroom_id: 10,
+      name: "691j",
+      capacity: 75,
+      floor: 0,
+    },
+    {
+      classroom_id: 11,
+      name: "691k",
+      capacity: 75,
+      floor: 0,
+    },
+  ];
+  // test data
+  const docente = [
+    {
+      teacher_subject_id: 2,
+      group_number: 1,
+      teacher_id: 1,
+      teacher_name: "maria",
+      teacher_last_name: "cespedes",
+    },
+    {
+      teacher_subject_id: 3,
+      group_number: 2,
+      teacher_id: 2,
+      teacher_name: "marcelo",
+      teacher_last_name: "antezana",
+    },
+    {
+      teacher_subject_id: 4,
+      group_number: 3,
+      teacher_id: 4,
+      teacher_name: "agustin",
+      teacher_last_name: "guzman",
+    },
+    {
+      teacher_subject_id: 4,
+      group_number: 3,
+      teacher_id: 4,
+      teacher_name: "agustin",
+      teacher_last_name: "guzman",
+    },
+    {
+      teacher_subject_id: 4,
+      group_number: 3,
+      teacher_id: 4,
+      teacher_name: "agustin",
+      teacher_last_name: "guzman",
+    },
+    {
+      teacher_subject_id: 7,
+      group_number: 7,
+      teacher_id: 7,
+      teacher_name: "zapato",
+      teacher_last_name: "rp",
+    },
+  ];
+
+  useEffect(() => {
+    setBlockOption(bloque);
+  }, []);
+
+  const handleSelectChangeBloque = (event) => {
+    setOpcionSeleccionadaBloque(event.target.value);
+    setFormData({
+      ...formData,
+      bloque: event.target.value,
+    });
+  };
+
+  const handleCheckboxChange = (event, classroomId) => {
+    const isChecked = event.target.checked;
+
+    if (isChecked) {
+      setSelectedItems([...selectedItems, classroomId]);
+      setFormData({
+        ...formData,
+        aula: [...formData.aula, classroomId],
+      });
+    } else {
+      setSelectedItems(selectedItems.filter((id) => id !== classroomId));
+      setFormData({
+        ...formData,
+        aula: formData.aula.filter((id) => id !== classroomId),
+      });
+    }
+  };
+
+  const handleCheckboxChangeTeacher = (event, teacherId) => {
+    const isCheckedTeacher = event.target.checked;
+
+    if (isCheckedTeacher) {
+      setSelectedItemsTeacher([...selectedItemsTeacher, teacherId]);
+      setFormData({
+        ...formData,
+        docentes: [...formData.docentes, teacherId],
+      });
+    } else {
+      setSelectedItemsTeacher(
+        selectedItemsTeacher.filter((id) => id !== teacherId)
+      );
+      setFormData({
+        ...formData,
+        docentes: formData.docentes.filter((id) => id !== teacherId),
+      });
+    }
+  };
+
+  const isItemSelectedTeacher = (teacherId) => {
+    return selectedItemsTeacher.includes(teacherId);
+  };
+
+  const isItemSelected = (classroomId) => {
+    return selectedItems.includes(classroomId);
+  };
+
+  /*
+  const handleGetBloqueData = () => {
+    const url = "http://localhost:8000/api/bloque"; // URL de la API 
+    fetch(url)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error en la solicitud");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setBlockOption(data); 
+      })
+      .catch((error) => {
+        console.error("Error al obtener datos de bloque:", error);
+      });
+  };
+
+  useEffect(() => {
+    handleGetBloqueData();
+  }, []); */
 
   /*
   useEffect(() => {
-    fetch("/opciones") // Haces la solicitud GET al servidor
+    fetch("/opciones") // GET 
       .then((response) => response.json())
       .then((data) => setOpciones(data))
       .catch((error) => console.error("Error al obtener las opciones:", error));
@@ -106,6 +282,37 @@ function RequestReservationAmbience() {
     { id: 3, nombre: "Opción 3" },
   ];
   const [opciones, setOpciones] = useState(opcionesTemporales);
+
+  const handleSelectChange = (event) => {
+    setOpcionSeleccionada(event.target.value);
+  };
+
+  // TIME PICKET
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+
+  const handleStartTimeChange = (e) => {
+    const newStartTime = e.target.value;
+    setStartTime(newStartTime);
+    console.log("Hora de inicio:", newStartTime);
+  };
+
+  const handleEndTimeChange = (e) => {
+    const newEndTime = e.target.value;
+    setEndTime(newEndTime);
+    console.log("Hora de fin:", newEndTime);
+  };
+
+  //console.log("Hora de inicio seleccionada:", startTime);
+  //console.log("Hora de fin seleccionada:", endTime);
+
+  const clearStartTime = () => {
+    setStartTime("");
+  };
+
+  const clearEndTime = () => {
+    setEndTime("");
+  };
 
   return (
     <Form isInvalid onSubmit={handleSubmit} className="formulario-principal">
@@ -148,11 +355,87 @@ function RequestReservationAmbience() {
                 {validateCantEst(formData.cantidadEstudiantes)}
               </Form.Control.Feedback>
             </div>
-          </div>
-          <div className="col-md-6">
-            <div className="label-calendary d-flex flex-column align-items-start">
-              <Form.Label>DATE</Form.Label>
-              <CalendarOwn onDateSelect={handleDateSelect} />
+
+            {/* ambiente */}
+            <div className="classroom-container">
+              <Form.Label className="mt-4">Ambiente</Form.Label>
+              <div className="container">
+                <Row>
+                  <Col>
+                    <Form.Label className="mb-3">Bloque</Form.Label>
+                  </Col>
+                  <Col>
+                    <Form.Select
+                      className="input-block mb-3"
+                      onChange={handleSelectChangeBloque}
+                      value={opcionSeleccionadaBloque}
+                      isInvalid={!!validateInput(formData.bloque)}
+                    >
+                      <option value="">Selecciona un Bloque</option>
+                      {blockOption.map((optionBlock) => (
+                        <option
+                          key={optionBlock.block_id}
+                          value={optionBlock.block_id}
+                        >
+                          {optionBlock.name}
+                        </option>
+                      ))}
+                    </Form.Select>
+                    <Form.Control.Feedback type="invalid">
+                      {validateInput(formData.bloque)}
+                    </Form.Control.Feedback>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <Form.Label>Aulas</Form.Label>
+                  </Col>
+                  <Col>
+                    <div className="container-classroom container mb-3">
+                      <Table striped bordered hover>
+                        <tbody>
+                          {classroom.map((item) => (
+                            <tr key={item.classroom_id}>
+                              <td className="table-classroom table">
+                                <Row>
+                                  <Col xs={5}>
+                                    <Form.Check
+                                      className="check-classroom"
+                                      type="checkbox"
+                                      id={`checkbox-${item.classroom_id}`}
+                                      checked={isItemSelected(
+                                        item.classroom_id
+                                      )}
+                                      onChange={(event) =>
+                                        handleCheckboxChange(
+                                          event,
+                                          item.classroom_id
+                                        )
+                                      }
+                                      disabled={
+                                        selectedItems.length === 3 &&
+                                        !isItemSelected(item.classroom_id)
+                                      }
+                                    />
+                                  </Col>
+                                  <Col xs={7}>{item.name}</Col>
+                                </Row>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                    </div>
+                  </Col>
+                </Row>
+              </div>
+            </div>
+
+            <div className="col-md-6">
+              <div className="label-calendary d-flex flex-column align-items-start">
+                <Form.Label>DATE</Form.Label>
+                <CalendarOwn onDateSelect={handleDateSelect} />
+              </div>
             </div>
           </div>
         </div>
@@ -177,6 +460,77 @@ function RequestReservationAmbience() {
         <Form.Control.Feedback type="invalid">
           {validateMotReser(formData.motivoReserva)}
         </Form.Control.Feedback>
+      </div>
+      {/* docente */}
+      <div className="container-teacher container mb-3">
+        <Form.Label className="mt-4">Docentes</Form.Label>
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>Seleccionar</th>
+              <th>Nombre</th>
+              <th>Grupo</th>
+            </tr>
+          </thead>
+          <tbody>
+            {docente.map((item) => (
+              <tr key={item.teacher_id}>
+                <td className="table-teacher">
+                  <Form.Check
+                    className="check-teacher"
+                    type="checkbox"
+                    id={`checkbox-teacher-${item.teacher_id}`}
+                    checked={isItemSelectedTeacher(item.teacher_id)}
+                    onChange={(event) =>
+                      handleCheckboxChangeTeacher(event, item.teacher_id)
+                    }
+                    disabled={
+                      selectedItemsTeacher.length === 10 &&
+                      !isItemSelectedTeacher(item.teacher_id)
+                    }
+                  />
+                </td>
+                <td>
+                  {item.teacher_name} {item.teacher_last_name}
+                </td>
+                <td>{item.group_number}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+      <div>
+        <h3>segunpart</h3>
+      </div>
+      <div>
+        <Form.Label>Start Time:</Form.Label>
+        <input
+          type="time"
+          id="startTime"
+          name="startTime"
+          value={startTime}
+          onChange={handleStartTimeChange}
+          className="hour-start"
+        />
+        {startTime && (
+          <Button variant="clear-button" onClick={clearStartTime}>
+            <BsX />
+          </Button>
+        )}
+        <Form.Label className="label-end">End Time:</Form.Label>
+        <input
+          type="time"
+          id="endTime"
+          name="endTime"
+          value={endTime}
+          onChange={handleEndTimeChange}
+          className="hour-end"
+        />
+        {endTime && (
+          <Button variant="clear-button" onClick={clearEndTime}>
+            <BsX />
+          </Button>
+        )}
       </div>
       <div class="col-12">
         <Button variant="primary" onClick={printFormData}>

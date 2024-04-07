@@ -16,7 +16,7 @@ export default function RequestInformation(props) {
     updatedAt,
     reservationStatus,
     schedule,
-    asignament,
+    assignment,
     classrooms,
   } = props;
 
@@ -54,7 +54,7 @@ export default function RequestInformation(props) {
         <div className="row p-1">
           <h6 className="d-flex align-items-start  col-3">{`ID: ${id}`}</h6>
           <h3 className="align-self-baseline col-6">
-            {asignament[0].universitySubject.name}
+            {assignment[0].universitySubject.name}
           </h3>
         </div>
         <div className="row">
@@ -85,20 +85,20 @@ export default function RequestInformation(props) {
         <Modal.Body>
           <div className="row">
             <div className="col">
-              <p>{`Docente(s): ${asignament.map((teacher) => {
+              <p>{`Docente(s): ${assignment.map((teacher) => {
                 return teacher.teacher.person.name + " ";
               })}`}</p>
               <p>{`Ambiente: ${classrooms.map((room) => {
                 return room.name + " ";
               })}`}</p>
-              <p>{`Materia: ${asignament[0].universitySubject.name}`}</p>
+              <p>{`Materia: ${assignment[0].universitySubject.name}`}</p>
               <p>{`Motivo: ${reason}`}</p>
             </div>
             <div className="col">
               <p>{`Fecha: ${date}`}</p>
               <p>{`Hora: ${schedule[0].time + "-" + schedule[1].time}`}</p>
               <p>{`Periodos academicos: ${1}`}</p>
-              <p>{`Grupo: ${asignament.map((group) => {
+              <p>{`Grupo: ${assignment.map((group) => {
                 return group.groupNumber + " ";
               })}`}</p>
               <p>{`Cantidad de estudiantes: ${numberOfStudents}`}</p>

@@ -129,9 +129,9 @@ function ModalRejectRequest() {
           <Button variant="secondary" onClick={handleClose}>
             Aceptar y Rechazar
           </Button>
-          <Button variant="primary" onClick={handleSugerir}>
+          {/* <Button variant="primary" onClick={handleSugerir}>
             Sugerir
-          </Button>
+          </Button> */}
         </Modal.Footer>
       </Modal>
 

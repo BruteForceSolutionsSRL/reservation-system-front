@@ -63,6 +63,21 @@ export default function Sidebar({ user }) {
                 <i className="fal fa-list"></i> Lista de solicitudes
               </Link>
             </li>
+
+            {/* si es super usuario crea el elemento en la lista */}
+            {user === "superuser" ? (
+              <li className="list-unstyled px-2">
+                <Link
+                  to={user === "superuser" ? "environment-register" : " "}
+                  className="text-decoration-none px-3 py-2 d-block"
+                  onClick={() => handleItemClick("#")}
+                >
+                  <i className="fa fa-list-alt"></i> Registrar Ambiente
+                </Link>
+              </li>
+            ) : (
+              ""
+            )}
             <li className="list-unstyled px-2">
               <Link
                 to={user === "superuser" ? "superuser-manual" : "user-manual"}

@@ -40,9 +40,10 @@ export default function App() {
             path="environment-register"
             element={<EnvironmentRegistration />}
           ></Route>
+          <Route
             path="reservations-list-superuser"
             element={<RequestsList />}
-          />
+          ></Route>
         </Route>
         <Route path="*" element={<ErrorPage />}></Route>
       </Routes>

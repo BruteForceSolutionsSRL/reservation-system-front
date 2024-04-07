@@ -92,10 +92,13 @@
 
 /*----------------*/
 input {
-    padding-right: 24px;
+    padding-right: 2rem;
     /* Espacio para el botón X */
-    width: 170px;
-    /* Ancho del input, ajusta según sea necesario */
+    width: 100%;
+    /* Ancho del input ocupando todo el espacio disponible */
+    max-width: 200px;
+    min-width: 120px;
+    /* Ancho máximo del input */
     background-color: #f8f9fa;
     /* Color de fondo del input */
     border: 1px solid #ced4da;
@@ -104,7 +107,8 @@ input {
     /* Borde redondeado del input */
     color: #000;
     /* Color del texto del input */
-    width: 128px;
+    box-sizing: border-box;
+    /* Incluye el padding y el borde en el ancho total */
 }
 
 input:focus {
@@ -119,8 +123,6 @@ input:focus {
     position: relative;
     display: inline-block;
 }
-
-
 .clear-button {
     position: absolute;
     top: 50%;
@@ -144,7 +146,13 @@ input:focus {
     top: auto;
     bottom: 0;
     left: 50%;
-    transform: translateX(-50%);
     background-color: null;
     /* Fondo transparente */
+}
+/* Media query para ajustar el tamaño y posición en pantallas más pequeñas */
+@media (max-width: 768px) {
+    .modal-dialog {
+        width: 50%;
+        margin: 10% auto;
+    }
 }

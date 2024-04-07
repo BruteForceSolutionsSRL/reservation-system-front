@@ -5,7 +5,7 @@ import Modal from "react-bootstrap/Modal";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import "./CalendarOwn.css";
 
-const CalendarOwn = () => {
+const CalendarOwn = ({ onDateSelect }) => {
   //Esta ordenado de domingo a sabado
   const diasSemana = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"];
 
@@ -14,7 +14,6 @@ const CalendarOwn = () => {
   const [anio, setAnio] = useState(mesActual.getFullYear());
   const [fechaSeleccionada, setFechaSeleccionada] = useState(null);
   const [calendarioVisible, setCalendarioVisible] = useState(false);
-  const [showModal, setShowModal] = useState(false);
 
   const obtenerDiasEnMes = (mes, anio) => {
     return new Date(anio, mes + 1, 0).getDate();
@@ -72,13 +71,11 @@ const CalendarOwn = () => {
   // obtencion de la decha que se selecciono
   const handleClick = (dia) => {
     const nuevaFechaSeleccionada = new Date(anio, mes, dia);
+    const formattedDate = `${dia.toString().padStart(2, "0")}/${(mes + 1)
+      .toString()
+      .padStart(2, "0")}/${anio}`;
     setFechaSeleccionada(nuevaFechaSeleccionada);
-    console.log({
-      dia: dia,
-      mes: mes,
-      anio: anio,
-    });
-
+    onDateSelect(formattedDate);
     toggleCalendario(); // Cierra el modal al seleccionar una fecha
   };
 
@@ -105,6 +102,7 @@ const CalendarOwn = () => {
           value={fechaSeleccionada ? formatDate(fechaSeleccionada) : ""}
           onClick={toggleCalendario}
           readOnly
+          required
         />
         {fechaSeleccionada && (
           <button className="clear-button" onClick={handleClearDate}>
@@ -112,12 +110,11 @@ const CalendarOwn = () => {
           </button>
         )}
       </div>
-
       <Modal
         show={calendarioVisible}
         onHide={toggleCalendario}
+        dialogClassName="modal-dialog-"
         className="modal-custom"
-        backdrop={false}
       >
         <Modal.Header>
           <Button variant="link" onClick={() => cambiarMes("atras")}>

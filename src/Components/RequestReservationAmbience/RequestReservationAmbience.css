@@ -1,40 +1,40 @@
 .input-materia {
     width: 100%;
-    max-width: 400px;
-    margin-right: 100px;
+    /*max-width: 400px;
+    margin-right: 100px;*/
 }
 
 
 .input-cant {
-    width: 120px;
+    width: 150px;
 }
 
 
-.input-cal {
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 20px;
-    margin-left: 100px;
-    margin-top: -50px;
+.cant-student {
+    width: 100%;
+    /* Ajusta el ancho según sea necesario */
+  
 }
-
-/* Media query para pantallas más pequeñas */
-@media (max-width: 768px) {
-    .input-cal {
-        max-width: 90%;
-        /* Reduzca el ancho máximo para pantallas más pequeñas */
-        padding: 10px;
-        /* Reduzca el espacio interno */
-    }
-}
-
 
 .formulario-principal {
     background-color: #e7e6e6;
     border-radius: 15px;
-    margin: 25px auto;
-    padding: 20px;
+    margin: 10px auto;
+    padding: 45px;
+    width: 100%;
 
+}
+
+.periods-container{
+background-color: #cecccc;
+    border-radius: 15px;
+    margin: 20px auto;
+    padding: 10px;
+    width: 100%;
+    margin-top: -0px;
+}
+.label-periods {
+    margin-top: 20px;
 }
 
 /*seting color icon timePiker*/
@@ -50,10 +50,40 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 .hour-end {
+    margin-right: 430px;
     margin-left: 10px;
     width: 120px;
 }
 
 .label-end {
-    margin-left: 100px;
+    margin-right: 100px;
 }
+
+.time-input-container {
+  position: relative;
+  display: flex;
+  justify-content: space-between; /* Alinear los elementos a los extremos */
+  align-items: center; /* Centrar verticalmente los elementos */
+}
+
+.clear-button2 {
+  margin-left: 10px; /* Ajustar el espacio entre el campo de hora de fin y el botón "clear-button2" */
+    margin-left: px;
+}
+
+
+.time-inputs-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.time-input-container {
+    display: flex;
+    align-items: center;
+}
+
+.error-message {
+    color: red;
+    margin-top: 5px;
+}
+

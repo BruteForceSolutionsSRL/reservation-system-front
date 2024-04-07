@@ -54,8 +54,8 @@ export default function Sidebar({ user }) {
               <Link
                 to={
                   user === "superuser"
-                    ? "reservation-request"
-                    : "enviroment-request"
+                    ? "reservations-list-superuser"
+                    : "reservations-list-user"
                 }
                 className="text-decoration-none px-3 py-2 d-block"
                 onClick={() => handleItemClick("#")}
@@ -135,13 +135,13 @@ export default function Sidebar({ user }) {
                 <ul className="navbar-nav mb-2 mb-lg-0">
                   <li className="nav-item">
                     {/* This is a photo, but for now it does nothing until we decide what to do*/}
-                    <Link className="nav-brand active" to="#">
+                    {/* <Link className="nav-brand active" to="#">
                       <img
                         src="https://fastly.picsum.photos/id/65/4912/3264.jpg?hmac=uq0IxYtPIqRKinGruj45KcPPzxDjQvErcxyS1tn7bG0"
                         alt=""
                         width="60px"
                       />
-                    </Link>
+                    </Link> */}
                   </li>
                 </ul>
               </div>

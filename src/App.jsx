@@ -5,6 +5,9 @@ import Sidebar from "./Components/Sidebar.jsx/Sidebar";
 import EnvironmentRequest from "./Pages/EnvironmentRequest/EnvironmentRequest";
 import LandingPage from "./Pages/LandingPage/LandingPage";
 import EnvironmentRegistration from "./Pages/SuperUser/EnvironmentRegistration/EnvironmentRegistration";
+import ReservationList from "./Pages/User/ReservationsList/ReservationList";
+import RequestsList from "./Pages/SuperUser/RequestsList/RequestsList";
+import ReservationInformation from "./Pages/SuperUser/ReservationInformation/ReservationInformation";
 
 export default function App() {
   return (
@@ -21,6 +24,7 @@ export default function App() {
             path="user-manual"
             element={<div>Pagina para manual de usuario</div>}
           ></Route>
+          <Route path="reservations-list-user" element={<ReservationList />} />
         </Route>
         <Route path="/superuser" element={<Sidebar user="superuser" />}>
           <Route path="home" element={<Homepage />}></Route>
@@ -36,6 +40,9 @@ export default function App() {
             path="environment-register"
             element={<EnvironmentRegistration />}
           ></Route>
+            path="reservations-list-superuser"
+            element={<RequestsList />}
+          />
         </Route>
         <Route path="*" element={<ErrorPage />}></Route>
       </Routes>

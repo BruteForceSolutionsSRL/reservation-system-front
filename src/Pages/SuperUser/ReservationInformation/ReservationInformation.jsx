@@ -18,7 +18,7 @@ export default function ReservationInformation(props) {
     updatedAt,
     reservationStatus,
     schedule,
-    asignament,
+    assignment,
     classrooms,
   } = props;
 
@@ -59,7 +59,7 @@ export default function ReservationInformation(props) {
             })}
           </div>
           <div className="col-5 d-flex justify-content-center align-items-center">
-            {asignament.map((teacher) => {
+            {assignment.map((teacher) => {
               return teacher.teacher.person.name + " ";
             })}
           </div>
@@ -104,7 +104,7 @@ export default function ReservationInformation(props) {
       >
         <Modal.Header closeButton>
           <Modal.Title id="reservation-info-modal">
-            {`Materia: ${asignament[0].universitySubject.name}`}
+            {`Materia: ${assignment[0].universitySubject.name}`}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -118,7 +118,7 @@ export default function ReservationInformation(props) {
                 </tr>
               </thead>
               <tbody>
-                {asignament.map((teacher, index) => {
+                {assignment.map((teacher, index) => {
                   return (
                     <tr key={teacher.id}>
                       <th scope="row">{++index}</th>

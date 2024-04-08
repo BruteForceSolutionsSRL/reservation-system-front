@@ -3,7 +3,6 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Toast from "react-bootstrap/Toast";
 import ToastContainer from "react-bootstrap/ToastContainer";
-import ModalRejectRequest from "../../../Components/ShowReservationRequest/RejectReservationRequest/ModalRejectRequest";
 import "./ReservationInformation.css";
 
 export default function ReservationInformation(props) {

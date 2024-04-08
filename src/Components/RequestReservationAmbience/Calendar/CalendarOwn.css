@@ -1,0 +1,158 @@
+.calendar-container {
+    width: 340px;
+    height: 254px;
+    font-family: Arial, sans-serif;
+    /* Borde redondeado en las esquinas superiores */
+    overflow: hidden;
+    /* Para ocultar cualquier contenido que pueda sobresalir del contenedor */
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px;
+    background-color: #ebeef1;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom: 1px solid #ffffff;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 6fr);
+
+}
+
+/*Botones cambiar mes*/
+.calendar-button-back {
+    background-color: #ebeef1;
+    color: #080707;
+    border: #080707;
+    font-size: 1.2em;
+    margin-right: 10px;
+}
+
+.calendar-button-back:hover {
+    color: white;
+}
+
+.calendar-button-next {
+    background-color: #ebeef1;
+    color: #080707;
+    border: #080707;
+    font-size: 1.2em;
+    margin-right: 15px;
+}
+
+.calendar-button-next:hover {
+    color: white;
+}
+
+
+.calendar-cell {
+    padding: 4px;
+    margin-block-end: 0px;
+
+    text-align: center;
+    font-size: 0.8em;
+
+}
+
+.selected {
+    background-color: #c4d5df;
+    border-radius: 15px;
+}
+
+/*redondear las esquinas del selector*/
+.day:hover {
+    background-color: #c4d5df;
+    border-radius: 15px;
+}
+
+.day-name {
+    font-weight: bold;
+    font-size: 0.9em;
+    /* Tamaño de fuente más pequeño */
+}
+
+
+.calendar-button:hover {
+    color: #080e14;
+}
+
+/*fecha actual*/
+.fecha-actual {
+    margin-left: 20px;
+    font-weight: bold;
+}
+
+/*----------------*/
+input {
+    padding-right: 2rem;
+    /* Espacio para el botón X */
+    width: 100%;
+    /* Ancho del input ocupando todo el espacio disponible */
+    max-width: 200px;
+    min-width: 120px;
+    /* Ancho máximo del input */
+    background-color: #f8f9fa;
+    /* Color de fondo del input */
+    border: 1px solid #ced4da;
+    /* Borde del input */
+    border-radius: 4px;
+    /* Borde redondeado del input */
+    color: #000;
+    /* Color del texto del input */
+    box-sizing: border-box;
+    /* Incluye el padding y el borde en el ancho total */
+}
+
+input:focus {
+    outline: none;
+    /* Quitar el contorno al hacer foco en el input */
+    border-color: #80bdff;
+    /* Cambiar el color del borde al hacer foco en el input */
+}
+
+
+.input-container {
+    position: relative;
+    display: inline-block;
+}
+.clear-button {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.clear-button svg {
+    width: 16px;
+    /* Tamaño del icono X */
+    height: 16px;
+    color: #555;
+    /* Color del icono X */
+}
+
+/*Modal*/
+.modal-custom {
+    top: auto;
+    bottom: 0;
+    left: 50%;
+    background-color: null;
+    /* Fondo transparente */
+}
+/* Media query para ajustar el tamaño y posición en pantallas más pequeñas */
+@media (max-width: 768px) {
+    .modal-dialog {
+        width: 50%;
+        margin: 10% auto;
+    }
+}

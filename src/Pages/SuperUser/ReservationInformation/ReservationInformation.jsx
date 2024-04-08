@@ -3,13 +3,16 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Toast from "react-bootstrap/Toast";
 import ToastContainer from "react-bootstrap/ToastContainer";
+import ModalRejectRequest from "../../../Components/ShowReservationRequest/RejectReservationRequest/ModalRejectRequest";
 import "./ReservationInformation.css";
+
 export default function ReservationInformation(props) {
   const [show, setShow] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [bg, setBg] = useState("");
   const [toastMessage, setToastMessage] = useState("");
   const [toastIcon, setToastIcon] = useState("");
+  const [showRefuseModal, setShowRefuseModal] = useState(false);
 
   const {
     id,
@@ -64,12 +67,31 @@ export default function ReservationInformation(props) {
   };
 
   const handleRefuseModal = () => {
-    setBg("danger");
-    setToastMessage(`Solicitud ${id} rechazada`);
-    setShowToast(true);
     setShow(false);
-    // Message refuse
-    // setToastMessage("");
+    setShowRefuseModal(true);
+  };
+
+  const handleCloseRefuseModal = () => {
+    setShowRefuseModal(false);
+  };
+
+  const refuseRequest = () => {
+    let url = `http://localhost:8000/api/reservation/reject/${id}`;
+    fetch(url, {
+      method: "PUT",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setToastMessage(`La solicitud ${id} fue rechazada`);
+        setBg("danger");
+        setShowToast(true);
+        setShow(false);
+        setShowRefuseModal(false);
+      })
+      .catch((err) => {
+        if (err) throw console.error(err);
+      });
   };
 
   return (
@@ -110,25 +132,6 @@ export default function ReservationInformation(props) {
           </div>
         </div>
       </div>
-
-      <ToastContainer
-        className="p-3 m-3"
-        position="top-end"
-        style={{ zIndex: 1 }}
-      >
-        <Toast
-          onClose={() => setShowToast(false)}
-          show={showToast}
-          delay={3000}
-          bg={bg}
-          autohide
-        >
-          <Toast.Body>
-            <i className={`fal fa-${toastIcon}`} style={{ color: "white" }}></i>{" "}
-            <i style={{ color: "white" }}>{toastMessage}</i>
-          </Toast.Body>
-        </Toast>
-      </ToastContainer>
 
       <Modal
         show={show}
@@ -198,6 +201,47 @@ export default function ReservationInformation(props) {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* Modal for refuse request */}
+      <Modal
+        show={showRefuseModal}
+        onHide={handleCloseRefuseModal}
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Advertencia</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>¿Esta seguro de rechazar la solicitud?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={refuseRequest}>
+            Aceptar y Rechazar
+          </Button>
+          {/* <Button variant="primary" onClick={handleSugerir}>
+            Sugerir
+          </Button> */}
+        </Modal.Footer>
+      </Modal>
+
+      {/* Toast message to superuser */}
+      <ToastContainer
+        className="p-3 m-3"
+        position="top-end"
+        style={{ zIndex: 1 }}
+      >
+        <Toast
+          onClose={() => setShowToast(false)}
+          show={showToast}
+          delay={3000}
+          bg={bg}
+          autohide
+        >
+          <Toast.Body>
+            <i className={`fal fa-${toastIcon}`} style={{ color: "white" }}></i>{" "}
+            <i style={{ color: "white" }}>{toastMessage}</i>
+          </Toast.Body>
+        </Toast>
+      </ToastContainer>
     </>
   );
 }

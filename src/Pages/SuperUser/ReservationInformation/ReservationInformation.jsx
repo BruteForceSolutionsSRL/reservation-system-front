@@ -53,7 +53,13 @@ export default function ReservationInformation(props) {
         }
       })
       .then((data) => {
-        console.log(data);
+        if (data.message === "Already occupied classroom(s)") {
+          setBg("warning");
+          setToastMessage(
+            `La solicitud ${id} no puede aceptarse por que el aula esta ocupada`
+          );
+          setToastIcon("times-circle");
+        }
       })
       .catch((err) => {
         if (err) throw console.error(err);
@@ -189,15 +195,48 @@ export default function ReservationInformation(props) {
               <h6>Cantidad de estudiantes</h6>
               <p>{numberOfStudents}</p>
             </div>
+            <div className="col">
+              <h6>Estado de la solicitud</h6>
+              <p>
+                {reservationStatus.id === 1
+                  ? "Aceptado"
+                  : reservationStatus.id === 2
+                  ? "Rechazado"
+                  : reservationStatus.id === 3
+                  ? "En espera"
+                  : "Cancelado"}
+              </p>
+            </div>
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="outline-danger" onClick={handleRefuseModal}>
-            Rechazar
-          </Button>
-          <Button variant="outline-success" onClick={handleAcceptModal}>
-            Aceptar
-          </Button>
+          {reservationStatus.id === 3 ? (
+            <>
+              <Button variant="outline-danger" onClick={handleRefuseModal}>
+                Rechazar
+              </Button>
+              <Button variant="outline-success" onClick={handleAcceptModal}>
+                Aceptar
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="outline-danger"
+                onClick={handleRefuseModal}
+                disabled
+              >
+                Rechazar
+              </Button>
+              <Button
+                variant="outline-success"
+                onClick={handleAcceptModal}
+                disabled
+              >
+                Aceptar
+              </Button>
+            </>
+          )}
         </Modal.Footer>
       </Modal>
 

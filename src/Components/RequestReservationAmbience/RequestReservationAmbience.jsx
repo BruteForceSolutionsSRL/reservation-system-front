@@ -315,230 +315,233 @@ function RequestReservationAmbience() {
   };
 
   return (
-    <Form isInvalid onSubmit={handleSubmit} className="formulario-principal">
-      <div>
-        <Form.Label className="me-3">MATERIA</Form.Label>
-        <Form.Select
-          type="input"
-          id="materia"
-          name="materia"
-          value={formData.materia}
-          onChange={handleChange}
-          className="input-materia"
-          isInvalid={!!validateInput(formData.materia)}
-        >
-          <option value="">Select an option</option>
-          {opciones.map((opcion) => (
-            <option key={opcion.id} value={opcion.id}>
-              {opcion.nombre}
-            </option>
-          ))}
-        </Form.Select>
-        <Form.Control.Feedback type="invalid">
-          {validateInput(formData.materia)}
-        </Form.Control.Feedback>
-        <div className="mt-3 row">
-          <div className="col-md-6">
-            <div>
-              <Form.Label>NUMBER OF STUDENTES</Form.Label>
-              <Form.Control
-                type="number"
-                id="cantidadEstudiantes"
-                name="cantidadEstudiantes"
-                value={formData.cantidadEstudiantes}
-                onChange={handleChange}
-                isInvalid={validateCantEst(formData.cantidadEstudiantes)}
-                className="input-cant"
-                placeholder="Amount"
-              />
-              <Form.Control.Feedback type="invalid">
-                {validateCantEst(formData.cantidadEstudiantes)}
-              </Form.Control.Feedback>
-            </div>
-
-            {/* ambiente */}
-            <div className="classroom-container">
-              <Form.Label className="mt-4">Ambiente</Form.Label>
-              <div className="container">
-                <Row>
-                  <Col>
-                    <Form.Label className="mb-3">Bloque</Form.Label>
-                  </Col>
-                  <Col>
-                    <Form.Select
-                      className="input-block mb-3"
-                      onChange={handleSelectChangeBloque}
-                      value={opcionSeleccionadaBloque}
-                      isInvalid={!!validateInput(formData.bloque)}
-                    >
-                      <option value="">Selecciona un Bloque</option>
-                      {blockOption.map((optionBlock) => (
-                        <option
-                          key={optionBlock.block_id}
-                          value={optionBlock.block_id}
-                        >
-                          {optionBlock.name}
-                        </option>
-                      ))}
-                    </Form.Select>
-                    <Form.Control.Feedback type="invalid">
-                      {validateInput(formData.bloque)}
-                    </Form.Control.Feedback>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <Form.Label>Aulas</Form.Label>
-                  </Col>
-                  <Col>
-                    <div className="container-classroom container mb-3">
-                      <Table striped bordered hover>
-                        <tbody>
-                          {classroom.map((item) => (
-                            <tr key={item.classroom_id}>
-                              <td className="table-classroom table">
-                                <Row>
-                                  <Col xs={5}>
-                                    <Form.Check
-                                      className="check-classroom"
-                                      type="checkbox"
-                                      id={`checkbox-${item.classroom_id}`}
-                                      checked={isItemSelected(
-                                        item.classroom_id
-                                      )}
-                                      onChange={(event) =>
-                                        handleCheckboxChange(
-                                          event,
-                                          item.classroom_id
-                                        )
-                                      }
-                                      disabled={
-                                        selectedItems.length === 3 &&
-                                        !isItemSelected(item.classroom_id)
-                                      }
-                                    />
-                                  </Col>
-                                  <Col xs={7}>{item.name}</Col>
-                                </Row>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </Table>
-                    </div>
-                  </Col>
-                </Row>
-              </div>
-            </div>
-
+    <>
+      <h1 className="text-center">Nueva solicitud de reserva</h1>
+      <Form isInvalid onSubmit={handleSubmit} className="formulario-principal">
+        <div>
+          <Form.Label className="me-3">MATERIA</Form.Label>
+          <Form.Select
+            type="input"
+            id="materia"
+            name="materia"
+            value={formData.materia}
+            onChange={handleChange}
+            className="input-materia"
+            isInvalid={!!validateInput(formData.materia)}
+          >
+            <option value="">Select an option</option>
+            {opciones.map((opcion) => (
+              <option key={opcion.id} value={opcion.id}>
+                {opcion.nombre}
+              </option>
+            ))}
+          </Form.Select>
+          <Form.Control.Feedback type="invalid">
+            {validateInput(formData.materia)}
+          </Form.Control.Feedback>
+          <div className="mt-3 row">
             <div className="col-md-6">
-              <div className="label-calendary d-flex flex-column align-items-start">
-                <Form.Label>DATE</Form.Label>
-                <CalendarOwn onDateSelect={handleDateSelect} />
+              <div>
+                <Form.Label>NUMBER OF STUDENTES</Form.Label>
+                <Form.Control
+                  type="number"
+                  id="cantidadEstudiantes"
+                  name="cantidadEstudiantes"
+                  value={formData.cantidadEstudiantes}
+                  onChange={handleChange}
+                  isInvalid={validateCantEst(formData.cantidadEstudiantes)}
+                  className="input-cant"
+                  placeholder="Amount"
+                />
+                <Form.Control.Feedback type="invalid">
+                  {validateCantEst(formData.cantidadEstudiantes)}
+                </Form.Control.Feedback>
+              </div>
+
+              {/* ambiente */}
+              <div className="classroom-container">
+                <Form.Label className="mt-4">Ambiente</Form.Label>
+                <div className="container">
+                  <Row>
+                    <Col>
+                      <Form.Label className="mb-3">Bloque</Form.Label>
+                    </Col>
+                    <Col>
+                      <Form.Select
+                        className="input-block mb-3"
+                        onChange={handleSelectChangeBloque}
+                        value={opcionSeleccionadaBloque}
+                        isInvalid={!!validateInput(formData.bloque)}
+                      >
+                        <option value="">Selecciona un Bloque</option>
+                        {blockOption.map((optionBlock) => (
+                          <option
+                            key={optionBlock.block_id}
+                            value={optionBlock.block_id}
+                          >
+                            {optionBlock.name}
+                          </option>
+                        ))}
+                      </Form.Select>
+                      <Form.Control.Feedback type="invalid">
+                        {validateInput(formData.bloque)}
+                      </Form.Control.Feedback>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <Form.Label>Aulas</Form.Label>
+                    </Col>
+                    <Col>
+                      <div className="container-classroom container mb-3">
+                        <Table striped bordered hover>
+                          <tbody>
+                            {classroom.map((item) => (
+                              <tr key={item.classroom_id}>
+                                <td className="table-classroom table">
+                                  <Row>
+                                    <Col xs={5}>
+                                      <Form.Check
+                                        className="check-classroom"
+                                        type="checkbox"
+                                        id={`checkbox-${item.classroom_id}`}
+                                        checked={isItemSelected(
+                                          item.classroom_id
+                                        )}
+                                        onChange={(event) =>
+                                          handleCheckboxChange(
+                                            event,
+                                            item.classroom_id
+                                          )
+                                        }
+                                        disabled={
+                                          selectedItems.length === 3 &&
+                                          !isItemSelected(item.classroom_id)
+                                        }
+                                      />
+                                    </Col>
+                                    <Col xs={7}>{item.name}</Col>
+                                  </Row>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </Table>
+                      </div>
+                    </Col>
+                  </Row>
+                </div>
+              </div>
+
+              <div className="col-md-6">
+                <div className="label-calendary d-flex flex-column align-items-start">
+                  <Form.Label>DATE</Form.Label>
+                  <CalendarOwn onDateSelect={handleDateSelect} />
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <Form.Label className="label-periods">PERIODS</Form.Label>
-      <div className="periods-container">
-        <TimePicker onTimeChange={handleTimeChange} />
-      </div>
-      <div>
-        <Form.Label className=" mt-4">RESERVATION REASON</Form.Label>
-        <Form.Control
-          id="motivoReserva"
-          name="motivoReserva"
-          value={formData.motivoReserva}
-          onChange={handleChange}
-          isInvalid={validateMotReser(formData.motivoReserva)}
-          className=""
-          placeholder="Write a reason for booking"
-          as="textarea"
-          rows={2}
-        ></Form.Control>
-        <Form.Control.Feedback type="invalid">
-          {validateMotReser(formData.motivoReserva)}
-        </Form.Control.Feedback>
-      </div>
-      {/* docente */}
-      <div className="container-teacher container mb-3">
-        <Form.Label className="mt-4">Docentes</Form.Label>
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Seleccionar</th>
-              <th>Nombre</th>
-              <th>Grupo</th>
-            </tr>
-          </thead>
-          <tbody>
-            {docente.map((item) => (
-              <tr key={item.teacher_id}>
-                <td className="table-teacher">
-                  <Form.Check
-                    className="check-teacher"
-                    type="checkbox"
-                    id={`checkbox-teacher-${item.teacher_id}`}
-                    checked={isItemSelectedTeacher(item.teacher_id)}
-                    onChange={(event) =>
-                      handleCheckboxChangeTeacher(event, item.teacher_id)
-                    }
-                    disabled={
-                      selectedItemsTeacher.length === 10 &&
-                      !isItemSelectedTeacher(item.teacher_id)
-                    }
-                  />
-                </td>
-                <td>
-                  {item.teacher_name} {item.teacher_last_name}
-                </td>
-                <td>{item.group_number}</td>
+        <Form.Label className="label-periods">PERIODS</Form.Label>
+        <div className="periods-container">
+          <TimePicker onTimeChange={handleTimeChange} />
+        </div>
+        <div>
+          <Form.Label className=" mt-4">RESERVATION REASON</Form.Label>
+          <Form.Control
+            id="motivoReserva"
+            name="motivoReserva"
+            value={formData.motivoReserva}
+            onChange={handleChange}
+            isInvalid={validateMotReser(formData.motivoReserva)}
+            className=""
+            placeholder="Write a reason for booking"
+            as="textarea"
+            rows={2}
+          ></Form.Control>
+          <Form.Control.Feedback type="invalid">
+            {validateMotReser(formData.motivoReserva)}
+          </Form.Control.Feedback>
+        </div>
+        {/* docente */}
+        <div className="container-teacher container mb-3">
+          <Form.Label className="mt-4">Docentes</Form.Label>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Seleccionar</th>
+                <th>Nombre</th>
+                <th>Grupo</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
-      </div>
-      <div>
-        <h3>segunpart</h3>
-      </div>
-      <div>
-        <Form.Label>Start Time:</Form.Label>
-        <input
-          type="time"
-          id="startTime"
-          name="startTime"
-          value={startTime}
-          onChange={handleStartTimeChange}
-          className="hour-start"
-        />
-        {startTime && (
-          <Button variant="clear-button" onClick={clearStartTime}>
-            <BsX />
+            </thead>
+            <tbody>
+              {docente.map((item) => (
+                <tr key={item.teacher_id}>
+                  <td className="table-teacher">
+                    <Form.Check
+                      className="check-teacher"
+                      type="checkbox"
+                      id={`checkbox-teacher-${item.teacher_id}`}
+                      checked={isItemSelectedTeacher(item.teacher_id)}
+                      onChange={(event) =>
+                        handleCheckboxChangeTeacher(event, item.teacher_id)
+                      }
+                      disabled={
+                        selectedItemsTeacher.length === 10 &&
+                        !isItemSelectedTeacher(item.teacher_id)
+                      }
+                    />
+                  </td>
+                  <td>
+                    {item.teacher_name} {item.teacher_last_name}
+                  </td>
+                  <td>{item.group_number}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+        <div>
+          <h3>segunpart</h3>
+        </div>
+        <div>
+          <Form.Label>Start Time:</Form.Label>
+          <input
+            type="time"
+            id="startTime"
+            name="startTime"
+            value={startTime}
+            onChange={handleStartTimeChange}
+            className="hour-start"
+          />
+          {startTime && (
+            <Button variant="clear-button" onClick={clearStartTime}>
+              <BsX />
+            </Button>
+          )}
+          <Form.Label className="label-end">End Time:</Form.Label>
+          <input
+            type="time"
+            id="endTime"
+            name="endTime"
+            value={endTime}
+            onChange={handleEndTimeChange}
+            className="hour-end"
+          />
+          {endTime && (
+            <Button variant="clear-button" onClick={clearEndTime}>
+              <BsX />
+            </Button>
+          )}
+        </div>
+        <div class="col-12">
+          <Button variant="primary" onClick={printFormData}>
+            Send
           </Button>
-        )}
-        <Form.Label className="label-end">End Time:</Form.Label>
-        <input
-          type="time"
-          id="endTime"
-          name="endTime"
-          value={endTime}
-          onChange={handleEndTimeChange}
-          className="hour-end"
-        />
-        {endTime && (
-          <Button variant="clear-button" onClick={clearEndTime}>
-            <BsX />
-          </Button>
-        )}
-      </div>
-      <div class="col-12">
-        <Button variant="primary" onClick={printFormData}>
-          Send
-        </Button>
-        <Button variant="secondary">Cancel</Button>
-      </div>
-    </Form>
+          <Button variant="secondary">Cancel</Button>
+        </div>
+      </Form>
+    </>
   );
 }
 

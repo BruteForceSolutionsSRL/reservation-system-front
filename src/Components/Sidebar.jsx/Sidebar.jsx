@@ -51,6 +51,17 @@ export default function Sidebar({ user }) {
                   : "list-unstyled px-2"
               }
             >
+              {user === "user" ? (
+                <Link
+                  to={"enviroment-request"}
+                  className="text-decoration-none px-3 py-2 d-block"
+                  onClick={() => handleItemClick("#")}
+                >
+                  <i className="fal fa-plus"></i> Nueva solicitud de reserva
+                </Link>
+              ) : (
+                ""
+              )}
               <Link
                 to={
                   user === "superuser"

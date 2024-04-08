@@ -2,13 +2,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ErrorPage from "./Components/ErrorPage/ErrorPage";
 import Homepage from "./Pages/User/Homepage/Homepage";
 import Sidebar from "./Components/Sidebar.jsx/Sidebar";
-import EnvironmentRequest from "./Pages/EnvironmentRequest/EnvironmentRequest";
 import LandingPage from "./Pages/LandingPage/LandingPage";
 import EnvironmentRegistration from "./Pages/SuperUser/EnvironmentRegistration/EnvironmentRegistration";
 import ReservationList from "./Pages/User/ReservationsList/ReservationList";
 import RequestsList from "./Pages/SuperUser/RequestsList/RequestsList";
-import ReservationInformation from "./Pages/SuperUser/ReservationInformation/ReservationInformation";
-
+import RequestReservationAmbience from "./Components/RequestReservationAmbience/RequestReservationAmbience";
 export default function App() {
   return (
     <BrowserRouter>
@@ -18,7 +16,7 @@ export default function App() {
           <Route path="home" element={<Homepage />}></Route>
           <Route
             path="enviroment-request"
-            element={<EnvironmentRequest />}
+            element={<RequestReservationAmbience />}
           ></Route>
           <Route
             path="user-manual"

@@ -8,6 +8,8 @@ export default function ReservationInformation(props) {
   const [show, setShow] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [bg, setBg] = useState("");
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastIcon, setToastIcon] = useState("");
 
   const {
     id,
@@ -23,14 +25,51 @@ export default function ReservationInformation(props) {
   } = props;
 
   const handleAcceptModal = () => {
-    setBg("success");
+    let url = "http://localhost:8000/api/reservation/assign";
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: id,
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          setBg("warning");
+          setToastMessage(
+            `Ocurrio un problema y no se logró realizar la operacion para la solicitud ${id}`
+          );
+          setToastIcon("exclamation-triangle");
+          new Error("Network response was not ok.");
+        } else {
+          setBg("success");
+          setToastMessage(`Solicitud ${id} aceptada`);
+          setToastIcon("check");
+          return res.json();
+        }
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => {
+        if (err) throw console.error(err);
+      });
     setShow(false);
     setShowToast(true);
+    setToastMessage("");
+    setToastIcon("");
+    setBg("");
   };
+
   const handleRefuseModal = () => {
     setBg("danger");
-    setShow(false);
+    setToastMessage(`Solicitud ${id} rechazada`);
     setShowToast(true);
+    setShow(false);
+    // Message refuse
+    // setToastMessage("");
   };
 
   return (
@@ -85,11 +124,8 @@ export default function ReservationInformation(props) {
           autohide
         >
           <Toast.Body>
-            <i
-              className="fal fa-exclamation-triangle"
-              style={{ color: "white" }}
-            ></i>{" "}
-            <i style={{ color: "white" }}>{`Solicitud ID: ${id} rechazada`}</i>
+            <i className={`fal fa-${toastIcon}`} style={{ color: "white" }}></i>{" "}
+            <i style={{ color: "white" }}>{toastMessage}</i>
           </Toast.Body>
         </Toast>
       </ToastContainer>

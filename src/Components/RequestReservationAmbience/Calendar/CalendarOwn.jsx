@@ -98,7 +98,8 @@ const CalendarOwn = ({ onDateSelect }) => {
       <div className="input-container">
         <input
           type="text"
-          placeholder="Date"
+          placeholder="Selecciona una fecha"
+          name="copy-button"
           value={fechaSeleccionada ? formatDate(fechaSeleccionada) : ""}
           onClick={toggleCalendario}
           readOnly

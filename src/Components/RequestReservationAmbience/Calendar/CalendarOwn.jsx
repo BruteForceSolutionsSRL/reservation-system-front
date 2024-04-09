@@ -69,25 +69,24 @@ const CalendarOwn = ({ onDateSelect }) => {
   ];
 
   // obtencion de la decha que se selecciono
-  const handleClick = (dia) => {
-    const nuevaFechaSeleccionada = new Date(anio, mes, dia);
-    const formattedDate = `${dia.toString().padStart(2, "0")}/${(mes + 1)
-      .toString()
-      .padStart(2, "0")}/${anio}`;
-    setFechaSeleccionada(nuevaFechaSeleccionada);
-    onDateSelect(formattedDate);
-    toggleCalendario(); // Cierra el modal al seleccionar una fecha
-  };
-
+const handleClick = (dia) => {
+  const nuevaFechaSeleccionada = new Date(anio, mes, dia);
+  setFechaSeleccionada(nuevaFechaSeleccionada);
+  const formattedDate = `${anio}-${(mes + 1).toString().padStart(2, "0")}-${dia.toString().padStart(2, "0")}`;
+  onDateSelect(formattedDate);
+  toggleCalendario(); // Cierra el modal al seleccionar una fecha
+  console.log("Fecha seleccionada:", formattedDate); // Imprime la fecha seleccionada en la consola
+};
   const toggleCalendario = () => {
     setCalendarioVisible(!calendarioVisible);
   };
 
   const formatDate = (date) => {
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear().toString();
-    return `${day}/${month}/${year}`;
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+
+    return `${year}/${month}/${day}`;
   };
   const handleClearDate = () => {
     setFechaSeleccionada(null);
@@ -141,9 +140,9 @@ const CalendarOwn = ({ onDateSelect }) => {
                 key={dia}
                 className={`calendar-cell day ${
                   fechaSeleccionada &&
-                  fechaSeleccionada.getDate() === dia &&
+                  fechaSeleccionada.getFullYear() === anio &&
                   fechaSeleccionada.getMonth() === mes &&
-                  fechaSeleccionada.getFullYear() === anio
+                  fechaSeleccionada.getDate() === dia
                     ? "selected"
                     : ""
                 }`}

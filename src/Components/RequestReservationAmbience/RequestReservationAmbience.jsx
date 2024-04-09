@@ -61,13 +61,14 @@ function RequestReservationAmbience() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleTimeChange = ({ startHour, endHour }) => {
+  const handleTimeChange = ({ startHourId, endHourId }) => {
     setFormData({
       ...formData,
-      horaInicio: startHour,
-      horaFin: endHour,
+      horaInicio: startHourId,
+      horaFin: endHourId,
     });
   };
+
   //validador de materia
   const validateInput = (value) => {
     if (!value || value.trim() === "") {
@@ -139,6 +140,12 @@ function RequestReservationAmbience() {
       capacity: 75,
       floor: 0,
     },
+    {
+      classroom_id: 12,
+      name: "Auditorio",
+      capacity: 700,
+      floor: 0,
+    },
   ];
   // test data
   const docente = [
@@ -146,22 +153,22 @@ function RequestReservationAmbience() {
       teacher_subject_id: 2,
       group_number: 1,
       teacher_id: 1,
-      teacher_name: "maria",
-      teacher_last_name: "cespedes",
+      teacher_name: "Leticia",
+      teacher_last_name: "Blanco Coca",
     },
     {
       teacher_subject_id: 3,
       group_number: 2,
       teacher_id: 2,
-      teacher_name: "marcelo",
-      teacher_last_name: "antezana",
+      teacher_name: "Rosemary",
+      teacher_last_name: "Torrico Bascope",
     },
     {
       teacher_subject_id: 4,
       group_number: 3,
       teacher_id: 4,
-      teacher_name: "agustin",
-      teacher_last_name: "guzman",
+      teacher_name: "Elder Octavio",
+      teacher_last_name: "Fernandez Guzman",
     },
     // {
     //   teacher_subject_id: 4,
@@ -181,8 +188,8 @@ function RequestReservationAmbience() {
       teacher_subject_id: 7,
       group_number: 7,
       teacher_id: 7,
-      teacher_name: "zapato",
-      teacher_last_name: "rp",
+      teacher_name: "Leticia",
+      teacher_last_name: "Blanco Coca",
     },
   ];
 
@@ -276,9 +283,9 @@ function RequestReservationAmbience() {
 
   //Ejemplo de como recibir datos
   const opcionesTemporales = [
-    { id: 1, nombre: "Opción 1" },
-    { id: 2, nombre: "Opción 2" },
-    { id: 3, nombre: "Opción 3" },
+    { id: 1, nombre: "Elementos de programacion y estructura de datos" },
+    { id: 2, nombre: "Algoritmos avanzados" },
+    { id: 3, nombre: "Examen" },
   ];
   const [opciones, setOpciones] = useState(opcionesTemporales);
 

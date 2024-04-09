@@ -11,47 +11,129 @@ export default function EnvironmentRegistration() {
   const [environmentName, setEnvironmentName] = useState("");
   const [environmentType, setEnvironmentType] = useState("");
   const [environmentCapacity, setEnvironmentCapacity] = useState("");
-  const [environmentLocation, setEnvironmentLocation] = useState({
-    building: "",
-    floor: "",
-  });
-  const [showModal, setShowModal] = useState(false);
+  const [environmentBuilding, setEnvironmentBuilding] = useState("");
+  const [environmentFloor, setEnvironmentFloor] = useState("");
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [nameError, setNameError] = useState(false);
+  const [typeError, setTypeError] = useState(false);
+  const [capacityError, setCapacityError] = useState(false);
+  const [blockError, setBlockError] = useState(false);
+  const [floorError, setFloorError] = useState(false);
 
-  /*   const handleEnvironmentNameChange = (event) => {
-    setEnvironmentName(event.target.value);
-  }; */
+  const validateAlphanumeric = (input) => {
+    const alphanumericRegex = /^[a-zA-Z0-9]+$/;
+    return alphanumericRegex.test(input);
+  };
+
+  const handleEnvironmentNameChange = (event) => {
+    const value = event.target.value;
+    setEnvironmentName(value);
+    setNameError(
+      value.length < 3 ||
+        value.length > 30 ||
+        value === "" ||
+        !validateAlphanumeric(value)
+    );
+  };
 
   const handleEnvironmentTypeChange = (event) => {
-    setEnvironmentType(event.target.value);
+    const value = event.target.value;
+    setEnvironmentType(value);
+    setTypeError(value === ""); //error if empty
   };
 
   const handleEnvironmentCapacityChange = (event) => {
-    setEnvironmentCapacity(event.target.value);
+    const value = event.target.value;
+    const isValidPositiveNumber =
+      /^\d+(?!e)$/.test(value) && parseInt(value, 10) > 0;
+    const isValidRange =
+      parseInt(value, 10) >= 15 && parseInt(value, 10) <= 1000;
+    setEnvironmentCapacity(value);
+    setCapacityError(!isValidPositiveNumber || !isValidRange || value === "");
   };
 
   const handleBuildingChange = (event) => {
-    setEnvironmentLocation({
-      ...environmentLocation,
-      building: event.target.value,
-    });
+    const value = event.target.value;
+    setEnvironmentBuilding(value);
+    setBlockError(value === "");
   };
 
   const handleFloorChange = (event) => {
-    setEnvironmentLocation({
-      ...environmentLocation,
-      floor: event.target.value,
-    });
+    const value = event.target.value;
+    const isValidInput = /^\d+$/.test(value) && !/e/i.test(value);
+    const isValidRange = parseInt(value, 10) >= 0 && parseInt(value, 10) <= 200;
+    if ((isValidInput && isValidRange) || value === "") {
+      setEnvironmentFloor(value);
+      setFloorError(false);
+    } else {
+      setFloorError(true);
+    }
+  };
+  /*  const handleFloorChange = (event) => {
+    const value = event.target.value;
+    const isValidRange =
+      value === "" || (parseInt(value, 10) >= 0 && parseInt(value, 10) <= 200);
+    const isValidInput = /^\d{0,3}$/.test(value) && !/e/i.test(value);
+    if (isValidRange && isValidInput) {
+      setEnvironmentFloor(value);
+      setFloorError(false);
+    } else {
+      setFloorError(true);
+    }
+  }; */
+
+  const handleCancelClick = () => {
+    setShowCancelModal(true);
   };
 
+  const handleCancelConfirmation = () => {
+    setShowCancelModal(false);
+    resetForm();
+  };
+
+  const handleModalClose = () => {
+    setShowCancelModal(false);
+    setShowConfirmModal(false);
+  };
   const handleSubmit = () => {
+    event.preventDefault();
+    if (
+      !environmentName ||
+      !environmentType ||
+      !environmentCapacity ||
+      !environmentBuilding ||
+      !environmentFloor ||
+      nameError ||
+      typeError ||
+      capacityError ||
+      blockError ||
+      floorError
+    ) {
+      setNameError(!environmentName);
+      setTypeError(!environmentType);
+      setCapacityError(!environmentCapacity);
+      setBlockError(!environmentBuilding);
+      setFloorError(!environmentFloor);
+      return;
+    }
+
+    console.log("Datos del formulario:", {
+      environmentName,
+      environmentType,
+      environmentCapacity,
+      environmentBuilding,
+      environmentFloor,
+    });
+
     const formData = {
       name: environmentName,
       capacity: environmentCapacity,
       classroomTypeID: environmentType,
-      blockID: environmentLocation.building,
-      floor: environmentLocation.floor,
+      blockID: environmentBuilding,
+      floor: environmentFloor,
     };
+    setShowConfirmModal(true);
 
     const url = "http://localhost:8000/api/classroom";
 
@@ -70,24 +152,24 @@ export default function EnvironmentRegistration() {
       })
       .then((data) => {
         console.log("response", data);
+        setShowConfirmModal(true);
       })
       .catch((error) => {
         console.log("response error", error);
       });
   };
 
-  const handleCancelClick = () => {
-    setShowModal(true);
-  };
-
-  const handleEnvironmentNameChange = (event) => {
-    const value = event.target.value;
-    if (value.length < 5) {
-      setEnvironmentName(value);
-      setNameError(false); // valor válido, no mostramos el mensaje de error
-    } else {
-      setNameError(true); // valor inválido, mostramos el mensaje de error
-    }
+  const resetForm = () => {
+    setEnvironmentName("");
+    setEnvironmentType("");
+    setEnvironmentCapacity("");
+    setEnvironmentBuilding("");
+    setEnvironmentFloor("");
+    setNameError(false);
+    setTypeError(false);
+    setCapacityError(false);
+    setBlockError(false);
+    setFloorError(false);
   };
 
   return (
@@ -106,10 +188,13 @@ export default function EnvironmentRegistration() {
               rows={1}
               value={environmentName}
               onChange={handleEnvironmentNameChange}
+              isInvalid={nameError} // true = error
+              required
             />
             {nameError && (
               <Form.Text className="text-danger">
-                El nombre debe tener menos de 4 caracteres.
+                El nombre no puede estar vacío y solo debe contener letras y
+                números.
               </Form.Text>
             )}
           </Col>
@@ -125,6 +210,8 @@ export default function EnvironmentRegistration() {
               aria-label="Select environment type"
               value={environmentType}
               onChange={handleEnvironmentTypeChange}
+              isInvalid={typeError}
+              required
             >
               <option value="">Seleccione...</option>
               <option value="1">Auditorio</option>
@@ -132,6 +219,11 @@ export default function EnvironmentRegistration() {
               <option value="3">Aula</option>
               <option value="0">Otro</option>
             </Form.Select>
+            {typeError && (
+              <Form.Text className="text-danger">
+                El tipo de ambiente es obligatorio
+              </Form.Text>
+            )}
           </Col>
         </Row>
         <Row className="mb-3">
@@ -145,7 +237,16 @@ export default function EnvironmentRegistration() {
               type="number"
               value={environmentCapacity}
               onChange={handleEnvironmentCapacityChange}
+              isInvalid={capacityError}
+              required
             />
+
+            {capacityError && (
+              <Form.Text className="text-danger">
+                Ingresa un número entero positivo válido mayor a 15. Este campo
+                es obligatorio.
+              </Form.Text>
+            )}
           </Col>
         </Row>
 
@@ -158,8 +259,10 @@ export default function EnvironmentRegistration() {
                   <Form.Label>Bloque</Form.Label>
                   <Form.Select
                     aria-label="Select building"
-                    value={environmentLocation.building}
+                    value={environmentBuilding}
                     onChange={handleBuildingChange}
+                    isInvalid={blockError && environmentBuilding === ""}
+                    required
                   >
                     <option value="">Seleccione...</option>
                     <option value="1">Edificio Nuevo</option>
@@ -167,6 +270,11 @@ export default function EnvironmentRegistration() {
                     <option value="0">Edificio Academico</option>
                     <option value="Trencito">Trencito</option>
                   </Form.Select>
+                  {blockError && (
+                    <Form.Text className="text-danger">
+                      El bloque es obligatorio.
+                    </Form.Text>
+                  )}
                 </Form.Group>
               </Col>
               <Col xs={12} md={6}>
@@ -174,9 +282,16 @@ export default function EnvironmentRegistration() {
                   <Form.Label>Piso</Form.Label>
                   <Form.Control
                     type="number"
-                    value={environmentLocation.floor}
+                    value={environmentFloor}
                     onChange={handleFloorChange}
+                    isInvalid={floorError && environmentFloor === ""}
                   />
+                  {floorError && (
+                    <Form.Text className="text-danger">
+                      Ingresa un número entero positivo. Este campo es
+                      obligatorio.
+                    </Form.Text>
+                  )}
                 </Form.Group>
               </Col>
             </Row>
@@ -195,17 +310,29 @@ export default function EnvironmentRegistration() {
         </Button>
       </Form>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
+      <Modal show={showCancelModal} onHide={handleModalClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Confirmación</Modal.Title>
+          <Modal.Title>Cancelar Registro</Modal.Title>
         </Modal.Header>
         <Modal.Body>¿Estás seguro que quieres cancelar?</Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+          <Button variant="secondary" onClick={handleModalClose}>
             Cerrar
           </Button>
-          <Button variant="primary" onClick={() => setShowModal(false)}>
+          <Button variant="primary" onClick={handleCancelConfirmation}>
             Confirmar
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showConfirmModal} onHide={handleModalClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmación</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>¡Ambiente registrado con éxito!</Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleModalClose}>
+            Cerrar
           </Button>
         </Modal.Footer>
       </Modal>

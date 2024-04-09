@@ -7,6 +7,8 @@ function TimePicker({ onTimeChange }) {
   const [startHour, setStartHour] = useState("");
   const [endHour, setEndHour] = useState("");
   const [error, setError] = useState("");
+  const [startHourId, setStartHourId] = useState("");
+  const [endHourId, setEndHourId] = useState("");
 
   //forma de recibir desde el back
   const hoursOptions = [
@@ -34,24 +36,28 @@ function TimePicker({ onTimeChange }) {
     );
     if (endHour !== "" && newStartHour >= endHour) {
       setEndHour("");
+      setEndHourId("");
     }
     setStartHour(newStartHour);
+    setStartHourId(selectedStart.id);
     if (endHour !== "" && endHour > hoursOptions[maxEndHourIndex].time) {
       setEndHour(hoursOptions[maxEndHourIndex].time);
-      // lógica para validar y actualizar la hora de inicio
-      onTimeChange({ startHour: newStartHour, endHour });
+      setEndHourId(hoursOptions[maxEndHourIndex].id);
+      onTimeChange({
+        startHourId: selectedStart.id,
+        endHourId: hoursOptions[maxEndHourIndex].id,
+      });
     }
     if (endHour !== "" && newStartHour > endHour) {
       setEndHour("");
-      // lógica para validar y actualizar la hora de inicio
-      onTimeChange({ startHour: newStartHour, endHour });
+      setEndHourId("");
+      onTimeChange({ startHourId: selectedStart.id, endHourId: "" });
     }
     setError(
       newStartHour && endHour
         ? ""
         : "Both start and end hours must be selected."
     );
-    //console.log("Hora inicial seleccionada:", newStartHour);
   };
 
   const handleEndHourChange = (e) => {
@@ -63,22 +69,25 @@ function TimePicker({ onTimeChange }) {
     );
     if (selectedEndHour && selectedEndHour.id <= selectedStart.id + 2) {
       setEndHour(e.target.value);
+      setEndHourId(selectedEndHour.id);
       setError("");
-      // lógica para validar y actualizar la hora de fin
-      onTimeChange({ startHour, endHour: e.target.value });
+      onTimeChange({
+        startHourId: selectedStart.id,
+        endHourId: selectedEndHour.id,
+      });
     } else {
       setEndHour("");
+      setEndHourId("");
       setError(
         "The schedule exceeds the reservation period permitided(Maximum 4 periods)."
       );
     }
-    //console.log("Hora final seleccionada:", e.target.value);
   };
 
   useEffect(() => {
-    // Aquí puedes hacer lo que necesites con las horas seleccionadas, como enviarlas al backend
+    console.log("Periodo:", startHourId, "-", endHourId);
     console.log("Periodo:", startHour, "-", endHour);
-  }, [startHour, endHour]);
+  }, [startHourId, endHourId]);
 
   return (
     <div>

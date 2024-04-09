@@ -17,7 +17,7 @@
 }
 
 .formulario-principal {
-  background-color: #e7e6e6;
+  /* background-color: #e7e6e6; */
   border-radius: 15px;
   margin: 10px auto;
   padding: 45px;
@@ -25,7 +25,7 @@
 }
 
 .periods-container {
-  background-color: #cecccc;
+  /* background-color: #cecccc; */
   border-radius: 15px;
   margin: 20px auto;
   padding: 10px;
@@ -113,4 +113,20 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   max-height: 250px;
   overflow-y: auto;
   overflow-x: auto;
+}
+
+.tag-container {
+  border: 2px solid #ccc;
+  padding: 20px;
+  border-radius: 5px;
+  position: relative;
+}
+
+.tag-label {
+  position: absolute;
+  top: -14px; /* posición vertical */
+  left: 10px; /* posición horizontal */
+  background-color: white;
+  padding: 0 10px; /* relleno horizontal */
+  font-weight: bold;
 }

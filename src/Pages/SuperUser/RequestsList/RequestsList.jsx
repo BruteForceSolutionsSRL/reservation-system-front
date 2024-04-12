@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import ReservationInformation from "../ReservationInformation/ReservationInformation";
 import Spinner from "react-bootstrap/Spinner";
 export default function RequestsList() {
-  const URL = "http://localhost:8000/api/reservations";
+  const URL = import.meta.env.VITE_REACT_API_URL;
   const [reservations, setReservations] = useState([]);
   const [acceptedList, setAcceptedList] = useState([]);
   const [refusedList, setRefusedList] = useState([]);
@@ -12,7 +12,7 @@ export default function RequestsList() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(URL)
+    fetch(URL + "reservations")
       .then((res) => {
         if (!res.ok) throw new Error("Network response was not ok.");
         return res.json();

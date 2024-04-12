@@ -6,10 +6,10 @@ export default function ReservationList() {
   const acceptedList = [];
   const refusedList = [];
   const cancelledList = [];
-  const URL = "http://localhost:8000/api/reservations";
+  const URL = import.meta.env.VITE_REACT_API_URL;
 
   useEffect(() => {
-    fetch(URL)
+    fetch(URL + "reservations")
       .then((res) => {
         if (!res.ok) throw new Error("Network response was not ok.");
         return res.json();

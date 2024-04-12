@@ -27,8 +27,8 @@ export default function ReservationInformation(props) {
   } = props;
 
   const handleAcceptModal = () => {
-    let url = "http://localhost:8000/api/reservation/assign";
-    fetch(url, {
+    let url = import.meta.env.VITE_REACT_API_URL;
+    fetch(url + "reservation/assign", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -81,8 +81,8 @@ export default function ReservationInformation(props) {
   };
 
   const refuseRequest = () => {
-    let url = `http://localhost:8000/api/reservation/reject/${id}`;
-    fetch(url, {
+    let url = import.meta.env.VITE_REACT_API_URL;
+    fetch(url + `reservation/reject/${id}`, {
       method: "PUT",
     })
       .then((res) => res.json())

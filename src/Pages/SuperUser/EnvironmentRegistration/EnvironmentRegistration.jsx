@@ -135,9 +135,9 @@ export default function EnvironmentRegistration() {
     };
     setShowConfirmModal(true);
 
-    const url = "http://localhost:8000/api/classroom";
+    const url = import.meta.env.VITE_REACT_API_URL;
 
-    fetch(url, {
+    fetch(url + "classroom", {
       method: "POST",
       headers: {
         "Content-Type": "aplication/json",

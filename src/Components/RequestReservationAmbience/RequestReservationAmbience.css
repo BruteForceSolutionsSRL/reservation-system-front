@@ -2,11 +2,8 @@
   width: 100%;
   /*max-width: 400px;
     margin-right: 100px;*/
-  width: 100%;
-  max-width: 400px;
-  margin-right: 100px;
 }
-
+    
 .input-cant {
   width: 150px;
 }
@@ -17,11 +14,11 @@
 }
 
 .formulario-principal {
-  /* background-color: #e7e6e6; */
-  border-radius: 15px;
-  margin: 10px auto;
-  padding: 45px;
+  background-color: #f1f0f0; /*Quitarlo al final*/
   width: 100%;
+  border-radius: 15px;
+  margin: 25px auto;
+  padding: 20px;
 }
 
 .periods-container {
@@ -32,6 +29,7 @@
   width: 100%;
   margin-top: -0px;
 }
+
 .label-periods {
   margin-top: 20px;
 }
@@ -108,18 +106,19 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   display: inline-block;
   margin-right: 10px;
 }
-.container-teacher {
-  max-width: 100%;
-  max-height: 250px;
-  overflow-y: auto;
-  overflow-x: auto;
-}
 
+
+
+
+
+/*Desde aqui empiza codigo limpio*/
+/*Marco de cada caja*/
 .tag-container {
   border: 2px solid #ccc;
-  padding: 20px;
+  padding: 25px;
   border-radius: 5px;
   position: relative;
+  padding-bottom: 0px;
 }
 
 .tag-label {
@@ -130,3 +129,24 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   padding: 0 10px; /* relleno horizontal */
   font-weight: bold;
 }
+
+/*Control table color*/
+.table-blue {
+  background-color: blue !important;
+  color: white;
+}
+
+/*Scrol bar*/
+.scrol-teacher{
+  overflow-y: auto;
+  max-height:206px;
+  scrollbar-width: thin;
+}
+
+
+/*Mantener el header de la tabla nombre y grupo*/
+.sticky-header {
+  position: sticky;
+  top: 0;
+}
+

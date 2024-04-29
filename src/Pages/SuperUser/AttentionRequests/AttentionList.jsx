@@ -45,7 +45,7 @@ export default function AttentionList() {
           <div className="container overflow-x-scroll text-center">
             <div className="row" style={{ minWidth: "470px" }}>
               <div className="col-1">
-                <i>#</i>
+                <i>ID</i>
               </div>
               <div className="col-2">
                 <i>Materia(s)</i>
@@ -53,18 +53,18 @@ export default function AttentionList() {
               <div className="col-2">
                 <i>Cantidad de estudiantes</i>
               </div>
-              <div className="col-3">
+              <div className="col-2">
                 <i>Fecha de reserva</i>
               </div>
               <div className="col-3">
                 <i>Periodos</i>
               </div>
-              <div className="col-1"></div>
+              <div className="col-2"></div>
             </div>
-            <div>
+            <div className="">
               {reservations.map((element) => {
                 return (
-                  <div key={element.reservation_id} className="col-12">
+                  <div key={element.reservation_id} className="">
                     <AttentionRequest {...element} />
                   </div>
                 );

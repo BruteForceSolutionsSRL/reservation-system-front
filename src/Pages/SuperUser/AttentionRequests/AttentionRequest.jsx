@@ -8,7 +8,17 @@ import Spinner from "react-bootstrap/Spinner";
 export default function AttentionRequest(props) {
   const URL = import.meta.env.VITE_REACT_API_URL;
   // Conflicts state
-  const [conflicts, setConflicts] = useState({});
+  const [conflicts, setConflicts] = useState({
+    quantity: "",
+    classroom: {
+      message: "",
+      list: [],
+    },
+    teacher: {
+      message: "",
+      list: [],
+    },
+  });
   // Modals states
   const [showModal, setShowModal] = useState(false);
   const [showRefuseModal, setShowRefuseModal] = useState(false);
@@ -21,35 +31,39 @@ export default function AttentionRequest(props) {
 
   const [spinnerInModal, setSpinnerInModal] = useState(false);
 
-  let block_name = "Edificio nuevo";
   const {
     reservation_id,
     subject_name,
     quantity,
     reservation_date,
-    timeSlot,
+    time_slot,
     groups,
-    // block_name, Este valor falta obtener del endpoint
+    block_name,
     classrooms,
     reason_name,
     priority,
     reservation_status,
   } = props;
 
-  // Get conflicts
-  useEffect(() => {
-    fetch(URL + `resevation/conflicts/${reservation_id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setConflicts(data);
-      })
-      .catch((err) => {
-        if (err) throw console.error(err);
-      });
-  }, []);
+  // fetchData
+  // for conflicts
+  const conflictsFetch = async () => {
+    if (conflicts) {
+      await fetch(URL + `reservation/conflicts/${reservation_id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setConflicts(data);
+        })
+        .catch((err) => {
+          if (err) throw console.error(err);
+        });
+    }
+  };
 
   // Handlers modals
   const handleShowModal = () => {
+    // Get conflicts when modal opens
+    conflictsFetch();
     setShowModal(true);
   };
 
@@ -109,18 +123,23 @@ export default function AttentionRequest(props) {
 
   return (
     <>
-      <div className="container  rounded mb-2 mt-1">
-        <div className="row border" style={{ minWidth: "470px" }}>
+      <div className="container mb-2 mt-1">
+        <div
+          className={`row rounded border ${
+            priority === 1 ? "border-danger" : ""
+          }`}
+          style={{ minWidth: "470px" }}
+        >
           <div className="col-1">
             <b>{reservation_id}</b>
           </div>
           <div className="col-2">{subject_name}</div>
           <div className="col-2">{quantity}</div>
-          <div className="col-3">{reservation_date}</div>
+          <div className="col-2">{reservation_date}</div>
           <div className="col-3">
-            {timeSlot[0]} - {timeSlot[1]}
+            {time_slot[0]} - {time_slot[1]}
           </div>
-          <div className="col-1">
+          <div className="col-2">
             <button className="btn btn-primary" onClick={handleShowModal}>
               Atender
             </button>
@@ -151,6 +170,17 @@ export default function AttentionRequest(props) {
               <div className="pb-3">
                 <b>GRUPO</b>
               </div>
+              {conflicts.teacher.message === "" ? (
+                ""
+              ) : (
+                <div>
+                  <b className="text-warning">{`${
+                    conflicts.teacher.message
+                  }, ${conflicts.teacher.list.map((teachr) => {
+                    return teachr + ", ";
+                  })}`}</b>
+                </div>
+              )}
               <div className="table-responsive">
                 <Table bordered>
                   <thead>
@@ -176,8 +206,15 @@ export default function AttentionRequest(props) {
               <b>FECHA DE RESERVA: </b> {reservation_date}
             </div>
             <div className="pb-3">
-              <b>PERIODOS: </b> {timeSlot[0]}-{timeSlot[1]}
+              <b>PERIODOS: </b> {time_slot[0]}-{time_slot[1]}
             </div>
+            {conflicts.quantity === "" ? (
+              ""
+            ) : (
+              <div>
+                <b className="text-warning">{conflicts.quantity}</b>
+              </div>
+            )}
             <div className="pb-3">
               <b>CANTIDAD DE ESTUDIANTES: </b>
               {quantity}
@@ -189,6 +226,17 @@ export default function AttentionRequest(props) {
               <div className="pt-2 pb-2">
                 <b>BLOQUE: </b> {block_name}
               </div>
+              {conflicts.classroom.message === "" ? (
+                ""
+              ) : (
+                <div>
+                  <b className="text-warning">{`${
+                    conflicts.classroom.message
+                  }, ${conflicts.classroom.list.map((classr) => {
+                    return classr + ", ";
+                  })}`}</b>
+                </div>
+              )}
               <div className="row">
                 <div className="col-sm-2">
                   <b>AULA(s)</b>

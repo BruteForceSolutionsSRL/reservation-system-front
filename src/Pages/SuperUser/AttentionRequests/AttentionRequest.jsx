@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
 import Spinner from "react-bootstrap/Spinner";
-import "./AttentionRequest.css";
 
 export default function AttentionRequest(props) {
   const URL = import.meta.env.VITE_REACT_API_URL;

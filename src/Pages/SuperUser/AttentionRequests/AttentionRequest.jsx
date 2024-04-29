@@ -140,7 +140,10 @@ export default function AttentionRequest(props) {
             {time_slot[0]} - {time_slot[1]}
           </div>
           <div className="col-2">
-            <button className="btn btn-primary" onClick={handleShowModal}>
+            <button
+              className="btn btn-outline-primary"
+              onClick={handleShowModal}
+            >
               Atender
             </button>
           </div>

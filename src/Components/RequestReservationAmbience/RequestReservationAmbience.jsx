@@ -13,52 +13,12 @@ function RequestReservationAmbience() {
   const [showModal, setShowModal] = useState(false);
   const [showModalClass, setShowModalClass] = useState(false);
 
-  const URL = "http://localhost:8000/api/";
+  const URL = import.meta.env.VITE_REACT_API_URL;
   const [materias, setMaterias] = useState([]);
+  const [reason, setReason] = useState([]);
+  const [hoursOptions, setIHoursOptions] = useState([]);
+  const [intro, setIntro] = useState([]);
   const [firstTime, setFirstTime] = useState(true); //Refactorizar luego, esta hardcodeado.
-  /*
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    //Fetch for Subjects
-    await fetch(URL + `subjects/teacher/${0}`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("fetch for subjects");
-        setMaterias(data);
-      })
-      .catch((err) => {
-        if (err) throw console.error(err);
-      });
-    //Fetch for teachers
-    await fetch(URL + `subjects/teacher/${1}`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Fetch for teachers");
-      })
-      .catch((err) => {
-        if (err) throw console.error(err);
-      });
-  };*/
-
-  //Gets the date the current date
-  const today = new Date();
-  const year = today.getFullYear();
-  let minDate, maxDate;
-  // first part: 15 de febrero al 20 de julio
-  if (
-    today.getMonth() < 6 ||
-    (today.getMonth() === 6 && today.getDate() <= 20)
-  ) {
-    minDate = new Date(year, 1, 15); // 15 de febrero
-    maxDate = new Date(year, 6, 20); // 20 de julio
-  } else {
-    // second part: 25 de julio al 31 de diciembre
-    minDate = new Date(year, 6, 25); // 25 de julio
-    maxDate = new Date(year, 11, 31); // 31 de diciembre
-  }
 
   const [formData, setFormData] = useState({
     subject_id: "", //materia
@@ -83,6 +43,90 @@ function RequestReservationAmbience() {
     date: "", //fecha
     reason_id: "", //motivo
   });
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
+
+  // const fetchData = async () => {
+  //   //Fetch for Subjects
+  //   await fetch(URL + `subjects/teacher/${0}`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       console.log("fetch for subjects");
+  //       setMaterias(data);
+  //     })
+  //     .catch((err) => {
+  //       if (err) throw console.error(err);
+  //     });
+  //   //Fetch for teachers
+  //   await fetch(URL + `subjects/teacher/${1}`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       console.log("Fetch for teachers");
+  //     })
+  //     .catch((err) => {
+  //       if (err) throw console.error(err);
+  //     });
+  // };
+
+  // const [materiass, setMateriass] = useState(materiaTemporal);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = () => {
+    // Subjects
+    fetch(URL + `subjects/teacher/${2}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setMaterias(data);
+      })
+      .catch((err) => {
+        if (err) throw console.error(err);
+      });
+    // Reasons
+    fetch(URL + `reservation-reasons`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setReason(data);
+      })
+      .catch((err) => {
+        if (err) throw console.error(err);
+      });
+    // Timeslots
+    fetch(URL + `timeslots`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setIHoursOptions(data);
+      })
+      .catch((err) => {
+        if (err) throw console.error(err);
+      });
+  };
+
+  // useEffect(() => {
+  //   // Groups teachers
+  // }, [formData.subject_id]);
+
+  //Gets the date the current date
+  const today = new Date();
+  const year = today.getFullYear();
+  let minDate, maxDate;
+  // first part: 15 de febrero al 20 de julio
+  if (
+    today.getMonth() < 6 ||
+    (today.getMonth() === 6 && today.getDate() <= 20)
+  ) {
+    minDate = new Date(year, 1, 15); // 15 de febrero
+    maxDate = new Date(year, 6, 20); // 20 de julio
+  } else {
+    // second part: 25 de julio al 31 de diciembre
+    minDate = new Date(year, 6, 25); // 25 de julio
+    maxDate = new Date(year, 11, 31); // 31 de diciembre
+  }
 
   const [suggestionData, setSuggestionData] = useState({
     block_id: "",
@@ -296,9 +340,14 @@ function RequestReservationAmbience() {
       setFormData((prevFormData) => {
         let updatedOptions = [...prevFormData.time_slot_id];
         if (name === "start") {
-          updatedOptions = [selectedOption ? selectedOption.id : "", ""];
+          updatedOptions = [
+            selectedOption ? selectedOption.time_slot_id : "",
+            "",
+          ];
         } else {
-          updatedOptions[index] = selectedOption ? selectedOption.id : "";
+          updatedOptions[index] = selectedOption
+            ? selectedOption.time_slot_id
+            : "";
         }
 
         const error = validators[name](updatedOptions);
@@ -343,11 +392,12 @@ function RequestReservationAmbience() {
 */
   const getFilteredOptions = () => {
     const selectedId = hoursOptions.find(
-      (option) => option.id === formData.time_slot_id[0]
-    )?.id;
+      (option) => option.time_slot_id === formData.time_slot_id[0]
+    )?.time_slot_id;
     if (selectedId) {
       return hoursOptions.filter(
-        (hour) => hour.id > selectedId && hour.id <= selectedId + 4
+        (hour) =>
+          hour.time_slot_id > selectedId && hour.time_slot_id <= selectedId + 4
       );
     }
     return [];
@@ -438,7 +488,16 @@ function RequestReservationAmbience() {
       setSelectedOptions({});
       setIntro([]); // clear list teacher
     } else {
-      setIntro(introTemporales);
+      fetch(URL + `teachers/subject/${formData.subject_id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setIntro(data);
+        })
+        .catch((err) => {
+          if (err) throw console.error(err);
+        });
+      // setIntro(intro);
     }
   }, [formData.subject_id]);
 
@@ -463,64 +522,62 @@ function RequestReservationAmbience() {
   }, [selectOptionsClass]);
 
   //Ejemplo de materias
-  const materiaTemporal = [
-    {
-      subject_id: 0,
-      subject_name: "Elementos de programacion y estructura de datos",
-    },
-    { subject_id: 1, subject_name: "Intro a la programacion" },
-    { subject_id: 2, subject_name: "Aquitectura de computadoras" },
-    { subject_id: 3, subject_name: "Algoritmos avanzados" },
-    { subject_id: 4, subject_name: "Taller de ingenieria de soft" },
-  ];
-  const [materiass, setMateriass] = useState(materiaTemporal);
+  // const materiaTemporal = [
+  //   {
+  //     subject_id: 0,
+  //     subject_name: "Elementos de programacion y estructura de datos",
+  //   },
+  //   { subject_id: 1, subject_name: "Intro a la programacion" },
+  //   { subject_id: 2, subject_name: "Aquitectura de computadoras" },
+  //   { subject_id: 3, subject_name: "Algoritmos avanzados" },
+  //   { subject_id: 4, subject_name: "Taller de ingenieria de soft" },
+  // ];
 
   //Ejemplo de docentesINTRO A LA PROG
-  const introTemporales = [
-    { id: 0, teacher_fullname: "Letecia Blanco Coca", group_number: "2" },
-    { id: 1, teacher_fullname: "Carla Serrudo Salazar", group_number: "1" },
-    { id: 2, teacher_fullname: "Carla Serrudo Salazar", group_number: "6" },
-    { id: 3, teacher_fullname: "Vladimir Costas Jauregui", group_number: "10" },
-    { id: 4, teacher_fullname: "Hernan Ustariz Vargas", group_number: "3" },
-    { id: 5, teacher_fullname: "Victor Hugo Montaño", group_number: "5" },
-    { id: 6, teacher_fullname: "Vladimir Costas Jauregui", group_number: "7" },
-    { id: 7, teacher_fullname: "Henry Frank Villaroel", group_number: "4" },
-  ];
-  const [intro, setIntro] = useState(introTemporales);
+  // const introTemporales = [
+  //   { id: 0, teacher_fullname: "Letecia Blanco Coca", group_number: "2" },
+  //   { id: 1, teacher_fullname: "Carla Serrudo Salazar", group_number: "1" },
+  //   { id: 2, teacher_fullname: "Carla Serrudo Salazar", group_number: "6" },
+  //   { id: 3, teacher_fullname: "Vladimir Costas Jauregui", group_number: "10" },
+  //   { id: 4, teacher_fullname: "Hernan Ustariz Vargas", group_number: "3" },
+  //   { id: 5, teacher_fullname: "Victor Hugo Montaño", group_number: "5" },
+  //   { id: 6, teacher_fullname: "Vladimir Costas Jauregui", group_number: "7" },
+  //   { id: 7, teacher_fullname: "Henry Frank Villaroel", group_number: "4" },
+  // ];
+  // const [intro, setIntro] = useState(introTemporales);
 
   //Ejemplo de MOTIVO
-  const motivoTemporales = [
-    { reason_id: 0, reason_name: "Examen" },
-    { reason_id: 1, reason_name: "Charla" },
-    { reason_id: 2, reason_name: "Defensa da tesis" },
-  ];
-  const [reason, setReason] = useState(motivoTemporales);
+  // const motivoTemporales = [
+  //   { reason_id: 0, reason_name: "Examen" },
+  //   { reason_id: 1, reason_name: "Charla" },
+  //   { reason_id: 2, reason_name: "Defensa da tesis" },
+  // ];
 
   //Ejemplo de HORA INI Y FIN
-  const hoursOptions = [
-    { id: 2, time: "06:45" },
-    { id: 3, time: "07:30" },
-    { id: 4, time: "08:15" },
-    { id: 5, time: "09:00" },
-    { id: 6, time: "09:45" },
-    { id: 7, time: "10:30" },
-    { id: 8, time: "11:15" },
-    { id: 9, time: "12:00" },
-    { id: 10, time: "12:45" },
-    { id: 11, time: "13:30" },
-    { id: 12, time: "14:15" },
-    { id: 13, time: "15:00" },
-    { id: 14, time: "15:45" },
-    { id: 15, time: "16:30" },
-    { id: 16, time: "17:15" },
-    { id: 17, time: "18:00" },
-    { id: 18, time: "18:45" },
-    { id: 19, time: "19:30" },
-    { id: 20, time: "20:15" },
-    { id: 21, time: "21:30" },
-    { id: 22, time: "21:45" },
-  ];
-  const [hours, setIHours] = useState(hoursOptions);
+  // const hoursOptions = [
+  //   { id: 2, time: "06:45" },
+  //   { id: 3, time: "07:30" },
+  //   { id: 4, time: "08:15" },
+  //   { id: 5, time: "09:00" },
+  //   { id: 6, time: "09:45" },
+  //   { id: 7, time: "10:30" },
+  //   { id: 8, time: "11:15" },
+  //   { id: 9, time: "12:00" },
+  //   { id: 10, time: "12:45" },
+  //   { id: 11, time: "13:30" },
+  //   { id: 12, time: "14:15" },
+  //   { id: 13, time: "15:00" },
+  //   { id: 14, time: "15:45" },
+  //   { id: 15, time: "16:30" },
+  //   { id: 16, time: "17:15" },
+  //   { id: 17, time: "18:00" },
+  //   { id: 18, time: "18:45" },
+  //   { id: 19, time: "19:30" },
+  //   { id: 20, time: "20:15" },
+  //   { id: 21, time: "21:30" },
+  //   { id: 22, time: "21:45" },
+  // ];
+  // const [hours, setIHours] = useState([]);
 
   //Ejemplo de BLOQUE
   const blockTemporales = [
@@ -596,7 +653,7 @@ function RequestReservationAmbience() {
                 isInvalid={!!errors.subject_id}
               >
                 <option value="">Seleccione una materia</option>
-                {materiass.map((opcion) => (
+                {materias.map((opcion) => (
                   <option
                     key={opcion.subject_id}
                     value={`${opcion.subject_id}`}
@@ -692,7 +749,8 @@ function RequestReservationAmbience() {
                     value={
                       formData.time_slot_id[0]
                         ? hoursOptions.find(
-                            (option) => option.id === formData.time_slot_id[0]
+                            (option) =>
+                              option.time_slot_id === formData.time_slot_id[0]
                           ).time
                         : ""
                     }
@@ -701,7 +759,7 @@ function RequestReservationAmbience() {
                   >
                     <option value="">Periodo</option>
                     {hoursOptions.map((hour) => (
-                      <option key={hour.id} value={hour.time}>
+                      <option key={hour.time_slot_id} value={hour.time}>
                         {hour.time}
                       </option>
                     ))}
@@ -719,7 +777,8 @@ function RequestReservationAmbience() {
                     value={
                       formData.time_slot_id[1]
                         ? hoursOptions.find(
-                            (option) => option.id === formData.time_slot_id[1]
+                            (option) =>
+                              option.time_slot_id === formData.time_slot_id[1]
                           ).time
                         : ""
                     }
@@ -728,7 +787,7 @@ function RequestReservationAmbience() {
                   >
                     <option value="">Periodo</option>
                     {getFilteredOptions(0).map((hour) => (
-                      <option key={hour.id} value={hour.time}>
+                      <option key={hour.time_slot_id} value={hour.time}>
                         {hour.time}
                       </option>
                     ))}
@@ -776,7 +835,7 @@ function RequestReservationAmbience() {
                   </thead>
                   <tbody>
                     {Object.values(selectedOptions).map((option) => (
-                      <tr key={option.id}>
+                      <tr key={option.person_id}>
                         <td
                           style={{
                             backgroundColor: "rgb(75, 177, 229 )",
@@ -784,7 +843,7 @@ function RequestReservationAmbience() {
                             userSelect: "none",
                           }}
                         >
-                          {option.teacher_fullname}
+                          {`${option.teacher_name} ${option.teacher_last_name} `}
                         </td>
                         <td
                           style={{

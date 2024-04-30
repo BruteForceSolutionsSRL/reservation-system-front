@@ -113,7 +113,12 @@ export default function ElementCancel(props) {
           <div>¿Esta seguro de cancelar la solicitud?</div>
         </Modal.Body>
         <Modal.Footer>
-          <button className="btn btn-outline-secondary">Cancelar</button>
+          <button
+            className="btn btn-outline-secondary"
+            onClick={() => setShow(false)}
+          >
+            Cancelar
+          </button>
           <button className="btn btn-outline-danger" onClick={cancelRequest}>
             Aceptar
           </button>

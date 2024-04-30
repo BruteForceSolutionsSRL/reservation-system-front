@@ -1,0 +1,15 @@
+.ubicacion-container {
+  border: 2px solid #ccc;
+  padding: 20px;
+  border-radius: 5px;
+  position: relative;
+}
+
+.ubicacion-label {
+  position: absolute;
+  top: -14px; /* posición vertical */
+  left: 10px; /* posición horizontal */
+  background-color: white;
+  padding: 0 10px; /* relleno horizontal */
+  font-weight: bold;
+}

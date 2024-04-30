@@ -15,8 +15,6 @@ const EnvironmentRegistration = () => {
   const [environmentCapacity, setEnvironmentCapacity] = useState("");
   const [environmentBlock, setEnvironmentBlock] = useState("");
   const [environmentFloor, setEnvironmentFloor] = useState("");
-  const [showCancelModal, setShowCancelModal] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [nameError, setNameError] = useState(false);
   const [typeError, setTypeError] = useState(false);
   const [capacityError, setCapacityError] = useState(false);
@@ -40,34 +38,12 @@ const EnvironmentRegistration = () => {
 
   const url = import.meta.env.VITE_REACT_API_URL;
 
-  // const logAllStates = () => {
-  //   const allStates = {
-  //     environmentName,
-  //     environmentType,
-  //     environmentCapacity,
-  //     environmentBlock,
-  //     environmentFloor,
-  //     showCancelModal,
-  //     showConfirmModal,
-  //     nameError,
-  //     typeError,
-  //     capacityError,
-  //     blockError,
-  //     floorError,
-  //     blockOptions,
-  //     classroomOptions,
-  //     maxFloor,
-  //   };
-  //   console.log("Todos los estados:", allStates);
-  // };
-
   useEffect(() => {
     setLoading(true);
     const fetchData = async () => {
       await fetchBlockOptions();
       await fetchTypes();
       await fetchClassrooms();
-      // logAllStates();
       setTimeout(() => {
         setLoading(false);
         setReload(false);
@@ -91,7 +67,6 @@ const EnvironmentRegistration = () => {
           ...data, // add Seleccione...
         ];
         setBlockOptions(optionsWithDefault);
-        // console.log(blockOptions);
       })
       .catch((error) => {
         console.error("Error fetching options:", error);
@@ -112,7 +87,6 @@ const EnvironmentRegistration = () => {
           ...data, // add Seleccione...
         ];
         setTypeOptions(optionsWithDefault);
-        // console.log(typeOptions);
       })
       .catch((error) => {
         console.error("Error fetching options:", error);
@@ -129,7 +103,6 @@ const EnvironmentRegistration = () => {
       })
       .then((data) => {
         setClassroomOptions(data);
-        // console.log(classroomOptions);
       })
       .catch((error) => {
         console.error("Error obteniendo opciones: ", error);
@@ -140,17 +113,6 @@ const EnvironmentRegistration = () => {
     const alphanumericRegex = /^(?=.*[a-zA-Z0-9])[a-zA-Z0-9\-.'\s]+$/;
     return alphanumericRegex.test(input);
   };
-
-  // const handleEnvironmentNameChange = (event) => {
-  //   const value = event.target.value.toUpperCase();
-  //   setEnvironmentName(value);
-  //   setNameError(
-  //     value.length < 3 ||
-  //       value.length > 30 ||
-  //       value === "" ||
-  //       !validateAlphanumeric(value)
-  //   );
-  // };
 
   const handleEnvironmentNameChange = (event) => {
     let value = event.target.value.toUpperCase();
@@ -191,7 +153,6 @@ const EnvironmentRegistration = () => {
 
   const handleBlockChange = (event) => {
     const value = event.target.value;
-    // console.log(event.target.value);
     setEnvironmentBlock(value);
     setFloorError(false);
     setBlockError(value === "");
@@ -202,7 +163,6 @@ const EnvironmentRegistration = () => {
     );
 
     if (selectedBlock) {
-      // console.log("bloque seleccionado", selectedBlock);
       setMaxFloor(selectedBlock.block_maxfloor);
     } else {
       setMaxFloor("");
@@ -220,7 +180,6 @@ const EnvironmentRegistration = () => {
 
   const handleFloorChange = (event) => {
     const enteredFloor = parseInt(event.target.value, 10);
-    // console.log(event.target.value);
     setEnvironmentFloor(enteredFloor);
     //const isValidRange = parseInt(value, 10) >= 0 //&& parseInt(value, 10) <= 200;
 
@@ -247,6 +206,7 @@ const EnvironmentRegistration = () => {
       event.key === "." ||
       event.key === "," ||
       event.key === "e" ||
+      event.key === "+" ||
       event.key === "E"
     ) {
       event.preventDefault();
@@ -268,7 +228,7 @@ const EnvironmentRegistration = () => {
     handleHideModal();
     resetForm();
   };
-
+  // Sin usar
   const handleModalClose = () => {
     setShowCancelModal(false);
     setShowConfirmModal(false);
@@ -287,10 +247,8 @@ const EnvironmentRegistration = () => {
     const isDuplicateName = classroomOptions.some(
       (classroom) => classroom.classroom_name === environmentName
     );
-    // console.log(isDuplicateName);
 
     if (isDuplicateName) {
-      // console.log("ya existe el ambiente");
       setModalResponseData({
         show: true,
         title: "¡Advertencia!",
@@ -313,20 +271,13 @@ const EnvironmentRegistration = () => {
       blockError ||
       floorError
     ) {
-      // console.log(
-      //   environmentFloor,
-      //   typeof environmentFloor,
-      //   environmentFloor >= 0
-      // );
       setNameError(!environmentName);
       setTypeError(!environmentType);
       setCapacityError(!environmentCapacity);
       setBlockError(!environmentBlock);
       setFloorError(!environmentFloor);
-      // logAllStates();
       return;
     }
-    // logAllStates();
     setSpanLoading(true);
     setTimeout(() => {
       setSpanLoading(false);
@@ -359,17 +310,8 @@ const EnvironmentRegistration = () => {
       setCapacityError(!environmentCapacity);
       setBlockError(!environmentBlock);
       setFloorError(!environmentFloor);
-      // logAllStates();
       return;
     }
-
-    // console.log("Datos del formulario:", {
-    //   environmentName,
-    //   environmentCapacity,
-    //   environmentType,
-    //   environmentBlock,
-    //   environmentFloor,
-    // });
 
     const formData = {
       classroom_name: environmentName,
@@ -391,15 +333,11 @@ const EnvironmentRegistration = () => {
     })
       .then(async (response) => {
         if (!response.ok) {
-          // console.log(response);
           throw await response.json();
         }
         return response.json();
       })
       .then((data) => {
-        // console.log("Respuesta de servidor: ", data);
-        // console.log(data);
-        //exit
         setModalResponseData({
           show: true,
           title: "¡Exíto!",
@@ -410,9 +348,6 @@ const EnvironmentRegistration = () => {
         });
       })
       .catch((error) => {
-        // console.log("Error al enviar la solicitud: ", error);
-        // console.log(error.message);
-        //error
         setModalResponseData({
           show: true,
           title: "¡Error!",
@@ -518,6 +453,9 @@ const EnvironmentRegistration = () => {
                     value={environmentCapacity}
                     onChange={handleEnvironmentCapacityChange}
                     isInvalid={capacityError}
+                    onPaste={(e) => {
+                      e.preventDefault();
+                    }}
                     required
                   />
                   {capacityError && (
@@ -570,6 +508,9 @@ const EnvironmentRegistration = () => {
                           onChange={handleFloorChange}
                           isInvalid={floorError && environmentFloor === ""}
                           disabled={isFloorDisable(maxFloor)}
+                          onPaste={(e) => {
+                            e.preventDefault();
+                          }}
                         />
                         {floorError && environmentFloor === "" && (
                           <Form.Text className="text-danger">
@@ -615,7 +556,6 @@ const EnvironmentRegistration = () => {
             </Form>
 
             <CModal
-              // key={modalResponseData.onAccept}
               show={modalResponseData.show}
               onHide={handleHideModal}
               title={modalResponseData.title}
@@ -651,7 +591,7 @@ const CModal = ({
   };
 
   return (
-    <Modal show={show} onHide={onHide} centered>
+    <Modal show={show} onHide={onHide} centered backdrop="static">
       <Modal.Header>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>

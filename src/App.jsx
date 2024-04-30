@@ -4,7 +4,6 @@ import Homepage from "./Pages/User/Homepage/Homepage";
 import Sidebar from "./Components/Sidebar.jsx/Sidebar";
 import LandingPage from "./Pages/LandingPage/LandingPage";
 import EnvironmentRegistration from "./Pages/SuperUser/EnvironmentRegistration/EnvironmentRegistration";
-import ReservationList from "./Pages/User/ReservationsList/ReservationList";
 import RequestsList from "./Pages/SuperUser/RequestsList/RequestsList";
 import RequestReservationAmbience from "./Components/RequestReservationAmbience/RequestReservationAmbience";
 import AttentionList from "./Pages/SuperUser/AttentionRequests/AttentionList";
@@ -24,11 +23,6 @@ export default function App() {
             path="environments-disponibility"
             element={<Disponibility />}
           />
-          <Route
-            path="user-manual"
-            element={<div>Pagina para manual de usuario</div>}
-          ></Route>
-          <Route path="reservations-list-user" element={<ReservationList />} />
         </Route>
         <Route path="/superuser" element={<Sidebar user="superuser" />}>
           <Route path="home" element={<Homepage />}></Route>
@@ -40,10 +34,6 @@ export default function App() {
             path="environments-disponibility"
             element={<Disponibility />}
           />
-          <Route
-            path="superuser-manual"
-            element={<div>Pagina para manual de superusuario</div>}
-          ></Route>
           <Route
             path="environment-register"
             element={<EnvironmentRegistration />}

@@ -44,13 +44,14 @@ export default function Sidebar({ user }) {
                 <i className="fal fa-home"></i> Pagina principal
               </Link>
             </li>
-            <li className="active list-unstyled px-2">
+            <li className="list-unstyled px-2">
               <Link
                 to="environments-disponibility"
                 className="text-decoration-none px-3 py-2 d-block"
                 onClick={() => handleItemClick("#")}
               >
-                <i className="fal fa-home"></i> Disponibilidad de ambientes
+                <i className="far fa-clock" aria-hidden="true"></i>{" "}
+                Disponibilidad de ambientes
               </Link>
             </li>
             <li
@@ -71,19 +72,8 @@ export default function Sidebar({ user }) {
               ) : (
                 ""
               )}
-              <Link
-                to={
-                  user === "superuser"
-                    ? "reservations-list-superuser"
-                    : "reservations-list-user"
-                }
-                className="text-decoration-none px-3 py-2 d-block"
-                onClick={() => handleItemClick("#")}
-              >
-                <i className="fal fa-list"></i> Lista de solicitudes
-              </Link>
             </li>
-                
+
             {/* si es super usuario crea el elemento en la lista */}
             {user === "superuser" ? (
               <li className="list-unstyled px-2">
@@ -98,20 +88,11 @@ export default function Sidebar({ user }) {
             ) : (
               ""
             )}
-            <li className="list-unstyled px-2">
-              <Link
-                to={user === "superuser" ? "superuser-manual" : "user-manual"}
-                className="text-decoration-none px-3 py-2 d-block"
-                onClick={() => handleItemClick("#")}
-              >
-                <i className="fal fa-users"></i> Manual de usuario
-              </Link>
-            </li>
           </ul>
           <ul className="list-unstyled px-2">
             <li className={activeItem === "reservations" ? "active" : ""}>
               <Link
-                to=""
+                to="#"
                 className="text-decoration-none px-3 py-2 d-block"
                 onClick={() => handleItemClick("reservations")}
               >
@@ -181,11 +162,14 @@ export default function Sidebar({ user }) {
               >
                 <ul className="navbar-nav mb-2 mb-lg-0">
                   <li className="nav-item">
-                    {/* This is a photo, but for now it does nothing until we decide what to do*/}
+                    {/* This is a photo, but for now it does nothing until we decide what to do */}
+                    <b className="text-success me-5">
+                      *Maria Leticia Blanco Coca
+                    </b>
                     {/* <Link className="nav-brand active" to="#">
                       <img
-                        src="https://fastly.picsum.photos/id/65/4912/3264.jpg?hmac=uq0IxYtPIqRKinGruj45KcPPzxDjQvErcxyS1tn7bG0"
-                        alt=""
+                        src="../../assets/img/people-icon.png"
+                        alt="user-profile"
                         width="60px"
                       />
                     </Link> */}

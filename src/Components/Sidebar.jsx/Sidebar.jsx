@@ -44,6 +44,15 @@ export default function Sidebar({ user }) {
                 <i className="fal fa-home"></i> Pagina principal
               </Link>
             </li>
+            <li className="active list-unstyled px-2">
+              <Link
+                to="environments-disponibility"
+                className="text-decoration-none px-3 py-2 d-block"
+                onClick={() => handleItemClick("#")}
+              >
+                <i className="fal fa-home"></i> Disponibilidad de ambientes
+              </Link>
+            </li>
             <li
               className={
                 activeItem === "enviroment-request"
@@ -74,7 +83,7 @@ export default function Sidebar({ user }) {
                 <i className="fal fa-list"></i> Lista de solicitudes
               </Link>
             </li>
-
+                
             {/* si es super usuario crea el elemento en la lista */}
             {user === "superuser" ? (
               <li className="list-unstyled px-2">

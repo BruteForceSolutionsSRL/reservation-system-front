@@ -1,0 +1,12 @@
+.block-cm {
+    display: flex;
+    flex-direction: initial ;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.block-cm-t{
+    display: flex;
+    align-self: center;
+    flex-direction: row;  
+    flex-wrap: wrap;
+}

@@ -1,132 +1,323 @@
-.input-materia {
-  width: 100%;
-  /*max-width: 400px;
-    margin-right: 100px;*/
-  width: 100%;
-  max-width: 400px;
-  margin-right: 100px;
-}
-
-.input-cant {
-  width: 150px;
-}
-
-.cant-student {
-  width: 100%;
-  /* Ajusta el ancho según sea necesario */
-}
-
 .formulario-principal {
-  /* background-color: #e7e6e6; */
-  border-radius: 15px;
-  margin: 10px auto;
-  padding: 45px;
+  background-color: #f1f0f0; /*Quitarlo al final*/
   width: 100%;
+  border-radius: 15px;
+  margin: 25px auto;
+  padding: 20px;
+  font-weight: bold;
+}
+
+
+/*Teachers component*/
+.teacher-container {
+  border: 2px solid #ccc;
+  padding: 25px;
+  border-radius: 5px;
+  position: relative;
+  padding-bottom: 0px;
 }
 
 .periods-container {
-  /* background-color: #cecccc; */
+   /*background-color: #cecccc; */
   border-radius: 15px;
   margin: 20px auto;
   padding: 10px;
   width: 100%;
   margin-top: -0px;
-}
-.label-periods {
-  margin-top: 20px;
-}
-
-/*seting color icon timePiker*/
-input[type="time"]::-webkit-calendar-picker-indicator {
-  filter: invert(100%);
-  background-color: rgb(223, 235, 231);
-}
-
-.hour-start {
-  margin-left: 10px;
-  width: 120px;
-}
-
-.hour-end {
-  margin-right: 430px;
-  margin-left: 10px;
-  width: 120px;
-}
-
-.label-end {
-  margin-right: 100px;
-}
-
-.time-input-container {
-  position: relative;
   display: flex;
-  justify-content: space-between; /* Alinear los elementos a los extremos */
-  align-items: center; /* Centrar verticalmente los elementos */
+  flex-direction: row;
+}
+.scrol-teacher{
+  overflow-y: auto;
+  max-height:206px;
+  scrollbar-width: thin;
 }
 
-.clear-button2 {
-  margin-left: 10px; /* Ajustar el espacio entre el campo de hora de fin y el botón "clear-button2" */
-  margin-left: px;
+.scrol-teacher-modal {
+  overflow-y: auto;
+  max-height: 280px;
+  scrollbar-width: thin;
 }
 
-.time-inputs-container {
+.sticky-header {
+  position: sticky;
+  top: 0;
+}
+
+.button-edit {
+  font-size: 26px;
+  color: rgb(0, 0, 0);
+}
+/*-----------------------*/
+
+.teacher-tag {
   display: flex;
-  justify-content: space-between;
-}
-
-.time-input-container {
-  display: flex;
-  align-items: center;
-}
-
-.error-message {
-  color: red;
+  flex-direction: row;
+  margin-top: -10px;
   margin-top: 5px;
 }
 
-.label-end {
-  margin-left: 100px;
+.teacher-table-tag {
+  margin-left: 10px;
+  margin-right: 25px;
+  width: 100%;
 }
 
-.container-classroom {
-  max-width: 100%;
-  max-height: 200px;
-  overflow-y: auto;
-  overflow-x: auto;
+.teacher-table-tag,
+.teacher-table {
+  width: 100%;
 }
 
-.table-classroom {
-  text-align: center;
+/*Responsive Aula*/
+@media (max-width: 600px) {
+  .teacher-tag {
+    flex-direction: column;
+    margin-top: 5px;
+  }
+
+  .teacher-table-tag{
+    margin: 10px;
+
+  }
+
+  .teacher-table-tag {
+    margin-top: -0px;
+    margin-right: 100px;
+    /* Eliminar margen derecho en dispositivos móviles */
+  }
+
 }
 
-.check-classroom {
-  display: inline-block;
-  margin-right: 10px;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*Materia and Reason components*/
+.materia-reason-container {
+  display: flex;
+  flex-direction: column;
 }
 
-.check-teacher {
-  display: inline-block;
-  margin-right: 10px;
-}
-.container-teacher {
-  max-width: 100%;
-  max-height: 250px;
-  overflow-y: auto;
-  overflow-x: auto;
+
+.materia-label {
+  margin-bottom: -7px;
+  margin-right: 20px;
 }
 
-.tag-container {
+/* change for resposive*/
+@media (min-width: 600px) {
+  .materia-reason-container {
+    flex-direction: row;
+  }
+    .materia-tag {
+      width: 900px;
+    }
+}
+
+/*Student and date components*/
+.student-date-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.student-label,
+.date-label {
+  margin-right: 20px;
+}
+
+.student-tag{
+  width: 220px;
+  margin-right: 50px;
+}
+
+.date-tag{
+  width: 180px;
+}
+
+/* change for resposive*/
+@media (max-width: 600px) {
+  .student-date-container {
+    flex-direction: column;
+  }
+  .student-label,
+  .date-label {
+    margin-right: 0;
+    margin-bottom: 2px;
+  }
+  .student-tag,
+  .date-tag {
+    width: auto;
+    margin-right: 0px;
+  }
+}
+
+/*Time piker Star and End*/
+  .tag-label {
+    position: absolute;
+    top: -14px;
+    left: 10px;
+    background-color: white;
+    padding: 0 10px;
+    font-weight: bold;
+  }
+  .tag-time-container {
+      border: 2px solid #ccc;
+      padding: 20px;
+      border-radius: 5px;
+      position: relative;
+      padding-bottom: 0px;
+    }
+
+  .time-container {
+    /* background-color: #cecccc; */
+    border-radius: 15px;
+    margin: 20px auto;
+    padding: 10px;
+    width: 100%;
+    margin-top: -0px;
+    display: flex;
+    flex-direction: row;
+  }
+
+.start-tag,
+.end-tag {
+  display: inline-flex;
+  margin-right: 50px;
+}
+.start-label,
+.end-label{
+  margin-right: 20px;
+}
+
+.pickerStart-tag,
+.pickeEnd-tag {
+  width: 150px;
+}
+
+/*Responsive*/
+@media (max-width: 600px) {
+  .time-container {
+    flex-direction: column;
+  }
+    .start-tag,
+    .end-tag {
+      margin-top: -15px;
+      display: block;
+      margin-right: 0;
+      margin-bottom: 10%;
+    }
+}
+
+/*Bloque and components*/
+.enviroment-container {
   border: 2px solid #ccc;
-  padding: 20px;
+  padding: 25px;
   border-radius: 5px;
   position: relative;
+  padding-bottom: 0px;
 }
 
-.tag-label {
-  position: absolute;
-  top: -14px; /* posición vertical */
-  left: 10px; /* posición horizontal */
-  background-color: white;
-  padding: 0 10px; /* relleno horizontal */
-  font-weight: bold;
+.block-container {
+    /* background-color: #cecccc; */
+    border-radius: 15px;
+    margin: 20px auto;
+    padding: 10px;
+    width: 100%;
+    margin-top: -0px;
+    display: flex;
+    flex-direction: row;
+  }
+
+.block-tag {
+  display: flex;
+}
+
+.block-label {
+  margin-right: 20px;
+}
+.block-input-tag{
+  width: 840px;
+}
+
+/*responsive Bloque*/
+@media (max-width: 600px) {
+  .block-container {
+    flex-direction: column;
+  }
+
+  .block-tag,
+  .block-input-tag {
+    margin-top: -20px;
+    display: block;
+  }
+    .block-input-tag {
+      margin-top: -7px;
+      width: auto;
+    }
+}
+
+/*Aula componente*/
+.scrol-classroom {
+  overflow-y: auto;
+  max-height: 166px;
+  scrollbar-width: thin;
+}
+
+.table-class-tag {
+  display: flex;
+  flex-direction: row;
+  margin-top: -10px;
+}
+
+.class-label {
+  margin-right: 20px;
+  margin-left: 10px;
+}
+
+.class-tag {
+  margin-left: 10px;
+  margin-right: 25px;
+  width: 100%;
+}
+
+.class-tag ,
+.table-tag {
+  width: 100%;
+}
+
+.suggestion-edit-tag {
+  margin-right: 20px;
+}
+
+/*Responsive Aula*/
+@media (max-width: 600px) {
+  .table-class-tag {
+    flex-direction: column;
+    margin-top: -25px;
+  }
+
+  .class-label,
+  .class-tag,
+  .suggestion-edit-tag {
+    margin: 10px;
+
+  }
+
+  .class-tag {
+    margin-top: -0px;
+    margin-right: 100px;
+    /* Eliminar margen derecho en dispositivos móviles */
+  }
+  
 }

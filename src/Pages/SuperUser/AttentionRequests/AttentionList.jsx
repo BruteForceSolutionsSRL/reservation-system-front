@@ -8,10 +8,15 @@ export default function AttentionList() {
 
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [reload, setReload] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    fetch(URL + "pending-requests")
+    reloadListt();
+  }, [reload]);
+
+  const reloadListt = async () => {
+    const fetchData = await fetch(URL + "pending-requests")
       .then((res) => {
         if (!res.ok) throw new Error("Network response was not ok.");
         return res.json();
@@ -19,11 +24,13 @@ export default function AttentionList() {
       .then((data) => {
         setReservations(data);
         setLoading(false);
+        setReload(false);
       })
       .catch((err) => {
         if (err) throw console.error(err);
       });
-  }, []);
+    return fetchData;
+  };
 
   return (
     <>
@@ -65,7 +72,10 @@ export default function AttentionList() {
               {reservations.map((element) => {
                 return (
                   <div key={element.reservation_id} className="">
-                    <AttentionRequest {...element} />
+                    <AttentionRequest
+                      {...element}
+                      reload={(change) => setReload(change)}
+                    />
                   </div>
                 );
               })}

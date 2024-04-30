@@ -7,6 +7,7 @@ import EnvironmentRegistration from "./Pages/SuperUser/EnvironmentRegistration/E
 import ReservationList from "./Pages/User/ReservationsList/ReservationList";
 import RequestsList from "./Pages/SuperUser/RequestsList/RequestsList";
 import RequestReservationAmbience from "./Components/RequestReservationAmbience/RequestReservationAmbience";
+import AttentionList from "./Pages/SuperUser/AttentionRequests/AttentionList";
 import Disponibility from "./Pages/Environment/Disponibility";
 export default function App() {
   return (
@@ -21,7 +22,7 @@ export default function App() {
           ></Route>
           <Route
             path="environments-disponibility"
-            element={ <Disponibility/> }
+            element={<Disponibility />}
           />
           <Route
             path="user-manual"
@@ -37,7 +38,7 @@ export default function App() {
           ></Route>
           <Route
             path="environments-disponibility"
-            element={ <Disponibility/> }
+            element={<Disponibility />}
           />
           <Route
             path="superuser-manual"
@@ -51,6 +52,7 @@ export default function App() {
             path="reservations-list-superuser"
             element={<RequestsList />}
           ></Route>
+          <Route path="attention-list" element={<AttentionList />}></Route>
         </Route>
         <Route path="*" element={<ErrorPage />}></Route>
       </Routes>

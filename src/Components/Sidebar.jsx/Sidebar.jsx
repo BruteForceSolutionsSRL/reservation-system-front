@@ -108,6 +108,33 @@ export default function Sidebar({ user }) {
               </Link>
             </li>
           </ul>
+          <ul className="list-unstyled px-2">
+            <li className={activeItem === "reservations" ? "active" : ""}>
+              <Link
+                to=""
+                className="text-decoration-none px-3 py-2 d-block"
+                onClick={() => handleItemClick("reservations")}
+              >
+                <i className="fas fa-clipboard-list"></i> Reservas
+              </Link>
+            </li>
+            {user === "superuser" ? (
+              <>
+                <li className="list-unstyled px-2">
+                  <Link
+                    to={user === "superuser" ? "attention-list" : ""}
+                    className="text-decoration-none px-3 py-2 d-block"
+                    onClick={() => handleItemClick("#")}
+                  >
+                    <i className="fal fa-users"></i> Atender solicitudes
+                    pendientes
+                  </Link>
+                </li>
+              </>
+            ) : (
+              ""
+            )}
+          </ul>
           <hr className="h-color mx-2" />
           <ul className="list-unstyled px-2">
             <li className="">

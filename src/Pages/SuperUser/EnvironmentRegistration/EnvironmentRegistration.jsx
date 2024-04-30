@@ -435,6 +435,7 @@ const EnvironmentRegistration = () => {
     setCapacityError(false);
     setBlockError(false);
     setFloorError(false);
+    setMaxFloor("");
   };
 
   return (

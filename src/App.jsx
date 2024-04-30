@@ -8,6 +8,7 @@ import RequestsList from "./Pages/SuperUser/RequestsList/RequestsList";
 import RequestReservationAmbience from "./Components/RequestReservationAmbience/RequestReservationAmbience";
 import AttentionList from "./Pages/SuperUser/AttentionRequests/AttentionList";
 import Disponibility from "./Pages/Environment/Disponibility";
+import ListCancel from "./Pages/User/ListCancel/ListCancel";
 export default function App() {
   return (
     <BrowserRouter>
@@ -23,6 +24,7 @@ export default function App() {
             path="environments-disponibility"
             element={<Disponibility />}
           />
+          <Route path="list-cancel" element={<ListCancel />} />
         </Route>
         <Route path="/superuser" element={<Sidebar user="superuser" />}>
           <Route path="home" element={<Homepage />}></Route>

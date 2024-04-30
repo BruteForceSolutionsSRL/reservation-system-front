@@ -115,6 +115,21 @@ export default function Sidebar({ user }) {
             ) : (
               ""
             )}
+            {user === "user" ? (
+              <>
+                <li className="list-unstyled px-2">
+                  <Link
+                    to={user === "user" ? "list-cancel" : ""}
+                    className="text-decoration-none px-3 py-2 d-block"
+                    onClick={() => handleItemClick("#")}
+                  >
+                    <i className="fal fa-users"></i> Lista de solicitudes
+                  </Link>
+                </li>
+              </>
+            ) : (
+              ""
+            )}
           </ul>
           <hr className="h-color mx-2" />
           <ul className="list-unstyled px-2">
@@ -164,7 +179,7 @@ export default function Sidebar({ user }) {
                   <li className="nav-item">
                     {/* This is a photo, but for now it does nothing until we decide what to do */}
                     <b className="text-success me-5">
-                      *Maria Leticia Blanco Coca
+                      *MAGDA LENA PEETERS ILONAA,
                     </b>
                     {/* <Link className="nav-brand active" to="#">
                       <img

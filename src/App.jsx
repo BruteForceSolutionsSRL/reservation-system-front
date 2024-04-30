@@ -8,6 +8,7 @@ import ReservationList from "./Pages/User/ReservationsList/ReservationList";
 import RequestsList from "./Pages/SuperUser/RequestsList/RequestsList";
 import RequestReservationAmbience from "./Components/RequestReservationAmbience/RequestReservationAmbience";
 import AttentionList from "./Pages/SuperUser/AttentionRequests/AttentionList";
+import Disponibility from "./Pages/Environment/Disponibility";
 export default function App() {
   return (
     <BrowserRouter>
@@ -20,6 +21,10 @@ export default function App() {
             element={<RequestReservationAmbience />}
           ></Route>
           <Route
+            path="environments-disponibility"
+            element={<Disponibility />}
+          />
+          <Route
             path="user-manual"
             element={<div>Pagina para manual de usuario</div>}
           ></Route>
@@ -31,6 +36,10 @@ export default function App() {
             path="reservation-request"
             element={<div>Pagina para Lista de solicitudes</div>}
           ></Route>
+          <Route
+            path="environments-disponibility"
+            element={<Disponibility />}
+          />
           <Route
             path="superuser-manual"
             element={<div>Pagina para manual de superusuario</div>}

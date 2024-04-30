@@ -6,17 +6,17 @@ import "./RequestReservationAmbience.css";
 function RequestReservationAmbience() {
   const [selectedOptions, setSelectedOptions] = useState({});
   const [selectedOptionsNames, setSelectedOptionsNames] = useState({});
-  const [startHour, setStartHour] = useState("");
-  const [endHour, setEndHour] = useState("");
-  const [error, setError] = useState("");
-  const [startHourId, setStartHourId] = useState("");
-  const [endHourId, setEndHourId] = useState("");
 
+  const [selectOptionsClass, setSelectOptionsClass] = useState({});
+  const [selectOptionsNamesClass, setSelectdOptionsNamesClass] = useState({});
+  const [message, setMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [showModalClass, setShowModalClass] = useState(false);
 
   const URL = "http://localhost:8000/api/";
   const [materias, setMaterias] = useState([]);
-
+  const [firstTime, setFirstTime] = useState(true); //Refactorizar luego, esta hardcodeado.
+  /*
   useEffect(() => {
     fetchData();
   }, []);
@@ -41,7 +41,7 @@ function RequestReservationAmbience() {
       .catch((err) => {
         if (err) throw console.error(err);
       });
-  };
+  };*/
 
   //Gets the date the current date
   const today = new Date();
@@ -59,23 +59,14 @@ function RequestReservationAmbience() {
     minDate = new Date(year, 6, 25); // 25 de julio
     maxDate = new Date(year, 11, 31); // 31 de diciembre
   }
-  // const [formData, setFormData] = useState({
-  //   materia: "",
-  //   cantidad: "",
-  //   fecha: "",
-  //   periodo: "",
-  //   bloque: "",
-  //   aula: "",
-  //   motivo: "",
-  //   docentes: "",
-  // });
+
   const [formData, setFormData] = useState({
     subject_id: "", //materia
     quantity: "", //cantidad
     group_id: "", //docentes
     block_id: "", //bloque
-    classroom_id: {}, //aula
-    time_slot_id: {}, //periodo
+    classroom_id: "", //aula
+    time_slot_id: ["", ""], //periodo
     date: "", //fecha
     reason_id: "", //motivo
   });
@@ -85,12 +76,69 @@ function RequestReservationAmbience() {
     quantity: "", //cantidad
     group_id: "", //docentes
     block_id: "", //bloque
-    classroom_id: {}, //aula
-    time_slot_id: {}, //periodo
+    classroom_id: "", //aula
+    time_slot_id: ["", ""], //periodo
+    start: "",
+    end: "",
     date: "", //fecha
     reason_id: "", //motivo
   });
 
+  const [suggestionData, setSuggestionData] = useState({
+    block_id: "",
+    time_slot_id: [0, 0],
+    quantity: "",
+    date: "",
+  });
+
+  //Get date of generate suggetions
+  const handleClick = () => {
+    // her update state suggestions
+    setSuggestionData((prevData) => {
+      const newSuggestionData = { ...prevData };
+      newSuggestionData.block_id = formData.block_id;
+      newSuggestionData.time_slot_id = formData.time_slot_id;
+      newSuggestionData.quantity = formData.quantity;
+      newSuggestionData.date = formData.date;
+      return newSuggestionData;
+    });
+  };
+
+  // Function validate suggestionData
+  const validateSuggestionData = () => {
+    for (const key in suggestionData) {
+      if (suggestionData[key] === "") {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  //click on Button GENERATE SUGGESTIONS
+  const suggestionClick = () => {
+    const isValid = validateSuggestionData(); //validate the fields suggestionData
+    if (isValid) {
+      const selected = {};
+      classromSugg.forEach((classroom) => {
+        const existingClassroom = classrom.find(
+          (c) => c.classroom_id === classroom.classroom_id
+        );
+        if (existingClassroom) {
+          selected[classroom.classroom_id] = existingClassroom;
+        }
+      });
+      setSelectOptionsClass(selected);
+      setFormData({ ...formData, classroom_id: selected });
+      console.log("Datos actualizados en el form", formData);
+
+      setMessage("");
+    } else {
+      console.log("Sugerencia invalida");
+      setMessage("Seleccione cantidad, fecha, peridos y bolque");
+    }
+  };
+
+  /*
   const postForm = () => {
     fetch(URL + "reservation", {
       method: "POST",
@@ -107,10 +155,10 @@ function RequestReservationAmbience() {
       .catch((err) => {
         if (err) throw console.error(err);
       });
-  };
+  };*/
 
-  //VALIDADORES DE TODO EL FORMULARIO
-  //validador de materia
+  //VALIDATOR OF ENTIRE FORM
+  //validator of MATERIA
   const validateMateria = (value) => {
     if (!value || value.trim() === "") {
       return "Seleccione una materia.";
@@ -118,7 +166,7 @@ function RequestReservationAmbience() {
     return null;
   };
 
-  // validator teacher
+  // validator of TEACHER
   const validateTeacher = (selectedOptions) => {
     if (Object.keys(selectedOptions).length === 0) {
       return "Seleccione al menos un docente.";
@@ -128,33 +176,25 @@ function RequestReservationAmbience() {
 
   //validator of DATE
   const validateDate = (value) => {
-    console.log(value);
+    //console.log(value);
     if (!value || value.trim() === "") {
       return "Seleccione una fecha.";
     }
     return null;
   };
-  // Function to reverse date format DD/MM/YY
-  const formatDate = (dateString) => {
-    const dateParts = dateString.split("-");
-    const year = dateParts[0];
-    const month = dateParts[1];
-    const day = dateParts[2];
-    console.log("traducidoen metodo", `${day}/${month}/${year}`);
-    return `${day}/${month}/${year}`;
-  };
 
-  // validator of PERIODO
+  //Validator of Time START and END
   const validatePeriod = (value) => {
-    if (!value.start || !value.end) {
-      return "Seleccione un periodo completo.";
+    if (value[0] === "") {
+      return "Seleccione una hora de inicio y una hora de fin.";
+    } else if (value[0] != "" && value[1] === "") {
+      return "Seleccione una hora fin.";
     }
     return null;
   };
 
   //validador de CANTIDAD
   const validateCantidad = (value) => {
-    console.log(value);
     if (!value) {
       return "Ingrese una cantidad.";
     } else if (value < 25 || value > 500) {
@@ -163,25 +203,65 @@ function RequestReservationAmbience() {
     return null;
   };
 
-  //validador de Reason
+  //validator of REASON
   const validateReason = (value) => {
     if (!value || value.trim() === "") {
       return "Debe seleccionar el motivo de reserva.";
     }
     return null;
   };
+  //validator of BOCK
+  const validateBlock = (value) => {
+    if (!value || value.trim() === "") {
+      return "Seleccione un bloque.";
+    }
+    return null;
+  };
 
-  //Boton enviar solicitud
+  // validator of CLASSROM
+  const validateClassrom = (selectOptionsClass) => {
+    console.log("Validador classrom", selectOptionsClass);
+    if (Object.keys(selectOptionsClass).length === 0) {
+      return "Seleccione al menos una aula.";
+    } else if (!formData.classroom_id) {
+      return "Seleccione al menos una aula.";
+    }
+    return null;
+  };
+
+  //errores teacher
+  useEffect(() => {
+    if (!firstTime) {
+      let newErrors = { ...errors };
+      newErrors.group_id = validateTeacher(formData.group_id);
+      setErrors(newErrors);
+    }
+  }, [selectedOptions, selectedOptionsNames]);
+
+  //errores classrom
+  useEffect(() => {
+    if (!firstTime) {
+      let newErrors = { ...errors };
+      newErrors.classroom_id = validateClassrom(formData.classroom_id);
+      setErrors(newErrors);
+    }
+  }, [selectOptionsClass, selectOptionsNamesClass]);
+
+  //Boton enviar solicitud FORM
   const handleSubmit = (e) => {
     e.preventDefault();
-    let newErrors = {};
 
+    let newErrors = {};
     newErrors.subject_id = validateMateria(formData.subject_id);
     newErrors.group_id = validateTeacher(formData.group_id);
-    //newErrors.time_slot_id = validatePeriod(formData.time_slot_id);
+    newErrors.time_slot_id = validatePeriod(formData.time_slot_id);
+    newErrors.start = validatePeriod(formData.time_slot_id[0]);
+    newErrors.end = validatePeriod(formData.time_slot_id[1]);
     newErrors.date = validateDate(formData.date);
     newErrors.quantity = validateCantidad(formData.quantity);
     newErrors.reason_id = validateReason(formData.reason_id);
+    newErrors.block_id = validateBlock(formData.block_id);
+    //newErrors.classroom_id = validateClassrom(formData.classroom_id);
 
     setErrors(newErrors);
     // Si no hay errores, puedes enviar el formulario
@@ -189,29 +269,70 @@ function RequestReservationAmbience() {
       !newErrors.subject_id &&
       !newErrors.group_id &&
       !newErrors.time_slot_id &&
+      !newErrors.start &&
+      !newErrors.end &&
       !newErrors.date &&
       !newErrors.quantity &&
-      !newErrors.reason_id
+      !newErrors.reason_id &&
+      !newErrors.block_id &&
+      !newErrors.classroom_id
     ) {
-      console.log("Datos del formulario:", formData);
+      console.log("Datos del formulario:", {
+        ...formData,
+      });
+      //postForm();
     }
-    postForm();
   };
 
   //validador en tiempo real
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    let formattedValue = value;
+  const handleChange = (event) => {
+    const { name, value } = event.target;
     console.log(name, value);
-    //if (name === "date") {
-    // console.log("traduciendo", formatDate(value));
-    // const dateObj = new Date(value);
-    // formattedValue = dateObj.toISOString().split("T")[0];
-    //}
-    formattedValue = value;
+    if (name === "start" || name === "end") {
+      const index = name === "start" ? 0 : 1;
+      const selectedOption = hoursOptions.find(
+        (option) => option.time === value
+      );
+      setFormData((prevFormData) => {
+        let updatedOptions = [...prevFormData.time_slot_id];
+        if (name === "start") {
+          updatedOptions = [selectedOption ? selectedOption.id : "", ""];
+        } else {
+          updatedOptions[index] = selectedOption ? selectedOption.id : "";
+        }
+
+        const error = validators[name](updatedOptions);
+        setErrors({
+          ...errors,
+          [name]: error,
+        });
+
+        return {
+          ...prevFormData,
+          time_slot_id: updatedOptions,
+        };
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+      const error = validators[name](value);
+      setErrors({
+        ...errors,
+        [name]: error,
+      });
+    }
+  };
+
+  //validador en tiempo real
+  /*const handleChange = (e) => {
+    const { name, value } = e.target;
+    console.log(name, value);
+
     setFormData({
       ...formData,
-      [name]: formattedValue,
+      [name]: value,
     });
     const error = validators[name](value);
     setErrors({
@@ -219,21 +340,37 @@ function RequestReservationAmbience() {
       [name]: error,
     });
   };
+*/
+  const getFilteredOptions = () => {
+    const selectedId = hoursOptions.find(
+      (option) => option.id === formData.time_slot_id[0]
+    )?.id;
+    if (selectedId) {
+      return hoursOptions.filter(
+        (hour) => hour.id > selectedId && hour.id <= selectedId + 4
+      );
+    }
+    return [];
+  };
 
   //controlador de validadores
   const validators = {
     subject_id: validateMateria,
     group_id: validateTeacher,
     time_slot_id: validatePeriod,
+    start: validatePeriod,
+    end: validatePeriod,
     date: validateDate,
     quantity: validateCantidad,
     reason_id: validateReason,
-
+    block_id: validateBlock,
+    classroom_id: validateClassrom,
     // Agrega más validadores para otros campos si es necesario
   };
 
   //Docentes
   const handleOptionClick = (id, teacher_fullname, group_number) => {
+    setFirstTime(false);
     setSelectedOptions((prevSelectedOptions) => {
       const updatedSelection = { ...prevSelectedOptions };
       if (updatedSelection[id]) {
@@ -241,7 +378,6 @@ function RequestReservationAmbience() {
       } else {
         updatedSelection[id] = { id, teacher_fullname, group_number };
       }
-      // Actualizar formData.docentes con el formato deseado
       setFormData({
         ...formData,
         group_id: updatedSelection,
@@ -257,6 +393,43 @@ function RequestReservationAmbience() {
       }
       return updatedSelectionNames;
     });
+    console.log("Opciones seleccionadas");
+  };
+
+  //Aulas
+  const handleOptionClassrom = (classroom_id, classroom_name, capacity) => {
+    setFirstTime(false);
+    setSelectOptionsClass((prevSelectedOptions) => {
+      const updatedSelection = { ...prevSelectedOptions };
+      if (updatedSelection[classroom_id]) {
+        delete updatedSelection[classroom_id];
+      } else {
+        updatedSelection[classroom_id] = {
+          classroom_id,
+          classroom_name,
+          capacity,
+        };
+      }
+      setFormData({
+        ...formData,
+        classroom_id: updatedSelection,
+      });
+      return updatedSelection;
+    });
+    setSelectdOptionsNamesClass((prevSelectedOptionsNames) => {
+      const updatedSelectionNames = { ...prevSelectedOptionsNames };
+      if (prevSelectedOptionsNames[classroom_id]) {
+        delete updatedSelectionNames[classroom_id];
+      } else {
+        updatedSelectionNames[classroom_id] = {
+          classroom_id,
+          classroom_name,
+          capacity,
+        };
+      }
+      return updatedSelectionNames;
+    });
+    console.log("Opciones seleccionadas");
   };
 
   // update table teacher selected
@@ -274,6 +447,21 @@ function RequestReservationAmbience() {
     console.log(formData.group_id);
   }, [selectedOptions]);
 
+  // update table AULAS -- block_id es id seleccionado y actualizar en base a eso
+  useEffect(() => {
+    if (!formData.block_id) {
+      setSelectOptionsClass({});
+      setClassrom([]); // clear list teacher
+    } else {
+      setClassrom(classromTemporales); // envio classroms
+    }
+  }, [formData.block_id]);
+
+  //Ver lo que se selcciona aulas
+  useEffect(() => {
+    console.log(formData.classroom_id);
+  }, [selectOptionsClass]);
+
   //Ejemplo de materias
   const materiaTemporal = [
     {
@@ -286,15 +474,6 @@ function RequestReservationAmbience() {
     { subject_id: 4, subject_name: "Taller de ingenieria de soft" },
   ];
   const [materiass, setMateriass] = useState(materiaTemporal);
-
-  //Ejemplo de docentes ELEMENTOS DE PROG
-  const elementosTemporales = [
-    { id: 0, teacher_fullname: "Letecia Blanco Coca", group_number: "2" },
-    { id: 1, teacher_fullname: "Letecia Blanco Coca", group_number: "3" },
-    { id: 2, teacher_fullname: "Rosemary Torrico Bascope", group_number: "1" },
-    { id: 3, teacher_fullname: "Helder Guzman Fernandez", group_number: "5" },
-  ];
-  const [elementos, setElementos] = useState(elementosTemporales);
 
   //Ejemplo de docentesINTRO A LA PROG
   const introTemporales = [
@@ -309,14 +488,6 @@ function RequestReservationAmbience() {
   ];
   const [intro, setIntro] = useState(introTemporales);
 
-  //Ejemplo de ARQUI DE COMPU
-  const arquiTemporales = [
-    { id: 0, docente: "Letecia Blanco Coca", grupo: "2" },
-    { id: 1, docente: "Samuel Acha Perez", grupo: "1" },
-    { id: 2, docente: "Luis Agreda Corrales", grupo: "3" },
-  ];
-  const [arqui, setArqui] = useState(arquiTemporales);
-
   //Ejemplo de MOTIVO
   const motivoTemporales = [
     { reason_id: 0, reason_name: "Examen" },
@@ -327,7 +498,6 @@ function RequestReservationAmbience() {
 
   //Ejemplo de HORA INI Y FIN
   const hoursOptions = [
-    { id: 1, time: "Periodo" },
     { id: 2, time: "06:45" },
     { id: 3, time: "07:30" },
     { id: 4, time: "08:15" },
@@ -350,65 +520,70 @@ function RequestReservationAmbience() {
     { id: 21, time: "21:30" },
     { id: 22, time: "21:45" },
   ];
+  const [hours, setIHours] = useState(hoursOptions);
 
-  const handleStartHourChange = (e) => {
-    const newStartHour = e.target.value;
-    const selectedStart = hoursOptions.find(
-      (option) => option.time === newStartHour
-    );
-    const maxEndHourIndex = hoursOptions.findIndex(
-      (option) => option.id === selectedStart.id + 4
-    );
-    if (endHour !== "" && newStartHour >= endHour) {
-      setEndHour("");
-      setEndHourId("");
-    }
-    setStartHour(newStartHour);
-    setStartHourId(selectedStart.id);
-    if (endHour !== "" && endHour > hoursOptions[maxEndHourIndex].time) {
-      setEndHour(hoursOptions[maxEndHourIndex].time);
-      setEndHourId(hoursOptions[maxEndHourIndex].id);
-      onTimeChange({
-        startHourId: selectedStart.id,
-        endHourId: hoursOptions[maxEndHourIndex].id,
-      });
-    }
-    if (endHour !== "" && newStartHour > endHour) {
-      setEndHour("");
-      setEndHourId("");
-      onTimeChange({ startHourId: selectedStart.id, endHourId: "" });
-    }
-    setError(
-      newStartHour && endHour
-        ? ""
-        : "Se deben seleccionar la hora de finalización."
-    );
-  };
+  //Ejemplo de BLOQUE
+  const blockTemporales = [
+    { block_id: 1, block_name: "Edificio nuevo", block_maxfloor: "20" },
+    { block_id: 2, block_name: "Edifico multiacademico", block_maxfloor: "10" },
+    { block_id: 3, block_name: "CAE", block_maxfloor: "30" },
+    { block_id: 4, block_name: "Departamento de Fisica", block_maxfloor: "3" },
+    { block_id: 5, block_name: "Departamento de Quimica", block_maxfloor: "3" },
+  ];
+  const [block, setBlock] = useState(blockTemporales);
 
-  const handleEndHourChange = (e) => {
-    const selectedStart = hoursOptions.find(
-      (option) => option.time === startHour
-    );
-    const selectedEndHour = hoursOptions.find(
-      (option) => option.time === e.target.value
-    );
-    if (selectedEndHour && selectedEndHour.id <= selectedStart.id + 4) {
-      setEndHour(e.target.value);
-      setEndHourId(selectedEndHour.id);
-      setError("");
-      onTimeChange({
-        startHourId: selectedStart.id,
-        endHourId: selectedEndHour.id,
-      });
-    }
-  };
+  //Ejemplo de AULAS
+  const classromTemporales = [
+    {
+      classroom_id: 0,
+      classroom_name: "691A",
+      capacity: "100",
+      floor_number: 2,
+    },
+    {
+      classroom_id: 1,
+      classroom_name: "692A",
+      capacity: "80",
+      floor_number: 2,
+    },
+    {
+      classroom_id: 2,
+      classroom_name: "691B",
+      capacity: "80",
+      floor_number: 3,
+    },
+    {
+      classroom_id: 3,
+      classroom_name: "692B",
+      capacity: "90",
+      floor_number: 3,
+    },
+  ];
+  const [classrom, setClassrom] = useState(classromTemporales);
+
+  //Ejemplo de AULAS SUGERENCIA GENERADA
+  const classromSuggTemporales = [
+    {
+      classroom_id: 0,
+      classroom_name: "691A",
+      capacity: "100",
+      floor_number: 2,
+    },
+    {
+      classroom_id: 2,
+      classroom_name: "691B",
+      capacity: "80",
+      floor_number: 3,
+    },
+  ];
+  const [classromSugg, setClassromSugg] = useState(classromSuggTemporales);
 
   return (
     <div>
       <Form noValidate onSubmit={handleSubmit} className="formulario-principal">
         <h1 className="text-center text-sm">Formulario de Reserva</h1>
         <div>
-          <div className="materia-reason-container mt-2 ms-4">
+          <div className="materia-reason-container mt-2 ms-4 mt-3">
             <div className="materia-label col-form-label">
               <Form.Label>MATERIA</Form.Label>
             </div>
@@ -424,7 +599,7 @@ function RequestReservationAmbience() {
                 {materiass.map((opcion) => (
                   <option
                     key={opcion.subject_id}
-                    value={`${opcion.subject_id},${opcion.subject_name}`}
+                    value={`${opcion.subject_id}`}
                   >
                     {opcion.subject_name}
                   </option>
@@ -449,6 +624,7 @@ function RequestReservationAmbience() {
                 name="quantity"
                 value={formData.quantity}
                 onChange={handleChange}
+                onClick={handleClick}
                 isInvalid={!!errors.quantity}
               ></Form.Control>
               <Form.Control.Feedback type="invalid">
@@ -464,6 +640,7 @@ function RequestReservationAmbience() {
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
+                onClick={handleClick}
                 isInvalid={!!errors.date}
                 min={today.toISOString().split("T")[0]}
                 max={maxDate.toISOString().split("T")[0]}
@@ -488,10 +665,7 @@ function RequestReservationAmbience() {
               >
                 <option value="">Seleccione</option>
                 {reason.map((opcion) => (
-                  <option
-                    key={opcion.reason_id}
-                    value={`${opcion.reason_id},${opcion.reason_name}`}
-                  >
+                  <option key={opcion.reason_id} value={`${opcion.reason_id}`}>
                     {opcion.reason_name}
                   </option>
                 ))}
@@ -502,64 +676,80 @@ function RequestReservationAmbience() {
             </div>
           </div>
 
-          <div className="tag-time-container mb-3 mt-5 ms-3">
+          <div className="tag-time-container mb-3 mt-5 ms-4">
             <label className="tag-label">Periodos</label>
-            <div className="time-container d-flex justify-content-center text-center">
-              <div className="d-flex align-items-center">
-                <Col xs="auto">
-                  <Form.Label className="me-3">HORA INICIO:</Form.Label>
-                </Col>
-                <Form.Select
-                  className="time-pickerStart"
-                  type="input"
-                  name="time_slot_id"
-                  value={startHour}
-                  onChange={handleStartHourChange}
-                >
-                  {hoursOptions.map((option) => (
-                    <option key={option.id} value={option.time}>
-                      {`${option.time}`}
-                    </option>
-                  ))}
-                </Form.Select>
-              </div>
-              <div className="d-flex align-items-center">
-                <Col xs="auto">
-                  <Form.Label className="me-3">HORA FIN:</Form.Label>
-                </Col>
-                <Form.Select
-                  className="time-pickerEnd"
-                  type="input"
-                  name="time_slot_id"
-                  value={endHour}
-                  onChange={handleEndHourChange}
-                >
-                  {!startHour && <option value="">Periodo</option>}
-                  {startHour &&
-                    [
-                      { id: -1, time: "Periodo" },
-                      ...hoursOptions.filter(
-                        (option) =>
-                          option.id > startHourId &&
-                          option.id <= startHourId + 4
-                      ),
-                    ].map((option) => (
-                      <option key={option.id} value={option.time}>
-                        {`${option.time}`}
+            <div className="time-container justify-content-center">
+              <div className="start-tag">
+                <div className="start-label">
+                  <Form.Label className="col-form-label ">
+                    HORA INICIO
+                  </Form.Label>
+                </div>
+                <div className="pickerStart-tag">
+                  <Form.Select
+                    type="input"
+                    name="start"
+                    value={
+                      formData.time_slot_id[0]
+                        ? hoursOptions.find(
+                            (option) => option.id === formData.time_slot_id[0]
+                          ).time
+                        : ""
+                    }
+                    onChange={handleChange}
+                    onClick={handleClick}
+                  >
+                    <option value="">Periodo</option>
+                    {hoursOptions.map((hour) => (
+                      <option key={hour.id} value={hour.time}>
+                        {hour.time}
                       </option>
                     ))}
-                </Form.Select>
+                  </Form.Select>
+                </div>
+              </div>
+              <div className="end-tag">
+                <div className="end-label">
+                  <Form.Label className="col-form-label">HORA FIN</Form.Label>
+                </div>
+                <div className="pickerStart-tag">
+                  <Form.Select
+                    type="input"
+                    name="end"
+                    value={
+                      formData.time_slot_id[1]
+                        ? hoursOptions.find(
+                            (option) => option.id === formData.time_slot_id[1]
+                          ).time
+                        : ""
+                    }
+                    onChange={handleChange}
+                    onClick={handleClick}
+                  >
+                    <option value="">Periodo</option>
+                    {getFilteredOptions(0).map((hour) => (
+                      <option key={hour.id} value={hour.time}>
+                        {hour.time}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </div>
               </div>
             </div>
-
-            {errors && <div className="text-danger mt-2">{error}</div>}
+            <Form.Control.Feedback
+              type="invalid"
+              style={{ display: "block", marginTop: "-10px" }}
+            >
+              {errors.start} {errors.end}
+            </Form.Control.Feedback>
           </div>
 
-          <div className="teacher-container mt-5 ms-3">
+          <div className="teacher-container mt-4 ms-4">
             <label className="tag-label">DOCENTE</label>
-            <div className="periods-container align-items-start row">
-              <div className="scrol-teacher text-center col">
-                <Table striped bordered hover className="fixed-header">
+
+            <div className="teacher-tag">
+              <div className="teacher-table-tag scrol-teacher">
+                <Table striped bordered hover className="teacher-table">
                   <thead>
                     <tr>
                       <th
@@ -610,23 +800,21 @@ function RequestReservationAmbience() {
                   </tbody>
                 </Table>
               </div>
+
               <div className="mt-1 col-2">
                 <FaRegEdit
-                  className="button-edit"
+                  className="teacher-edit"
                   onClick={() => setShowModal(true)}
                   style={{
                     fontSize: "26px",
                   }}
                 ></FaRegEdit>
-                <Form.Label className="label-edit ms-2">Editar</Form.Label>
+                <Form.Label className="label-edit ms-1">Editar</Form.Label>
               </div>
-              <Form.Control.Feedback
-                type="invalid"
-                style={{ display: "block" }}
-              >
-                {errors.group_id}
-              </Form.Control.Feedback>
             </div>
+            <Form.Control.Feedback type="invalid" style={{ display: "block" }}>
+              {errors.group_id}
+            </Form.Control.Feedback>
 
             <Modal show={showModal} onHide={() => setShowModal(false)}>
               <Modal.Header closeButton>
@@ -689,19 +877,198 @@ function RequestReservationAmbience() {
               </Modal.Body>
               <Modal.Footer></Modal.Footer>
             </Modal>
+            <div className="mt-3"></div>
           </div>
-
-          <div className="tag-container position-relative mb-3 mt-5 ms-3">
+          <div className="enviroment-container mt-4 ms-4">
             <label className="tag-label">Ambiente</label>
-            <div className="classroom-container">
-              <div className="container"></div>
+            <div className="block-container">
+              <div className="block-tag">
+                <div className="block-label col-form-label">
+                  <Form.Label>BLOQUE</Form.Label>
+                </div>
+                <div className="block-input-tag">
+                  <Form.Select
+                    type="input"
+                    name="block_id"
+                    value={formData.block_id}
+                    onChange={handleChange}
+                    isInvalid={!!errors.block_id}
+                    onClick={handleClick}
+                  >
+                    <option value="">Seleccione un bloque</option>
+                    {block.map((opcion) => (
+                      <option
+                        key={opcion.block_id}
+                        value={`${opcion.block_id}`}
+                      >
+                        {opcion.block_name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">
+                    {errors.block_id}
+                  </Form.Control.Feedback>
+                </div>
+              </div>
             </div>
+
+            <div className="table-class-tag">
+              <label className="class-label">AULAS</label>
+              <div className="class-tag scrol-classroom">
+                <Table striped bordered hover className="table-tag text-center">
+                  <thead>
+                    <tr>
+                      <th
+                        className="sticky-header text-center"
+                        style={{
+                          backgroundColor: "rgb(4, 94, 140)",
+                          color: "white",
+                          userSelect: "none",
+                        }}
+                      >
+                        Nombre
+                      </th>
+                      <th
+                        className="sticky-header text-center"
+                        style={{
+                          backgroundColor: "rgb(4, 94, 140)",
+                          color: "white",
+                          userSelect: "none",
+                        }}
+                      >
+                        Capacidad
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.values(selectOptionsClass).map((option) => (
+                      <tr key={option.classroom_id}>
+                        <td
+                          style={{
+                            backgroundColor: "rgb(75, 177, 229 )",
+                            color: "white",
+                            userSelect: "none",
+                          }}
+                        >
+                          {option.classroom_name}
+                        </td>
+                        <td
+                          style={{
+                            backgroundColor: "rgb(75, 177, 229 )",
+                            color: "white",
+                            userSelect: "none",
+                          }}
+                        >
+                          {option.capacity}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+              <div className="suggestion-edit-tag mt-1 col-2">
+                <Button className="suggestion-tag" onClick={suggestionClick}>
+                  Generar sugerencia
+                </Button>
+                {message && (
+                  <Form.Text
+                    className=" class-danger text-danger"
+                    style={{ display: "block" }}
+                  >
+                    {message}
+                  </Form.Text>
+                )}
+                <div>
+                  <FaRegEdit
+                    className="class-edit-tag"
+                    onClick={() => setShowModalClass(true)}
+                    style={{
+                      fontSize: "26px",
+                    }}
+                  ></FaRegEdit>
+                  <Form.Label className="label-edit ms-1 mt-3">
+                    Editar
+                  </Form.Label>
+                </div>
+              </div>
+            </div>
+            <Form.Control.Feedback type="invalid" style={{ display: "block" }}>
+              {errors.classroom_id}
+            </Form.Control.Feedback>
+
+            <Modal
+              show={showModalClass}
+              onHide={() => setShowModalClass(false)}
+            >
+              <Modal.Header closeButton>
+                <Modal.Title>Aulas disponibles</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="scrol-teacher-modal">
+                  <Table striped bordered hover>
+                    <thead>
+                      <tr>
+                        <th
+                          className="sticky-header text-center"
+                          style={{
+                            backgroundColor: "rgb(4, 94, 140)",
+                            color: "white",
+                            userSelect: "none",
+                          }}
+                        >
+                          Nombre
+                        </th>
+                        <th
+                          className="sticky-header text-center"
+                          style={{
+                            backgroundColor: "rgb(4, 94, 140)",
+                            color: "white",
+                            userSelect: "none",
+                          }}
+                        >
+                          Capacidad
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {classrom.map((item) => (
+                        <tr
+                          key={item.classroom_id}
+                          onClick={() =>
+                            handleOptionClassrom(
+                              item.classroom_id,
+                              item.classroom_name,
+                              item.capacity
+                            )
+                          }
+                          className={
+                            selectOptionsClass[item.classroom_id]
+                              ? "table-primary"
+                              : ""
+                          }
+                          style={{ cursor: "pointer" }}
+                        >
+                          <td style={{ userSelect: "none" }}>
+                            {item.classroom_name}
+                          </td>
+                          <td style={{ userSelect: "none" }}>
+                            {item.capacity}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                </div>
+              </Modal.Body>
+              <Modal.Footer></Modal.Footer>
+            </Modal>
+            <div className="mt-3"></div>
           </div>
         </div>
 
         <div className="col-12 mt-2" style={{ textAlign: "right" }}>
           <Button variant="outline-success m-3" type="submit">
-            Enviar solicitud
+            Reservar
           </Button>
         </div>
       </Form>

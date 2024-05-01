@@ -44,6 +44,16 @@ export default function Sidebar({ user }) {
                 <i className="fal fa-home"></i> Pagina principal
               </Link>
             </li>
+            <li className="list-unstyled px-2">
+              <Link
+                to="environments-disponibility"
+                className="text-decoration-none px-3 py-2 d-block"
+                onClick={() => handleItemClick("#")}
+              >
+                <i className="far fa-clock" aria-hidden="true"></i>{" "}
+                Disponibilidad de ambientes
+              </Link>
+            </li>
             <li
               className={
                 activeItem === "enviroment-request"
@@ -51,27 +61,75 @@ export default function Sidebar({ user }) {
                   : "list-unstyled px-2"
               }
             >
+              {user === "user" ? (
+                <Link
+                  to={"enviroment-request"}
+                  className="text-decoration-none px-3 py-2 d-block"
+                  onClick={() => handleItemClick("#")}
+                >
+                  <i className="fal fa-plus"></i> Nueva solicitud de reserva
+                </Link>
+              ) : (
+                ""
+              )}
+            </li>
+
+            {/* si es super usuario crea el elemento en la lista */}
+            {user === "superuser" ? (
+              <li className="list-unstyled px-2">
+                <Link
+                  to={user === "superuser" ? "environment-register" : " "}
+                  className="text-decoration-none px-3 py-2 d-block"
+                  onClick={() => handleItemClick("#")}
+                >
+                  <i className="fa fa-list-alt"></i> Registrar Ambiente
+                </Link>
+              </li>
+            ) : (
+              ""
+            )}
+          </ul>
+          <ul className="list-unstyled px-2">
+            <li className={activeItem === "reservations" ? "active" : ""}>
               <Link
-                to={
-                  user === "superuser"
-                    ? "reservation-request"
-                    : "enviroment-request"
-                }
+                to="#"
                 className="text-decoration-none px-3 py-2 d-block"
-                onClick={() => handleItemClick("#")}
+                onClick={() => handleItemClick("reservations")}
               >
-                <i className="fal fa-list"></i> Lista de solicitudes
+                <i className="fas fa-clipboard-list"></i> Reservas
               </Link>
             </li>
-            <li className="list-unstyled px-2">
-              <Link
-                to={user === "superuser" ? "superuser-manual" : "user-manual"}
-                className="text-decoration-none px-3 py-2 d-block"
-                onClick={() => handleItemClick("#")}
-              >
-                <i className="fal fa-users"></i> Manual de usuario
-              </Link>
-            </li>
+            {user === "superuser" ? (
+              <>
+                <li className="list-unstyled px-2">
+                  <Link
+                    to={user === "superuser" ? "attention-list" : ""}
+                    className="text-decoration-none px-3 py-2 d-block"
+                    onClick={() => handleItemClick("#")}
+                  >
+                    <i className="fal fa-users"></i> Atender solicitudes
+                    pendientes
+                  </Link>
+                </li>
+              </>
+            ) : (
+              ""
+            )}
+            {user === "user" ? (
+              <>
+                <li className="list-unstyled px-2">
+                  <Link
+                    to={user === "user" ? "list-cancel" : ""}
+                    className="text-decoration-none px-3 py-2 d-block"
+                    onClick={() => handleItemClick("#")}
+                  >
+                    <i className="fal fa-users"></i> Lista de solicitudes
+                  </Link>
+                </li>
+              </>
+            ) : (
+              ""
+            )}
           </ul>
           <hr className="h-color mx-2" />
           <ul className="list-unstyled px-2">
@@ -119,14 +177,17 @@ export default function Sidebar({ user }) {
               >
                 <ul className="navbar-nav mb-2 mb-lg-0">
                   <li className="nav-item">
-                    {/* This is a photo, but for now it does nothing until we decide what to do*/}
-                    <Link className="nav-brand active" to="#">
+                    {/* This is a photo, but for now it does nothing until we decide what to do */}
+                    <b className="text-success me-5">
+                      *MAGDA LENA PEETERS ILONAA,
+                    </b>
+                    {/* <Link className="nav-brand active" to="#">
                       <img
-                        src="https://fastly.picsum.photos/id/65/4912/3264.jpg?hmac=uq0IxYtPIqRKinGruj45KcPPzxDjQvErcxyS1tn7bG0"
-                        alt=""
+                        src="../../assets/img/people-icon.png"
+                        alt="user-profile"
                         width="60px"
                       />
-                    </Link>
+                    </Link> */}
                   </li>
                 </ul>
               </div>

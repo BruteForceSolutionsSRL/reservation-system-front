@@ -1,0 +1,10 @@
+
+.cell {
+    width: 100px;
+    height: 40px; 
+    text-align: center; 
+}
+.static {
+    position: sticky;
+    left: 0;
+}

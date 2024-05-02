@@ -130,6 +130,15 @@ export default function Sidebar({ user }) {
             ) : (
               ""
             )}
+            <li className="list-unstyled px-2">
+              <Link
+                to="request-history"
+                className="text-decoration-none px-3 py-2 d-block"
+                onClick={() => handleItemClick("#")}
+              >
+                <i className="fas fa-th-list"></i> Historial de solicitudes
+              </Link>
+            </li>
           </ul>
           <hr className="h-color mx-2" />
           <ul className="list-unstyled px-2">

@@ -7,10 +7,10 @@ export default function LandingPage() {
       <h1>This is a landing page</h1>
       <div>
         <div>
-          <Link to="/user">Ingresar como usuario</Link>
+          <Link to="/user/home">Ingresar como usuario</Link>
         </div>
         <div>
-          <Link to="/superuser">Ingresar como administrador</Link>
+          <Link to="/superuser/home">Ingresar como administrador</Link>
         </div>
       </div>
     </div>

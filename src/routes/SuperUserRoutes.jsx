@@ -4,6 +4,7 @@ import Homepage from "../Pages/User/Homepage/Homepage";
 import Disponibility from "../Pages/Environment/Disponibility";
 import EnvironmentRegistration from "../Pages/SuperUser/EnvironmentRegistration/EnvironmentRegistration";
 import AttentionList from "../Pages/SuperUser/AttentionRequests/AttentionList";
+import ErrorPage from "../Components/ErrorPage/ErrorPage";
 
 export default function SuperUserRoutes() {
   return (
@@ -17,6 +18,7 @@ export default function SuperUserRoutes() {
         ></Route>
         <Route path="attention-list" element={<AttentionList />}></Route>
       </Route>
+      <Route path="*" element={<ErrorPage />} />
     </Routes>
   );
 }

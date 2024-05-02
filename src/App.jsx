@@ -12,7 +12,8 @@ export default function App() {
         <Route path="/user/*" element={<UserRoutes />} />
         {/* Routes for superuser */}
         <Route path="/superuser/*" element={<SuperUserRoutes />} />
-        <Route path="*" element={<ErrorPage />}></Route>
+        <Route path="*" element={<ErrorPage />} />
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>
   );

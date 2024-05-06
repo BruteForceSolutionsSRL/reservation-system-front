@@ -44,44 +44,54 @@ export default function Sidebar({ user }) {
                 <i className="bi bi-house fs-4"></i> Pagina principal
               </Link>
             </li>
-            <li className="list-unstyled px-2">
+            <li
+              className={`list-unstyled px-2 ${
+                activeItem === "disponibility" ? "active" : ""
+              }`}
+            >
               <Link
-                to="environments-disponibility"
+                to="environments-disponibility "
                 className="text-decoration-none px-3 py-2 d-block"
-                onClick={() => handleItemClick("#")}
+                onClick={() => handleItemClick("disponibility")}
               >
                 <i className="bi bi-clock-history fs-5" aria-hidden="true"></i>{" "}
                 Disponibilidad de ambientes
               </Link>
             </li>
-            <li
-              className={
-                activeItem === "enviroment-request"
-                  ? "active list-unstyled px-2"
-                  : "list-unstyled px-2"
-              }
-            >
-              {user === "user" ? (
+            {user === "user" ? (
+              <li
+                className={
+                  activeItem === "enviroment-request"
+                    ? "active list-unstyled px-2"
+                    : "list-unstyled px-2"
+                }
+              >
                 <Link
                   to={"enviroment-request"}
                   className="text-decoration-none px-3 py-2 d-block"
-                  onClick={() => handleItemClick("#")}
+                  onClick={() => handleItemClick("enviroment-request")}
                 >
                   <i className="bi bi-journal-plus fs-5"></i> Nueva solicitud de
                   reserva
                 </Link>
-              ) : (
-                ""
-              )}
-            </li>
+              </li>
+            ) : (
+              ""
+            )}
 
             {/* si es super usuario crea el elemento en la lista */}
             {user === "superuser" ? (
-              <li className="list-unstyled px-2">
+              <li
+                className={
+                  activeItem === "enviroment-register"
+                    ? "active list-unstyled px-2"
+                    : "list-unstyled px-2"
+                }
+              >
                 <Link
                   to={user === "superuser" ? "environment-register" : " "}
                   className="text-decoration-none px-3 py-2 d-block"
-                  onClick={() => handleItemClick("#")}
+                  onClick={() => handleItemClick("enviroment-register")}
                 >
                   <i className="bi bi-house-add fs-4"></i> Registrar Ambiente
                 </Link>
@@ -95,18 +105,24 @@ export default function Sidebar({ user }) {
               <Link
                 to="#"
                 className="text-decoration-none px-3 py-2 d-block"
-                onClick={() => handleItemClick("reservations")}
+                onClick={() => handleItemClick("#")}
               >
                 <i className="bi bi-person-lines-fill fs-4"></i> Reservas
               </Link>
             </li>
             {user === "superuser" ? (
               <>
-                <li className="list-unstyled px-2">
+                <li
+                  className={
+                    activeItem === "request-attention"
+                      ? "active list-unstyled px-2"
+                      : "list-unstyled px-2"
+                  }
+                >
                   <Link
                     to={user === "superuser" ? "attention-list" : ""}
                     className="text-decoration-none px-3 py-2 d-block"
-                    onClick={() => handleItemClick("#")}
+                    onClick={() => handleItemClick("request-attention")}
                   >
                     <i className="bi bi-person-workspace"></i> Atender
                     solicitudes pendientes
@@ -118,11 +134,17 @@ export default function Sidebar({ user }) {
             )}
             {user === "user" ? (
               <>
-                <li className="list-unstyled px-2">
+                <li
+                  className={
+                    activeItem === "list-requests"
+                      ? "active list-unstyled px-2"
+                      : "list-unstyled px-2"
+                  }
+                >
                   <Link
                     to={user === "user" ? "list-cancel" : ""}
                     className="text-decoration-none px-3 py-2 d-block"
-                    onClick={() => handleItemClick("#")}
+                    onClick={() => handleItemClick("list-requests")}
                   >
                     <i className="bi bi-card-list"></i> Lista de solicitudes
                   </Link>
@@ -131,11 +153,17 @@ export default function Sidebar({ user }) {
             ) : (
               ""
             )}
-            <li className="list-unstyled px-2">
+            <li
+              className={
+                activeItem === "request-history"
+                  ? "active list-unstyled px-2"
+                  : "list-unstyled px-2"
+              }
+            >
               <Link
                 to="request-history"
                 className="text-decoration-none px-3 py-2 d-block"
-                onClick={() => handleItemClick("#")}
+                onClick={() => handleItemClick("request-history")}
               >
                 <i className="bi bi-list-check"></i> Historial de solicitudes
               </Link>

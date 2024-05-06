@@ -30,7 +30,7 @@ export default function Sidebar({ user }) {
               className="btn d-md-none d-block close-btn px-1 py-0 text-black"
               onClick={handleMenuClose}
             >
-              <i className="fal fa-stream"></i>
+              <i className="bi bi-list-nested"></i>
             </button>
           </div>
 
@@ -162,7 +162,7 @@ export default function Sidebar({ user }) {
                   className="btn px-1 py-0 open-btn me-2"
                   onClick={handleMenuOpen}
                 >
-                  <i className="fal fa-stream"></i>
+                  <i className="bi bi-list-nested"></i>
                 </button>
                 <Link
                   className="navbar-brand fs-4"

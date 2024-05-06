@@ -47,7 +47,7 @@ const EnvironmentRegistration = () => {
       setTimeout(() => {
         setLoading(false);
         setReload(false);
-      }, 1500);
+      }, 200);
     };
 
     fetchData();

@@ -41,7 +41,7 @@ export default function Sidebar({ user }) {
                 className="text-decoration-none px-3 py-2 d-block"
                 onClick={() => handleItemClick("home")}
               >
-                <i className="fal fa-home"></i> Pagina principal
+                <i className="bi bi-house fs-4"></i> Pagina principal
               </Link>
             </li>
             <li className="list-unstyled px-2">
@@ -50,7 +50,7 @@ export default function Sidebar({ user }) {
                 className="text-decoration-none px-3 py-2 d-block"
                 onClick={() => handleItemClick("#")}
               >
-                <i className="far fa-clock" aria-hidden="true"></i>{" "}
+                <i className="bi bi-clock-history fs-5" aria-hidden="true"></i>{" "}
                 Disponibilidad de ambientes
               </Link>
             </li>
@@ -67,7 +67,8 @@ export default function Sidebar({ user }) {
                   className="text-decoration-none px-3 py-2 d-block"
                   onClick={() => handleItemClick("#")}
                 >
-                  <i className="fal fa-plus"></i> Nueva solicitud de reserva
+                  <i className="bi bi-journal-plus fs-5"></i> Nueva solicitud de
+                  reserva
                 </Link>
               ) : (
                 ""
@@ -82,7 +83,7 @@ export default function Sidebar({ user }) {
                   className="text-decoration-none px-3 py-2 d-block"
                   onClick={() => handleItemClick("#")}
                 >
-                  <i className="fa fa-list-alt"></i> Registrar Ambiente
+                  <i className="bi bi-house-add fs-4"></i> Registrar Ambiente
                 </Link>
               </li>
             ) : (
@@ -96,7 +97,7 @@ export default function Sidebar({ user }) {
                 className="text-decoration-none px-3 py-2 d-block"
                 onClick={() => handleItemClick("reservations")}
               >
-                <i className="fas fa-clipboard-list"></i> Reservas
+                <i className="bi bi-person-lines-fill fs-4"></i> Reservas
               </Link>
             </li>
             {user === "superuser" ? (
@@ -107,8 +108,8 @@ export default function Sidebar({ user }) {
                     className="text-decoration-none px-3 py-2 d-block"
                     onClick={() => handleItemClick("#")}
                   >
-                    <i className="fal fa-users"></i> Atender solicitudes
-                    pendientes
+                    <i className="bi bi-person-workspace"></i> Atender
+                    solicitudes pendientes
                   </Link>
                 </li>
               </>
@@ -123,7 +124,7 @@ export default function Sidebar({ user }) {
                     className="text-decoration-none px-3 py-2 d-block"
                     onClick={() => handleItemClick("#")}
                   >
-                    <i className="fal fa-users"></i> Lista de solicitudes
+                    <i className="bi bi-card-list"></i> Lista de solicitudes
                   </Link>
                 </li>
               </>
@@ -136,7 +137,7 @@ export default function Sidebar({ user }) {
                 className="text-decoration-none px-3 py-2 d-block"
                 onClick={() => handleItemClick("#")}
               >
-                <i className="fas fa-th-list"></i> Historial de solicitudes
+                <i className="bi bi-list-check"></i> Historial de solicitudes
               </Link>
             </li>
           </ul>
@@ -148,7 +149,7 @@ export default function Sidebar({ user }) {
                 className="text-decoration-none px-3 py-2 d-block"
                 onClick={() => handleItemClick("home")}
               >
-                <i className="fas fa-sign-out-alt"></i> Cerrar sesion
+                <i className="bi bi-box-arrow-left"></i> Cerrar sesion
               </Link>
             </li>
           </ul>
@@ -188,15 +189,9 @@ export default function Sidebar({ user }) {
                   <li className="nav-item">
                     {/* This is a photo, but for now it does nothing until we decide what to do */}
                     <b className="text-success me-5">
-                      *MAGDA LENA PEETERS ILONAA,
+                      MAGDA LENA PEETERS ILONAA{" "}
+                      <i className="bi bi-person fs-3"></i>
                     </b>
-                    {/* <Link className="nav-brand active" to="#">
-                      <img
-                        src="../../assets/img/people-icon.png"
-                        alt="user-profile"
-                        width="60px"
-                      />
-                    </Link> */}
                   </li>
                 </ul>
               </div>

@@ -15,7 +15,6 @@ export default function ListCancel() {
     await fetch(URL + `all-reservations/${2}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setReservations(data);
       })
       .catch((err) => {

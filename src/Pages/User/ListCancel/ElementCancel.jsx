@@ -24,7 +24,6 @@ export default function ElementCancel(props) {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setShow(false);
         props.reload(true);
       })

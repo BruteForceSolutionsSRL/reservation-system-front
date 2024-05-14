@@ -70,7 +70,6 @@ export default function RequestsHistory() {
           }
         }}
       />
-
       <div className="container">
         {loading ? (
           <div className="text-center">
@@ -79,7 +78,26 @@ export default function RequestsHistory() {
             </Spinner>
           </div>
         ) : (
-          <div className="">
+          <div>
+            <div className="row text-center" style={{ minWidth: "350px" }}>
+              <div className="col-1 mt-1 mb-1">
+                <i>ID</i>
+              </div>
+              <div className="col-3 mt-1 mb-1">
+                <i>Materia(s)</i>
+              </div>
+              <div className="col-2 mt-1 mb-1">
+                <i>Cantidad de estudiantes</i>
+              </div>
+              <div className="col-2 mt-1 mb-1">
+                <i>Fecha de reserva</i>
+              </div>
+              <div className="col-2 mt-1 mb-1">
+                <i>Periodos</i>
+              </div>
+              <div className="col-2 mt-1 mb-1"></div>
+            </div>
+            <hr />
             {list.length > 0 ? (
               list.map((each) => {
                 let content = {

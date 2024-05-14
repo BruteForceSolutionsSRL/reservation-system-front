@@ -155,7 +155,10 @@ export default function RequestInformation({
 
   return (
     <>
-      <div className="border border-dark rounded row mt-2 mb-2 text-center">
+      <div
+        className="border border-dark rounded row mt-2 mb-2 text-center"
+        style={{ minWidth: "300px" }}
+      >
         <div className="col-1 mt-1 mb-1">
           <b>{id}</b>
         </div>

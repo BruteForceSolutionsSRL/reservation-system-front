@@ -4,7 +4,6 @@ export function getRequests() {
   return fetch(url + "reservations")
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
       return data;
     });
 }

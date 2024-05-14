@@ -1,80 +1,110 @@
-import Form from "react-bootstrap/Form";
 import { useState, useEffect } from "react";
-
 import Spinner from "react-bootstrap/Spinner";
 import RequestInformation from "../../Components/RequestInformation/RequestInformation";
+import SearchBar from "../../Components/SearchBar/SearchBar";
+import { getRequests, getTeacherRequests } from "../../services/requests";
+
 export default function RequestsHistory() {
-  const URL = import.meta.env.VITE_REACT_API_URL;
   const [loading, setLoading] = useState(false);
   const [allReservations, setAllReservations] = useState([]);
+  const [list, setList] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [msgNoResults, setMsgNoResults] = useState("");
 
+  // getReservations
   useEffect(() => {
     setLoading(true);
-    fetchData();
-    setAllReservations([]);
+    Promise.all([getRequests(), getTeacherRequests({ id: 2 })])
+      .then(([requests, teacherRequests]) => {
+        setAllReservations(requests);
+        setList(requests);
+      })
+      .catch((err) => console.error(err))
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const res = await fetch(URL + `all-reservations/${2}`);
-      const data = await res.json();
-      setAllReservations(data);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
+  // Useeffect for search
+  useEffect(() => {
+    if (searchValue === "") {
+      setList(allReservations);
+      setMsgNoResults("");
+    } else {
+      const results = allReservations.filter(
+        (each) =>
+          each.subject_name.toLowerCase().includes(searchValue.toLowerCase()) ||
+          each.block_name.toLowerCase().includes(searchValue.toLowerCase()) ||
+          each.reservation_status
+            .toLowerCase()
+            .includes(searchValue.toLowerCase()) ||
+          each.reason_name.toLowerCase().includes(searchValue.toLowerCase()) ||
+          each.groups.some((group) =>
+            group.teacher_name.toLowerCase().includes(searchValue.toLowerCase())
+          ) ||
+          each.classrooms.some((classroom) =>
+            classroom.classroom_name
+              .toLowerCase()
+              .includes(searchValue.toLowerCase())
+          )
+      );
+      if (results.length < 1) {
+        setMsgNoResults("No se encontraron resultados");
+      } else {
+        setMsgNoResults("");
+      }
+      setList(results);
     }
-  };
+  }, [searchValue]);
 
   return (
     <div className="container">
       <h1 className="text-center">Historial de solicitudes</h1>
 
-      <div className="row d-inline-flex justify-content-between">
-        <Form.Select
-          className="col"
-          aria-label="select-input"
-          style={{ maxWidth: "200px" }}
-        >
-          <option value="1">Todo</option>
-          <option value="2">Solicitudes aceptadas</option>
-          <option value="3">Solicitudes rechazadas</option>
-          <option value="4">Solicitudes expiradas</option>
-          <option value="5">Solicitudes canceladas</option>
-        </Form.Select>
-        <div className="col d-inline-flex ">
-          <input className="form-control" type="text" placeholder="Buscar..." />
-          <i className="fas fa-search"></i>
-        </div>
-      </div>
+      <SearchBar
+        value={searchValue}
+        onChange={(event) => {
+          const regex = /^[a-zA-Z0-9\s]*$/;
+          if (regex.test(event.target.value) || event.target.value === "") {
+            setSearchValue(event.target.value);
+          }
+        }}
+      />
 
-      {loading ? (
-        <div className="text-center">
-          <Spinner animation="border" variant="secondary" role="status">
-            <span className="visually-hidden">Cargando...</span>
-          </Spinner>
-        </div>
-      ) : (
-        <div className="container">
-          {allReservations.map((each) => {
-            let content = {
-              id: each.reservation_id,
-              subject: each.subject_name,
-              groups: each.groups,
-              reservation_date: each.reservation_date,
-              periods: each.time_slot,
-              quantity_studets: each.quantity,
-              block: each.block_name,
-              classrooms: each.classrooms,
-              reason: each.reason_name,
-            };
-            return (
-              <div key={each.reservation_id}>
-                <RequestInformation content={content} />
-              </div>
-            );
-          })}
-        </div>
-      )}
+      <div className="container">
+        {loading ? (
+          <div className="text-center">
+            <Spinner animation="border" variant="secondary" role="status">
+              <span className="visually-hidden">Cargando...</span>
+            </Spinner>
+          </div>
+        ) : (
+          <div className="">
+            {list.length > 0 ? (
+              list.map((each) => {
+                let content = {
+                  id: each.reservation_id,
+                  subject: each.subject_name,
+                  groups: each.groups,
+                  reservation_date: each.reservation_date,
+                  periods: each.time_slot,
+                  quantity_studets: each.quantity,
+                  block: each.block_name,
+                  classrooms: each.classrooms,
+                  reason: each.reason_name,
+                };
+                return (
+                  <div key={each.reservation_id}>
+                    <RequestInformation content={content} />
+                  </div>
+                );
+              })
+            ) : (
+              <h3 className="text-center">{msgNoResults}</h3>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

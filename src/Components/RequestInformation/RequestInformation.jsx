@@ -155,15 +155,17 @@ export default function RequestInformation({
 
   return (
     <>
-      <div className="border border-dark rounded row mt-2 mb-2">
-        <div className="col-1">{id}</div>
-        <div className="col-2">{subject}</div>
-        <div className="col-2">{quantity_studets}</div>
-        <div className="col-2">{reservation_date}</div>
-        <div className="col-2">{`${periods[0]} - ${periods[1]}`}</div>
-        <div className="col-2">
+      <div className="border border-dark rounded row mt-2 mb-2 text-center">
+        <div className="col-1 mt-1 mb-1">
+          <b>{id}</b>
+        </div>
+        <div className="col-3 mt-1 mb-1">{subject}</div>
+        <div className="col-2 mt-1 mb-1">{quantity_studets}</div>
+        <div className="col-2 mt-1 mb-1">{reservation_date}</div>
+        <div className="col-2 mt-1 mb-1">{`${periods[0]} - ${periods[1]}`}</div>
+        <div className="col-sm-2 mt-1 mb-1">
           <button
-            className="btn btn-outline-primary me-2"
+            className="btn btn-outline-primary "
             onClick={() => modalStateShow.setShow(true)}
           >
             Detalles

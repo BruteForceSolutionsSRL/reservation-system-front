@@ -3,6 +3,7 @@ import Spinner from "react-bootstrap/Spinner";
 import RequestInformation from "../../Components/RequestInformation/RequestInformation";
 import SearchBar from "../../Components/SearchBar/SearchBar";
 import { getRequests, getTeacherRequests } from "../../services/requests";
+import { searchRequests } from "../../utils/searchRequests";
 
 export default function RequestsHistory() {
   const [loading, setLoading] = useState(false);
@@ -31,23 +32,7 @@ export default function RequestsHistory() {
       setList(allReservations);
       setMsgNoResults("");
     } else {
-      const results = allReservations.filter(
-        (each) =>
-          each.subject_name.toLowerCase().includes(searchValue.toLowerCase()) ||
-          each.block_name.toLowerCase().includes(searchValue.toLowerCase()) ||
-          each.reservation_status
-            .toLowerCase()
-            .includes(searchValue.toLowerCase()) ||
-          each.reason_name.toLowerCase().includes(searchValue.toLowerCase()) ||
-          each.groups.some((group) =>
-            group.teacher_name.toLowerCase().includes(searchValue.toLowerCase())
-          ) ||
-          each.classrooms.some((classroom) =>
-            classroom.classroom_name
-              .toLowerCase()
-              .includes(searchValue.toLowerCase())
-          )
-      );
+      const results = searchRequests(allReservations);
       if (results.length < 1) {
         setMsgNoResults("No se encontraron resultados");
       } else {

@@ -32,7 +32,7 @@ export default function RequestsHistory() {
       setList(allReservations);
       setMsgNoResults("");
     } else {
-      const results = searchRequests(allReservations);
+      const results = searchRequests(allReservations, searchValue);
       if (results.length < 1) {
         setMsgNoResults("No se encontraron resultados");
       } else {
@@ -95,6 +95,7 @@ export default function RequestsHistory() {
                   block: each.block_name,
                   classrooms: each.classrooms,
                   reason: each.reason_name,
+                  state: each.reservation_status,
                 };
                 return (
                   <div key={each.reservation_id}>

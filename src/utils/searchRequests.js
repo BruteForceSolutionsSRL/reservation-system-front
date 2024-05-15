@@ -1,4 +1,4 @@
-export function searchRequests(list) {
+export function searchRequests(list, searchValue) {
   return list.filter(
     (each) =>
       each.subject_name.toLowerCase().includes(searchValue.toLowerCase()) ||

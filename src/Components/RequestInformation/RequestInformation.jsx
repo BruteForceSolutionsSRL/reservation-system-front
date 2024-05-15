@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Table } from "react-bootstrap";
 import ModalRequestInformation from "./ModalRequestInformation";
+import { getConflicts } from "../../services/conflicts";
 
 export default function RequestInformation({
   content,
@@ -17,6 +18,7 @@ export default function RequestInformation({
     block,
     classrooms,
     reason,
+    state,
   } = content;
 
   const [show, setShow] = useState(false);
@@ -30,12 +32,19 @@ export default function RequestInformation({
       message: "",
       list: [],
     },
-    ok: -1,
   });
 
   const modalStateShow = {
     show: show,
     setShow: (change) => setShow(change),
+  };
+
+  const handleClickModal = async () => {
+    if (showConflicts) {
+      let conflicts = await getConflicts(id);
+      setConflictsModal(conflicts);
+    }
+    setShow(true);
   };
 
   const modalContent = {
@@ -48,15 +57,32 @@ export default function RequestInformation({
             <b>MATERIA: </b> {subject}
           </div>
 
+          <div className="pb-3">
+            <b>ESTADO: </b>{" "}
+            <label
+              className={`rounded p-1  bg-${
+                state === "ACCEPTED"
+                  ? "success text-light"
+                  : state === "CANCELLED"
+                  ? "secondary text-light"
+                  : state === "REJECTED"
+                  ? "danger text-light"
+                  : "dark text-white"
+              }`}
+            >
+              {state}
+            </label>
+          </div>
+
           <div className="tag-container mb-3">
             <label className="tag-label">GRUPO</label>
-            {conflictsModal.teacher.message === "" ? (
+            {conflictsModal?.teacher.message === "" ? (
               ""
             ) : (
               <div>
                 <b className="text-warning">{`${
-                  conflictsModal.teacher.message
-                }, ${conflictsModal.teacher.list.map((teacher) => {
+                  conflictsModal?.teacher.message
+                }, ${conflictsModal?.teacher.list.map((teacher) => {
                   return teacher + ", ";
                 })}`}</b>
               </div>
@@ -89,11 +115,11 @@ export default function RequestInformation({
           <div className="pb-3">
             <b>PERIODOS: </b> {periods[0]}-{periods[1]}
           </div>
-          {conflictsModal.quantity === "" ? (
+          {conflictsModal?.quantity === "" ? (
             ""
           ) : (
             <div>
-              <b className="text-warning">{conflictsModal.quantity}</b>
+              <b className="text-warning">{conflictsModal?.quantity}</b>
             </div>
           )}
           <div className="pb-3">
@@ -107,13 +133,13 @@ export default function RequestInformation({
             <div className="pt-2 pb-2">
               <b>BLOQUE: </b> {block}
             </div>
-            {conflictsModal.classroom.message === "" ? (
+            {conflictsModal?.classroom.message === "" ? (
               ""
             ) : (
               <div>
                 <b className="text-warning">{`${
-                  conflictsModal.classroom.message
-                }, ${conflictsModal.classroom.list.map((classr) => {
+                  conflictsModal?.classroom.message
+                }, ${conflictsModal?.classroom.list.map((classr) => {
                   return classr + ", ";
                 })}`}</b>
               </div>
@@ -169,7 +195,7 @@ export default function RequestInformation({
         <div className="col-sm-2 mt-1 mb-1">
           <button
             className="btn btn-outline-primary "
-            onClick={() => modalStateShow.setShow(true)}
+            onClick={handleClickModal}
           >
             Detalles
           </button>
@@ -179,8 +205,6 @@ export default function RequestInformation({
         show={modalStateShow.show}
         setShow={(change) => modalStateShow.setShow(change)}
         content={modalContent}
-        showConflicts={showConflicts}
-        conflicts={(conflicts) => setConflictsModal(conflicts)}
       />
     </>
   );

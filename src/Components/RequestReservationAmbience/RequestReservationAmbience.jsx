@@ -23,7 +23,7 @@ function RequestReservationAmbience() {
   const [reason, setReason] = useState([]);
   const [block, setBlock] = useState([]);
   const [classrom, setClassrom] = useState([]);
-  //const [hours, setHours] = useState([]);
+  const [hours, setHours] = useState([]);
   //const [teachers, setTeachers] = useState([]);
 
   //Consulta a backEnd
@@ -54,9 +54,9 @@ function RequestReservationAmbience() {
     fetchData(`blocks`, setBlock);
   }, []);
   // GET TIME SLOT
-  /*useEffect(() => {
+  useEffect(() => {
     fetchData(`timeslots`, setHours);
-  }, []);*/
+  }, []);
 
   //Gets the date the current date
   const today = new Date();
@@ -188,7 +188,7 @@ function RequestReservationAmbience() {
   // Validar la tabla DOCENTES solo si se ha interactuado con ella
   const validateTable = () => {
     if (tableInteracted && selectedOptions.length === 0) {
-      setTableError("Debe seleccionar al menos un docente.");
+      setTableError("Seleccione un docente.");
       return false;
     }
     setTableError("");
@@ -226,12 +226,25 @@ function RequestReservationAmbience() {
 
   //validador de CANTIDAD
   const validateCantidad = (value) => {
+    console.log(value);
     if (!value) {
       return "Ingrese una cantidad.";
     } else if (value < 25 || value > 500) {
       return "La cantidad de estudiantes debe ser mayor a 25 y menor 500.";
     }
     return null;
+  };
+  const handleKeyDown = (value) => {
+    if (
+      value.key === "-" ||
+      value.key === "." ||
+      value.key === "," ||
+      value.key === "e" ||
+      value.key === "+" ||
+      value.key === "E"
+    ) {
+      value.preventDefault();
+    }
   };
 
   //validator of REASON
@@ -254,24 +267,19 @@ function RequestReservationAmbience() {
     e.preventDefault();
     // Validar la tabla de docentes
     if (selectedOptions.length === 0) {
-      setTableError("Debe seleccionar al menos un docente.");
+      setTableError("Seleccione un docente.");
     }
     // Validar la tabla de Aulas
     if (selectedClassrooms.length === 0) {
       setTableErrorClass("Seleccione al menos un aula.");
     }
-
     let newErrors = {};
     newErrors.subject_id = validateMateria(formData.subject_id);
-    //newErrors.group_id = validateTeacher(formData.group_id);
     newErrors.time_slot_id = validatePeriod(formData.time_slot_id);
-    //newErrors.start = validatePeriod(formData.time_slot_id[0]);
-    //newErrors.end = validatePeriod(formData.time_slot_id[1]);
     newErrors.date = validateDate(formData.date);
     newErrors.quantity = validateCantidad(formData.quantity);
     newErrors.reason_id = validateReason(formData.reason_id);
     newErrors.block_id = validateBlock(formData.block_id);
-    //newErrors.classroom_id = validateClassrom(formData.classroom_id);
 
     setErrors(newErrors);
     // Si no hay errores, puedes enviar el formulario
@@ -284,9 +292,6 @@ function RequestReservationAmbience() {
       !newErrors.block_id &&
       selectedOptions.length > 0 &&
       selectedClassrooms.length > 0
-
-      /*!newErrors.group_id && !newErrors.classroom_id && !newErrors.end &&
-      !newErrors.date &&*/
     ) {
       //setModalReservation(true);
       console.log("Datos del formulario:", {
@@ -304,16 +309,23 @@ function RequestReservationAmbience() {
     //se  imprime aqui lo que se selecciona
     console.log(name, value);
     if (name === "start" || name === "end") {
-      //const index = name === "start" ? 0 : 1;
-      let newFormData = { ...formData };
-      if (name === "start") {
-        newFormData.time_slot_id[0] = value !== "" ? parseInt(value) : "";
-        setErrors({ ...errors, start: "" });
-      } else if (name === "end") {
-        newFormData.time_slot_id[1] = value !== "" ? parseInt(value) : "";
-        setErrors({ ...errors, end: "" });
-      }
-      setFormData(newFormData);
+      setFormData((prevFormData) => {
+        let newTimeSlotId = [...prevFormData.time_slot_id];
+        if (name === "start") {
+          newTimeSlotId[0] = value !== "" ? parseInt(value) : "";
+          if (
+            newTimeSlotId[1] !== "" &&
+            newTimeSlotId[0] !== newTimeSlotId[1]
+          ) {
+            newTimeSlotId[1] = "";
+          }
+          setErrors((prevErrors) => ({ ...prevErrors, start: "" }));
+        } else if (name === "end") {
+          newTimeSlotId[1] = value !== "" ? parseInt(value) : "";
+          setErrors((prevErrors) => ({ ...prevErrors, end: "" }));
+        }
+        return { ...prevFormData, time_slot_id: newTimeSlotId };
+      });
     } else {
       setFormData({
         ...formData,
@@ -327,31 +339,15 @@ function RequestReservationAmbience() {
     }
   };
 
-  //validador en tiempo real
-  /*const handleChange = (e) => {
-    const { name, value } = e.target;
-    console.log(name, value);
-
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-    const error = validators[name](value);
-    setErrors({
-      ...errors,
-      [name]: error,
-    });
-  };
-*/
-  //Filtrar horas de inicio y fni
+  //Filtrar horas FIN
   const getFilteredOptions = () => {
     const selectedTimeSlotId = formData.time_slot_id[0];
     if (selectedTimeSlotId) {
-      const selectedHour = hoursOptions.find(
+      const selectedHour = hours.find(
         (option) => option.time_slot_id === selectedTimeSlotId
       );
       if (selectedHour) {
-        const filteredOptions = hoursOptions.filter(
+        const filteredOptions = hours.filter(
           (hour) =>
             hour.time_slot_id > selectedTimeSlotId &&
             hour.time_slot_id <= selectedTimeSlotId + 4
@@ -365,15 +361,11 @@ function RequestReservationAmbience() {
   //controlador de validadores
   const validators = {
     subject_id: validateMateria,
-    // group_id: validateTeacher,
     time_slot_id: validatePeriod,
-    start: validatePeriod,
-    end: validatePeriod,
     date: validateDate,
     quantity: validateCantidad,
     reason_id: validateReason,
     block_id: validateBlock,
-    //classroom_id: validateClassrom,
     // Agrega más validadores para otros campos si es necesario
   };
 
@@ -462,19 +454,6 @@ function RequestReservationAmbience() {
     [formData.quantity]
   );
 
-  //Ejemplo de materias
-  /*const materiaTemporal = [
-    {
-      subject_id: 0,
-      subject_name: "Elementos de programacion y estructura de datos",
-    },
-    { subject_id: 1, subject_name: "Intro a la programacion" },
-    { subject_id: 2, subject_name: "Aquitectura de computadoras" },
-    { subject_id: 3, subject_name: "Algoritmos avanzados" },
-    { subject_id: 4, subject_name: "Taller de ingenieria de soft" },
-  ];
-  const [materiass, setMateriass] = useState(materiaTemporal);*/
-
   //Ejemplo de docentesINTRO A LA PROG
   const teachersTemporales = [
     { id: 0, teacher_name: "Letecia Blanco Coca", group_number: "2" },
@@ -487,32 +466,6 @@ function RequestReservationAmbience() {
     { id: 7, teacher_name: "Henry Frank Villaroel", group_number: "4" },
   ];
   const [teachers, setTeachers] = useState(teachersTemporales);
-
-  //Ejemplo de HORA INI Y FIN
-  const hoursOptions = [
-    { time_slot_id: 2, time: "06:45:00" },
-    { time_slot_id: 3, time: "07:30:00" },
-    { time_slot_id: 4, time: "08:15:00" },
-    { time_slot_id: 5, time: "09:00:00" },
-    { time_slot_id: 6, time: "09:45:00" },
-    { time_slot_id: 7, time: "10:30:00" },
-    { time_slot_id: 8, time: "11:15:00" },
-    { time_slot_id: 9, time: "12:00:00" },
-    { time_slot_id: 10, time: "12:45:00" },
-    { time_slot_id: 11, time: "13:30:00" },
-    { time_slot_id: 12, time: "14:15:00" },
-    { time_slot_id: 13, time: "15:00:00" },
-    { time_slot_id: 14, time: "15:45:00" },
-    { time_slot_id: 15, time: "16:30:00" },
-    { time_slot_id: 16, time: "17:15:00" },
-    { time_slot_id: 17, time: "18:00:00" },
-    { time_slot_id: 18, time: "18:45:00" },
-    { time_slot_id: 19, time: "19:30:00" },
-    { time_slot_id: 20, time: "20:15:00" },
-    { time_slot_id: 21, time: "21:30:00" },
-    { time_slot_id: 22, time: "21:45:00" },
-  ];
-  const [hours, setIHours] = useState(hoursOptions);
 
   //Ejemplo de AULAS SUGERENCIA GENERADA
   const classromSuggTemporales = [
@@ -563,7 +516,6 @@ function RequestReservationAmbience() {
               </Form.Control.Feedback>
             </div>
           </div>
-          {/*hata aqui el primero input */}
 
           <div className="student-date-container mt-3 ms-4 justify-content-center">
             <div className="student-label">
@@ -576,6 +528,7 @@ function RequestReservationAmbience() {
                 type="number"
                 name="quantity"
                 value={formData.quantity}
+                onKeyDown={handleKeyDown}
                 onChange={handleChange}
                 onClick={handleClick}
                 isInvalid={!!errors.quantity}
@@ -681,7 +634,7 @@ function RequestReservationAmbience() {
               type="invalid"
               style={{ display: "block", marginTop: "-10px" }}
             >
-              {errors.start} {errors.end}
+              {errors.time_slot_id}
             </Form.Control.Feedback>
           </div>
 

@@ -130,6 +130,17 @@ export default function Sidebar({ user }) {
             ) : (
               ""
             )}
+
+            <li className="">
+              <Link
+                to="statistics-ambience"
+                className="text-decoration-none px-3 py-2 d-block"
+                onClick={() => handleItemClick("#")}
+              >
+                <i className="fa fa-chart-line"></i> Estadistica de uso de
+                ambiente
+              </Link>
+            </li>
           </ul>
           <hr className="h-color mx-2" />
           <ul className="list-unstyled px-2">

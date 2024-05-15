@@ -18,7 +18,7 @@ function RequestReservationAmbience() {
 
   const [message, setMessage] = useState(""); //ERRO DE SUGERENCIAS
 
-  const URL = "http://localhost:8000/api/";
+  const URL = import.meta.env.VITE_REACT_API_URL;
   const [materias, setMaterias] = useState([]);
   const [reason, setReason] = useState([]);
   const [block, setBlock] = useState([]);

@@ -5,6 +5,7 @@ import RequestReservationAmbience from "../Components/RequestReservationAmbience
 import Disponibility from "../Pages/Environment/Disponibility";
 import ListCancel from "../Pages/User/ListCancel/ListCancel";
 import ErrorPage from "../Components/ErrorPage/ErrorPage";
+import RequestsHistory from "../Pages/RequestsHistory/RequestsHistory";
 
 export default function UserRoutes() {
   return (
@@ -17,6 +18,7 @@ export default function UserRoutes() {
         ></Route>
         <Route path="environments-disponibility" element={<Disponibility />} />
         <Route path="list-cancel" element={<ListCancel />} />
+        <Route path="request-history" element={<RequestsHistory />} />
       </Route>
       <Route path="*" element={<ErrorPage />} />
     </Routes>

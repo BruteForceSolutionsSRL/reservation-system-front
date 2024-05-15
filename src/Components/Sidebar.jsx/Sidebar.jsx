@@ -18,6 +18,11 @@ export default function Sidebar({ user }) {
     setActiveItem(itemName);
   };
 
+  const logout = () => {
+    sessionStorage.removeItem("userloged");
+    sessionStorage.removeItem("userInformation");
+  };
+
   return (
     <>
       <div className="main-container d-flex">
@@ -175,7 +180,10 @@ export default function Sidebar({ user }) {
               <Link
                 to="/"
                 className="text-decoration-none px-3 py-2 d-block"
-                onClick={() => handleItemClick("home")}
+                onClick={() => {
+                  logout();
+                  handleItemClick("home");
+                }}
               >
                 <i className="bi bi-box-arrow-left"></i> Cerrar sesion
               </Link>
@@ -195,7 +203,9 @@ export default function Sidebar({ user }) {
                 <Link
                   className="navbar-brand fs-4"
                   to="#"
-                  onClick={() => handleItemClick("home")}
+                  onClick={() => {
+                    handleItemClick("home");
+                  }}
                 >
                   <span className="px-2 py-0 text-black">FCyT</span>
                 </Link>

@@ -15,3 +15,12 @@ export function getTeacherRequests({ id }) {
       return data;
     });
 }
+
+// Talvez esto no deberia estar aqui.
+export function getRequestsReasons() {
+  return fetch(url + `reservation-reasons`)
+    .then((response) => response.json())
+    .then((data) => {
+      return data;
+    });
+}

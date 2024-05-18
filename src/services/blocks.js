@@ -1,7 +1,7 @@
 const url = import.meta.env.VITE_REACT_API_URL;
 
-export function getTeachersBySubject(idSubject) {
-  return fetch(url + `teachers/subject/${idSubject}`)
+export function getBlocks() {
+  return fetch(url + `blocks`)
     .then((response) => response.json())
     .then((data) => {
       return data;

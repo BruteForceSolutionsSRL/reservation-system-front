@@ -3,18 +3,20 @@ import "./LandingPage.css";
 
 export default function LandingPage() {
   const userSession = () => {
-    sessionStorage.setItem("userloged", "user");
-    sessionStorage.setItem("userInformation", {
+    const user = {
       name: "MAGDA LENA PEETERS ILONAA",
       teacher_id: 2,
-    });
+    };
+    sessionStorage.setItem("userloged", "user");
+    sessionStorage.setItem("userInformation", JSON.stringify(user));
   };
   const superUserSession = () => {
-    sessionStorage.setItem("userloged", "superuser");
-    sessionStorage.setItem("userInformation", {
+    const user = {
       name: "Juanito Perez ",
       teacher_id: 2,
-    });
+    };
+    sessionStorage.setItem("userloged", "superuser");
+    sessionStorage.setItem("userInformation", JSON.stringify(user));
   };
   return (
     <div className="bg text-center">

@@ -21,6 +21,9 @@ export default function RequestReservation() {
   const [reasons, setReasons] = useState([]);
   // For timeSlots
   const [timeSlots, setTimeSlots] = useState([]);
+  const [startTime, setStartTime] = useState(0);
+  const [startTimeSlots, setStartTimeSlots] = useState([]);
+  const [endTimeSlots, setEndTimeSlots] = useState([]);
   // For blocks
   const [blocks, setBlocks] = useState([]);
   const [blockSelected, setBlockSelected] = useState(0);
@@ -55,6 +58,11 @@ export default function RequestReservation() {
     fetchClassroomsByBlock();
   }, [blockSelected]);
 
+  useEffect(() => {
+    const index = timeSlots.findIndex((slot) => slot.time_slot_id == startTime);
+    index === -1 ? getEndTime(0) : getEndTime(index);
+  }, [startTime, startTimeSlots]);
+
   const fetchSubjects = async () => {
     const sbjs = await getSubjects();
     setSubjects(sbjs);
@@ -68,6 +76,9 @@ export default function RequestReservation() {
   const fetchTimeSlots = async () => {
     const tmsl = await getTimeSlots();
     setTimeSlots(tmsl);
+    let startSlots = [...tmsl];
+    startSlots.pop();
+    setStartTimeSlots(startSlots);
   };
 
   const fetchBlocks = async () => {
@@ -116,6 +127,10 @@ export default function RequestReservation() {
     } else {
       setClassroomsSelectedInModal([...classroomsSelectedInModal, classroom]);
     }
+  };
+
+  const getEndTime = (index) => {
+    setEndTimeSlots(timeSlots.slice(index + 1, index + 5));
   };
 
   return (
@@ -201,8 +216,14 @@ export default function RequestReservation() {
               <b>HORA INICIO</b>
             </div>
             <div className="col-sm-4">
-              <Form.Select name="" id="" className="form-select">
-                {timeSlots.map((each) => {
+              <Form.Select
+                name=""
+                id=""
+                className="form-select"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+              >
+                {startTimeSlots.map((each) => {
                   return (
                     <option key={each.time_slot_id} value={each.time_slot_id}>
                       {each.time}
@@ -217,11 +238,19 @@ export default function RequestReservation() {
               <b>HORA FIN</b>
             </div>
             <div className="col-sm-4">
-              <Form.Select name="" id="" className="col-sm form-select">
-                <option value="">alguna hora</option>
-                <option value="">alguna hora</option>
-                <option value="">alguna hora</option>
-                <option value="">alguna hora</option>
+              <Form.Select
+                name=""
+                id=""
+                className="col-sm form-select"
+                disabled={endTimeSlots.length === 0}
+              >
+                {endTimeSlots.map((each) => {
+                  return (
+                    <option key={each.time_slot_id} value={each.time_slot_id}>
+                      {each.time}
+                    </option>
+                  );
+                })}
               </Form.Select>
             </div>
             {/* Error message for end hour */}

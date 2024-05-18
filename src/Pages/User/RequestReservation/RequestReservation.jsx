@@ -6,7 +6,10 @@ import { getRequestsReasons } from "../../../services/requests";
 import { getTimeSlots } from "../../../services/timeSlots";
 import { getBlocks } from "../../../services/blocks";
 import { getTeachersBySubject } from "../../../services/teachers";
-import { getClassroomsByBlock } from "../../../services/classrooms";
+import {
+  getClassroomsByBlock,
+  getSuggestsClassrooms,
+} from "../../../services/classrooms";
 import ModalTable from "../../../Components/ModalTable/ModalTable";
 
 export default function RequestReservation() {
@@ -22,6 +25,7 @@ export default function RequestReservation() {
   // For timeSlots
   const [timeSlots, setTimeSlots] = useState([]);
   const [startTime, setStartTime] = useState(0);
+  const [endTime, setEndTime] = useState(0);
   const [startTimeSlots, setStartTimeSlots] = useState([]);
   const [endTimeSlots, setEndTimeSlots] = useState([]);
   // For blocks
@@ -60,8 +64,19 @@ export default function RequestReservation() {
 
   useEffect(() => {
     const index = timeSlots.findIndex((slot) => slot.time_slot_id == startTime);
-    index === -1 ? getEndTime(0) : getEndTime(index);
-  }, [startTime, startTimeSlots]);
+    if (index === -1) {
+      setEndTimeSlots([]);
+      setEndTime(0);
+    } else {
+      const newEndTimeSlots = timeSlots.slice(index + 1, index + 5);
+      setEndTimeSlots(newEndTimeSlots);
+      if (newEndTimeSlots.length > 0) {
+        setEndTime(newEndTimeSlots[0].time_slot_id);
+      } else {
+        setEndTime(0);
+      }
+    }
+  }, [startTime, timeSlots]);
 
   const fetchSubjects = async () => {
     const sbjs = await getSubjects();
@@ -76,6 +91,10 @@ export default function RequestReservation() {
   const fetchTimeSlots = async () => {
     const tmsl = await getTimeSlots();
     setTimeSlots(tmsl);
+    if (tmsl.length > 1) {
+      setStartTime(tmsl[0].time_slot_id);
+      setEndTime(tmsl[1].time_slot_id);
+    }
     let startSlots = [...tmsl];
     startSlots.pop();
     setStartTimeSlots(startSlots);
@@ -129,8 +148,15 @@ export default function RequestReservation() {
     }
   };
 
-  const getEndTime = (index) => {
-    setEndTimeSlots(timeSlots.slice(index + 1, index + 5));
+  const getSuggest = async () => {
+    let dataSugg = {
+      block_id: blockSelected,
+      time_slot_id: [startTime, endTime],
+      quantity: 150,
+      date: dateValue,
+    };
+    const suggests = await getSuggestsClassrooms(dataSugg);
+    console.log(suggests);
   };
 
   return (
@@ -221,7 +247,9 @@ export default function RequestReservation() {
                 id=""
                 className="form-select"
                 value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
+                onChange={(e) => {
+                  setStartTime(e.target.value);
+                }}
               >
                 {startTimeSlots.map((each) => {
                   return (
@@ -242,6 +270,10 @@ export default function RequestReservation() {
                 name=""
                 id=""
                 className="col-sm form-select"
+                value={endTime}
+                onChange={(e) => {
+                  setEndTime(e.target.value);
+                }}
                 disabled={endTimeSlots.length === 0}
               >
                 {endTimeSlots.map((each) => {
@@ -384,7 +416,8 @@ export default function RequestReservation() {
                     <button
                       type="button"
                       className="btn btn-outline-secondary btn-sm mb-2"
-                      disabled
+                      // disabled
+                      onClick={getSuggest}
                     >
                       Generar sugerencia
                     </button>

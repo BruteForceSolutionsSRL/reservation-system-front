@@ -7,3 +7,17 @@ export function getClassroomsByBlock(id) {
       return data;
     });
 }
+
+export function getSuggestsClassrooms(dataSugg) {
+  return fetch(url + "reservation/suggest", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(dataSugg),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      return data;
+    });
+}

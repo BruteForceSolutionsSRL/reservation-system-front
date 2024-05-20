@@ -11,19 +11,16 @@ export default function RequestsHistory() {
   const [list, setList] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [msgNoResults, setMsgNoResults] = useState("");
+  const userLogged = sessionStorage.getItem("userloged");
 
   // getReservations
   useEffect(() => {
     setLoading(true);
-    Promise.all([getRequests(), getTeacherRequests({ id: 2 })])
-      .then(([requests, teacherRequests]) => {
-        setAllReservations(requests);
-        setList(requests);
-      })
-      .catch((err) => console.error(err))
-      .finally(() => {
-        setLoading(false);
-      });
+    if (userLogged === "user") {
+      teacherHistory();
+    } else {
+      superUserHistory();
+    }
   }, []);
 
   // Useeffect for search
@@ -41,6 +38,22 @@ export default function RequestsHistory() {
       setList(results);
     }
   }, [searchValue]);
+
+  const teacherHistory = async () => {
+    const th = await getTeacherRequests()
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+    setAllReservations(th);
+    setList(th);
+  };
+
+  const superUserHistory = async () => {
+    const su = await getRequests()
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+    setAllReservations(su);
+    setList(su);
+  };
 
   return (
     <div className="container">

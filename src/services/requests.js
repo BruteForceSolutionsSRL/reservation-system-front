@@ -24,3 +24,18 @@ export function getRequestsReasons() {
       return data;
     });
 }
+
+export function sendRequest(request) {
+  return fetch(url + "reservation", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      return data;
+    });
+}

@@ -174,6 +174,35 @@ export default function Sidebar({ user }) {
               </Link>
             </li>
           </ul>
+
+          <ul className="list-unstyled px-2">
+            <li className={activeItem === "reservations" ? "active" : ""}>
+              <Link
+                to="#"
+                className="text-decoration-none px-3 py-2 d-block"
+                onClick={() => handleItemClick("#")}
+              >
+                <i className="bi bi-person-lines-fill fs-4"></i> Gestion de
+                Ambiente
+              </Link>
+            </li>
+            <li
+              className={
+                activeItem === "edit-environment"
+                  ? "active list-unstyled px-2"
+                  : "list-unstyled px-2"
+              }
+            >
+              <Link
+                to="edit-environment"
+                className="text-decoration-none px-3 py-2 d-block"
+                onClick={() => handleItemClick("edit-environment")}
+              >
+                <i className="bi bi-list-check"></i> Editar ambiente
+              </Link>
+            </li>
+          </ul>
+
           <hr className="h-color mx-2" />
           <ul className="list-unstyled px-2">
             <li className="">

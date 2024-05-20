@@ -194,6 +194,20 @@ export default function RequestReservation() {
     setSubjectSelected(value);
   };
 
+  const handleChangeQuantity = (e) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setQuantity(value);
+    }
+  };
+
+  const handleDateChange = (e) => {
+    const newValue = e.target.value;
+    if (newValue) {
+      setDateValue(newValue);
+    }
+  };
+
   const handleChangeBlocks = (value) => {
     setBlocksInitialOptionDisabled(true);
     setBlockSelected(value);
@@ -427,12 +441,13 @@ export default function RequestReservation() {
           <div className="col-6">
             <b className="">CANTIDAD DE ESTUDIANTES</b>
             <Form.Control
-              type="number"
+              type="text"
               className="form-control"
               value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
+              onChange={handleChangeQuantity}
               placeholder="Ingrese la cantidad de estudiantes para la solicitud..."
               isInvalid={errorsMessages.quantity.isInvalid}
+              inputMode="numeric"
             />
 
             <Form.Control.Feedback type="invalid">
@@ -445,7 +460,9 @@ export default function RequestReservation() {
               type="date"
               className="col-sm form-control"
               value={dateValue}
-              onChange={(e) => setDateValue(e.target.value)}
+              onChange={handleDateChange}
+              min={getCurrentDate()}
+              max="2024-07-06"
             />
           </div>
           {/* Error message for date */}

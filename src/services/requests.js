@@ -18,3 +18,11 @@ export function getTeacherRequests() {
       return data;
     });
 }
+
+export function getReservationsPerClassrooms(id) {
+  return fetch(url + `reservations/classroom/${id}`)
+    .then((response) => response.json())
+    .then((data) => {
+      return data;
+    });
+}

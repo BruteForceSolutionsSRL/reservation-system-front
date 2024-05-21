@@ -194,7 +194,7 @@ export default function RequestInformation({
         <div className="col-2 mt-1 mb-1">{`${periods[0]} - ${periods[1]}`}</div>
         <div className="col-sm-2 mt-1 mb-1">
           <button
-            className="btn btn-outline-primary "
+            className="btn btn-outline-primary mt-1"
             onClick={handleClickModal}
           >
             Detalles

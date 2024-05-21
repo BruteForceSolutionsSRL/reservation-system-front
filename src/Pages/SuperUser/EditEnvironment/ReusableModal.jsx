@@ -7,9 +7,10 @@ const ReusableModal = ({
   title,
   children,
   footerButtons = [],
+  size,
 }) => {
   return (
-    <Modal show={show} onHide={handleClose} size="lg">
+    <Modal show={show} onHide={handleClose} size={size}>
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>

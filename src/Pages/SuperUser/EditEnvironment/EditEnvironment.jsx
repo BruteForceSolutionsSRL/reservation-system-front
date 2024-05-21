@@ -336,6 +336,7 @@ function EditEnvironment() {
         handleClose={handleCloseModal}
         title="Información del Ambiente"
         footerButtons={footerButtonsModal}
+        size="lg"
       >
         {currentReservation && (
           <Form>

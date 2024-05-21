@@ -18,13 +18,12 @@ export default function ElementCancel(props) {
   } = props;
 
   const cancelRequest = async () => {
-    await fetch(URL + `reservation/cancel/${reservation_id}`, {
+    await fetch(URL + `reservations/${reservation_id}/cancel`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setShow(false);
         props.reload(true);
       })

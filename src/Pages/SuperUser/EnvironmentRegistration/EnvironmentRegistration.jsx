@@ -47,7 +47,7 @@ const EnvironmentRegistration = () => {
       setTimeout(() => {
         setLoading(false);
         setReload(false);
-      }, 1500);
+      }, 200);
     };
 
     fetchData();
@@ -74,7 +74,7 @@ const EnvironmentRegistration = () => {
   };
 
   const fetchTypes = () => {
-    fetch(url + "classroomtypes")
+    fetch(url + "classrooms/types")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -323,7 +323,7 @@ const EnvironmentRegistration = () => {
 
     const url = import.meta.env.VITE_REACT_API_URL;
 
-    return fetch(url + "classroom", {
+    return fetch(url + "classrooms", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -18,6 +18,11 @@ export default function Sidebar({ user }) {
     setActiveItem(itemName);
   };
 
+  const logout = () => {
+    sessionStorage.removeItem("userloged");
+    sessionStorage.removeItem("userInformation");
+  };
+
   return (
     <>
       <div className="main-container d-flex">
@@ -30,7 +35,7 @@ export default function Sidebar({ user }) {
               className="btn d-md-none d-block close-btn px-1 py-0 text-black"
               onClick={handleMenuClose}
             >
-              <i className="fal fa-stream"></i>
+              <i className="bi bi-list-nested"></i>
             </button>
           </div>
 
@@ -41,48 +46,59 @@ export default function Sidebar({ user }) {
                 className="text-decoration-none px-3 py-2 d-block"
                 onClick={() => handleItemClick("home")}
               >
-                <i className="fal fa-home"></i> Pagina principal
-              </Link>
-            </li>
-            <li className="list-unstyled px-2">
-              <Link
-                to="environments-disponibility"
-                className="text-decoration-none px-3 py-2 d-block"
-                onClick={() => handleItemClick("#")}
-              >
-                <i className="far fa-clock" aria-hidden="true"></i>{" "}
-                Disponibilidad de ambientes
+                <i className="bi bi-house fs-4"></i> Pagina principal
               </Link>
             </li>
             <li
-              className={
-                activeItem === "enviroment-request"
-                  ? "active list-unstyled px-2"
-                  : "list-unstyled px-2"
-              }
+              className={`list-unstyled px-2 ${
+                activeItem === "disponibility" ? "active" : ""
+              }`}
             >
-              {user === "user" ? (
+              <Link
+                to="environments-disponibility "
+                className="text-decoration-none px-3 py-2 d-block"
+                onClick={() => handleItemClick("disponibility")}
+              >
+                <i className="bi bi-clock-history fs-5" aria-hidden="true"></i>{" "}
+                Disponibilidad de ambientes
+              </Link>
+            </li>
+            {user === "user" ? (
+              <li
+                className={
+                  activeItem === "enviroment-request"
+                    ? "active list-unstyled px-2"
+                    : "list-unstyled px-2"
+                }
+              >
                 <Link
                   to={"enviroment-request"}
                   className="text-decoration-none px-3 py-2 d-block"
-                  onClick={() => handleItemClick("#")}
+                  onClick={() => handleItemClick("enviroment-request")}
                 >
-                  <i className="fal fa-plus"></i> Nueva solicitud de reserva
+                  <i className="bi bi-journal-plus fs-5"></i> Nueva solicitud de
+                  reserva
                 </Link>
-              ) : (
-                ""
-              )}
-            </li>
+              </li>
+            ) : (
+              ""
+            )}
 
             {/* si es super usuario crea el elemento en la lista */}
             {user === "superuser" ? (
-              <li className="list-unstyled px-2">
+              <li
+                className={
+                  activeItem === "enviroment-register"
+                    ? "active list-unstyled px-2"
+                    : "list-unstyled px-2"
+                }
+              >
                 <Link
                   to={user === "superuser" ? "environment-register" : " "}
                   className="text-decoration-none px-3 py-2 d-block"
-                  onClick={() => handleItemClick("#")}
+                  onClick={() => handleItemClick("enviroment-register")}
                 >
-                  <i className="fa fa-list-alt"></i> Registrar Ambiente
+                  <i className="bi bi-house-add fs-4"></i> Registrar Ambiente
                 </Link>
               </li>
             ) : (
@@ -94,21 +110,27 @@ export default function Sidebar({ user }) {
               <Link
                 to="#"
                 className="text-decoration-none px-3 py-2 d-block"
-                onClick={() => handleItemClick("reservations")}
+                onClick={() => handleItemClick("#")}
               >
-                <i className="fas fa-clipboard-list"></i> Reservas
+                <i className="bi bi-person-lines-fill fs-4"></i> Reservas
               </Link>
             </li>
             {user === "superuser" ? (
               <>
-                <li className="list-unstyled px-2">
+                <li
+                  className={
+                    activeItem === "request-attention"
+                      ? "active list-unstyled px-2"
+                      : "list-unstyled px-2"
+                  }
+                >
                   <Link
                     to={user === "superuser" ? "attention-list" : ""}
                     className="text-decoration-none px-3 py-2 d-block"
-                    onClick={() => handleItemClick("#")}
+                    onClick={() => handleItemClick("request-attention")}
                   >
-                    <i className="fal fa-users"></i> Atender solicitudes
-                    pendientes
+                    <i className="bi bi-person-workspace"></i> Atender
+                    solicitudes pendientes
                   </Link>
                 </li>
               </>
@@ -117,29 +139,99 @@ export default function Sidebar({ user }) {
             )}
             {user === "user" ? (
               <>
-                <li className="list-unstyled px-2">
+                <li
+                  className={
+                    activeItem === "list-requests"
+                      ? "active list-unstyled px-2"
+                      : "list-unstyled px-2"
+                  }
+                >
                   <Link
                     to={user === "user" ? "list-cancel" : ""}
                     className="text-decoration-none px-3 py-2 d-block"
-                    onClick={() => handleItemClick("#")}
+                    onClick={() => handleItemClick("list-requests")}
                   >
-                    <i className="fal fa-users"></i> Lista de solicitudes
+                    <i className="bi bi-card-list"></i> Lista de solicitudes
                   </Link>
                 </li>
               </>
             ) : (
               ""
             )}
+            <li
+              className={
+                activeItem === "request-history"
+                  ? "active list-unstyled px-2"
+                  : "list-unstyled px-2"
+              }
+            >
+              <Link
+                to="request-history"
+                className="text-decoration-none px-3 py-2 d-block"
+                onClick={() => handleItemClick("request-history")}
+              >
+                <i className="bi bi-list-check"></i> Historial de solicitudes
+              </Link>
+            </li>
           </ul>
+
+          {user === "superuser" && (
+            <ul className="list-unstyled px-2">
+              <li className={activeItem === "reservations" ? "active" : ""}>
+                <Link
+                  to="#"
+                  className="text-decoration-none px-3 py-2 d-block"
+                  onClick={() => handleItemClick("#")}
+                >
+                  <i className="bi bi-person-lines-fill fs-4"></i> Gestion de
+                  Ambiente
+                </Link>
+              </li>
+              <li
+                className={
+                  activeItem === "edit-environment"
+                    ? "active list-unstyled px-2"
+                    : "list-unstyled px-2"
+                }
+              >
+                <Link
+                  to="edit-environment"
+                  className="text-decoration-none px-3 py-2 d-block"
+                  onClick={() => handleItemClick("edit-environment")}
+                >
+                  <i className="bi bi-list-check"></i> Editar ambiente
+                </Link>
+              </li>
+              <li
+                className={
+                  activeItem === "delete-environment"
+                    ? "active list-unstyled px-2"
+                    : "list-unstyled px-2"
+                }
+              >
+                <Link
+                  to="delete-environment"
+                  className="text-decoration-none px-3 py-2 d-block"
+                  onClick={() => handleItemClick("delete-environment")}
+                >
+                  <i className="bi bi-folder-x"></i> Eliminar ambiente
+                </Link>
+              </li>
+            </ul>
+          )}
+
           <hr className="h-color mx-2" />
           <ul className="list-unstyled px-2">
             <li className="">
               <Link
                 to="/"
                 className="text-decoration-none px-3 py-2 d-block"
-                onClick={() => handleItemClick("home")}
+                onClick={() => {
+                  logout();
+                  handleItemClick("home");
+                }}
               >
-                <i className="fas fa-sign-out-alt"></i> Cerrar sesion
+                <i className="bi bi-box-arrow-left"></i> Cerrar sesion
               </Link>
             </li>
           </ul>
@@ -152,12 +244,14 @@ export default function Sidebar({ user }) {
                   className="btn px-1 py-0 open-btn me-2"
                   onClick={handleMenuOpen}
                 >
-                  <i className="fal fa-stream"></i>
+                  <i className="bi bi-list-nested"></i>
                 </button>
                 <Link
                   className="navbar-brand fs-4"
                   to="#"
-                  onClick={() => handleItemClick("home")}
+                  onClick={() => {
+                    handleItemClick("home");
+                  }}
                 >
                   <span className="px-2 py-0 text-black">FCyT</span>
                 </Link>
@@ -179,15 +273,9 @@ export default function Sidebar({ user }) {
                   <li className="nav-item">
                     {/* This is a photo, but for now it does nothing until we decide what to do */}
                     <b className="text-success me-5">
-                      *MAGDA LENA PEETERS ILONAA,
+                      MAGDA LENA PEETERS ILONAA{" "}
+                      <i className="bi bi-person fs-3"></i>
                     </b>
-                    {/* <Link className="nav-brand active" to="#">
-                      <img
-                        src="../../assets/img/people-icon.png"
-                        alt="user-profile"
-                        width="60px"
-                      />
-                    </Link> */}
                   </li>
                 </ul>
               </div>

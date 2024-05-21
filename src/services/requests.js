@@ -26,3 +26,27 @@ export function getReservationsPerClassrooms(id) {
       return data;
     });
 }
+
+// Talvez esto no deberia estar aqui.
+export function getRequestsReasons() {
+  return fetch(url + `reservation-reasons`)
+    .then((response) => response.json())
+    .then((data) => {
+      return data;
+    });
+}
+
+export function sendRequest(request) {
+  return fetch(url + "reservation", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      return data;
+    });
+}

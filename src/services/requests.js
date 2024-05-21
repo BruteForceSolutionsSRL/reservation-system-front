@@ -29,7 +29,7 @@ export function getReservationsPerClassrooms(id) {
 
 // Talvez esto no deberia estar aqui.
 export function getRequestsReasons() {
-  return fetch(url + `reservation-reasons`)
+  return fetch(url + `reservations/reasons`)
     .then((response) => response.json())
     .then((data) => {
       return data;
@@ -37,7 +37,7 @@ export function getRequestsReasons() {
 }
 
 export function sendRequest(request) {
-  return fetch(url + "reservation", {
+  return fetch(url + "reservations", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -748,7 +748,7 @@ export default function RequestReservation() {
             <th>Grupo</th>
           </>
         }
-        contentTable={teachersBySubject.map((each) => {
+        contentTable={teachersBySubject?.map((each) => {
           const isSelected = teachersSelectedInModal.includes(each);
           return (
             <tr

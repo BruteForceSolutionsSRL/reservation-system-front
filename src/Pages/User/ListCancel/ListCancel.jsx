@@ -12,7 +12,7 @@ export default function ListCancel() {
   }, [reload]);
 
   const fetchData = async () => {
-    await fetch(URL + `all-reservations/${2}`)
+    await fetch(URL + `reservations/teacher/${2}`)
       .then((res) => res.json())
       .then((data) => {
         setReservations(data);

@@ -18,7 +18,7 @@ export default function ElementCancel(props) {
   } = props;
 
   const cancelRequest = async () => {
-    await fetch(URL + `reservation/cancel/${reservation_id}`, {
+    await fetch(URL + `reservations/${reservation_id}/cancel`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
     })

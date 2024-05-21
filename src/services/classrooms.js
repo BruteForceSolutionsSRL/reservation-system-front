@@ -9,7 +9,7 @@ export function getClassroomsByBlock(id) {
 }
 
 export function getSuggestsClassrooms(dataSugg) {
-  return fetch(url + "reservation/suggest", {
+  return fetch(url + "classrooms/reservation/suggest", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

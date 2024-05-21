@@ -1,7 +1,7 @@
 const url = import.meta.env.VITE_REACT_API_URL;
 
 export function getRequests() {
-  return fetch(url + "reservations-history")
+  return fetch(url + "reservations/history")
     .then((response) => response.json())
     .then((data) => {
       return data;
@@ -11,7 +11,7 @@ export function getRequests() {
 export function getTeacherRequests() {
   let userInformation = JSON.parse(sessionStorage.getItem("userInformation"));
   return fetch(
-    url + `reservations-history/teacher/${userInformation.teacher_id}`
+    url + `reservations/history/teacher/${userInformation.teacher_id}`
   )
     .then((response) => response.json())
     .then((data) => {
@@ -29,7 +29,7 @@ export function getReservationsPerClassrooms(id) {
 
 // Talvez esto no deberia estar aqui.
 export function getRequestsReasons() {
-  return fetch(url + `reservation-reasons`)
+  return fetch(url + `reservations/reasons`)
     .then((response) => response.json())
     .then((data) => {
       return data;
@@ -37,7 +37,7 @@ export function getRequestsReasons() {
 }
 
 export function sendRequest(request) {
-  return fetch(url + "reservation", {
+  return fetch(url + "reservations", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

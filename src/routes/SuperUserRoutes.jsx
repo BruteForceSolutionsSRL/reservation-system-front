@@ -23,7 +23,8 @@ export default function SuperUserRoutes() {
         <Route path="request-history" element={<RequestsHistory />} />
         <Route path="edit-environment" element={<EditEnvironment />}></Route>
         <Route path="delete-environment" element={<DeleteEnvironment />} />
-      <Route path="*" element={<ErrorPage />} />
+        <Route path="*" element={<ErrorPage />} />
+      </Route>
     </Routes>
   );
 }

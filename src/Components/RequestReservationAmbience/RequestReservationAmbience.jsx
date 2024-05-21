@@ -43,11 +43,11 @@ function RequestReservationAmbience() {
 
   // GET MATERIAS
   useEffect(() => {
-    fetchData(`subjects/teacher/${2}`, setMaterias);
+    fetchData(`teacher-subjects/teacher/${2}`, setMaterias);
   }, []);
   // GET MOTIVO
   useEffect(() => {
-    fetchData(`reservation-reasons`, setReason);
+    fetchData(`reservations/reasons`, setReason);
   }, []);
   // GET BLOQUE
   useEffect(() => {
@@ -398,7 +398,7 @@ function RequestReservationAmbience() {
       setSelectedOptions([]);
     } else {
       //aqui resibir datos de BACKEND para actualizar la tabla doncente
-      //fetchData(`teachers/subject/${formData.subject_id}`, setTeachers);
+      fetchData(`teacher-subjects/subject/${formData.subject_id}`, setTeachers);
       //console.log("profesorres",teachers);
       setTeachers(teachersTemporales); // envio teachers
     }
@@ -974,7 +974,10 @@ function RequestReservationAmbience() {
         </div>
 
         <div className="col-12 mt-2" style={{ textAlign: "right" }}>
-          <Button variant="outline-success m-3" type="submit">
+          <Button 
+            variant="outline-success m-3" 
+            type="submit"
+            >
             Reservar
           </Button>
         </div>

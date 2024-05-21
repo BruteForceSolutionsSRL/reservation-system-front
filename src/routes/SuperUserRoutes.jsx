@@ -6,6 +6,7 @@ import EnvironmentRegistration from "../Pages/SuperUser/EnvironmentRegistration/
 import AttentionList from "../Pages/SuperUser/AttentionRequests/AttentionList";
 import ErrorPage from "../Components/ErrorPage/ErrorPage";
 import RequestsHistory from "../Pages/RequestsHistory/RequestsHistory";
+import EditEnvironment from "../Pages/SuperUser/EditEnvironment/EditEnvironment";
 import DeleteEnvironment from "../Pages/SuperUser/DeleteEnvironment/DeleteEnvironment";
 
 export default function SuperUserRoutes() {
@@ -20,8 +21,8 @@ export default function SuperUserRoutes() {
         ></Route>
         <Route path="attention-list" element={<AttentionList />}></Route>
         <Route path="request-history" element={<RequestsHistory />} />
+        <Route path="edit-environment" element={<EditEnvironment />}></Route>
         <Route path="delete-environment" element={<DeleteEnvironment />} />
-      </Route>
       <Route path="*" element={<ErrorPage />} />
     </Routes>
   );

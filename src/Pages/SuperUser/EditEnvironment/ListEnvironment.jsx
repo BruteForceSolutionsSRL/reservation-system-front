@@ -98,61 +98,57 @@ const ListEnvironment = ({ list, handleShowModal }) => {
   return (
     <div>
       {list.map((reservation, index) => (
-        <div
-          key={index}
-          className="border border-dark rounded mt-2 mb-2 p-2"
-          style={{ minWidth: "300px" }}
-        >
-          <div className="container">
-            <div className="row">
-              <div className="col">
-                <div className="d-flex justify-content-between">
-                  <div style={{ flex: "1" }}>
-                    <div className="bold-text">Estado</div>
-                    <div
-                      className={
-                        reservation.classroom_status_id === 1
-                          ? "bg-green"
-                          : "bg-red"
-                      }
-                    >
-                      {showStatus(reservation.classroom_status_id)}
-                    </div>
-                    <div className="bold-text">Nombre</div>
-                    <div>{reservation.classroom_name}</div>
-                  </div>
-
-                  <div
-                    style={{
-                      flex: "1",
-                      marginLeft: "10px",
-                      marginRight: "10px",
-                    }}
-                  >
-                    <div className="bold-text">Bloque: </div>
-                    <div>{showBlock(reservation.block_id)}</div>
-                    <div className="bold-text">Tipo</div>
-                    <div>{showType(reservation.classroom_type_id)}</div>
-                  </div>
-
-                  <div style={{ flex: "1" }}>
-                    <div className="bold-text">Capacidad</div>
-                    <div>{reservation.capacity}</div>
-                    <div className="bold-text">Piso</div>
-                    <div>{reservation.floor}</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-auto">
-                <Button
-                  variant="primary"
-                  className="mt-1 custom-button"
-                  onClick={() => handleShowModal(reservation)}
+        <div key={index} style={{ minWidth: "300px" }}>
+          <div
+            className="row border border-black rounded p-2 mb-2"
+            style={{ minWidth: "400px" }}
+          >
+            <div className="col-sm-4">
+              <div>
+                <b className="col text-primary">ESTADO: </b>
+                <b
+                  className={`text-light rounded p-1 ${
+                    reservation.classroom_status_id === 1
+                      ? "bg-success"
+                      : "bg-danger"
+                  }`}
                 >
-                  Editar
-                </Button>
+                  {showStatus(reservation.classroom_status_id)}
+                </b>
               </div>
+              <div>
+                <b className="text-primary">NOMBRE: </b>
+                <b>{reservation.classroom_name}</b>
+              </div>
+            </div>
+            <div className="col-sm-4">
+              <div>
+                <b className="text-primary">BLOQUE: </b>
+                <b>{showBlock(reservation.block_id)}</b>
+              </div>
+              <div>
+                <b className="text-primary">TIPO: </b>
+                <b>{showType(reservation.classroom_type_id)}</b>
+              </div>
+            </div>
+            <div className="col-sm-2">
+              <div>
+                <b className="text-primary">CAPACIDAD: </b>
+                <b>{reservation.capacity}</b>
+              </div>
+              <div>
+                <b className="text-primary">PISO: </b>
+                <b>{reservation.floor}</b>
+              </div>
+            </div>
+            <div className="col-sm-2 align-self-center d-flex justify-content-end">
+              <Button
+                variant="primary"
+                className="mt-1 custom-button"
+                onClick={() => handleShowModal(reservation)}
+              >
+                Editar
+              </Button>
             </div>
           </div>
         </div>

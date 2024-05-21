@@ -26,3 +26,10 @@ export function searchEnvironments(list, searchValue) {
       each.status_name.toLowerCase().includes(searchValue.toLowerCase())
   );
 }
+
+export function searchEnvironmentsForEdit(list, searchValue) {
+  return list.filter(
+    (each) =>
+      each.classroom_name.toLowerCase().includes(searchValue.toLowerCase())
+  );
+}

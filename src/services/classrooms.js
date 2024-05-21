@@ -21,3 +21,21 @@ export function getSuggestsClassrooms(dataSugg) {
       return data;
     });
 }
+
+export function getClassroomsForDeleteList() {
+  return fetch(url + "classrooms/statistics/list")
+    .then((response) => response.json())
+    .then((data) => {
+      return data;
+    });
+}
+
+export function deleteEnvironment(environment) {
+  return fetch(url + `classroom/delete/${environment}`, {
+    method: "DELETE",
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      return data;
+    });
+}

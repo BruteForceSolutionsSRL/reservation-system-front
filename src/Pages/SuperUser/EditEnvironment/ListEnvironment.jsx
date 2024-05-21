@@ -6,8 +6,7 @@ const ListEnvironment = ({ list, handleShowModal }) => {
   const [typeOptions, setTypeOptions] = useState([]);
   const [blockOptions, setBlockOptions] = useState([]);
   const [status, setStatus] = useState([]);
-    const url = import.meta.env.VITE_REACT_API_URL;
-    
+  const url = import.meta.env.VITE_REACT_API_URL;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,7 +36,7 @@ const ListEnvironment = ({ list, handleShowModal }) => {
   };
 
   const fetchTypes = () => {
-    fetch(url + "classroomtypes")
+    fetch(url + "classrooms/types")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -54,7 +53,7 @@ const ListEnvironment = ({ list, handleShowModal }) => {
   };
 
   const statusTypes = () => {
-    fetch(url + "classroom-statuses")
+    fetch(url + "classrooms/statuses")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -68,32 +67,34 @@ const ListEnvironment = ({ list, handleShowModal }) => {
       .catch((error) => {
         console.error("Error fetching options:", error);
       });
-    };
-    
-    function showStatus(key){ 
-     const selectedElement = status.find(
-       (elemento) => elemento.classrooom_status_id === key
-     );
-     if (selectedElement) {
-       return selectedElement.classroom_status_name;
-     }
+  };
+
+  function showStatus(key) {
+    const selectedElement = status.find(
+      (elemento) => elemento.classroom_status_id === parseInt(key)
+    );
+    if (selectedElement) {
+      return selectedElement.classroom_status_name;
     }
-    function showBlock(key) {
-      const selectedElement = blockOptions.find(
-        (elemento) => elemento.block_id === key
-      );
-      if (selectedElement) {
-        return selectedElement.block_name;
-      }
+  }
+
+  function showBlock(key) {
+    const selectedElement = blockOptions.find(
+      (elemento) => elemento.block_id === parseInt(key)
+    );
+    if (selectedElement) {
+      return selectedElement.block_name;
     }
-    function showType(key) {
-      const selectedElement = typeOptions.find(
-        (elemento) => elemento.type_id === key
-      );
-      if (selectedElement) {
-        return selectedElement.type_name;
-      }
+  }
+
+  function showType(key) {
+    const selectedElement = typeOptions.find(
+      (elemento) => elemento.type_id === parseInt(key)
+    );
+    if (selectedElement) {
+      return selectedElement.type_name;
     }
+  }
   return (
     <div>
       {list.map((reservation, index) => (

@@ -6,7 +6,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Spinner from "react-bootstrap/Spinner";
 import SearchBar from "../../../Components/SearchBar/SearchBar";
-import { searchRequests } from "../../../utils/searchRequests";
+import { searchEnvironmentsForEdit } from "../../../utils/searchRequests";
 import RequestInformation from "../../../Components/RequestInformation/RequestInformation";
 import { getRequests, getTeacherRequests } from "../../../services/requests";
 import ReusableModal from "./ReusableModal";
@@ -29,14 +29,56 @@ function EditEnvironment() {
   const [showModal, setShowModal] = useState(false);
   const [saveModal, setSaveModal] = useState(false);
   const [cancelModal, setCancelModal] = useState(false);
+  const [confirmations, setConfirmationsModal] = useState(false);
   const url = import.meta.env.VITE_REACT_API_URL;
+  const [confirmationMessage, setConfirmationMessage] = useState("");
 
   const handleShowModal = (reservation) => {
     setCurrentReservation({ ...reservation, errors: {} });
     setShowModal(true);
+    setChangedFields({});
   };
 
-  const handleCloseModal = () => {
+  const handleSaveConfirmationsModal = () => {
+    setSaveModal(false);
+    setConfirmationsModal(true);
+  };
+  const handleCloseConfirmationsModal = () => {
+    setConfirmationsModal(false);
+    //Save in BackEnd
+    handleSaveChanges();
+  };
+
+  /******************************************************** */
+  const handleSaveModal = () => {
+    //REFACTORIZAR SE REPITE
+    const formHasErrors = Object.keys(currentReservation.errors).some(
+      (key) => currentReservation.errors[key]
+    );
+    if (!formHasErrors) {
+      setSaveModal(true);
+      setShowModal(false);
+    }
+  };
+
+  const handleSaveCancelModal = () => {
+    setSaveModal(false);
+    setShowModal(true);
+  };
+
+  /******************************************************/
+  const handleCancelModal = () => {
+    setCancelModal(true);
+    setShowModal(false);
+  };
+
+  const handleCancelBackModal = () => {
+    setShowModal(true);
+    setCancelModal(false);
+  };
+
+  const handleCancelAceptedModal = () => {
+    setCancelModal(false);
     setCurrentReservation(null);
     setShowModal(false);
   };
@@ -57,7 +99,7 @@ function EditEnvironment() {
         type_id: currentReservation.classroom_type_id,
         block_id: currentReservation.block_id,
         floor_number: currentReservation.floor,
-        status_id: currentReservation.classroom_status_name,
+        status_id: currentReservation.classroom_status_id,
       };
 
       //Send in BackEnd
@@ -69,7 +111,6 @@ function EditEnvironment() {
           //Estatus and update list
           setAllReservations(updatedReservations);
           setList(updatedReservations);
-          handleCloseModal();
         })
         .catch((error) => {
           console.error("Error al enviar los datos:", error);
@@ -119,26 +160,12 @@ function EditEnvironment() {
     {
       label: "Guardar",
       variant: "primary",
-      onClick: handleSaveChanges,
+      onClick: handleSaveModal,
     },
     {
       label: "Cancelar",
       variant: "secondary",
-      onClick: handleCloseModal,
-    },
-  ];
-
-  // Botton Save
-  const saveButtonsModal = [
-    {
-      label: "Aceptar",
-      variant: "primary",
-      onClick: handleSaveChanges,
-    },
-    {
-      label: "Cancelar",
-      variant: "secondary",
-      onClick: handleCloseModal,
+      onClick: handleCancelModal,
     },
   ];
   //  Botton Cancel
@@ -146,12 +173,34 @@ function EditEnvironment() {
     {
       label: "Aceptar",
       variant: "primary",
-      onClick: handleSaveChanges,
+      onClick: handleCancelAceptedModal,
     },
     {
       label: "Atras",
       variant: "secondary",
-      onClick: handleCloseModal,
+      onClick: handleCancelBackModal,
+    },
+  ];
+  // Botton Save
+  const saveButtonsModal = [
+    {
+      label: "Aceptar",
+      variant: "primary",
+      onClick: handleSaveConfirmationsModal,
+    },
+    {
+      label: "Cancelar",
+      variant: "secondary",
+      onClick: handleSaveCancelModal,
+    },
+  ];
+
+  // Botton Save confirmnations
+  const saveButtonsConfirmationsModal = [
+    {
+      label: "Aceptar",
+      variant: "primary",
+      onClick: handleCloseConfirmationsModal,
     },
   ];
 
@@ -161,7 +210,7 @@ function EditEnvironment() {
       setList(allReservations);
       setMsgNoResults("");
     } else {
-      const results = searchRequests(allReservations, searchValue);
+      const results = searchEnvironmentsForEdit(allReservations, searchValue);
       if (results.length < 1) {
         setMsgNoResults("No se encontraron resultados");
       } else {
@@ -173,10 +222,12 @@ function EditEnvironment() {
 
   useEffect(() => {
     const fetchData = async () => {
+      //setLoading(true);
       await fetchBlockOptions();
       await fetchTypes();
       await allEnvironments();
       await statusTypes();
+      //setLoading(false);
     };
 
     fetchData();
@@ -299,6 +350,34 @@ function EditEnvironment() {
       event.preventDefault();
     }
   };
+  const getBlockNameById = (blockId) => {
+    const block = blockOptions.find(
+      (option) => option.block_id === parseInt(blockId)
+    );
+    return block ? block.block_name : "";
+  };
+
+  const getStatusNameById = (statusId) => {
+    const statusOption = status.find(
+      (option) => option.classroom_status_id === parseInt(statusId)
+    );
+    return statusOption ? statusOption.classroom_status_name : "";
+  };
+
+  const getTypeNameById = (typeId) => {
+    const typeOption = typeOptions.find(
+      (option) => option.type_id === parseInt(typeId)
+    );
+    return typeOption ? typeOption.type_name : "";
+  };
+
+  const fieldLabels = {
+    block_id: "BLOQUE",
+    classroom_type_id: "TIPO DE AMBIENTE",
+    classroom_status_id: "ESTADO",
+    floor: "PISO",
+    capacity: "CAPACIDAD",
+  };
 
   return (
     <div className="container">
@@ -324,16 +403,13 @@ function EditEnvironment() {
           <div>
             <hr></hr>
             {msgNoResults && <div>{msgNoResults}</div>}
-            <ListEnvironment
-              list={allReservations}
-              handleShowModal={handleShowModal}
-            />
+            <ListEnvironment list={list} handleShowModal={handleShowModal} />
           </div>
         )}
       </div>
       <ReusableModal
         show={showModal}
-        handleClose={handleCloseModal}
+        handleClose={handleCancelModal}
         title="Información del Ambiente"
         footerButtons={footerButtonsModal}
         size="lg"
@@ -465,8 +541,73 @@ function EditEnvironment() {
           </Form>
         )}
       </ReusableModal>
+
+      <ReusableModal
+        show={cancelModal}
+        handleClose={handleCancelAceptedModal}
+        title="!Alerta¡"
+        footerButtons={cancelButtonsModal}
+      >
+        Se descartaran los cambios realizados
+      </ReusableModal>
+
+      <ReusableModal
+        show={saveModal}
+        handleClose={handleSaveCancelModal}
+        title="¡Confirmación!"
+        footerButtons={saveButtonsModal}
+      >
+        ¿Está seguro de actualizar el ambiente? Se modificarán los siguientes
+        campos:
+        <ul>
+          {Object.keys(changedFields).map((fieldName) => {
+            let displayValue = changedFields[fieldName];
+            if (fieldName === "block_id") {
+              displayValue = getBlockNameById(displayValue);
+            } else if (fieldName === "classroom_status_id") {
+              displayValue = getStatusNameById(displayValue);
+            } else if (fieldName === "classroom_type_id") {
+              displayValue = getTypeNameById(displayValue);
+            }
+
+            return (
+              <li key={fieldName}>
+                <span style={{ color: "red" }}>
+                  {fieldLabels[fieldName] || fieldName}
+                </span>
+                : {displayValue}
+              </li>
+            );
+          })}
+        </ul>
+        {Object.keys(changedFields).includes("classroom_status_id") ? (
+          <>
+            <p>
+              El ambiente quedará{" "}
+              <span style={{ color: "red" }}>DESHABILITADO</span>. Todas las
+              solicitudes pendientes y aceptadas hasta el momento que incluyan
+              al ambiente serán <span style={{ color: "red" }}>RECHAZADAS</span>
+              .
+            </p>
+          </>
+        ) : (
+          <p>
+            Todas las solicitudes pendientes y aceptadas asociadas al ambiente
+            se actualizarán con la nueva información.
+          </p>
+        )}
+      </ReusableModal>
+
+      <ReusableModal
+        show={confirmations}
+        handleClose={handleCloseConfirmationsModal}
+        title="¡Éxito!"
+        footerButtons={saveButtonsConfirmationsModal}
+      >
+        El ambiente se actualizo con exito
+      </ReusableModal>
     </div>
   );
 }
-
+/*CORREGIR EL VALIDOS DE MENSAJE SE CONFIRMACION*/
 export default EditEnvironment;

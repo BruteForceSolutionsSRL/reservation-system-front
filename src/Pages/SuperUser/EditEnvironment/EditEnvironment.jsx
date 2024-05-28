@@ -99,11 +99,13 @@ function EditEnvironment() {
         type_id: parseInt(currentReservation.classroom_type_id),
         block_id: parseInt(currentReservation.block_id),
         floor_number: parseInt(currentReservation.floor),
-        status_id: parseInt(currentReservation.classroom_id),
+        status_id: parseInt(currentReservation.classroom_status_id),
       };
 
       console.log(newDataEnvironment);
-      
+
+      console.log(currentReservation.status_id);
+      console.log(currentReservation);
 
       //Send in BackEnd
       sendData(newDataEnvironment, currentReservation.classroom_id)

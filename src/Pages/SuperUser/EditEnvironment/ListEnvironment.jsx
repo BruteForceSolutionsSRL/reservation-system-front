@@ -108,7 +108,7 @@ const ListEnvironment = ({ list, handleShowModal }) => {
                 <b className="col text-primary">ESTADO: </b>
                 <b
                   className={`text-light rounded p-1 ${
-                    reservation.classroom_status_id === 1
+                    parseInt(reservation.classroom_status_id) === 1
                       ? "bg-success"
                       : "bg-danger"
                   }`}

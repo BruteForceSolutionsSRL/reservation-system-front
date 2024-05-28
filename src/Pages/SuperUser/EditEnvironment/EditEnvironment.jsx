@@ -32,6 +32,7 @@ function EditEnvironment() {
   const [confirmations, setConfirmationsModal] = useState(false);
   const url = import.meta.env.VITE_REACT_API_URL;
   const [confirmationMessage, setConfirmationMessage] = useState("");
+  const [backendError, setBackendError] = useState("");
 
   const handleShowModal = (reservation) => {
     setCurrentReservation({ ...reservation, errors: {} });
@@ -42,16 +43,15 @@ function EditEnvironment() {
   const handleSaveConfirmationsModal = () => {
     setSaveModal(false);
     setConfirmationsModal(true);
+    //Save in BackEnd
+    handleSaveChanges();
   };
   const handleCloseConfirmationsModal = () => {
     setConfirmationsModal(false);
-    //Save in BackEnd
-    handleSaveChanges();
   };
 
   /******************************************************** */
   const handleSaveModal = () => {
-    //REFACTORIZAR SE REPITE
     const formHasErrors = Object.keys(currentReservation.errors).some(
       (key) => currentReservation.errors[key]
     );
@@ -94,26 +94,30 @@ function EditEnvironment() {
           : reservation
       );
       const newDataEnvironment = {
-        classroom_id: currentReservation.classroom_id,
-        capacity: currentReservation.capacity,
-        type_id: currentReservation.classroom_type_id,
-        block_id: currentReservation.block_id,
-        floor_number: currentReservation.floor,
-        status_id: currentReservation.classroom_status_id,
+        classroom_id: parseInt(currentReservation.classroom_id),
+        capacity: parseInt(currentReservation.capacity),
+        type_id: parseInt(currentReservation.classroom_type_id),
+        block_id: parseInt(currentReservation.block_id),
+        floor_number: parseInt(currentReservation.floor),
+        status_id: parseInt(currentReservation.classroom_id),
       };
+
+      console.log(newDataEnvironment);
+      
 
       //Send in BackEnd
       sendData(newDataEnvironment, currentReservation.classroom_id)
         .then((responseMessage) => {
           console.log("Modificacion exitosa:", responseMessage);
           console.log("Campos modificados:", changedFields);
-
+          //setBackendError(responseMessage);
           //Estatus and update list
           setAllReservations(updatedReservations);
           setList(updatedReservations);
         })
         .catch((error) => {
           console.error("Error al enviar los datos:", error);
+          //setBackendError("Error al enviar los datos: " + error.message);
         });
     } else {
       console.log("Formulario inválido, llene todos los campos");
@@ -227,7 +231,6 @@ function EditEnvironment() {
       await fetchTypes();
       await allEnvironments();
       await statusTypes();
-      //setLoading(false);
     };
 
     fetchData();
@@ -295,6 +298,7 @@ function EditEnvironment() {
       .then((data) => {
         const optionsWithDefault = [...data];
         setAllReservations(optionsWithDefault);
+        //setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching options:", error);
@@ -328,7 +332,6 @@ function EditEnvironment() {
   };
 
   function getFloor(key) {
-    console.log("SE VERIFICO", key);
     const selectedElement = blockOptions.find(
       (elemento) => elemento.block_id === parseInt(key)
     );
@@ -407,6 +410,7 @@ function EditEnvironment() {
           </div>
         )}
       </div>
+
       <ReusableModal
         show={showModal}
         handleClose={handleCancelModal}
@@ -582,13 +586,21 @@ function EditEnvironment() {
         </ul>
         {Object.keys(changedFields).includes("classroom_status_id") ? (
           <>
-            <p>
-              El ambiente quedará{" "}
-              <span style={{ color: "red" }}>DESHABILITADO</span>. Todas las
-              solicitudes pendientes y aceptadas hasta el momento que incluyan
-              al ambiente serán <span style={{ color: "red" }}>RECHAZADAS</span>
-              .
-            </p>
+            {changedFields.classroom_status_id === "1" ? (
+              <p>
+                El ambiente quedara{" "}
+                <span style={{ color: "green" }}>HABILITADO</span> para hacer
+                reservas.
+              </p>
+            ) : (
+              <p>
+                El ambiente quedará{" "}
+                <span style={{ color: "red" }}>DESHABILITADO</span>. Todas las
+                solicitudes pendientes y aceptadas hasta el momento que incluyan
+                al ambiente serán{" "}
+                <span style={{ color: "red" }}>RECHAZADAS</span>.
+              </p>
+            )}
           </>
         ) : (
           <p>
@@ -609,5 +621,6 @@ function EditEnvironment() {
     </div>
   );
 }
-/*CORREGIR EL VALIDOS DE MENSAJE SE CONFIRMACION*/
 export default EditEnvironment;
+//{backendError && <p style={{ color: "red" }}>{backendError.message}</p>}
+//El ambiente se actualizo con exito

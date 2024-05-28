@@ -179,8 +179,7 @@ export default function RequestReservation() {
   const fetchTeachersBySubject = async () => {
     const tbs = await getTeachersBySubject(subjectSelected);
     setTeachersSelectedInModal([]);
-    // Esto no deberia ser asi, se debe arreglar en backend que devuelva solo una lista, no dos.
-    setTeachersBySubject(tbs[0]);
+    setTeachersBySubject(tbs);
   };
 
   const fetchClassroomsByBlock = async () => {
@@ -241,7 +240,9 @@ export default function RequestReservation() {
       date: dateValue,
     };
     const suggests = await getSuggestsClassrooms(dataSugg);
-    console.log(suggests);
+    if (!suggests.message) {
+      setClassroomsSelectedInModal(suggests);
+    }
   };
 
   const isAvailableToSuggest = () => {
@@ -749,7 +750,7 @@ export default function RequestReservation() {
           </>
         }
         contentTable={teachersBySubject?.map((each) => {
-          const isSelected = teachersSelectedInModal.includes(each);
+          const isSelected = teachersSelectedInModal?.includes(each);
           return (
             <tr
               key={each.id}
@@ -778,8 +779,8 @@ export default function RequestReservation() {
             <th>Capacidad</th>
           </>
         }
-        contentTable={classroomsByBlock.map((each) => {
-          const isSelected = classroomsSelectedInModal.includes(each);
+        contentTable={classroomsByBlock?.map((each) => {
+          const isSelected = classroomsSelectedInModal?.includes(each);
           return (
             <tr
               key={each.classroom_id}

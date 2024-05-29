@@ -79,6 +79,9 @@ export default function RequestsHistory() {
           <div>
             <div className="row text-center" style={{ minWidth: "350px" }}>
               <div className="col-1 mt-1 mb-1">
+                <i>#</i>
+              </div>
+              <div className="col-1 mt-1 mb-1">
                 <i>ID</i>
               </div>
               <div className="col-3 mt-1 mb-1">
@@ -93,11 +96,11 @@ export default function RequestsHistory() {
               <div className="col-2 mt-1 mb-1">
                 <i>Periodos</i>
               </div>
-              <div className="col-2 mt-1 mb-1"></div>
+              <div className="col-1 mt-1 mb-1"></div>
             </div>
             <hr />
             {list.length > 0 ? (
-              list.map((each) => {
+              list.map((each, index) => {
                 let content = {
                   id: each.reservation_id,
                   subject: each.subject_name,
@@ -112,7 +115,7 @@ export default function RequestsHistory() {
                 };
                 return (
                   <div key={each.reservation_id}>
-                    <RequestInformation content={content} />
+                    <RequestInformation content={content} index={index + 1} />
                   </div>
                 );
               })

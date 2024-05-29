@@ -83,6 +83,8 @@ function EditEnvironment() {
     setShowModal(false);
   };
 
+  
+
   const handleSaveChanges = () => {
     const formHasErrors = Object.keys(currentReservation.errors).some(
       (key) => currentReservation.errors[key]
@@ -99,32 +101,31 @@ function EditEnvironment() {
         type_id: parseInt(currentReservation.classroom_type_id),
         block_id: parseInt(currentReservation.block_id),
         floor_number: parseInt(currentReservation.floor),
-        status_id: parseInt(currentReservation.classroom_id),
+        status_id: parseInt(currentReservation.classroom_status_id),
       };
-
-      console.log(newDataEnvironment);
-      
-
+      console.log("Nuevos datos", newDataEnvironment);
+      console.log(currentReservation);
       //Send in BackEnd
       sendData(newDataEnvironment, currentReservation.classroom_id)
         .then((responseMessage) => {
           console.log("Modificacion exitosa:", responseMessage);
           console.log("Campos modificados:", changedFields);
-          //setBackendError(responseMessage);
+          setBackendError(responseMessage);
           //Estatus and update list
           setAllReservations(updatedReservations);
           setList(updatedReservations);
         })
         .catch((error) => {
           console.error("Error al enviar los datos:", error);
-          //setBackendError("Error al enviar los datos: " + error.message);
+          setBackendError("Error al enviar los datos: " + error.message);
         });
-    } else {
+    } else {   
       console.log("Formulario inválido, llene todos los campos");
     }
   };
 
   const sendData = async (newData, classroom_id) => {
+    console.log("Esto es lo que se envia al back editado", newData, classroom_id);
     try {
       const response = await fetch(url + `classrooms/${classroom_id}`, {
         method: "PUT",
@@ -134,7 +135,7 @@ function EditEnvironment() {
         body: JSON.stringify(newData),
         mode: "cors",
       });
-      const data = await response.json();
+      const data = response.json();
       return data;
     } catch (error) {
       console.error(error);
@@ -616,7 +617,7 @@ function EditEnvironment() {
         title="¡Éxito!"
         footerButtons={saveButtonsConfirmationsModal}
       >
-        El ambiente se actualizo con exito
+        {backendError && <p style={{ color: "red" }}>{backendError.message}</p>}
       </ReusableModal>
     </div>
   );

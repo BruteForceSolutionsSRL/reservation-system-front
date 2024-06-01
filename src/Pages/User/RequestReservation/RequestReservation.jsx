@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Form, Table } from "react-bootstrap";
+import { Form, Modal, Table } from "react-bootstrap";
 import { getSubjects } from "../../../services/subjects";
 import { getCurrentDate } from "../../../utils/getCurrentDate";
 import { getRequestsReasons, sendRequest } from "../../../services/requests";
@@ -14,24 +14,20 @@ import ModalTable from "../../../Components/ModalTable/ModalTable";
 
 export default function RequestReservation() {
   // Information user loged
-  // const user = sessionStorage.getItem("userInformation");
-  const user = {
-    name: "MAGDA LENA PEETERS ILONAA",
-    teacher_id: 2,
-  };
+  const user = JSON.parse(sessionStorage.getItem("userInformation"));
+
+  const [formData, setFormData] = useState({});
 
   // For subjects
   const [subjects, setSubjects] = useState(null);
-  const [subjectSelected, setSubjectSelected] = useState(0);
-  const [subjectsInitialOptionDisabled, setSubjectsInitialOptionDisabled] =
-    useState(false);
+  const [subjectSelected, setSubjectSelected] = useState("default");
   // For quantity
   const [quantity, setQuantity] = useState("");
   // For Date
   const [dateValue, setDateValue] = useState("");
   // For reasons
   const [reasons, setReasons] = useState([]);
-  const [reasonSelected, setReasonSelected] = useState(0);
+  const [reasonSelected, setReasonSelected] = useState("default");
   // For timeSlots
   const [timeSlots, setTimeSlots] = useState([]);
   const [startTime, setStartTime] = useState(0);
@@ -40,9 +36,7 @@ export default function RequestReservation() {
   const [endTimeSlots, setEndTimeSlots] = useState([]);
   // For blocks
   const [blocks, setBlocks] = useState([]);
-  const [blockSelected, setBlockSelected] = useState(0);
-  const [blocksInitialOptionDisabled, setBlocksInitialOptionDisabled] =
-    useState(false);
+  const [blockSelected, setBlockSelected] = useState("default");
   // For teachers
   const [teachersBySubject, setTeachersBySubject] = useState([]);
   const [showTeachersModal, setShowTeachersModal] = useState(false);
@@ -53,46 +47,54 @@ export default function RequestReservation() {
   const [classroomsSelectedInModal, setClassroomsSelectedInModal] = useState(
     []
   );
-  const [disabledSugg, setDisabledSugg] = useState(true);
+  const [suggAvailable, setSuggAvailable] = useState(false);
   // Errors messages
   const [errorsMessages, setErrorsMessages] = useState({
     subject: {
-      message: -1,
+      message: null,
       isInvalid: false,
     },
     quantity: {
-      message: -1,
+      message: null,
       isInvalid: false,
     },
     date: {
-      message: -1,
+      message: null,
       isInvalid: false,
     },
     reason: {
-      message: -1,
+      message: null,
       isInvalid: false,
     },
     periods: {
       startTime: {
-        message: -1,
+        message: null,
         isInvalid: false,
       },
       endTime: {
-        message: -1,
+        message: null,
         isInvalid: false,
       },
     },
     teachers: {
-      message: -1,
+      message: null,
       isInvalid: false,
     },
     block: {
-      message: -1,
+      message: null,
       isInvalid: false,
     },
     classrooms: {
-      message: -1,
+      message: null,
       isInvalid: false,
+    },
+  });
+
+  const [modalSendRequest, setModalSendRequest] = useState({
+    show: false,
+    content: {
+      title: "",
+      body: "",
     },
   });
 
@@ -105,14 +107,6 @@ export default function RequestReservation() {
       fetchBlocks(),
     ]).catch((err) => console.error(err));
   }, []);
-
-  useEffect(() => {
-    fetchTeachersBySubject();
-  }, [subjectSelected]);
-
-  useEffect(() => {
-    fetchClassroomsByBlock();
-  }, [blockSelected]);
 
   useEffect(() => {
     const index = timeSlots.findIndex((slot) => slot.time_slot_id == startTime);
@@ -131,23 +125,12 @@ export default function RequestReservation() {
   }, [startTime, timeSlots]);
 
   useEffect(() => {
-    isAvailableToSuggest();
-  }, [quantity]);
+    console.log(classroomsSelectedInModal);
+  }, [classroomsSelectedInModal]);
 
-  // Run when any field change
-  useEffect(() => {
-    validateFields();
-  }, [
-    subjectSelected,
-    quantity,
-    dateValue,
-    reasonSelected,
-    startTime,
-    endTime,
-    teachersSelectedInModal,
-    blockSelected,
-    classroomsSelectedInModal,
-  ]);
+  const setField = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  };
 
   const fetchSubjects = async () => {
     const sbjs = await getSubjects();
@@ -176,21 +159,38 @@ export default function RequestReservation() {
     setBlocks(blks);
   };
 
-  const fetchTeachersBySubject = async () => {
-    const tbs = await getTeachersBySubject(subjectSelected);
+  const fetchTeachersBySubject = async (subject_id) => {
+    const tbs = await getTeachersBySubject(subject_id);
     setTeachersSelectedInModal([]);
     setTeachersBySubject(tbs);
   };
 
-  const fetchClassroomsByBlock = async () => {
-    const clsm = await getClassroomsByBlock(blockSelected);
+  const fetchClassroomsByBlock = async (block_id) => {
+    const clsm = await getClassroomsByBlock(block_id);
     setClassroomsSelectedInModal([]);
     setClassroomsByBlock(clsm);
   };
 
   const handleChangeSubjects = (value) => {
-    setSubjectsInitialOptionDisabled(true);
     setSubjectSelected(value);
+    setField("subject", value);
+    fetchTeachersBySubject(value);
+
+    // Validations.
+    let newErrorsMessages = { ...errorsMessages };
+    if (value === "default") {
+      newErrorsMessages.subject = {
+        message: "Seleccione una materia.",
+        isInvalid: true,
+      };
+      setErrorsMessages(newErrorsMessages);
+    } else {
+      newErrorsMessages.subject = {
+        message: "",
+        isInvalid: false,
+      };
+      setErrorsMessages(newErrorsMessages);
+    }
   };
 
   const handleChangeQuantity = (e) => {
@@ -198,38 +198,146 @@ export default function RequestReservation() {
     if (/^\d*$/.test(value)) {
       setQuantity(value);
     }
+
+    let newErrorsMessages = { ...errorsMessages };
+    if (!!value.trim()) {
+      // Cuando el campo no esta vacio, entra.
+      if (value < 25 || value > 500) {
+        newErrorsMessages.quantity = {
+          message:
+            "La cantidad de estudiantes debe ser mayor a 25 y menor a 500",
+          isInvalid: true,
+        };
+        setSuggAvailable(false);
+        setErrorsMessages(newErrorsMessages);
+      } else {
+        newErrorsMessages.quantity = {
+          message: "",
+          isInvalid: false,
+        };
+        setSuggAvailable(true);
+        setErrorsMessages(newErrorsMessages);
+      }
+    } else {
+      newErrorsMessages.quantity = {
+        message: "Ingrese la cantidad de estudiantes.",
+        isInvalid: true,
+      };
+      setSuggAvailable(false);
+      setErrorsMessages(newErrorsMessages);
+    }
   };
 
   const handleDateChange = (e) => {
+    // Agregar validaciones para fecha.
     const newValue = e.target.value;
     if (newValue) {
       setDateValue(newValue);
     }
   };
 
-  const handleChangeBlocks = (value) => {
-    setBlocksInitialOptionDisabled(true);
+  const handleChangeReason = ({ value }) => {
+    setReasonSelected(value);
+    // Validations.
+    let newErrorsMessages = { ...errorsMessages };
+    if (value === "default") {
+      newErrorsMessages.reason = {
+        message: "Seleccione una materia.",
+        isInvalid: true,
+      };
+      setErrorsMessages(newErrorsMessages);
+    } else {
+      newErrorsMessages.reason = {
+        message: "",
+        isInvalid: false,
+      };
+      setErrorsMessages(newErrorsMessages);
+    }
+  };
+
+  const handleChangeBlocks = ({ value }) => {
     setBlockSelected(value);
+    fetchClassroomsByBlock(value);
+
+    // Validation
+    let newErrorsMessages = { ...errorsMessages };
+    if (value === "default") {
+      newErrorsMessages.block = {
+        message: "Seleccione un bloque",
+        isInvalid: true,
+      };
+    } else {
+      newErrorsMessages.block = {
+        message: "",
+        isInvalid: false,
+      };
+    }
+    setErrorsMessages(newErrorsMessages);
   };
 
   const handleClickTeacherRow = (teacher) => {
-    if (teachersSelectedInModal.includes(teacher)) {
-      setTeachersSelectedInModal(
-        teachersSelectedInModal.filter((tchr) => tchr !== teacher)
-      );
+    let tchrList = [...teachersSelectedInModal];
+
+    if (tchrList.includes(teacher)) {
+      tchrList = tchrList.filter((tchr) => tchr !== teacher);
     } else {
-      setTeachersSelectedInModal([...teachersSelectedInModal, teacher]);
+      tchrList = [...teachersSelectedInModal, teacher];
     }
+
+    // Validations
+    let newErrorsMessages = { ...errorsMessages };
+    let tchrInList = !!tchrList.find((teacher) => {
+      return teacher.person_id === user.teacher_id;
+    });
+
+    if (tchrList.length !== 0) {
+      if (tchrInList) {
+        newErrorsMessages.teachers = {
+          message: "",
+          isInvalid: false,
+        };
+      } else {
+        newErrorsMessages.teachers = {
+          message: "Seleccione uno de sus grupos.",
+          isInvalid: true,
+        };
+      }
+    } else {
+      newErrorsMessages.teachers = {
+        message: "Seleccione almenos uno de sus grupos.",
+        isInvalid: true,
+      };
+    }
+
+    setTeachersSelectedInModal(tchrList);
+    setErrorsMessages(newErrorsMessages);
   };
 
   const handleClickClassroomRow = (classroom) => {
-    if (classroomsSelectedInModal.includes(classroom)) {
-      setClassroomsSelectedInModal(
-        classroomsSelectedInModal.filter((clr) => clr !== classroom)
-      );
+    let clssList = [...classroomsSelectedInModal];
+
+    if (clssList.includes(classroom)) {
+      clssList = clssList.filter((clr) => clr !== classroom);
     } else {
-      setClassroomsSelectedInModal([...classroomsSelectedInModal, classroom]);
+      clssList = [...classroomsSelectedInModal, classroom];
     }
+    setClassroomsSelectedInModal(clssList);
+
+    // Validations
+    let newErrorsMessages = { ...errorsMessages };
+    if (clssList.length === 0) {
+      newErrorsMessages.classrooms = {
+        message: "Seleccione al menos un aula",
+        isInvalid: true,
+      };
+    } else {
+      newErrorsMessages.classrooms = {
+        message: "",
+        isInvalid: false,
+      };
+    }
+
+    setErrorsMessages(newErrorsMessages);
   };
 
   const getSuggest = async () => {
@@ -240,167 +348,40 @@ export default function RequestReservation() {
       date: dateValue,
     };
     const suggests = await getSuggestsClassrooms(dataSugg);
+    console.log("suggest", suggests);
     if (!suggests.message) {
       setClassroomsSelectedInModal(suggests);
     }
   };
 
-  const isAvailableToSuggest = () => {
-    if (quantity !== "") {
-      setDisabledSugg(false);
-    } else {
-      setDisabledSugg(true);
-    }
-  };
-
   const handleSendRequest = async () => {
-    if (updateErrorMessages()) {
-      let groups = [...teachersSelectedInModal];
-      let groupNumbers = groups.map(({ group_number }) => group_number);
-      let classrooms = [...classroomsSelectedInModal];
-      let classroomIds = classrooms.map(({ classroom_id }) => classroom_id);
-      let request = {
-        subject_id: subjectSelected,
-        group_id: groupNumbers,
-        block_id: blockSelected,
-        classroom_id: classroomIds,
-        time_slot_id: [startTime, endTime],
-        quantity: quantity,
-        date: dateValue,
-        reason_id: reasonSelected,
-      };
+    // setModalSendRequest(true);
+    let groups = [...teachersSelectedInModal];
+    let groupNumbers = groups.map(({ group_number }) => group_number);
+    let classrooms = [...classroomsSelectedInModal];
+    let classroomIds = classrooms.map(({ classroom_id }) => classroom_id);
+    let request = {
+      subject_id: subjectSelected,
+      group_id: groupNumbers,
+      block_id: blockSelected,
+      classroom_id: classroomIds,
+      time_slot_id: [startTime, endTime],
+      quantity: quantity,
+      date: dateValue,
+      reason_id: reasonSelected,
+    };
 
-      let response = await sendRequest(request);
-      console.log(response);
-    } else {
-      console.log("no se pudo xd");
-    }
+    let response = await sendRequest(request);
+    console.log(response.message);
+    setModalSendRequest({
+      content: { title: "Warning", body: response.message },
+      show: true,
+    });
   };
 
   const validateFields = () => {
     const newErrorsMessages = { ...errorsMessages };
-
-    if (subjectSelected === 0) {
-      if (errorsMessages.subject.message !== -1) {
-        newErrorsMessages.subject = {
-          message: "Seleccione una materia.",
-          isInvalid: true,
-        };
-      }
-    } else {
-      newErrorsMessages.subject = {
-        message: "",
-        isInvalid: false,
-      };
-    }
-
-    if (quantity === "") {
-      if (errorsMessages.quantity.message !== -1) {
-        newErrorsMessages.quantity = {
-          message: "Ingrese una cantidad de estudiantes",
-          isInvalid: true,
-        };
-      }
-    } else if (parseInt(quantity, 10) < 25 || parseInt(quantity, 10) > 500) {
-      newErrorsMessages.quantity = {
-        message: "La cantidad de estudiantes debe ser mayor a 25 y menor a 500",
-        isInvalid: true,
-      };
-    } else {
-      newErrorsMessages.quantity = {
-        message: "",
-        isInvalid: false,
-      };
-    }
-
-    if (reasonSelected === 0) {
-      if (errorsMessages.reason.message !== -1) {
-        newErrorsMessages.reason = {
-          message: "Debe seleccionar el motivo de reserva",
-          isInvalid: true,
-        };
-      }
-    } else {
-      newErrorsMessages.reason = {
-        message: "",
-        isInvalid: false,
-      };
-    }
-    // Refactor this, is unnecessarily big
-    const teacher = teachersSelectedInModal.find((teacher) => {
-      return teacher.person_id === user.teacher_id;
-    });
-    if (teachersSelectedInModal.length === 0) {
-      if (errorsMessages.teachers.message !== -1) {
-        newErrorsMessages.teachers = {
-          message: "Seleccione al menos uno de sus grupos.",
-          isInvalid: true,
-        };
-      }
-    } else if (!teacher && errorsMessages.teachers.message !== -1) {
-      newErrorsMessages.teachers = {
-        message: "Seleccione uno de sus grupos",
-        isInvalid: true,
-      };
-    } else {
-      newErrorsMessages.teachers = {
-        message: "",
-        isInvalid: false,
-      };
-    }
-    // Refactor up to here
-
-    if (blockSelected === 0) {
-      if (errorsMessages.block.message !== -1) {
-        newErrorsMessages.block = {
-          message: "Seleccione un bloque",
-          isInvalid: true,
-        };
-      }
-    } else {
-      newErrorsMessages.block = {
-        message: "",
-        isInvalid: false,
-      };
-    }
-
-    if (classroomsSelectedInModal.length === 0) {
-      if (errorsMessages.classrooms.message !== -1) {
-        newErrorsMessages.classrooms = {
-          message: "Seleccione al menos un aula",
-          isInvalid: true,
-        };
-      }
-    } else {
-      newErrorsMessages.classrooms = {
-        message: "",
-        isInvalid: true,
-      };
-    }
-
     setErrorsMessages(newErrorsMessages);
-  };
-
-  const updateErrorMessages = () => {
-    const updatedErrorsMessages = { ...errorsMessages };
-    let allFieldsFilled = true;
-
-    for (const key in updatedErrorsMessages) {
-      if (updatedErrorsMessages.hasOwnProperty(key)) {
-        if (
-          updatedErrorsMessages[key].message === -1 ||
-          updatedErrorsMessages[key].message === ""
-        ) {
-          updatedErrorsMessages[key] = {
-            message: "El campo es obligatorio.",
-            isInvalid: true,
-          };
-          allFieldsFilled = false;
-        }
-      }
-    }
-    setErrorsMessages(updatedErrorsMessages);
-    return allFieldsFilled;
   };
 
   return (
@@ -421,7 +402,7 @@ export default function RequestReservation() {
               value={subjectSelected}
               onChange={(e) => handleChangeSubjects(e.currentTarget.value)}
             >
-              <option value="0" disabled={subjectsInitialOptionDisabled}>
+              <option value="default" disabled={subjectSelected !== "default"}>
                 Seleccione una opcion
               </option>
               {subjects?.map((each) => {
@@ -444,7 +425,8 @@ export default function RequestReservation() {
             <Form.Control
               type="text"
               className="form-control"
-              value={quantity}
+              // value={quantity}
+              value={quantity ?? ""}
               onChange={handleChangeQuantity}
               placeholder="Ingrese la cantidad de estudiantes para la solicitud..."
               isInvalid={errorsMessages.quantity.isInvalid}
@@ -480,9 +462,12 @@ export default function RequestReservation() {
               id="reason-Form.Select"
               className="col-sm-10 form-Form.Select"
               value={reasonSelected}
-              onChange={(e) => setReasonSelected(e.target.value)}
+              onChange={(e) => handleChangeReason(e.target)}
               isInvalid={errorsMessages.reason.isInvalid}
             >
+              <option value="default" disabled={reasonSelected !== "default"}>
+                Seleccione una opcion
+              </option>
               {reasons?.map((each) => {
                 return (
                   <option key={each.reason_id} value={each.reason_id}>
@@ -507,11 +492,10 @@ export default function RequestReservation() {
             </div>
             <div className="col-sm-4">
               <Form.Select
-                name=""
-                id=""
                 className="form-select"
                 value={startTime}
                 onChange={(e) => {
+                  // Agregar validaciones en tiempo real.
                   setStartTime(e.target.value);
                 }}
               >
@@ -536,6 +520,7 @@ export default function RequestReservation() {
                 className="col-sm form-select"
                 value={endTime}
                 onChange={(e) => {
+                  // Agregar validaciones en tiempo real.
                   setEndTime(e.target.value);
                 }}
                 disabled={endTimeSlots.length === 0}
@@ -556,7 +541,7 @@ export default function RequestReservation() {
         <div className="mt-2 ps-1 pe-1 border rounded">
           <b>DOCENTE</b>
           <div className="row p-3">
-            {subjectSelected === 0 ? (
+            {subjectSelected === "default" ? (
               <div className="text-center pb-4">
                 <b>Seleccione una materia</b>
               </div>
@@ -630,10 +615,10 @@ export default function RequestReservation() {
               <Form.Select
                 className="form-select"
                 value={blockSelected}
-                onChange={(e) => handleChangeBlocks(e.currentTarget.value)}
+                onChange={(e) => handleChangeBlocks(e.target)}
                 isInvalid={errorsMessages.block.isInvalid}
               >
-                <option value="" disabled={blocksInitialOptionDisabled}>
+                <option value="default" disabled={blockSelected !== "default"}>
                   Seleccione una opcion
                 </option>
                 {blocks.map((each) => {
@@ -653,7 +638,7 @@ export default function RequestReservation() {
             <div className="col-sm-2">
               <b>AULA(s)</b>
             </div>
-            {blockSelected === 0 ? (
+            {blockSelected === "default" ? (
               <div className="text-center pb-4">
                 <b>Seleccione un bloque</b>
               </div>
@@ -694,7 +679,7 @@ export default function RequestReservation() {
                     <button
                       type="button"
                       className="btn btn-outline-secondary btn-sm mb-2"
-                      disabled={disabledSugg}
+                      disabled={!suggAvailable}
                       onClick={getSuggest}
                     >
                       Generar sugerencia
@@ -735,6 +720,16 @@ export default function RequestReservation() {
           </button>
         </div>
       </Form>
+
+      {/* Modal click "Reservar" */}
+      <Modal
+        show={modalSendRequest.show}
+        onHide={() => setModalSendRequest({ ...modalSendRequest, show: false })}
+        centered
+      >
+        <Modal.Title>{modalSendRequest.content.title}</Modal.Title>
+        <Modal.Body>{modalSendRequest.content.body}</Modal.Body>
+      </Modal>
 
       {/* Modal for teachers */}
       <ModalTable
@@ -779,8 +774,9 @@ export default function RequestReservation() {
             <th>Capacidad</th>
           </>
         }
-        contentTable={classroomsByBlock?.map((each) => {
-          const isSelected = classroomsSelectedInModal?.includes(each);
+        contentTable={classroomsByBlock.map((each) => {
+          console.log("modal", each);
+          const isSelected = classroomsSelectedInModal.includes(each);
           return (
             <tr
               key={each.classroom_id}

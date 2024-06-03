@@ -221,7 +221,6 @@ export default function RequestReservation() {
   };
 
   const handleDateChange = (e) => {
-    // Agregar validaciones para fecha.
     const newValue = e.target.value;
     if (newValue) {
       setDateValue(newValue);
@@ -546,7 +545,6 @@ export default function RequestReservation() {
             <Form.Control
               type="text"
               className="form-control"
-              // value={quantity}
               value={quantity ?? ""}
               onChange={handleChangeQuantity}
               placeholder="Ingrese la cantidad de estudiantes para la solicitud..."

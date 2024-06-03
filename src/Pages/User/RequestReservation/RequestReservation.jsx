@@ -15,28 +15,25 @@ import ModalTable from "../../../Components/ModalTable/ModalTable";
 export default function RequestReservation() {
   // Information user loged
   const user = JSON.parse(sessionStorage.getItem("userInformation"));
-
-  const [formData, setFormData] = useState({});
-
   // For subjects
   const [subjects, setSubjects] = useState(null);
-  const [subjectSelected, setSubjectSelected] = useState("default");
+  const [subjectSelected, setSubjectSelected] = useState("");
   // For quantity
   const [quantity, setQuantity] = useState("");
   // For Date
   const [dateValue, setDateValue] = useState("");
   // For reasons
   const [reasons, setReasons] = useState([]);
-  const [reasonSelected, setReasonSelected] = useState("default");
+  const [reasonSelected, setReasonSelected] = useState("");
   // For timeSlots
   const [timeSlots, setTimeSlots] = useState([]);
-  const [startTime, setStartTime] = useState(0);
-  const [endTime, setEndTime] = useState(0);
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
   const [startTimeSlots, setStartTimeSlots] = useState([]);
   const [endTimeSlots, setEndTimeSlots] = useState([]);
   // For blocks
   const [blocks, setBlocks] = useState([]);
-  const [blockSelected, setBlockSelected] = useState("default");
+  const [blockSelected, setBlockSelected] = useState("");
   // For teachers
   const [teachersBySubject, setTeachersBySubject] = useState([]);
   const [showTeachersModal, setShowTeachersModal] = useState(false);
@@ -49,7 +46,7 @@ export default function RequestReservation() {
   );
   const [suggAvailable, setSuggAvailable] = useState(false);
   // Errors messages
-  const [errorsMessages, setErrorsMessages] = useState({
+  const errorsInitialState = {
     subject: {
       message: null,
       isInvalid: false,
@@ -88,7 +85,8 @@ export default function RequestReservation() {
       message: null,
       isInvalid: false,
     },
-  });
+  };
+  const [errorsMessages, setErrorsMessages] = useState(errorsInitialState);
 
   const [modalSendRequest, setModalSendRequest] = useState({
     show: false,
@@ -122,15 +120,14 @@ export default function RequestReservation() {
         setEndTime(0);
       }
     }
+    setErrorsMessages({
+      ...errorsMessages,
+      periods: {
+        startTime: { message: "", isInvalid: false },
+        endTime: { message: "", isInvalid: false },
+      },
+    });
   }, [startTime, timeSlots]);
-
-  useEffect(() => {
-    console.log(classroomsSelectedInModal);
-  }, [classroomsSelectedInModal]);
-
-  const setField = (field, value) => {
-    setFormData({ ...formData, [field]: value });
-  };
 
   const fetchSubjects = async () => {
     const sbjs = await getSubjects();
@@ -145,10 +142,6 @@ export default function RequestReservation() {
   const fetchTimeSlots = async () => {
     const tmsl = await getTimeSlots();
     setTimeSlots(tmsl);
-    if (tmsl.length > 1) {
-      setStartTime(tmsl[0].time_slot_id);
-      setEndTime(tmsl[1].time_slot_id);
-    }
     let startSlots = [...tmsl];
     startSlots.pop();
     setStartTimeSlots(startSlots);
@@ -173,12 +166,11 @@ export default function RequestReservation() {
 
   const handleChangeSubjects = (value) => {
     setSubjectSelected(value);
-    setField("subject", value);
     fetchTeachersBySubject(value);
 
     // Validations.
     let newErrorsMessages = { ...errorsMessages };
-    if (value === "default") {
+    if (value === "") {
       newErrorsMessages.subject = {
         message: "Seleccione una materia.",
         isInvalid: true,
@@ -240,7 +232,7 @@ export default function RequestReservation() {
     setReasonSelected(value);
     // Validations.
     let newErrorsMessages = { ...errorsMessages };
-    if (value === "default") {
+    if (value === "") {
       newErrorsMessages.reason = {
         message: "Seleccione una materia.",
         isInvalid: true,
@@ -261,7 +253,7 @@ export default function RequestReservation() {
 
     // Validation
     let newErrorsMessages = { ...errorsMessages };
-    if (value === "default") {
+    if (value === "") {
       newErrorsMessages.block = {
         message: "Seleccione un bloque",
         isInvalid: true,
@@ -321,7 +313,6 @@ export default function RequestReservation() {
     } else {
       clssList = [...classroomsSelectedInModal, classroom];
     }
-    setClassroomsSelectedInModal(clssList);
 
     // Validations
     let newErrorsMessages = { ...errorsMessages };
@@ -337,6 +328,7 @@ export default function RequestReservation() {
       };
     }
 
+    setClassroomsSelectedInModal(clssList);
     setErrorsMessages(newErrorsMessages);
   };
 
@@ -348,40 +340,169 @@ export default function RequestReservation() {
       date: dateValue,
     };
     const suggests = await getSuggestsClassrooms(dataSugg);
-    console.log("suggest", suggests);
     if (!suggests.message) {
-      setClassroomsSelectedInModal(suggests);
+      const suggList = () => {
+        let array = [];
+        suggests.map((each) => {
+          classroomsByBlock.forEach((cls) => {
+            if (cls.classroom_id === each.classroom_id) {
+              array = [...array, cls];
+            }
+          });
+        });
+        return array;
+      };
+      setErrorsMessages({
+        ...errorsMessages,
+        classrooms: { message: "", isInvalid: false },
+      });
+      setClassroomsSelectedInModal(suggList);
     }
   };
 
   const handleSendRequest = async () => {
-    // setModalSendRequest(true);
-    let groups = [...teachersSelectedInModal];
-    let groupNumbers = groups.map(({ group_number }) => group_number);
-    let classrooms = [...classroomsSelectedInModal];
-    let classroomIds = classrooms.map(({ classroom_id }) => classroom_id);
-    let request = {
-      subject_id: subjectSelected,
-      group_id: groupNumbers,
-      block_id: blockSelected,
-      classroom_id: classroomIds,
-      time_slot_id: [startTime, endTime],
-      quantity: quantity,
-      date: dateValue,
-      reason_id: reasonSelected,
-    };
+    if (validateFields()) {
+      let groups = [...teachersSelectedInModal];
+      let groupNumbers = groups.map(({ group_number }) => group_number);
+      let classrooms = [...classroomsSelectedInModal];
+      let classroomIds = classrooms.map(({ classroom_id }) => classroom_id);
+      let request = {
+        subject_id: subjectSelected,
+        group_id: groupNumbers,
+        block_id: blockSelected,
+        classroom_id: classroomIds,
+        time_slot_id: [startTime, endTime],
+        quantity: quantity,
+        date: dateValue,
+        reason_id: reasonSelected,
+      };
 
-    let response = await sendRequest(request);
-    console.log(response.message);
-    setModalSendRequest({
-      content: { title: "Warning", body: response.message },
-      show: true,
-    });
+      let response = await sendRequest(request);
+      if (response.status >= 200 && response.status < 400) {
+        // Exito
+        setModalSendRequest({
+          content: { title: "Exito", body: response.data.message },
+          show: true,
+        });
+        setToInitalStateForm();
+      } else if (response.status >= 400 && response.status < 500) {
+        // Mala solicitud.
+        setModalSendRequest({
+          content: { title: "Error", body: response.data.message },
+          show: true,
+        });
+      } else if (response.status === 500) {
+        setModalSendRequest({
+          content: {
+            title: "Error",
+            body: "Ocurrio un problema al realizar el envio de la solicitud, intentelo nuevamente.",
+          },
+          show: true,
+        });
+      } else {
+        setModalSendRequest({
+          content: {
+            title: "Error",
+            body: "Ocurrio un error inesperado, intentelo nuevamente dentro de unos minutos.",
+          },
+          show: true,
+        });
+      }
+    }
   };
 
   const validateFields = () => {
-    const newErrorsMessages = { ...errorsMessages };
+    let newErrorsMessages = { ...errorsMessages };
+    let isValid = true;
+
+    if (!subjectSelected.trim()) {
+      newErrorsMessages.subject = {
+        message: "Seleccione una de las materias.",
+        isInvalid: true,
+      };
+      isValid = false;
+    }
+
+    if (!quantity.trim()) {
+      newErrorsMessages.quantity = {
+        message: "Ingrese la cantidad de estudiantes.",
+        isInvalid: true,
+      };
+      isValid = false;
+    }
+
+    if (!dateValue.trim()) {
+      newErrorsMessages.date = {
+        message: "Seleccione una fecha para la reserva.",
+        isInvalid: true,
+      };
+      isValid = false;
+    }
+
+    if (!reasonSelected.trim()) {
+      newErrorsMessages.reason = {
+        message: "Seleccione el motivo de la reserva.",
+        isInvalid: true,
+      };
+      isValid = false;
+    }
+
+    if (!startTime.trim()) {
+      newErrorsMessages.periods = {
+        message: "Seleccione los periodos para la reserva.",
+        isInvalid: true,
+      };
+      isValid = false;
+    }
+
+    if (teachersSelectedInModal.length === 0) {
+      newErrorsMessages.teachers = {
+        message: "Seleccione almenos uno de sus grupos.",
+        isInvalid: true,
+      };
+      isValid = false;
+    }
+
+    if (!blockSelected.trim()) {
+      newErrorsMessages.block = {
+        message: "Seleccione un bloque.",
+        isInvalid: true,
+      };
+      isValid = false;
+    }
+
+    if (classroomsSelectedInModal.length === 0) {
+      newErrorsMessages.classrooms = {
+        message: "Seleccione un aula para la solicitud.",
+        isInvalid: true,
+      };
+      isValid = false;
+    }
+
     setErrorsMessages(newErrorsMessages);
+    const isAnyErrorPresent = () => {
+      Object.values(errorsMessages).forEach((each) => {
+        if (each.isInvalid === true) {
+          isValid = false;
+        }
+      });
+    };
+    isAnyErrorPresent();
+    return isValid;
+  };
+
+  const setToInitalStateForm = () => {
+    setSubjectSelected("");
+    setQuantity("");
+    setDateValue("");
+    setReasonSelected("");
+    setStartTime("");
+    setEndTime("");
+    setBlockSelected("");
+    setTeachersSelectedInModal([]);
+    setClassroomsSelectedInModal([]);
+    setSuggAvailable(false);
+    setErrorsMessages(errorsInitialState);
   };
 
   return (
@@ -402,7 +523,7 @@ export default function RequestReservation() {
               value={subjectSelected}
               onChange={(e) => handleChangeSubjects(e.currentTarget.value)}
             >
-              <option value="default" disabled={subjectSelected !== "default"}>
+              <option value="" disabled={subjectSelected !== ""}>
                 Seleccione una opcion
               </option>
               {subjects?.map((each) => {
@@ -448,7 +569,9 @@ export default function RequestReservation() {
               max="2024-07-06"
             />
           </div>
-          {/* Error message for date */}
+          <Form.Control.Feedback type="invalid">
+            {errorsMessages.date.message}
+          </Form.Control.Feedback>
         </div>
         <div className="row pt-2">
           <div className="col-sm-2">
@@ -465,7 +588,7 @@ export default function RequestReservation() {
               onChange={(e) => handleChangeReason(e.target)}
               isInvalid={errorsMessages.reason.isInvalid}
             >
-              <option value="default" disabled={reasonSelected !== "default"}>
+              <option value="" disabled={reasonSelected !== ""}>
                 Seleccione una opcion
               </option>
               {reasons?.map((each) => {
@@ -476,12 +599,10 @@ export default function RequestReservation() {
                 );
               })}
             </Form.Select>
-
             <Form.Control.Feedback type="invalid">
               {errorsMessages.reason.message}
             </Form.Control.Feedback>
           </div>
-          {/* Error message for reason */}
         </div>
 
         <div className="mt-2 ps-1 pe-1 border rounded">
@@ -494,11 +615,11 @@ export default function RequestReservation() {
               <Form.Select
                 className="form-select"
                 value={startTime}
-                onChange={(e) => {
-                  // Agregar validaciones en tiempo real.
-                  setStartTime(e.target.value);
-                }}
+                onChange={(e) => setStartTime(e.target.value)}
               >
+                <option value="" disabled={startTime !== ""}>
+                  Seleccione una opcion
+                </option>
                 {startTimeSlots.map((each) => {
                   return (
                     <option key={each.time_slot_id} value={each.time_slot_id}>
@@ -508,21 +629,15 @@ export default function RequestReservation() {
                 })}
               </Form.Select>
             </div>
-            {/* Error message for init hour */}
 
             <div className="col-sm-2">
               <b>HORA FIN</b>
             </div>
             <div className="col-sm-4">
               <Form.Select
-                name=""
-                id=""
                 className="col-sm form-select"
                 value={endTime}
-                onChange={(e) => {
-                  // Agregar validaciones en tiempo real.
-                  setEndTime(e.target.value);
-                }}
+                onChange={(e) => setEndTime(e.target.value)}
                 disabled={endTimeSlots.length === 0}
               >
                 {endTimeSlots.map((each) => {
@@ -534,14 +649,13 @@ export default function RequestReservation() {
                 })}
               </Form.Select>
             </div>
-            {/* Error message for end hour */}
           </div>
         </div>
 
         <div className="mt-2 ps-1 pe-1 border rounded">
           <b>DOCENTE</b>
           <div className="row p-3">
-            {subjectSelected === "default" ? (
+            {subjectSelected === "" ? (
               <div className="text-center pb-4">
                 <b>Seleccione una materia</b>
               </div>
@@ -594,9 +708,11 @@ export default function RequestReservation() {
                 </div>
 
                 {errorsMessages.teachers.isInvalid && (
+                  // This is another way for alerts.
                   // <Alert variant={"danger"} className="text-center">
                   //   {errorsMessages.teachers.message}
                   // </Alert>
+                  // This is using bootstrap classes.
                   <div className="d-block invalid-feedback">
                     {errorsMessages.teachers.message}
                   </div>
@@ -618,7 +734,7 @@ export default function RequestReservation() {
                 onChange={(e) => handleChangeBlocks(e.target)}
                 isInvalid={errorsMessages.block.isInvalid}
               >
-                <option value="default" disabled={blockSelected !== "default"}>
+                <option value="" disabled={blockSelected !== ""}>
                   Seleccione una opcion
                 </option>
                 {blocks.map((each) => {
@@ -638,7 +754,7 @@ export default function RequestReservation() {
             <div className="col-sm-2">
               <b>AULA(s)</b>
             </div>
-            {blockSelected === "default" ? (
+            {blockSelected === "" ? (
               <div className="text-center pb-4">
                 <b>Seleccione un bloque</b>
               </div>
@@ -727,8 +843,10 @@ export default function RequestReservation() {
         onHide={() => setModalSendRequest({ ...modalSendRequest, show: false })}
         centered
       >
-        <Modal.Title>{modalSendRequest.content.title}</Modal.Title>
-        <Modal.Body>{modalSendRequest.content.body}</Modal.Body>
+        <Modal.Title className="p-3">
+          {modalSendRequest.content.title}
+        </Modal.Title>
+        <Modal.Body className="p-3">{modalSendRequest.content.body}</Modal.Body>
       </Modal>
 
       {/* Modal for teachers */}
@@ -775,7 +893,6 @@ export default function RequestReservation() {
           </>
         }
         contentTable={classroomsByBlock.map((each) => {
-          console.log("modal", each);
           const isSelected = classroomsSelectedInModal.includes(each);
           return (
             <tr

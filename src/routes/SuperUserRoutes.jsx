@@ -8,6 +8,7 @@ import ErrorPage from "../Components/ErrorPage/ErrorPage";
 import RequestsHistory from "../Pages/RequestsHistory/RequestsHistory";
 import EditEnvironment from "../Pages/SuperUser/EditEnvironment/EditEnvironment";
 import DeleteEnvironment from "../Pages/SuperUser/DeleteEnvironment/DeleteEnvironment";
+import GenerateReport from "../Pages/SuperUser/Reports/GenerateReport";
 
 export default function SuperUserRoutes() {
   return (
@@ -23,6 +24,7 @@ export default function SuperUserRoutes() {
         <Route path="request-history" element={<RequestsHistory />} />
         <Route path="edit-environment" element={<EditEnvironment />}></Route>
         <Route path="delete-environment" element={<DeleteEnvironment />} />
+        <Route path="generate-report" element={<GenerateReport />} />
         <Route path="*" element={<ErrorPage />} />
       </Route>
     </Routes>

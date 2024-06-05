@@ -180,11 +180,7 @@ function Disponibility() {
     newErrors.classroom_id = validateClassroom(formData.classroom_id);
     setErrors(newErrors);
 
-    if (
-      !newErrors.date &&
-      !newErrors.block_id &&
-      !newErrors.classroom_id
-    ) {
+    if (!newErrors.date && !newErrors.block_id && !newErrors.classroom_id) {
       console.log("Datos del formulario", formData);
     } else {
       console.log("LLENE TODOS LOS CAMPOS DEL FORMULARIO");
@@ -213,14 +209,6 @@ function Disponibility() {
         [name]: value,
       },
     }));
-    const error = validateTimeSlot({
-      ...formData.time_slot_id,
-      [name]: value,
-    });
-    setErrors({
-      ...errors,
-      time_slot_id: error,
-    });
   };
 
   const filteredEndPeriods = periods.filter(
@@ -281,10 +269,10 @@ function Disponibility() {
     <div className="table-responsive">
       <h1 className="text-center">Disponibilidad de ambientes</h1>
 
-      <div className="mt-5">
-        <Form noValidate onSubmit={handleSubmit}>
-          <div className="tag-container position-relative mb-3">
-            <label className="tag-label">Ambiente</label>
+      <div className="mt-3 ms-5">
+        <Form noValidate onSubmit={handleSubmit} className="row">
+          <div className="col-6 p-4 environmente-container position-relative mb-1">
+            <label className="tag-label">AMBIENTE</label>
             <div>
               <label className="fw-bold">BLOQUE</label>
               <Form.Select
@@ -364,56 +352,70 @@ function Disponibility() {
               {errors.classroom_id}
             </div>
           </div>
-          <div className="tag-container position-relative mb-3">
-            <label className="tag-label">Periodo</label>
-            <div>
-              <label className="fw-bold">PERIODO INICIAL</label>
-              <Form.Select
-                className="mt-2"
-                value={formData.time_slot_id.start}
-                onChange={(e) => handleTimeSlotChange("start", e.target.value)}
-              >
-                {periods.map((period) => (
-                  <option key={period.time_slot_id} value={period.time_slot_id}>
-                    {period.time}
-                  </option>
-                ))}
-              </Form.Select>
-              <label className="fw-bold mt-2">PERIODO FINAL</label>
-              <Form.Select
-                className="mt-2"
-                value={formData.time_slot_id.end}
-                onChange={(e) => handleTimeSlotChange("end", e.target.value)}
-              >
-                {filteredEndPeriods.map((period) => (
-                  <option key={period.time_slot_id} value={period.time_slot_id}>
-                    {period.time}
-                  </option>
-                ))}
-              </Form.Select>
+
+          <div className="col-6 position-relative ">
+            <div className="environmente-container position-relative mb-3">
+              <label className="tag-label">PERIODO</label>
+              <div>
+                <label className="fw-bold">PERIODO INICIAL</label>
+                <Form.Select
+                  className="mt-2"
+                  value={formData.time_slot_id.start}
+                  onChange={(e) =>
+                    handleTimeSlotChange("start", e.target.value)
+                  }
+                >
+                  {periods.map((period) => (
+                    <option
+                      key={period.time_slot_id}
+                      value={period.time_slot_id}
+                    >
+                      {period.time}
+                    </option>
+                  ))}
+                </Form.Select>
+                <label className="fw-bold mt-2">PERIODO FINAL</label>
+                <Form.Select
+                  className="mt-2"
+                  value={formData.time_slot_id.end}
+                  onChange={(e) => handleTimeSlotChange("end", e.target.value)}
+                >
+                  {filteredEndPeriods.map((period) => (
+                    <option
+                      key={period.time_slot_id}
+                      value={period.time_slot_id}
+                    >
+                      {period.time}
+                    </option>
+                  ))}
+                </Form.Select>
+              </div>
             </div>
-          </div>
-          <div>
-            <label className="fw-bold">FECHA</label>
-            <Form.Control
-              className="mt-2"
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              isInvalid={!!errors.date}
-            ></Form.Control>
-            <Form.Control.Feedback type="invalid">
-              {errors.date}
-            </Form.Control.Feedback>
-          </div>
-          <div className="mt-3">
-            <Button type="submit">Verificar</Button>
+
+            <div>
+              <label className="fw-bold">FECHA</label>
+              <Form.Control
+                className="mt-2"
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                isInvalid={!!errors.date}
+              ></Form.Control>
+              <Form.Control.Feedback type="invalid">
+                {errors.date}
+              </Form.Control.Feedback>
+            </div>
+            <div className="mt-3">
+              <Button className="button-verify" type="submit">
+                Verificar
+              </Button>
+            </div>
           </div>
         </Form>
       </div>
 
-      <div className="table-global mt-3">
+      <div className="table-global mt-5">
         <table className="table">
           <thead>
             <tr>

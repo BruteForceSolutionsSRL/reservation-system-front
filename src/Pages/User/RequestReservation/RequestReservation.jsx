@@ -106,29 +106,6 @@ export default function RequestReservation() {
     ]).catch((err) => console.error(err));
   }, []);
 
-  useEffect(() => {
-    const index = timeSlots.findIndex((slot) => slot.time_slot_id == startTime);
-    if (index === -1) {
-      setEndTimeSlots([]);
-      setEndTime(0);
-    } else {
-      const newEndTimeSlots = timeSlots.slice(index + 1, index + 5);
-      setEndTimeSlots(newEndTimeSlots);
-      if (newEndTimeSlots.length > 0) {
-        setEndTime(newEndTimeSlots[0].time_slot_id);
-      } else {
-        setEndTime(0);
-      }
-    }
-    setErrorsMessages({
-      ...errorsMessages,
-      periods: {
-        startTime: { message: "", isInvalid: false },
-        endTime: { message: "", isInvalid: false },
-      },
-    });
-  }, [startTime, timeSlots]);
-
   const fetchSubjects = async () => {
     const sbjs = await getSubjects();
     setSubjects(sbjs);
@@ -377,7 +354,7 @@ export default function RequestReservation() {
       };
 
       let response = await sendRequest(request);
-      if (response.status >= 200 && response.status < 400) {
+      if (response.status >= 200 && response.status < 300) {
         // Exito
         setModalSendRequest({
           content: { title: "Exito", body: response.data.message },
@@ -447,7 +424,7 @@ export default function RequestReservation() {
     }
 
     if (!startTime.trim()) {
-      newErrorsMessages.periods = {
+      newErrorsMessages.periods.startTime = {
         message: "Seleccione los periodos para la reserva.",
         isInvalid: true,
       };
@@ -456,7 +433,7 @@ export default function RequestReservation() {
 
     if (teachersSelectedInModal.length === 0) {
       newErrorsMessages.teachers = {
-        message: "Seleccione almenos uno de sus grupos.",
+        message: "Seleccione al menos uno de sus grupos.",
         isInvalid: true,
       };
       isValid = false;
@@ -502,6 +479,30 @@ export default function RequestReservation() {
     setClassroomsSelectedInModal([]);
     setSuggAvailable(false);
     setErrorsMessages(errorsInitialState);
+  };
+
+  const handleChangeStartTime = ({ value }) => {
+    setStartTime(value);
+    const index = timeSlots.findIndex((slot) => slot.time_slot_id == value);
+    if (index === -1) {
+      setEndTimeSlots([]);
+      setEndTime(0);
+    } else {
+      const newEndTimeSlots = timeSlots.slice(index + 1, index + 5);
+      setEndTimeSlots(newEndTimeSlots);
+      if (newEndTimeSlots.length > 0) {
+        setEndTime(newEndTimeSlots[0].time_slot_id);
+      } else {
+        setEndTime(0);
+      }
+    }
+    setErrorsMessages({
+      ...errorsMessages,
+      periods: {
+        startTime: { message: "", isInvalid: false },
+        endTime: { message: "", isInvalid: false },
+      },
+    });
   };
 
   return (
@@ -613,7 +614,8 @@ export default function RequestReservation() {
               <Form.Select
                 className="form-select"
                 value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
+                onChange={(e) => handleChangeStartTime(e.target)}
+                isInvalid={errorsMessages.periods.startTime.isInvalid}
               >
                 <option value="" disabled={startTime !== ""}>
                   Seleccione una opcion
@@ -626,6 +628,9 @@ export default function RequestReservation() {
                   );
                 })}
               </Form.Select>
+              <Form.Control.Feedback type="invalid">
+                {errorsMessages.periods.startTime.message}
+              </Form.Control.Feedback>
             </div>
 
             <div className="col-sm-2">

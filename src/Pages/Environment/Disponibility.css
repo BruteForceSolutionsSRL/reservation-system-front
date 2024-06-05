@@ -1,0 +1,78 @@
+.table-global {
+    /*max-width: 100%;*/
+    width: 100%;
+    max-width: 1100px;
+    overflow-x: auto;
+    overflow-y: auto;
+    height: 400px;
+        /* Altura máxima de la tabla */
+}
+
+.table {
+    width: 100%;
+    table-layout: auto;
+    border-collapse: collapse;
+}
+
+.table-responsive {
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+
+.static-header-cell {
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    position: sticky;
+    left: 0;
+    z-index: 2;
+}
+
+.environment-data {
+    text-align: center;
+    white-space: nowrap;
+    /* Asegura que los nombres largos no se dividan */
+}
+
+.time-cell {
+    text-align: center;
+    padding: 10px;
+    width: 10px;
+    /* Ajusta el ancho según sea necesario */
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    
+}
+
+.data-cell {
+    text-align: center;
+    width: 100px;
+    height: 40px;
+    border: 1px solid #01b688;
+    white-space: nowrap;
+    /* Asegura que el texto no se divida */
+}
+
+/*------------------------------------------------------*/
+
+.tag-container {
+    border: 2px solid #ccc;
+    padding: 20px;
+    border-radius: 5px;
+    position: relative;
+}
+
+/*Aula componente*/
+.table-class-tag {
+    display: flex;
+    flex-direction: row;
+    margin-top: -10px;
+}

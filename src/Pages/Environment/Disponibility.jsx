@@ -4,6 +4,8 @@ import Button from "react-bootstrap/Button";
 import { Table } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import Spinner from "react-bootstrap/Spinner";
+// Importa la función para obtener la fecha actual
+import { getCurrentDate } from "../../utils/getCurrentDate";
 import "./Disponibility.css";
 
 function Disponibility() {
@@ -12,12 +14,14 @@ function Disponibility() {
   const [periods, setPeriods] = useState([]);
   const [classrom, setClassrom] = useState([]);
   const [selectedClassrooms, setSelectedClassrooms] = useState([]);
+  const [environments, setEnvironments] = useState([]);
+  const [showTable, setShowTable] = useState(false);
 
   const [formData, setFormData] = useState({
-    date: "",
+    date: getCurrentDate(),
     block_id: "",
     classroom_id: [],
-    time_slot_id: [],
+    time_slot_id: [1, 21],
   });
 
   // erros form
@@ -27,107 +31,6 @@ function Disponibility() {
     classroom_id: [],
     time_slot_id: [],
   });
-
-  const environments = [
-    {
-      classroom_name: "690A",
-      "06:45:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "07:30:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "08:15:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "09:00:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "09:45:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "10:30:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "11:15:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "12:00:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "12:45:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "13:30:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "14:15:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "15:00:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "15:45:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "16:30:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "17:15:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "18:00:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "18:45:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "19:30:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "20:15:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "21:00:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-      "21:45:00": {
-        valor: 0,
-        message: "Disponible",
-      },
-    },
-  ];
-
-  const getColor = (valor) => {
-    if (valor === 0) {
-      return "#B2F2BB";
-    } else if (valor === 1) {
-      return "#FF9E9E";
-    } else {
-      return "#FFDFA3";
-    }
-    //return valor === 0 ? "#B2F2BB" : "#FF6B6B"; // disponible y ocupado
-  };
 
   //Consulta a backEnd
   const fetchData = async (endpoint, setterFunction) => {
@@ -140,6 +43,29 @@ function Disponibility() {
       setterFunction(data);
     } catch (error) {
       console.error("Error fetching data:", error);
+    }
+  };
+
+  //Senda data of disponibility
+  const sendDataAndGetResponse = async (data, dataDisponibility) => {
+    const requestData = data;
+    try {
+      const response = await fetch(URL + "classrooms/disponibility", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      });
+      if (!response.ok) {
+        throw new Error("La respuesta de la red no fue exitosa");
+      }
+      const responseData = await response.json();
+      dataDisponibility(responseData);
+      console.log("Respuesta recibida:", responseData);
+      setShowTable(true);
+    } catch (error) {
+      console.error("Error al enviar los datos:", error);
     }
   };
 
@@ -166,7 +92,7 @@ function Disponibility() {
   //validator of CLASSROM
   const validateClassroom = (value) => {
     if (!value || value.length === 0) {
-      return "Seleccione al menos un aula.";
+      return "Seleccione un aula.";
     }
     return null;
   };
@@ -181,7 +107,8 @@ function Disponibility() {
     setErrors(newErrors);
 
     if (!newErrors.date && !newErrors.block_id && !newErrors.classroom_id) {
-      console.log("Datos del formulario", formData);
+      //console.log("Datos del formulario", formData);
+      sendDataAndGetResponse(formData, setEnvironments);
     } else {
       console.log("LLENE TODOS LOS CAMPOS DEL FORMULARIO");
     }
@@ -189,7 +116,6 @@ function Disponibility() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    console.log(name, value);
     setFormData({
       ...formData,
       [name]: value,
@@ -201,42 +127,12 @@ function Disponibility() {
     });
   };
 
-  const handleTimeSlotChange = (name, value) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      time_slot_id: {
-        ...prevData.time_slot_id,
-        [name]: value,
-      },
-    }));
-  };
-
-  const filteredEndPeriods = periods.filter(
-    (period) =>
-      !formData.time_slot_id.start ||
-      period.time_slot_id > formData.time_slot_id.start
-  );
-
   const validators = {
     date: validateDate,
     block_id: validateBlock,
     classroom_id: validateClassroom,
     // Agrega más validadores para otros campos si es necesario
   };
-
-  // update table AULA -- block_id
-  useEffect(() => {
-    if (!formData.block_id) {
-      setClassrom([]);
-      setSelectedClassrooms([]);
-      setFormData((prevData) => ({
-        ...prevData,
-        classroom_id: [],
-      }));
-    } else {
-      fetchData(`classrooms/block/${formData.block_id}`, setClassrom);
-    }
-  }, [formData.block_id]);
 
   //Aulas
   const handleSelectClassroom = (id) => {
@@ -263,7 +159,59 @@ function Disponibility() {
       ),
     }));
   };
-  //console.log("Datos del formulario desde afuera", formData);
+  // update table AULA -- block_id
+  useEffect(() => {
+    if (!formData.block_id) {
+      clear();
+    } else {
+      clear();
+      fetchData(`classrooms/block/${formData.block_id}`, setClassrom);
+    }
+  }, [formData.block_id]);
+
+  function clear() {
+    //console.log("vacinado datos seleccionados");
+    setClassrom([]);
+    setSelectedClassrooms([]);
+    setFormData((prevData) => ({
+      ...prevData,
+      classroom_id: [],
+    }));
+  }
+
+  const handleTimeSlotChange = (index, value) => {
+    setFormData((prevData) => {
+      const newTimeSlots = [...prevData.time_slot_id];
+      newTimeSlots[index] = parseInt(value, 10);
+      if (index === 0 && newTimeSlots[1] <= newTimeSlots[0]) {
+        const newEndPeriods = periods.filter(
+          (period) => period.time_slot_id > parseInt(value, 10)
+        );
+        newTimeSlots[1] =
+          newEndPeriods.length > 0 ? newEndPeriods[0].time_slot_id : value;
+      }
+      return {
+        ...prevData,
+        time_slot_id: newTimeSlots,
+      };
+    });
+  };
+
+  const filteredEndPeriods = periods.filter(
+    (period) =>
+      !formData.time_slot_id[0] ||
+      period.time_slot_id > formData.time_slot_id[0]
+  );
+
+  const getColor = (valor) => {
+    const colorMap = {
+      0: "#B2F2BB",
+      1: "#FF9E9E",
+      default: "#FFDFA3",
+    };
+    return colorMap[valor] || colorMap.default;
+    //return valor === 0 ? "#B2F2BB" : "#FF6B6B"; // disponible y ocupado
+  };
 
   return (
     <div className="table-responsive">
@@ -360,10 +308,8 @@ function Disponibility() {
                 <label className="fw-bold">PERIODO INICIAL</label>
                 <Form.Select
                   className="mt-2"
-                  value={formData.time_slot_id.start}
-                  onChange={(e) =>
-                    handleTimeSlotChange("start", e.target.value)
-                  }
+                  value={formData.time_slot_id[0]}
+                  onChange={(e) => handleTimeSlotChange(0, e.target.value)}
                 >
                   {periods.map((period) => (
                     <option
@@ -377,8 +323,8 @@ function Disponibility() {
                 <label className="fw-bold mt-2">PERIODO FINAL</label>
                 <Form.Select
                   className="mt-2"
-                  value={formData.time_slot_id.end}
-                  onChange={(e) => handleTimeSlotChange("end", e.target.value)}
+                  value={formData.time_slot_id[1]}
+                  onChange={(e) => handleTimeSlotChange(1, e.target.value)}
                 >
                   {filteredEndPeriods.map((period) => (
                     <option
@@ -416,59 +362,70 @@ function Disponibility() {
       </div>
 
       <div className="table-global mt-5">
-        <table className="table">
-          <thead>
-            <tr>
-              <th
-                className="static-header-cell"
-                style={{
-                  backgroundColor: "#E7E7E7",
-                  color: "black",
-                }}
-              >
-                Ambiente
-              </th>
-              {environments.map((env, index) => (
+        {showTable && (
+          <table className="table">
+            <thead>
+              <tr>
                 <th
-                  className="environment-data"
-                  key={index}
-                  style={{
-                    backgroundColor: "#6DC2F5",
-                    color: "black",
-                  }}
-                >
-                  {env.classroom_name}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {periods.map((period, periodIndex) => (
-              <tr key={periodIndex}>
-                <td
-                  className="time-cell"
+                  className="static-header-cell"
                   style={{
                     backgroundColor: "#E7E7E7",
                     color: "black",
                   }}
                 >
-                  {period.time}
-                </td>
-                {environments.map((env, envIndex) => (
-                  <td
-                    key={envIndex}
-                    className="data-cell"
+                  Ambiente
+                </th>
+                {environments.map((env, index) => (
+                  <th
+                    className="environment-data"
+                    key={index}
                     style={{
-                      backgroundColor: getColor(env[period.time].valor),
+                      backgroundColor: "#6DC2F5",
+                      color: "black",
                     }}
                   >
-                    {env[period.time].message}
-                  </td>
+                    {env.classroom_name}
+                  </th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {periods
+                .filter((period) =>
+                  environments.some((env) => env[period.time])
+                )
+                .map((period, periodIndex) => {
+                  const filteredEnvironments = environments.filter(
+                    (env) => env[period.time]
+                  );
+                  return (
+                    <tr key={periodIndex}>
+                      <td
+                        className="time-cell"
+                        style={{
+                          backgroundColor: "#E7E7E7",
+                          color: "black",
+                        }}
+                      >
+                        {period.time}
+                      </td>
+                      {filteredEnvironments.map((env, envIndex) => (
+                        <td
+                          key={envIndex}
+                          className="data-cell"
+                          style={{
+                            backgroundColor: getColor(env[period.time]?.valor),
+                          }}
+                        >
+                          {env[period.time]?.message || "N/A"}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

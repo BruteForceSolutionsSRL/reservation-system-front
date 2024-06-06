@@ -4,7 +4,7 @@
     max-width: 1100px;
     overflow-x: auto;
     overflow-y: auto;
-    height: 400px;
+    height: auto;
         /* Altura máxima de la tabla */
 }
 

@@ -53,5 +53,9 @@ export function sendRequest(request) {
     .then((data) => {
       responseFetch = { ...responseFetch, data: data };
       return responseFetch;
+    })
+    .catch((error) => {
+      responseFetch.data = error.message;
+      return responseFetch;
     });
 }

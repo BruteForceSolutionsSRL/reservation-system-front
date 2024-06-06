@@ -11,6 +11,7 @@ import {
   getSuggestsClassrooms,
 } from "../../../services/classrooms";
 import ModalTable from "../../../Components/ModalTable/ModalTable";
+import { Spinner } from "react-bootstrap";
 
 export default function RequestReservation() {
   // Information user loged
@@ -20,6 +21,7 @@ export default function RequestReservation() {
   const [subjectSelected, setSubjectSelected] = useState("");
   // For quantity
   const [quantity, setQuantity] = useState("");
+  const [quantityWarnings, setQuantityWarnings] = useState({});
   // For Date
   const [dateValue, setDateValue] = useState("");
   // For reasons
@@ -100,6 +102,7 @@ export default function RequestReservation() {
       body: "",
     },
   });
+  const [loadingSendRequest, setLoadingSendRequest] = useState(false);
 
   useEffect(() => {
     setDateValue(getCurrentDate());
@@ -110,6 +113,29 @@ export default function RequestReservation() {
       fetchBlocks(),
     ]).catch((err) => console.error(err));
   }, []);
+
+  useEffect(() => {
+    if (!!quantity.trim() && classroomsSelectedInModal.length > 0) {
+      if (isQuantityLessThan50PercentClassrooms()) {
+        parseInt(quantity) > 25 &&
+          setQuantityWarnings({
+            message:
+              "ADVERTENCIA: La capacidad de las aulas es demasiado alta para la cantidad de estudiantes solicitada.",
+            show: true,
+          });
+      } else {
+        setQuantityWarnings({
+          message: "",
+          show: false,
+        });
+      }
+    } else {
+      setQuantityWarnings({
+        message: "",
+        show: false,
+      });
+    }
+  }, [quantity, classroomsSelectedInModal]);
 
   const fetchSubjects = async () => {
     const sbjs = await getSubjects();
@@ -175,7 +201,6 @@ export default function RequestReservation() {
 
     let newErrorsMessages = { ...errorsMessages };
     if (!!value.trim()) {
-      // Cuando el campo no esta vacio, entra.
       if (value < 25 || value > 500) {
         newErrorsMessages.quantity = {
           message:
@@ -200,6 +225,17 @@ export default function RequestReservation() {
       setSuggAvailable(false);
       setErrorsMessages(newErrorsMessages);
     }
+  };
+  const isQuantityLessThan50PercentClassrooms = () => {
+    let quantityParsed = parseInt(quantity);
+    let totalClassroomsCapacity = 0;
+    let totalCapacity = () => {
+      let total = 0;
+      classroomsSelectedInModal.forEach((each) => (total += each.capacity));
+      return total;
+    };
+    totalClassroomsCapacity = totalCapacity();
+    return quantityParsed < totalClassroomsCapacity * 0.5;
   };
 
   const handleDateChange = (e) => {
@@ -324,13 +360,20 @@ export default function RequestReservation() {
     if (suggests.status >= 200 && suggests.status < 300) {
       const suggList = () => {
         let array = [];
-        suggests.data.map((each) => {
-          classroomsByBlock.forEach((cls) => {
-            if (cls.classroom_id === each.classroom_id) {
-              array = [...array, cls];
-            }
+        try {
+          suggests.data.map((each) => {
+            classroomsByBlock.forEach((cls) => {
+              if (cls.classroom_id === each.classroom_id) {
+                array = [...array, cls];
+              }
+            });
           });
-        });
+        } catch (error) {
+          setSuggMessage({
+            message: "No se pudo generar la sugerencia.",
+            invalid: true,
+          });
+        }
         return array;
       };
       setErrorsMessages({
@@ -350,58 +393,59 @@ export default function RequestReservation() {
   };
 
   const handleSendRequest = async () => {
-    //Esto debe mostrar un modal primero.
-    if (validateFields()) {
-      let groups = [...teachersSelectedInModal];
-      let groupNumbers = groups.map(({ group_number }) => group_number);
-      let classrooms = [...classroomsSelectedInModal];
-      let classroomIds = classrooms.map(({ classroom_id }) => classroom_id);
-      let request = {
-        subject_id: subjectSelected,
-        group_id: groupNumbers,
-        block_id: blockSelected,
-        classroom_id: classroomIds,
-        time_slot_id: [startTime, endTime],
-        quantity: quantity,
-        date: dateValue,
-        reason_id: reasonSelected,
-      };
+    setLoadingSendRequest(true);
+    let groups = [...teachersSelectedInModal];
+    let groupNumbers = groups.map(({ group_number }) => group_number);
+    let classrooms = [...classroomsSelectedInModal];
+    let classroomIds = classrooms.map(({ classroom_id }) => classroom_id);
+    let request = {
+      subject_id: subjectSelected,
+      group_id: groupNumbers,
+      block_id: blockSelected,
+      classroom_id: classroomIds,
+      time_slot_id: [parseInt(startTime), parseInt(endTime)],
+      quantity: quantity,
+      date: dateValue,
+      reason_id: reasonSelected,
+    };
 
-      let response = await sendRequest(request);
-      if (response.status >= 200 && response.status < 300) {
-        // Exito
-        setModalSendRequest({
-          content: { title: "Exito", body: response.data.message },
-          show: true,
-        });
-        setToInitalStateForm();
-      } else if (response.status >= 400 && response.status < 500) {
-        // Mala solicitud.
-        setModalSendRequest({
-          content: { title: "Error", body: response.data.message },
-          show: true,
-        });
-      } else if (response.status === 500) {
-        setModalSendRequest({
-          content: {
-            title: "Error",
-            body: "Ocurrio un problema al realizar el envio de la solicitud, intentelo nuevamente.",
-          },
-          show: true,
-        });
-      } else {
-        setModalSendRequest({
-          content: {
-            title: "Error",
-            body: "Ocurrio un error inesperado, intentelo nuevamente dentro de unos minutos.",
-          },
-          show: true,
-        });
-      }
+    let response = await sendRequest(request).finally(() =>
+      setLoadingSendRequest(false)
+    );
+
+    if (response.status >= 200 && response.status < 300) {
+      // Exito
+      setModalSendRequest({
+        content: { title: "Exito", body: response.data.message },
+        show: true,
+      });
+      setToInitalStateForm();
+    } else if (response.status >= 400 && response.status < 500) {
+      // Mala solicitud.
+      setModalSendRequest({
+        content: { title: "Error", body: response.data.message },
+        show: true,
+      });
+    } else if (response.status === 500) {
+      setModalSendRequest({
+        content: {
+          title: "Error",
+          body: "Ocurrio un problema al realizar el envio de la solicitud, intentelo nuevamente.",
+        },
+        show: true,
+      });
+    } else {
+      setModalSendRequest({
+        content: {
+          title: "Error",
+          body: "Ocurrio un error inesperado, intentelo nuevamente dentro de unos minutos.",
+        },
+        show: true,
+      });
     }
   };
 
-  const validateFields = () => {
+  const validatedFields = () => {
     let newErrorsMessages = { ...errorsMessages };
     let isValid = true;
 
@@ -567,6 +611,11 @@ export default function RequestReservation() {
               inputMode="numeric"
             />
 
+            {quantityWarnings.show && (
+              <Alert variant={"warning"} className="text-center">
+                {quantityWarnings.message}
+              </Alert>
+            )}
             <Form.Control.Feedback type="invalid">
               {errorsMessages.quantity.message}
             </Form.Control.Feedback>
@@ -818,9 +867,7 @@ export default function RequestReservation() {
                       Generar sugerencia
                     </button>
                     {suggMessage.invalid && (
-                      <Alert variant={"danger"} className="text-center">
-                        {suggMessage.message}
-                      </Alert>
+                      <Alert variant={"warning"}>{suggMessage.message}</Alert>
                     )}
                   </div>
                   <div>
@@ -851,7 +898,14 @@ export default function RequestReservation() {
             className="btn btn-outline-success"
             onClick={(e) => {
               e.preventDefault();
-              handleSendRequest();
+              validatedFields() &&
+                setModalSendRequest({
+                  show: true,
+                  content: {
+                    title: "Confirmacion",
+                    body: "¿Esta seguro de enviar su solicitud de reserva?",
+                  },
+                });
             }}
           >
             Reservar
@@ -862,13 +916,62 @@ export default function RequestReservation() {
       {/* Modal click "Reservar" */}
       <Modal
         show={modalSendRequest.show}
-        onHide={() => setModalSendRequest({ ...modalSendRequest, show: false })}
+        onHide={() =>
+          loadingSendRequest
+            ? setModalSendRequest({ ...modalSendRequest, show: true })
+            : setModalSendRequest({ ...modalSendRequest, show: false })
+        }
         centered
       >
         <Modal.Title className="p-3">
           {modalSendRequest.content.title}
         </Modal.Title>
-        <Modal.Body className="p-3">{modalSendRequest.content.body}</Modal.Body>
+        <Modal.Body>
+          <div>{modalSendRequest.content.body}</div>
+          {quantityWarnings.show && (
+            <>
+              <div className="p-1">
+                <span>Tiene las siguientes advertencias:</span>
+              </div>
+              <Alert variant={"warning"} className="">
+                {quantityWarnings.message}
+              </Alert>
+              <div>
+                <span>
+                  Nota: Las advertencias no impiden enviar la solicitud de
+                  reserva, pero estas deberan ser revisadas por un encargado.
+                </span>
+              </div>
+            </>
+          )}
+          {modalSendRequest.content.title !== "Error" && (
+            <div className="d-flex justify-content-end p-3">
+              {loadingSendRequest && (
+                <div className="p-2">
+                  <Spinner animation="border" variant="secondary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </Spinner>
+                </div>
+              )}
+              <button
+                className="m-1 btn btn-outline-success"
+                onClick={handleSendRequest}
+                disabled={loadingSendRequest}
+              >
+                Enviar
+              </button>
+              <button
+                className="m-1 btn btn-outline-secondary"
+                onClick={() =>
+                  setModalSendRequest({ ...modalSendRequest, show: false })
+                }
+                disabled={loadingSendRequest}
+              >
+                Cancelar
+              </button>
+            </div>
+          )}
+        </Modal.Body>
       </Modal>
 
       {/* Modal for teachers */}

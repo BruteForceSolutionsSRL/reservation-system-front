@@ -2,9 +2,6 @@ import { useState, useEffect } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { Table } from "react-bootstrap";
-import Modal from "react-bootstrap/Modal";
-import Spinner from "react-bootstrap/Spinner";
-// Importa la función para obtener la fecha actual
 import { getCurrentDate } from "../../utils/getCurrentDate";
 import "./Disponibility.css";
 
@@ -24,7 +21,6 @@ function Disponibility() {
     time_slot_id: [1, 21],
   });
 
-  // erros form
   const [errors, setErrors] = useState({
     date: "",
     block_id: "",
@@ -32,7 +28,20 @@ function Disponibility() {
     time_slot_id: [],
   });
 
-  //Consulta a backEnd
+  useEffect(() => {
+    fetchData(`blocks`, setBlock);
+    fetchData(`timeslots`, setPeriods);
+  }, []);
+
+  useEffect(() => {
+    if (!formData.block_id) {
+      clear();
+    } else {
+      clear();
+      fetchData(`classrooms/block/${formData.block_id}`, setClassrom);
+    }
+  }, [formData.block_id]);
+
   const fetchData = async (endpoint, setterFunction) => {
     try {
       const response = await fetch(URL + endpoint);
@@ -46,7 +55,6 @@ function Disponibility() {
     }
   };
 
-  //Senda data of disponibility
   const sendDataAndGetResponse = async (data, dataDisponibility) => {
     const requestData = data;
     try {
@@ -62,34 +70,26 @@ function Disponibility() {
       }
       const responseData = await response.json();
       dataDisponibility(responseData);
-      console.log("Respuesta recibida:", responseData);
       setShowTable(true);
     } catch (error) {
       console.error("Error al enviar los datos:", error);
     }
   };
 
-  useEffect(() => {
-    fetchData(`blocks`, setBlock);
-    fetchData(`timeslots`, setPeriods);
-  }, []);
-
-  //validator of DATE
   const validateDate = (value) => {
-    if (!value || value.trim() === "") {
+    if (!value.trim()) {
       return "Seleccione una fecha.";
     }
     return null;
   };
 
-  //validator of BOCK
   const validateBlock = (value) => {
-    if (!value || value.trim() === "") {
+    if (!value.trim()) {
       return "Seleccione un bloque.";
     }
     return null;
   };
-  //validator of CLASSROM
+
   const validateClassroom = (value) => {
     if (!value || value.length === 0) {
       return "Seleccione un aula.";
@@ -97,7 +97,6 @@ function Disponibility() {
     return null;
   };
 
-  //Boton enviar solicitud FORM
   const handleSubmit = (e) => {
     e.preventDefault();
     let newErrors = {};
@@ -107,10 +106,7 @@ function Disponibility() {
     setErrors(newErrors);
 
     if (!newErrors.date && !newErrors.block_id && !newErrors.classroom_id) {
-      //console.log("Datos del formulario", formData);
       sendDataAndGetResponse(formData, setEnvironments);
-    } else {
-      console.log("LLENE TODOS LOS CAMPOS DEL FORMULARIO");
     }
   };
 
@@ -131,10 +127,8 @@ function Disponibility() {
     date: validateDate,
     block_id: validateBlock,
     classroom_id: validateClassroom,
-    // Agrega más validadores para otros campos si es necesario
   };
 
-  //Aulas
   const handleSelectClassroom = (id) => {
     setSelectedClassrooms((prevSelected) =>
       prevSelected.includes(id)
@@ -159,18 +153,8 @@ function Disponibility() {
       ),
     }));
   };
-  // update table AULA -- block_id
-  useEffect(() => {
-    if (!formData.block_id) {
-      clear();
-    } else {
-      clear();
-      fetchData(`classrooms/block/${formData.block_id}`, setClassrom);
-    }
-  }, [formData.block_id]);
 
   function clear() {
-    //console.log("vacinado datos seleccionados");
     setClassrom([]);
     setSelectedClassrooms([]);
     setFormData((prevData) => ({
@@ -210,7 +194,6 @@ function Disponibility() {
       default: "#FFDFA3",
     };
     return colorMap[valor] || colorMap.default;
-    //return valor === 0 ? "#B2F2BB" : "#FF6B6B"; // disponible y ocupado
   };
 
   return (
@@ -245,12 +228,7 @@ function Disponibility() {
 
             <label className="fw-bold mt-3">AULAS</label>
             <div className="scrol-teacher-modal">
-              <Table
-                striped
-                bordered
-                hover
-                className="table-tag text-center mt-2"
-              >
+              <Table bordered hover className="table-tag text-center mt-2">
                 <thead>
                   <tr>
                     <th

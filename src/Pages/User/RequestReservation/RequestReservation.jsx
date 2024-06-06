@@ -117,7 +117,7 @@ export default function RequestReservation() {
   useEffect(() => {
     if (!!quantity.trim() && classroomsSelectedInModal.length > 0) {
       if (isQuantityLessThan50PercentClassrooms()) {
-        parseInt(quantity) > 25 &&
+        parseInt(quantity) > 24 &&
           setQuantityWarnings({
             message:
               "ADVERTENCIA: La capacidad de las aulas es demasiado alta para la cantidad de estudiantes solicitada.",
@@ -443,6 +443,7 @@ export default function RequestReservation() {
         show: true,
       });
     }
+    quantityWarnings.show = false;
   };
 
   const validatedFields = () => {
@@ -936,11 +937,15 @@ export default function RequestReservation() {
               <Alert variant={"warning"} className="">
                 {quantityWarnings.message}
               </Alert>
-              <div>
-                <span>
-                  Nota: Las advertencias no impiden enviar la solicitud de
-                  reserva, pero estas deberan ser revisadas por un encargado.
-                </span>
+              <div className="pb-2 pt-1">
+                <span>¿Está seguro de enviar la solicitud?</span>
+              </div>
+              <div className="pt-4">
+                <i>
+                  <b>Nota:</b> Las advertencias no impiden enviar la solicitud
+                  de reserva, pero estas deberan ser revisadas por un
+                  supervisor.
+                </i>
               </div>
             </>
           )}

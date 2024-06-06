@@ -115,6 +115,9 @@ export default function AttentionRequest(props) {
       headers: {
         "Content-Type": "application/json",
       },
+      // Colocar un body {
+      //   reason: El que ingreso el usuario.
+      // }
     })
       .then((res) => res.json())
       .then((data) => {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Form, Modal, Table } from "react-bootstrap";
+import { Alert, Form, Modal, Table } from "react-bootstrap";
 import { getSubjects } from "../../../services/subjects";
 import { getCurrentDate } from "../../../utils/getCurrentDate";
 import { getRequestsReasons, sendRequest } from "../../../services/requests";
@@ -44,7 +44,12 @@ export default function RequestReservation() {
   const [classroomsSelectedInModal, setClassroomsSelectedInModal] = useState(
     []
   );
+  // Suggests
   const [suggAvailable, setSuggAvailable] = useState(false);
+  const [suggMessage, setSuggMessage] = useState({
+    message: "",
+    invalid: false,
+  });
   // Errors messages
   const errorsInitialState = {
     subject: {
@@ -316,10 +321,10 @@ export default function RequestReservation() {
       date: dateValue,
     };
     const suggests = await getSuggestsClassrooms(dataSugg);
-    if (!suggests.message) {
+    if (suggests.status >= 200 && suggests.status < 300) {
       const suggList = () => {
         let array = [];
-        suggests.map((each) => {
+        suggests.data.map((each) => {
           classroomsByBlock.forEach((cls) => {
             if (cls.classroom_id === each.classroom_id) {
               array = [...array, cls];
@@ -333,10 +338,19 @@ export default function RequestReservation() {
         classrooms: { message: "", isInvalid: false },
       });
       setClassroomsSelectedInModal(suggList);
+      setSuggMessage({ message: "", invalid: false });
+    } else if (suggests.status >= 400 && suggests.status < 500) {
+      setSuggMessage({ message: suggests.data.message, invalid: true });
+    } else if (suggests.status >= 500) {
+      setSuggMessage({
+        message: "Error, vuelva a intentarlo mas tarde.",
+        invalid: true,
+      });
     }
   };
 
   const handleSendRequest = async () => {
+    //Esto debe mostrar un modal primero.
     if (validateFields()) {
       let groups = [...teachersSelectedInModal];
       let groupNumbers = groups.map(({ group_number }) => group_number);
@@ -803,6 +817,11 @@ export default function RequestReservation() {
                     >
                       Generar sugerencia
                     </button>
+                    {suggMessage.invalid && (
+                      <Alert variant={"danger"} className="text-center">
+                        {suggMessage.message}
+                      </Alert>
+                    )}
                   </div>
                   <div>
                     <button

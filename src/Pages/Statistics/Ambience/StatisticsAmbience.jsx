@@ -17,6 +17,7 @@ import {
 import { Line } from "react-chartjs-2";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import "./StatisticsAmbience.css";
+import StatisticsElement from "./StatisticsElement";
 
 ChartJS.register(
   ArcElement,
@@ -198,117 +199,97 @@ export default function StatisticsAmbience() {
       },
     },
   };
+  const elementsList = [
+    {
+      classroom_id: 1,
+      classroom_name: "LABORATORIO DE COMPUTO 1",
+      classroom_type_id: 1,
+      classroom_type_name: "LABORATORIO",
+      classroom_status_id: 1,
+      classroom_status_name: "HABILITADO",
+      capacity: 50,
+      floor: 0,
+      block_id: 1,
+      block_name: "AULAS INF-LAB",
+    },
+    {
+      classroom_id: 2,
+      classroom_name: "LABORATORIO DE COMPUTO 2",
+      classroom_type_id: 1,
+      classroom_type_name: "LABORATORIO",
+      classroom_status_id: 1,
+      classroom_status_name: "HABILITADO",
+      capacity: 50,
+      floor: 0,
+      block_id: 1,
+      block_name: "AULAS INF-LAB",
+    },
+    {
+      classroom_id: 3,
+      classroom_name: "LABORATORIO DE REDES",
+      classroom_type_id: 1,
+      classroom_type_name: "LABORATORIO",
+      classroom_status_id: 1,
+      classroom_status_name: "HABILITADO",
+      capacity: 25,
+      floor: 0,
+      block_id: 1,
+      block_name: "AULAS INF-LAB",
+    },
+    {
+      classroom_id: 4,
+      classroom_name: "LABORATORIO DE DESARROLLO",
+      classroom_type_id: 1,
+      classroom_type_name: "LABORATORIO",
+      classroom_status_id: 1,
+      classroom_status_name: "HABILITADO",
+      capacity: 25,
+      floor: 0,
+      block_id: 1,
+      block_name: "AULAS INF-LAB",
+    },
+    {
+      classroom_id: 5,
+      classroom_name: "LABORATORIO DE MANTENIMIENTO",
+      classroom_type_id: 1,
+      classroom_type_name: "LABORATORIO",
+      classroom_status_id: 1,
+      classroom_status_name: "HABILITADO",
+      capacity: 50,
+      floor: 0,
+      block_id: 1,
+      block_name: "AULAS INF-LAB",
+    },
+    {
+      classroom_id: 6,
+      classroom_name: "LABORATORIO DE COMPUTO 3",
+      classroom_type_id: 1,
+      classroom_type_name: "LABORATORIO",
+      classroom_status_id: 1,
+      classroom_status_name: "HABILITADO",
+      capacity: 50,
+      floor: 2,
+      block_id: 2,
+      block_name: "EDIFICIO MEMI",
+    },
+  ];
 
   return (
     <div>
       <div>
         <h1 className="text-center mb-4">Estadísticas de ambiente</h1>
       </div>
+      <div className="pt-2">
+        {elementsList?.map((each) => {
+          return (
+            <div key={each.classroom_id}>
+              <StatisticsElement {...each} optionsLine={optionsLine} />
+            </div>
+          );
+        })}
+      </div>
 
       <div className="search-cotainer mb-4">buscador</div>
-
-      <div className="tag-container position-relative mb-3">
-        <label className="tag-label">Nombre de aula</label>
-
-        <div className="mb-3">
-          <Row className="mt-3">
-            <Col xs md="auto">
-              <label className="total-requests mb-4"> Estado: Habilitado</label>
-            </Col>
-            <Col xs md="auto">
-              <Row xs md="auto">
-                <Col xs md="auto">
-                  <label className="mb-3"> Inicio</label>
-                  <input
-                    type="date"
-                    // id="start"
-                    // name="trip-start"
-                    value="2024-03-01"
-                    min="2024-03-01"
-                    max="2024-07-01"
-                  />
-
-                  {/* <Calendar
-                    value={date1}
-                    onChange={(e) => {
-                      setDate1(e.value);
-                      console.log(date1);
-                    }}
-                  /> */}
-                </Col>
-
-                <Col xs="auto" md="auto">
-                  <label className="mb-3"> Fin</label>
-                  <input type="date" />
-                  {/* <Calendar
-                    value={date2}
-                    onChange={(e) => {
-                      setDate2(e.value);
-                      console.log(date2);
-                    }}
-                  /> */}
-                </Col>
-              </Row>
-            </Col>
-
-            <Col className="justify-content-center" xs="auto" md="auto">
-              <Button onClick={handleRange}>Buscar por rango</Button>
-            </Col>
-          </Row>
-          <Row className="justify-content-center mb-4" lg={2}>
-            {/* <MultiSelect
-              value={selectedCities}
-              onChange={handleSelector}
-              options={cities}
-              optionLabel="name"
-              display="chip"
-              placeholder="Seleccionar ciudades"
-              maxSelectedLabels={4}
-              className="w-full md:w-20rem mt-3"
-            /> */}
-            {/* <Calendar
-              value={dates}
-              onChange={handleCalendar}
-              selectionMode="range"
-              readOnlyInput
-              hideOnRangeSelection
-            /> */}
-            <Col>
-              <div></div>
-            </Col>
-            <Col>
-              {/* tabla, grafico */}
-
-              <Container>
-                <h2>Tabla de Usuarios</h2>
-                <div className="table-responsive">
-                  <Table bordered>
-                    <thead>
-                      <tr>
-                        <th>Motivo</th>
-                        <th>Cantidad</th>
-                        <th>Cantidad de Estudiantes</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {dataTable.map((item) => (
-                        <tr key={item.id}>
-                          <td>{item.motivo}</td>
-                          <td>{item.cant}</td>
-                          <td>{item.cantEst}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </div>
-              </Container>
-            </Col>
-            <Col>
-              <Line data={dataLine} options={optionsLine} />
-            </Col>
-          </Row>
-        </div>
-      </div>
     </div>
   );
 }

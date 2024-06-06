@@ -9,13 +9,7 @@ const ListEnvironment = ({ list, handleShowModal }) => {
   const url = import.meta.env.VITE_REACT_API_URL;
 
   useEffect(() => {
-    const fetchData = async () => {
-      await fetchBlockOptions();
-      await fetchTypes();
-      await statusTypes();
-    };
-
-    fetchData();
+    Promise.all([fetchBlockOptions(), fetchTypes(), statusTypes()]);
   }, []);
 
   const fetchBlockOptions = () => {

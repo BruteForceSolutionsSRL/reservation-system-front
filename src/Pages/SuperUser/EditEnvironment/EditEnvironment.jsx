@@ -34,6 +34,31 @@ function EditEnvironment() {
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [backendError, setBackendError] = useState("");
 
+  useEffect(() => {
+    setLoading(true);
+    Promise.all([
+      fetchBlockOptions(),
+      fetchTypes(),
+      allEnvironments(),
+      statusTypes(),
+    ]).finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (searchValue === "") {
+      setList(allReservations);
+      setMsgNoResults("");
+    } else {
+      const results = searchEnvironmentsForEdit(allReservations, searchValue);
+      if (results.length < 1) {
+        setMsgNoResults("No se encontraron resultados");
+      } else {
+        setMsgNoResults("");
+      }
+      setList(results);
+    }
+  }, [searchValue, allReservations]);
+
   const handleShowModal = (reservation) => {
     setCurrentReservation({ ...reservation, errors: {} });
     setShowModal(true);
@@ -79,7 +104,7 @@ function EditEnvironment() {
     setCurrentReservation(null);
     setShowModal(false);
   };
-  
+
   const handleSaveChanges = () => {
     const formHasErrors = Object.keys(currentReservation.errors).some(
       (key) => currentReservation.errors[key]
@@ -111,13 +136,17 @@ function EditEnvironment() {
           console.error("Error al enviar los datos:", error);
           setBackendError("Error al enviar los datos: " + error.message);
         });
-    } else {   
+    } else {
       console.log("Formulario inválido, llene todos los campos");
     }
   };
 
   const sendData = async (newData, classroom_id) => {
-    console.log("Esto es lo que se envia al back editado", newData, classroom_id);
+    console.log(
+      "Esto es lo que se envia al back editado",
+      newData,
+      classroom_id
+    );
     try {
       const response = await fetch(url + `classrooms/${classroom_id}`, {
         method: "PUT",
@@ -199,35 +228,8 @@ function EditEnvironment() {
     },
   ];
 
-  useEffect(() => {
-    if (searchValue === "") {
-      setList(allReservations);
-      setMsgNoResults("");
-    } else {
-      const results = searchEnvironmentsForEdit(allReservations, searchValue);
-      if (results.length < 1) {
-        setMsgNoResults("No se encontraron resultados");
-      } else {
-        setMsgNoResults("");
-      }
-      setList(results);
-    }
-  }, [searchValue, allReservations]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      //setLoading(true);
-      await fetchBlockOptions();
-      await fetchTypes();
-      await allEnvironments();
-      await statusTypes();
-    };
-
-    fetchData();
-  }, []);
-
-  const fetchBlockOptions = () => {
-    fetch(url + "blocks")
+  const fetchBlockOptions = async () => {
+    await fetch(url + "blocks")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -243,8 +245,8 @@ function EditEnvironment() {
       });
   };
 
-  const fetchTypes = () => {
-    fetch(url + "classrooms/types")
+  const fetchTypes = async () => {
+    await fetch(url + "classrooms/types")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -260,8 +262,8 @@ function EditEnvironment() {
       });
   };
 
-  const statusTypes = () => {
-    fetch(url + "classrooms/statuses")
+  const statusTypes = async () => {
+    await fetch(url + "classrooms/statuses")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -277,8 +279,8 @@ function EditEnvironment() {
       });
   };
 
-  const allEnvironments = () => {
-    fetch(url + "classrooms")
+  const allEnvironments = async () => {
+    await fetch(url + "classrooms")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -288,7 +290,6 @@ function EditEnvironment() {
       .then((data) => {
         const optionsWithDefault = [...data];
         setAllReservations(optionsWithDefault);
-        //setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching options:", error);
@@ -373,7 +374,6 @@ function EditEnvironment() {
   return (
     <div className="container">
       <h1 className="text-center">Lista de Ambientes</h1>
-
       <SearchBar
         value={searchValue}
         onChange={(event) => {
@@ -387,14 +387,17 @@ function EditEnvironment() {
         {loading ? (
           <div className="text-center">
             <Spinner animation="border" variant="secondary" role="status">
-              <span className="visually-hidden">Cargando...</span>
+              <span className="visually-hidden">Loading...</span>
             </Spinner>
           </div>
         ) : (
           <div>
             <hr></hr>
             {msgNoResults && <div>{msgNoResults}</div>}
-            <ListEnvironment list={list} handleShowModal={handleShowModal} />
+            <ListEnvironment
+              list={list}
+              handleShowModal={handleShowModal}
+            />
           </div>
         )}
       </div>

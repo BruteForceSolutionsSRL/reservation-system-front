@@ -44,7 +44,7 @@ hr.h-color {
 }
 
 .scroll {
-  height: 90vh;
+  height: 100vh;
   overflow-x: hidden;
   overflow-y: scroll;
   width: 100%;

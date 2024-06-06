@@ -7,6 +7,7 @@ export default function RequestInformation({
   content,
   customBottonsForModal,
   showConflicts = false,
+  index,
 }) {
   const {
     id,
@@ -182,22 +183,25 @@ export default function RequestInformation({
   return (
     <>
       <div
-        className="border border-dark rounded row mt-2 mb-2 text-center"
+        className="border border-dark rounded row mb-2"
         style={{ minWidth: "300px" }}
       >
-        <div className="col-1 mt-1 mb-1">
+        <div className="col-1 align-self-center">
+          <b>{`${index}.`}</b>
+        </div>
+        <div className="col-1 align-self-center">
           <b>{id}</b>
         </div>
-        <div className="col-3 mt-1 mb-1">{subject}</div>
-        <div className="col-2 mt-1 mb-1">{quantity_studets}</div>
-        <div className="col-2 mt-1 mb-1">{reservation_date}</div>
-        <div className="col-2 mt-1 mb-1">{`${periods[0]} - ${periods[1]}`}</div>
-        <div className="col-sm-2 mt-1 mb-1">
+        <div className="col-3 align-self-center">{subject}</div>
+        <div className="col-2 align-self-center">{quantity_studets}</div>
+        <div className="col-2 align-self-center">{reservation_date}</div>
+        <div className="col-2 align-self-center">{`${periods[0]} - ${periods[1]}`}</div>
+        <div className="col-sm-1 align-self-center">
           <button
-            className="btn btn-outline-primary mt-1"
+            className="btn btn-outline-primary btn-block"
             onClick={handleClickModal}
           >
-            Detalles
+            <b>Detalles</b>
           </button>
         </div>
       </div>

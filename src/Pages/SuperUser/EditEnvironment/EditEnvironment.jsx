@@ -10,7 +10,7 @@ import { searchEnvironmentsForEdit } from "../../../utils/searchRequests";
 import RequestInformation from "../../../Components/RequestInformation/RequestInformation";
 import { getRequests, getTeacherRequests } from "../../../services/requests";
 import ReusableModal from "./ReusableModal";
-import ListEnvironment from "./ListEnvironment"; // Importa el nuevo componente
+import ListEnvironment from "./ListEnvironment";
 
 function EditEnvironment() {
   const [loading, setLoading] = useState(false);
@@ -43,14 +43,12 @@ function EditEnvironment() {
   const handleSaveConfirmationsModal = () => {
     setSaveModal(false);
     setConfirmationsModal(true);
-    //Save in BackEnd
     handleSaveChanges();
   };
   const handleCloseConfirmationsModal = () => {
     setConfirmationsModal(false);
   };
 
-  /******************************************************** */
   const handleSaveModal = () => {
     const formHasErrors = Object.keys(currentReservation.errors).some(
       (key) => currentReservation.errors[key]
@@ -66,7 +64,6 @@ function EditEnvironment() {
     setShowModal(true);
   };
 
-  /******************************************************/
   const handleCancelModal = () => {
     setCancelModal(true);
     setShowModal(false);
@@ -82,9 +79,7 @@ function EditEnvironment() {
     setCurrentReservation(null);
     setShowModal(false);
   };
-
   
-
   const handleSaveChanges = () => {
     const formHasErrors = Object.keys(currentReservation.errors).some(
       (key) => currentReservation.errors[key]
@@ -103,9 +98,6 @@ function EditEnvironment() {
         floor_number: parseInt(currentReservation.floor),
         status_id: parseInt(currentReservation.classroom_status_id),
       };
-      console.log("Nuevos datos", newDataEnvironment);
-      console.log(currentReservation);
-      //Send in BackEnd
       sendData(newDataEnvironment, currentReservation.classroom_id)
         .then((responseMessage) => {
           console.log("Modificacion exitosa:", responseMessage);
@@ -160,7 +152,6 @@ function EditEnvironment() {
     });
   };
 
-  // Botones personalizados para el modal
   const footerButtonsModal = [
     {
       label: "Guardar",
@@ -173,7 +164,7 @@ function EditEnvironment() {
       onClick: handleCancelModal,
     },
   ];
-  //  Botton Cancel
+
   const cancelButtonsModal = [
     {
       label: "Aceptar",
@@ -186,7 +177,7 @@ function EditEnvironment() {
       onClick: handleCancelBackModal,
     },
   ];
-  // Botton Save
+
   const saveButtonsModal = [
     {
       label: "Aceptar",
@@ -200,7 +191,6 @@ function EditEnvironment() {
     },
   ];
 
-  // Botton Save confirmnations
   const saveButtonsConfirmationsModal = [
     {
       label: "Aceptar",
@@ -209,7 +199,6 @@ function EditEnvironment() {
     },
   ];
 
-  // useEffect para búsqueda
   useEffect(() => {
     if (searchValue === "") {
       setList(allReservations);
@@ -306,7 +295,6 @@ function EditEnvironment() {
       });
   };
 
-  // Validador de cantidad
   const validateCantidad = (value) => {
     if (!value) {
       return "Ingrese una cantidad.";
@@ -316,7 +304,6 @@ function EditEnvironment() {
     return null;
   };
 
-  // Validador de piso
   const validateFloor = (value) => {
     const maxFloor = getFloor(currentReservation.block_id);
     if (!value) {
@@ -623,5 +610,3 @@ function EditEnvironment() {
   );
 }
 export default EditEnvironment;
-//{backendError && <p style={{ color: "red" }}>{backendError.message}</p>}
-//El ambiente se actualizo con exito

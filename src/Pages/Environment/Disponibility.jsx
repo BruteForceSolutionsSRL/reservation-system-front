@@ -197,7 +197,7 @@ function Disponibility() {
   };
 
   return (
-    <div className="table-responsive">
+    <div>
       <h1 className="text-center">Disponibilidad de ambientes</h1>
 
       <div className="mt-3 ms-5">

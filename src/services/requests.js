@@ -37,6 +37,7 @@ export function getRequestsReasons() {
 }
 
 export function sendRequest(request) {
+  let responseFetch = {};
   return fetch(url + "reservations", {
     method: "POST",
     headers: {
@@ -44,9 +45,17 @@ export function sendRequest(request) {
     },
     body: JSON.stringify(request),
   })
-    .then((response) => response.json())
+    .then((response) => {
+      let status = response.status;
+      responseFetch = { ...responseFetch, status: status };
+      return response.json();
+    })
     .then((data) => {
-      console.log(data);
-      return data;
+      responseFetch = { ...responseFetch, data: data };
+      return responseFetch;
+    })
+    .catch((error) => {
+      responseFetch.data = error.message;
+      return responseFetch;
     });
 }

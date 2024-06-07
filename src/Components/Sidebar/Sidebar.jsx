@@ -47,7 +47,7 @@ export default function Sidebar({ user }) {
           <ul className="list-unstyled px-2">
             <li className={activeItem === "home" ? "active" : ""}>
               <Link
-                to="home"
+                to="#"
                 className="text-decoration-none px-3  d-block"
                 onClick={() => handleItemClick("home")}
               >
@@ -143,22 +143,24 @@ export default function Sidebar({ user }) {
                     </Link>
                   </li>
                 )}
-                <li
-                  className={
-                    activeItem === "request-history"
-                      ? "active list-unstyled px-2"
-                      : "list-unstyled px-2"
-                  }
-                >
-                  <Link
-                    to="request-history"
-                    className="text-decoration-none px-3 py-2 d-block"
-                    onClick={() => handleItemClick("request-history")}
+                {user === "user" && (
+                  <li
+                    className={
+                      activeItem === "request-history"
+                        ? "active list-unstyled px-2"
+                        : "list-unstyled px-2"
+                    }
                   >
-                    <i className="bi bi-list-check"></i> Historial de
-                    solicitudes
-                  </Link>
-                </li>
+                    <Link
+                      to="request-history"
+                      className="text-decoration-none px-3 py-2 d-block"
+                      onClick={() => handleItemClick("request-history")}
+                    >
+                      <i className="bi bi-list-check"></i> Historial de
+                      solicitudes
+                    </Link>
+                  </li>
+                )}
               </div>
             </Collapse>
           </ul>
@@ -231,22 +233,23 @@ export default function Sidebar({ user }) {
               </Collapse>
             </ul>
           )}
-
-          <hr className="h-color mx-2" />
-          <ul className="list-unstyled px-2">
-            <li className="">
-              <Link
-                to="/"
-                className="text-decoration-none px-3 py-2 d-block"
-                onClick={() => {
-                  logout();
-                  handleItemClick("home");
-                }}
-              >
-                <i className="bi bi-box-arrow-left"></i> Cerrar sesión
-              </Link>
-            </li>
-          </ul>
+          <div>
+            <hr className="h-color mx-2 align-self-end" />
+            <ul className="list-unstyled px-2">
+              <li className="align-self-end">
+                <Link
+                  to="/"
+                  className="text-decoration-none px-3 py-2 d-block"
+                  onClick={() => {
+                    logout();
+                    handleItemClick("home");
+                  }}
+                >
+                  <i className="bi bi-box-arrow-left"></i> Cerrar sesión
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
         <div className="content">
           <div className="bg-light p-3 d-md-none">

@@ -1,12 +1,10 @@
 .formulario-principal {
-  background-color: #f1f0f0; /*Quitarlo al final*/
   width: 100%;
   border-radius: 15px;
   margin: 25px auto;
   padding: 20px;
   font-weight: bold;
 }
-
 
 /*Teachers component*/
 .teacher-container {
@@ -18,7 +16,7 @@
 }
 
 .periods-container {
-   /*background-color: #cecccc; */
+  /*background-color: #cecccc; */
   border-radius: 15px;
   margin: 20px auto;
   padding: 10px;
@@ -27,9 +25,9 @@
   display: flex;
   flex-direction: row;
 }
-.scrol-teacher{
+.scrol-teacher {
   overflow-y: auto;
-  max-height:206px;
+  max-height: 206px;
   scrollbar-width: thin;
 }
 
@@ -75,9 +73,8 @@
     margin-top: 5px;
   }
 
-  .teacher-table-tag{
+  .teacher-table-tag {
     margin: 10px;
-
   }
 
   .teacher-table-tag {
@@ -85,30 +82,13 @@
     margin-right: 100px;
     /* Eliminar margen derecho en dispositivos móviles */
   }
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*Materia and Reason components*/
 .materia-reason-container {
   display: flex;
   flex-direction: column;
 }
-
 
 .materia-label {
   margin-bottom: -7px;
@@ -120,9 +100,9 @@
   .materia-reason-container {
     flex-direction: row;
   }
-    .materia-tag {
-      width: 900px;
-    }
+  .materia-tag {
+    width: 900px;
+  }
 }
 
 /*Student and date components*/
@@ -136,12 +116,12 @@
   margin-right: 20px;
 }
 
-.student-tag{
+.student-tag {
   width: 220px;
   margin-right: 50px;
 }
 
-.date-tag{
+.date-tag {
   width: 180px;
 }
 
@@ -163,32 +143,32 @@
 }
 
 /*Time piker Star and End*/
-  .tag-label {
-    position: absolute;
-    top: -14px;
-    left: 10px;
-    background-color: white;
-    padding: 0 10px;
-    font-weight: bold;
-  }
-  .tag-time-container {
-      border: 2px solid #ccc;
-      padding: 20px;
-      border-radius: 5px;
-      position: relative;
-      padding-bottom: 0px;
-    }
+.tag-label {
+  position: absolute;
+  top: -14px;
+  left: 10px;
+  background-color: white;
+  padding: 0 10px;
+  font-weight: bold;
+}
+.tag-time-container {
+  border: 2px solid #ccc;
+  padding: 20px;
+  border-radius: 5px;
+  position: relative;
+  padding-bottom: 0px;
+}
 
-  .time-container {
-    /* background-color: #cecccc; */
-    border-radius: 15px;
-    margin: 20px auto;
-    padding: 10px;
-    width: 100%;
-    margin-top: -0px;
-    display: flex;
-    flex-direction: row;
-  }
+.time-container {
+  /* background-color: #cecccc; */
+  border-radius: 15px;
+  margin: 20px auto;
+  padding: 10px;
+  width: 100%;
+  margin-top: -0px;
+  display: flex;
+  flex-direction: row;
+}
 
 .start-tag,
 .end-tag {
@@ -196,7 +176,7 @@
   margin-right: 50px;
 }
 .start-label,
-.end-label{
+.end-label {
   margin-right: 20px;
 }
 
@@ -210,13 +190,13 @@
   .time-container {
     flex-direction: column;
   }
-    .start-tag,
-    .end-tag {
-      margin-top: -15px;
-      display: block;
-      margin-right: 0;
-      margin-bottom: 10%;
-    }
+  .start-tag,
+  .end-tag {
+    margin-top: -15px;
+    display: block;
+    margin-right: 0;
+    margin-bottom: 10%;
+  }
 }
 
 /*Bloque and components*/
@@ -229,15 +209,15 @@
 }
 
 .block-container {
-    /* background-color: #cecccc; */
-    border-radius: 15px;
-    margin: 20px auto;
-    padding: 10px;
-    width: 100%;
-    margin-top: -0px;
-    display: flex;
-    flex-direction: row;
-  }
+  /* background-color: #cecccc; */
+  border-radius: 15px;
+  margin: 20px auto;
+  padding: 10px;
+  width: 100%;
+  margin-top: -0px;
+  display: flex;
+  flex-direction: row;
+}
 
 .block-tag {
   display: flex;
@@ -246,7 +226,7 @@
 .block-label {
   margin-right: 20px;
 }
-.block-input-tag{
+.block-input-tag {
   width: 840px;
 }
 
@@ -261,10 +241,10 @@
     margin-top: -20px;
     display: block;
   }
-    .block-input-tag {
-      margin-top: -7px;
-      width: auto;
-    }
+  .block-input-tag {
+    margin-top: -7px;
+    width: auto;
+  }
 }
 
 /*Aula componente*/
@@ -291,7 +271,7 @@
   width: 100%;
 }
 
-.class-tag ,
+.class-tag,
 .table-tag {
   width: 100%;
 }
@@ -311,7 +291,6 @@
   .class-tag,
   .suggestion-edit-tag {
     margin: 10px;
-
   }
 
   .class-tag {
@@ -319,5 +298,4 @@
     margin-right: 100px;
     /* Eliminar margen derecho en dispositivos móviles */
   }
-  
 }

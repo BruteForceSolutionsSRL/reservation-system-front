@@ -1,12 +1,14 @@
 body {
   background: #eee;
+  min-width: 300px;
 }
 
 #side_nav {
   background: white;
-  min-width: 250px;
-  max-width: 250px;
+  min-width: 200px;
+  max-width: 240px;
   transition: all 0.3s;
+  font-size: 14px;
 }
 .content {
   min-height: 100vh;
@@ -42,7 +44,7 @@ hr.h-color {
 }
 
 .scroll {
-  height: 90vh;
+  height: 100vh;
   overflow-x: hidden;
   overflow-y: scroll;
   width: 100%;

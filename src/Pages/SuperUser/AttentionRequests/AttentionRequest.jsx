@@ -52,7 +52,7 @@ export default function AttentionRequest(props) {
   // for conflicts
   const conflictsFetch = async () => {
     if (conflicts) {
-      await fetch(URL + `reservation/conflicts/${reservation_id}`)
+      await fetch(URL + `reservations/${reservation_id}/conflicts`)
         .then((res) => res.json())
         .then((data) => {
           setConflicts(data);
@@ -81,7 +81,7 @@ export default function AttentionRequest(props) {
 
   // Accept request
   const acceptRequest = async () => {
-    await fetch(URL + `reservation/assign/${reservation_id}`, {
+    await fetch(URL + `reservations/${reservation_id}/assign`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -110,7 +110,7 @@ export default function AttentionRequest(props) {
   // Refuse request
   const refuseRequest = async () => {
     setSpinnerInModal(true);
-    await fetch(URL + `reservation/reject/${reservation_id}`, {
+    await fetch(URL + `reservations/${reservation_id}/reject`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

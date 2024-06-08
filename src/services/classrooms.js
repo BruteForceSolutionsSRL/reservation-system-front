@@ -9,6 +9,7 @@ export function getClassroomsByBlock(id) {
 }
 
 export function getSuggestsClassrooms(dataSugg) {
+  let responseFetch = {};
   return fetch(url + "classrooms/reservation/suggest", {
     method: "POST",
     headers: {
@@ -16,9 +17,14 @@ export function getSuggestsClassrooms(dataSugg) {
     },
     body: JSON.stringify(dataSugg),
   })
-    .then((response) => response.json())
+    .then((response) => {
+      let status = response.status;
+      responseFetch = { ...responseFetch, status: status };
+      return response.json();
+    })
     .then((data) => {
-      return data;
+      responseFetch = { ...responseFetch, data: data };
+      return responseFetch;
     });
 }
 

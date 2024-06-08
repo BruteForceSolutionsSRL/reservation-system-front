@@ -92,6 +92,23 @@ export default function Sidebar({ user }) {
                     </Link>
                   </li>
                 )}
+
+                <li
+                  className={
+                    activeItem === "statistics"
+                      ? "active list-unstyled px-2"
+                      : "list-unstyled px-2"
+                  }
+                >
+                  <Link
+                    to="statistics-ambience"
+                    className="text-decoration-none px-3 py-2 d-block"
+                    onClick={() => handleItemClick("statistics")}
+                  >
+                    <i className="bi bi-graph-up"></i> Estadistica de uso de
+                    ambiente
+                  </Link>
+                </li>
               </div>
             </Collapse>
           </ul>
@@ -157,17 +174,6 @@ export default function Sidebar({ user }) {
                   >
                     <i className="bi bi-list-check"></i> Historial de
                     solicitudes
-                  </Link>
-                </li>
-
-                <li className="">
-                  <Link
-                    to="statistics-ambience"
-                    className="text-decoration-none px-3 py-2 d-block"
-                    onClick={() => handleItemClick("#")}
-                  >
-                    <i className="fa fa-chart-line"></i> Estadistica de uso de
-                    ambiente
                   </Link>
                 </li>
               </div>

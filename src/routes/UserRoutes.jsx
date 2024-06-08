@@ -1,7 +1,6 @@
 import { Route, Routes } from "react-router-dom";
-import Sidebar from "../Components/Sidebar.jsx/Sidebar";
+import Sidebar from "../Components/Sidebar/Sidebar";
 import Homepage from "../Pages/User/Homepage/Homepage";
-import RequestReservationAmbience from "../Components/RequestReservationAmbience/RequestReservationAmbience";
 import Disponibility from "../Pages/Environment/Disponibility";
 import ListCancel from "../Pages/User/ListCancel/ListCancel";
 import ErrorPage from "../Components/ErrorPage/ErrorPage";
@@ -14,10 +13,6 @@ export default function UserRoutes() {
     <Routes>
       <Route element={<Sidebar user="user" />}>
         <Route path="home" element={<Homepage />}></Route>
-        {/* <Route
-          path="enviroment-request"
-          element={<RequestReservationAmbience />}
-        ></Route> */}
         <Route
           path="enviroment-request"
           element={<RequestReservation />}

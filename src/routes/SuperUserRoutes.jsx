@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import Sidebar from "../Components/Sidebar.jsx/Sidebar";
+import Sidebar from "../Components/Sidebar/Sidebar";
 import Homepage from "../Pages/User/Homepage/Homepage";
 import Disponibility from "../Pages/Environment/Disponibility";
 import EnvironmentRegistration from "../Pages/SuperUser/EnvironmentRegistration/EnvironmentRegistration";

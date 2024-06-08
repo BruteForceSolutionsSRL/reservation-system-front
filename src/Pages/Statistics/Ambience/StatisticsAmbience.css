@@ -1,0 +1,7 @@
+.table-responsive {
+  max-height: 165px; /* Ajusta esta altura según tus necesidades */
+  overflow-y: auto;
+  overflow-x: auto;
+  height: fit-content;
+  width: min-content;
+}

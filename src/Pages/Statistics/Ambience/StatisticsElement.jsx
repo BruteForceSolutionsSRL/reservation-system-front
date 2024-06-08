@@ -37,7 +37,8 @@ ChartJS.register(
 );
 
 export default function StatisticsElement(props) {
-  const { classroom_name, classroom_status_name, classroom_id } = props;
+  const { classroom_name, classroom_status_name, classroom_id, block_name } =
+    props;
 
   // Chart data
   const [pendingData, setPendingData] = useState([]);
@@ -54,9 +55,10 @@ export default function StatisticsElement(props) {
   const [dataDounot, setDataDounot] = useState([]);
 
   // Start and end selectors
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState("2024-03-01");
+  const [endDate, setEndDate] = useState("2024-07-01");
   const [errors, setErrors] = useState({});
+  const [showContent, setShowContent] = useState(false);
 
   const handleSearchByRange = async () => {
     const dataBody = {
@@ -65,14 +67,16 @@ export default function StatisticsElement(props) {
       date_end: endDate,
     };
     const response = await getDataPerRange(dataBody);
-    console.log(response);
     if (response.status >= 200 && response.status < 300) {
       processChartData(response.data);
       setErrors({ show: false, message: response.data.message });
+      setShowContent(true);
     } else if (response.status >= 400 && response.status < 500) {
       setErrors({ show: true, message: response.data.message });
+      setShowContent(false);
       processChartData([]);
     } else if (response.status >= 500) {
+      setShowContent(false);
       processChartData([]);
       setErrors({ show: true, message: response.data.message });
     }
@@ -183,15 +187,30 @@ export default function StatisticsElement(props) {
   return (
     <Container className="tag-container position-relative mb-5">
       <Card className="p-4 mb-4">
-        <Card.Header className="bg-primary text-white">
-          <h4>{classroom_name}</h4>
+        <Card.Header className="bg-primary">
+          <div className="d-flex justify-content-between">
+            <h4 className="text-light">{classroom_name}</h4>
+            <div>
+              <b className="badge text-bg-secondary align-self-center">
+                {block_name}
+              </b>
+            </div>
+          </div>
         </Card.Header>
         <Card.Body>
           <Row className="align-items-center mb-3">
             <Col xs md="auto">
               <Form.Label className="font-weight-bold">
-                Estado:{" "}
-                <span className="text-success">{classroom_status_name}</span>
+                Estado:
+                <div
+                  className={`bg bg-${
+                    classroom_status_name === "HABILITADO"
+                      ? "success"
+                      : classroom_status_name === "DESHABILITADO" && "danger"
+                  } p-2 rounded`}
+                >
+                  <b className="text-light">{classroom_status_name}</b>
+                </div>
               </Form.Label>
             </Col>
             <Col xs="auto" md="3">
@@ -232,54 +251,58 @@ export default function StatisticsElement(props) {
           )}
         </Card.Body>
       </Card>
-      <Row className="justify-content-center mb-4">
-        <Col md={3} className="mb-4">
-          <Card>
-            <Card.Body>
-              <Doughnut options={optionsDoughnut} data={dataDoughnut} />
-              <Card.Title className="text-center mt-3">Motivos</Card.Title>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={4} className="mb-4">
-          <Card>
-            <Card.Body>
-              <Table bordered>
-                <thead>
-                  <tr>
-                    <th>Motivo</th>
-                    <th>Cantidad</th>
-                    <th>Cantidad de Estudiantes</th>
+      {showContent ? (
+        <Row className="justify-content-center mb-4">
+          <Col md={3} className="mb-4">
+            <Card>
+              <Card.Body>
+                <Doughnut options={optionsDoughnut} data={dataDoughnut} />
+                <Card.Title className="text-center mt-3">Motivos</Card.Title>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={4}>
+            <Table bordered>
+              <thead>
+                <tr>
+                  <th>Motivo</th>
+                  <th>Cantidad</th>
+                  <th>Cantidad promedio de Estudiantes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tableData.map((row) => (
+                  <tr key={row.reservation_reason_id}>
+                    <td>{row.reservation_reason_name}</td>
+                    <td>{row.total_reservations}</td>
+                    <td>{row.average_students}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {tableData.map((row) => (
-                    <tr key={row.reservation_reason_id}>
-                      <td>{row.reservation_reason_name}</td>
-                      <td>{row.total_reservations}</td>
-                      <td>{row.average_students}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-              <h5 className="mt-3">
+                ))}
+              </tbody>
+            </Table>
+            <div>
+              <b>
                 Total de solicitudes:{" "}
                 {tableData.reduce(
                   (total, row) => total + row.total_reservations,
                   0
                 )}
-              </h5>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={5} className="mb-4">
-          <Card style={{ height: "325px" }}>
-            <Card.Body>
-              <Line data={dataLine} options={optionsLine} />
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+              </b>
+            </div>
+          </Col>
+          <Col md={5} className="mb-4">
+            <Card style={{ height: "325px" }}>
+              <Card.Body>
+                <Line data={dataLine} options={optionsLine} />
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      ) : (
+        <div className="text-center">
+          <h3>Seleccione un rango de fechas.</h3>
+        </div>
+      )}
     </Container>
   );
 }

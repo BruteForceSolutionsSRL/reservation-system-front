@@ -9,12 +9,14 @@ import {
   Title,
   Tooltip,
   Legend,
-} from "chart.js"; // npm install --save chart.js react-chartjs-2
+} from "chart.js";
 
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import "./StatisticsAmbience.css";
 import StatisticsElement from "./StatisticsElement";
 import { getClassrooms } from "../../../services/statistics";
+import SearchBar from "../../../Components/SearchBar/SearchBar.jsx";
+import { searchByClassroomsForStatistics } from "../../../utils/searchEnvironments.js";
 
 ChartJS.register(
   ArcElement,
@@ -29,11 +31,33 @@ ChartJS.register(
 
 export default function StatisticsAmbience() {
   const [elementsList, setElementList] = useState([]);
-  const [hardCode, setHardCode] = useState(true);
+  const [show, setShow] = useState(true);
+  const [searchValue, setSearchValue] = useState("");
+  const [searchResultsList, setSearchResultsList] = useState([]);
+  const [msgNoResults, setMsgNoResults] = useState("");
 
   useEffect(() => {
     fetchClassrooms();
   }, []);
+
+  useEffect(() => {
+    if (searchValue === "") {
+      setSearchResultsList(elementsList);
+      setMsgNoResults("");
+      setShow(true);
+    } else {
+      const results = searchByClassroomsForStatistics(
+        elementsList,
+        searchValue
+      );
+      if (results.length < 1) {
+        setMsgNoResults("No se encontraron resultados para esta busqueda.");
+      } else {
+        setMsgNoResults("");
+      }
+      setSearchResultsList(results);
+    }
+  }, [searchValue]);
 
   const fetchClassrooms = async () => {
     try {
@@ -51,27 +75,40 @@ export default function StatisticsAmbience() {
         <h1 className="text-center mb-4">Estadísticas de ambiente</h1>
       </div>
       <div className="search-cotainer mb-4">
-        <input
-          type="search"
-          placeholder="Buscar"
-          onChange={() => setHardCode(false)}
+        <SearchBar
+          value={searchValue}
+          onChange={(event) => {
+            const regex = /^[a-zA-Z0-9\s]*$/;
+            if (regex.test(event.target.value) || event.target.value === "") {
+              setSearchValue(event.target.value.toUpperCase());
+            }
+            setShow(false);
+          }}
+          onPaste={(e) => e.preventDefault()}
         />
       </div>
       <div className="pt-3">
-        {hardCode ? (
-          <>
-            <b>Busque algo</b>
-          </>
+        {show ? (
+          <div className="text-center">
+            <h2>Realice una busqueda para ver resultados de ambientes.</h2>
+          </div>
         ) : (
           <>
-            {elementsList.map((each) => {
-              return (
-                <div key={each.classroom_id}>
-                  {/* <StatisticsElement {...each} optionsLine={optionsLine} /> */}
-                  <StatisticsElement {...each} />
-                </div>
-              );
-            })}
+            {searchResultsList.length === 0 ? (
+              <div className="text-center">
+                <h2>{msgNoResults}</h2>
+              </div>
+            ) : (
+              <>
+                {searchResultsList.map((each) => {
+                  return (
+                    <div key={each.classroom_id}>
+                      <StatisticsElement {...each} />
+                    </div>
+                  );
+                })}
+              </>
+            )}
           </>
         )}
       </div>

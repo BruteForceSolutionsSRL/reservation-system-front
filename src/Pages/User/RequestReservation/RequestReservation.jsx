@@ -123,6 +123,13 @@ export default function RequestReservation() {
               "ADVERTENCIA: La capacidad de las aulas es demasiado alta para la cantidad de estudiantes solicitada.",
             show: true,
           });
+      } else if (isQuantityMoreThan50PercentClassrooms()) {
+        parseInt(quantity) > 25 &&
+          setQuantityWarnings({
+            message:
+              "ADVERTENCIA: La capacidad de las aulas es demasiado baja para la cantidad de estudiantes solicitada.",
+            show: true,
+          });
       } else {
         setQuantityWarnings({
           message: "",
@@ -236,6 +243,18 @@ export default function RequestReservation() {
     };
     totalClassroomsCapacity = totalCapacity();
     return quantityParsed < totalClassroomsCapacity * 0.5;
+  };
+
+  const isQuantityMoreThan50PercentClassrooms = () => {
+    let quantityParsed = parseInt(quantity);
+    let totalClassroomsCapacity = 0;
+    let totalCapacity = () => {
+      let total = 0;
+      classroomsSelectedInModal.forEach((each) => (total += each.capacity));
+      return total;
+    };
+    totalClassroomsCapacity = totalCapacity();
+    return quantityParsed > totalClassroomsCapacity * 0.5;
   };
 
   const handleDateChange = (e) => {
@@ -383,6 +402,8 @@ export default function RequestReservation() {
       setClassroomsSelectedInModal(suggList);
       setSuggMessage({ message: "", invalid: false });
     } else if (suggests.status >= 400 && suggests.status < 500) {
+      setSuggMessage({ message: suggests.data.message, invalid: true });
+    } else if (suggests.status === 404) {
       setSuggMessage({ message: suggests.data.message, invalid: true });
     } else if (suggests.status >= 500) {
       setSuggMessage({

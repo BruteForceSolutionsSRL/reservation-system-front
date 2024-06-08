@@ -9,6 +9,9 @@ import RequestsHistory from "../Pages/RequestsHistory/RequestsHistory";
 import EditEnvironment from "../Pages/SuperUser/EditEnvironment/EditEnvironment";
 import DeleteEnvironment from "../Pages/SuperUser/DeleteEnvironment/DeleteEnvironment";
 import StatisticsAmbience from "../Pages/Statistics/Ambience/StatisticsAmbience";
+import BlockRegister from "../Pages/SuperUser/BlockRegister/BlockRegister";
+import EditBlock from "../Pages/SuperUser/EditBlock/EditBlock";
+import DeleteBlock from "../Pages/SuperUser/DeleteBlock/DeleteBlock";
 
 export default function SuperUserRoutes() {
   return (
@@ -24,6 +27,9 @@ export default function SuperUserRoutes() {
         <Route path="request-history" element={<RequestsHistory />} />
         <Route path="edit-environment" element={<EditEnvironment />}></Route>
         <Route path="delete-environment" element={<DeleteEnvironment />} />
+        <Route path="block-register" element={<BlockRegister />} />
+        <Route path="edit-block" element={<EditBlock />} />
+        <Route path="delete-block" element={<DeleteBlock />} />
         <Route path="*" element={<ErrorPage />} />
         <Route path="statistics-ambience" element={<StatisticsAmbience />} />
       </Route>

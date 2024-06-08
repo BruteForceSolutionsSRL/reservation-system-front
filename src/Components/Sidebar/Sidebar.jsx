@@ -249,6 +249,75 @@ export default function Sidebar({ user }) {
             </ul>
           )}
 
+          {user === "superuser" && (
+            <ul className="list-unstyled px-2">
+              <li className={activeItem === "management-block" ? "active" : ""}>
+                <Link
+                  to="#"
+                  className="text-decoration-none px-3 d-block"
+                  onClick={() => handleItemClick("management-block")}
+                >
+                  <div className="d-flex justify-content-between align-items-center">
+                    <i className="bi bi-houses fs-6"></i> Gestión de Bloques
+                    <i className="bi bi-chevron-down"></i>
+                  </div>
+                </Link>
+              </li>
+              <Collapse in={openItems["management-block"]}>
+                <div>
+                  <li
+                    className={
+                      activeItem === "block-register"
+                        ? "active list-unstyled px-2"
+                        : "list-unstyled px-2"
+                    }
+                  >
+                    <Link
+                      to="block-register"
+                      className="text-decoration-none px-3 py-2 d-block"
+                      onClick={() => handleItemClick("block-register")}
+                    >
+                      <div className="align-items-center">
+                        <i className="bi bi-house-add fs-6"></i> Registrar
+                        bloque
+                      </div>
+                    </Link>
+                  </li>
+                  <li
+                    className={
+                      activeItem === "edit-block"
+                        ? "active list-unstyled px-2"
+                        : "list-unstyled px-2"
+                    }
+                  >
+                    <Link
+                      to="edit-block"
+                      className="text-decoration-none px-3 py-2 d-block"
+                      onClick={() => handleItemClick("edit-block")}
+                    >
+                      <i className="bi bi-house-gear fs-6"></i> Editar bloque
+                    </Link>
+                  </li>
+                  <li
+                    className={
+                      activeItem === "delete-block"
+                        ? "active list-unstyled px-2"
+                        : "list-unstyled px-2"
+                    }
+                  >
+                    <Link
+                      to="delete-block"
+                      className="text-decoration-none px-3 py-2 d-block"
+                      onClick={() => handleItemClick("delete-block")}
+                    >
+                      <i className="bi bi-house-x fs-6"></i> Eliminar bloque
+                    </Link>
+                  </li>
+                </div>
+              </Collapse>
+            </ul>
+          )}
+
           <hr className="h-color mx-2" />
           <ul className="list-unstyled px-2">
             <li className="">

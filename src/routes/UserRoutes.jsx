@@ -21,8 +21,8 @@ export default function UserRoutes() {
         <Route path="list-cancel" element={<ListCancel />} />
         <Route path="request-history" element={<RequestsHistory />} />
         <Route path="statistics-ambience" element={<StatisticsAmbience />} />
+        <Route path="*" element={<ErrorPage />} />
       </Route>
-      <Route path="*" element={<ErrorPage />} />
     </Routes>
   );
 }

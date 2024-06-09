@@ -21,7 +21,6 @@ export default function SuperUserRoutes() {
           element={<EnvironmentRegistration />}
         ></Route>
         <Route path="attention-list" element={<AttentionList />}></Route>
-        <Route path="request-history" element={<RequestsHistory />} />
         <Route path="edit-environment" element={<EditEnvironment />}></Route>
         <Route path="delete-environment" element={<DeleteEnvironment />} />
         <Route path="*" element={<ErrorPage />} />

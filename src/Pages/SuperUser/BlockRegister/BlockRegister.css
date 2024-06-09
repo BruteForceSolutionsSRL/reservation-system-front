@@ -1,0 +1,18 @@
+
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .input-control {
+        margin-left: 0;
+    }
+    .col-form-label {
+        margin-right: 10;
+        margin-bottom: 2px;
+    }
+    .mb-3.align-items-center>.col-md-3,
+    .mb-3.align-items-center>.col-md-4,
+    .mb-3.align-items-center>.col-md-2,
+    .mb-3.align-items-center>.col-md-9 {
+        width: 100%;
+    }
+}

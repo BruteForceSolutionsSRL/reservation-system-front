@@ -160,22 +160,24 @@ export default function Sidebar({ user }) {
                     </Link>
                   </li>
                 )}
-                <li
-                  className={
-                    activeItem === "request-history"
-                      ? "active list-unstyled px-2"
-                      : "list-unstyled px-2"
-                  }
-                >
-                  <Link
-                    to="request-history"
-                    className="text-decoration-none px-3 py-2 d-block"
-                    onClick={() => handleItemClick("request-history")}
+                {user === "user" && (
+                  <li
+                    className={
+                      activeItem === "request-history"
+                        ? "active list-unstyled px-2"
+                        : "list-unstyled px-2"
+                    }
                   >
-                    <i className="bi bi-list-check"></i> Historial de
-                    solicitudes
-                  </Link>
-                </li>
+                    <Link
+                      to="request-history"
+                      className="text-decoration-none px-3 py-2 d-block"
+                      onClick={() => handleItemClick("request-history")}
+                    >
+                      <i className="bi bi-list-check"></i> Historial de
+                      solicitudes
+                    </Link>
+                  </li>
+                )}
               </div>
             </Collapse>
           </ul>

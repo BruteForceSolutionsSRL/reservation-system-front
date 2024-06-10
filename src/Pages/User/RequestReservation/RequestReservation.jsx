@@ -254,7 +254,9 @@ export default function RequestReservation() {
       return total;
     };
     totalClassroomsCapacity = totalCapacity();
-    return quantityParsed > totalClassroomsCapacity * 0.5;
+    return (
+      quantityParsed > totalClassroomsCapacity + totalClassroomsCapacity * 0.5
+    );
   };
 
   const handleDateChange = (e) => {
@@ -550,7 +552,7 @@ export default function RequestReservation() {
   const setToInitalStateForm = () => {
     setSubjectSelected("");
     setQuantity("");
-    setDateValue("");
+    setDateValue(getCurrentDate());
     setReasonSelected("");
     setStartTime("");
     setEndTime("");
@@ -970,7 +972,7 @@ export default function RequestReservation() {
               </div>
             </>
           )}
-          {modalSendRequest.content.title !== "Error" && (
+          {modalSendRequest.content.title === "Confirmacion" && (
             <div className="d-flex justify-content-end p-3">
               {loadingSendRequest && (
                 <div className="p-2">

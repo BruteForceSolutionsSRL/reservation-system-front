@@ -100,11 +100,11 @@ export default function EnvironmentToDelete(props) {
         </div>
         <div className="col-sm-2 align-self-center d-flex justify-content-end">
           <button
-            className="btn btn-sm btn-outline-primary"
+            className="btn btn-sm btn-outline-danger"
             type="button"
             onClick={getRequestsList}
           >
-            <b>Detalles</b>
+            <b>Eliminar</b>
           </button>
         </div>
       </div>

@@ -9,13 +9,7 @@ const ListEnvironment = ({ list, handleShowModal }) => {
   const url = import.meta.env.VITE_REACT_API_URL;
 
   useEffect(() => {
-    const fetchData = async () => {
-      await fetchBlockOptions();
-      await fetchTypes();
-      await statusTypes();
-    };
-
-    fetchData();
+    Promise.all([fetchBlockOptions(), fetchTypes(), statusTypes()]);
   }, []);
 
   const fetchBlockOptions = () => {
@@ -108,7 +102,7 @@ const ListEnvironment = ({ list, handleShowModal }) => {
                 <b className="col text-primary">ESTADO: </b>
                 <b
                   className={`text-light rounded p-1 ${
-                    reservation.classroom_status_id === 1
+                    parseInt(reservation.classroom_status_id) === 1
                       ? "bg-success"
                       : "bg-danger"
                   }`}

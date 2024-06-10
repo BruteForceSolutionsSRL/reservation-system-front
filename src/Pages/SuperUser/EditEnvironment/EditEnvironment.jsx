@@ -10,7 +10,7 @@ import { searchEnvironmentsForEdit } from "../../../utils/searchRequests";
 import RequestInformation from "../../../Components/RequestInformation/RequestInformation";
 import { getRequests, getTeacherRequests } from "../../../services/requests";
 import ReusableModal from "./ReusableModal";
-import ListEnvironment from "./ListEnvironment"; // Importa el nuevo componente
+import ListEnvironment from "./ListEnvironment";
 
 function EditEnvironment() {
   const [loading, setLoading] = useState(false);
@@ -32,6 +32,32 @@ function EditEnvironment() {
   const [confirmations, setConfirmationsModal] = useState(false);
   const url = import.meta.env.VITE_REACT_API_URL;
   const [confirmationMessage, setConfirmationMessage] = useState("");
+  const [backendError, setBackendError] = useState("");
+
+  useEffect(() => {
+    setLoading(true);
+    Promise.all([
+      fetchBlockOptions(),
+      fetchTypes(),
+      allEnvironments(),
+      statusTypes(),
+    ]).finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (searchValue === "") {
+      setList(allReservations);
+      setMsgNoResults("");
+    } else {
+      const results = searchEnvironmentsForEdit(allReservations, searchValue);
+      if (results.length < 1) {
+        setMsgNoResults("No se encontraron resultados");
+      } else {
+        setMsgNoResults("");
+      }
+      setList(results);
+    }
+  }, [searchValue, allReservations]);
 
   const handleShowModal = (reservation) => {
     setCurrentReservation({ ...reservation, errors: {} });
@@ -42,16 +68,13 @@ function EditEnvironment() {
   const handleSaveConfirmationsModal = () => {
     setSaveModal(false);
     setConfirmationsModal(true);
+    handleSaveChanges();
   };
   const handleCloseConfirmationsModal = () => {
     setConfirmationsModal(false);
-    //Save in BackEnd
-    handleSaveChanges();
   };
 
-  /******************************************************** */
   const handleSaveModal = () => {
-    //REFACTORIZAR SE REPITE
     const formHasErrors = Object.keys(currentReservation.errors).some(
       (key) => currentReservation.errors[key]
     );
@@ -66,7 +89,6 @@ function EditEnvironment() {
     setShowModal(true);
   };
 
-  /******************************************************/
   const handleCancelModal = () => {
     setCancelModal(true);
     setShowModal(false);
@@ -94,26 +116,25 @@ function EditEnvironment() {
           : reservation
       );
       const newDataEnvironment = {
-        classroom_id: currentReservation.classroom_id,
-        capacity: currentReservation.capacity,
-        type_id: currentReservation.classroom_type_id,
-        block_id: currentReservation.block_id,
-        floor_number: currentReservation.floor,
-        status_id: currentReservation.classroom_status_id,
+        classroom_id: parseInt(currentReservation.classroom_id),
+        capacity: parseInt(currentReservation.capacity),
+        type_id: parseInt(currentReservation.classroom_type_id),
+        block_id: parseInt(currentReservation.block_id),
+        floor_number: parseInt(currentReservation.floor),
+        status_id: parseInt(currentReservation.classroom_status_id),
       };
-
-      //Send in BackEnd
       sendData(newDataEnvironment, currentReservation.classroom_id)
         .then((responseMessage) => {
           console.log("Modificacion exitosa:", responseMessage);
           console.log("Campos modificados:", changedFields);
-
+          setBackendError(responseMessage);
           //Estatus and update list
           setAllReservations(updatedReservations);
           setList(updatedReservations);
         })
         .catch((error) => {
           console.error("Error al enviar los datos:", error);
+          setBackendError("Error al enviar los datos: " + error.message);
         });
     } else {
       console.log("Formulario inválido, llene todos los campos");
@@ -121,6 +142,11 @@ function EditEnvironment() {
   };
 
   const sendData = async (newData, classroom_id) => {
+    console.log(
+      "Esto es lo que se envia al back editado",
+      newData,
+      classroom_id
+    );
     try {
       const response = await fetch(url + `classrooms/${classroom_id}`, {
         method: "PUT",
@@ -130,7 +156,7 @@ function EditEnvironment() {
         body: JSON.stringify(newData),
         mode: "cors",
       });
-      const data = await response.json();
+      const data = response.json();
       return data;
     } catch (error) {
       console.error(error);
@@ -155,7 +181,6 @@ function EditEnvironment() {
     });
   };
 
-  // Botones personalizados para el modal
   const footerButtonsModal = [
     {
       label: "Guardar",
@@ -168,7 +193,7 @@ function EditEnvironment() {
       onClick: handleCancelModal,
     },
   ];
-  //  Botton Cancel
+
   const cancelButtonsModal = [
     {
       label: "Aceptar",
@@ -181,7 +206,7 @@ function EditEnvironment() {
       onClick: handleCancelBackModal,
     },
   ];
-  // Botton Save
+
   const saveButtonsModal = [
     {
       label: "Aceptar",
@@ -195,7 +220,6 @@ function EditEnvironment() {
     },
   ];
 
-  // Botton Save confirmnations
   const saveButtonsConfirmationsModal = [
     {
       label: "Aceptar",
@@ -204,37 +228,8 @@ function EditEnvironment() {
     },
   ];
 
-  // useEffect para búsqueda
-  useEffect(() => {
-    if (searchValue === "") {
-      setList(allReservations);
-      setMsgNoResults("");
-    } else {
-      const results = searchEnvironmentsForEdit(allReservations, searchValue);
-      if (results.length < 1) {
-        setMsgNoResults("No se encontraron resultados");
-      } else {
-        setMsgNoResults("");
-      }
-      setList(results);
-    }
-  }, [searchValue, allReservations]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      //setLoading(true);
-      await fetchBlockOptions();
-      await fetchTypes();
-      await allEnvironments();
-      await statusTypes();
-      //setLoading(false);
-    };
-
-    fetchData();
-  }, []);
-
-  const fetchBlockOptions = () => {
-    fetch(url + "blocks")
+  const fetchBlockOptions = async () => {
+    await fetch(url + "blocks")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -250,8 +245,8 @@ function EditEnvironment() {
       });
   };
 
-  const fetchTypes = () => {
-    fetch(url + "classrooms/types")
+  const fetchTypes = async () => {
+    await fetch(url + "classrooms/types")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -267,8 +262,8 @@ function EditEnvironment() {
       });
   };
 
-  const statusTypes = () => {
-    fetch(url + "classrooms/statuses")
+  const statusTypes = async () => {
+    await fetch(url + "classrooms/statuses")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -284,8 +279,8 @@ function EditEnvironment() {
       });
   };
 
-  const allEnvironments = () => {
-    fetch(url + "classrooms")
+  const allEnvironments = async () => {
+    await fetch(url + "classrooms")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -301,7 +296,6 @@ function EditEnvironment() {
       });
   };
 
-  // Validador de cantidad
   const validateCantidad = (value) => {
     if (!value) {
       return "Ingrese una cantidad.";
@@ -311,7 +305,6 @@ function EditEnvironment() {
     return null;
   };
 
-  // Validador de piso
   const validateFloor = (value) => {
     const maxFloor = getFloor(currentReservation.block_id);
     if (!value) {
@@ -328,7 +321,6 @@ function EditEnvironment() {
   };
 
   function getFloor(key) {
-    console.log("SE VERIFICO", key);
     const selectedElement = blockOptions.find(
       (elemento) => elemento.block_id === parseInt(key)
     );
@@ -382,7 +374,6 @@ function EditEnvironment() {
   return (
     <div className="container">
       <h1 className="text-center">Lista de Ambientes</h1>
-
       <SearchBar
         value={searchValue}
         onChange={(event) => {
@@ -396,17 +387,21 @@ function EditEnvironment() {
         {loading ? (
           <div className="text-center">
             <Spinner animation="border" variant="secondary" role="status">
-              <span className="visually-hidden">Cargando...</span>
+              <span className="visually-hidden">Loading...</span>
             </Spinner>
           </div>
         ) : (
           <div>
             <hr></hr>
             {msgNoResults && <div>{msgNoResults}</div>}
-            <ListEnvironment list={list} handleShowModal={handleShowModal} />
+            <ListEnvironment
+              list={list}
+              handleShowModal={handleShowModal}
+            />
           </div>
         )}
       </div>
+
       <ReusableModal
         show={showModal}
         handleClose={handleCancelModal}
@@ -582,13 +577,21 @@ function EditEnvironment() {
         </ul>
         {Object.keys(changedFields).includes("classroom_status_id") ? (
           <>
-            <p>
-              El ambiente quedará{" "}
-              <span style={{ color: "red" }}>DESHABILITADO</span>. Todas las
-              solicitudes pendientes y aceptadas hasta el momento que incluyan
-              al ambiente serán <span style={{ color: "red" }}>RECHAZADAS</span>
-              .
-            </p>
+            {changedFields.classroom_status_id === "1" ? (
+              <p>
+                El ambiente quedara{" "}
+                <span style={{ color: "green" }}>HABILITADO</span> para hacer
+                reservas.
+              </p>
+            ) : (
+              <p>
+                El ambiente quedará{" "}
+                <span style={{ color: "red" }}>DESHABILITADO</span>. Todas las
+                solicitudes pendientes y aceptadas hasta el momento que incluyan
+                al ambiente serán{" "}
+                <span style={{ color: "red" }}>RECHAZADAS</span>.
+              </p>
+            )}
           </>
         ) : (
           <p>
@@ -604,10 +607,9 @@ function EditEnvironment() {
         title="¡Éxito!"
         footerButtons={saveButtonsConfirmationsModal}
       >
-        El ambiente se actualizo con exito
+        {backendError && <p style={{ color: "red" }}>{backendError.message}</p>}
       </ReusableModal>
     </div>
   );
 }
-/*CORREGIR EL VALIDOS DE MENSAJE SE CONFIRMACION*/
 export default EditEnvironment;

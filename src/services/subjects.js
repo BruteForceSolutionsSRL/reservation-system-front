@@ -7,3 +7,11 @@ export function getSubjects() {
       return data;
     });
 }
+
+export function getAllSubjects() {
+  return fetch(url + 'university-subjects')
+    .then((response) => response.json())
+    .then((data) => {
+      return data;
+    });
+}

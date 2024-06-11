@@ -16,7 +16,7 @@ export default function Blocks({ blocks }) {
       <div className="block-cm">
         <div className="block-cm-t">
           <h5>BLOQUE</h5>
-        </div>
+        </div>  
         <div>
           <Form.Select>
             <option key="default">Seleccione...</option>

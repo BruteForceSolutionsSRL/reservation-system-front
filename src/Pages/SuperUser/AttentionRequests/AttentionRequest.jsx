@@ -1,38 +1,28 @@
 import { useState } from "react";
-
-// Bootstrap and css imports
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
 import Spinner from "react-bootstrap/Spinner";
+import { Alert } from "react-bootstrap";
 
 export default function AttentionRequest(props) {
   const URL = import.meta.env.VITE_REACT_API_URL;
-  // Conflicts state
-  const [conflicts, setConflicts] = useState({
-    quantity: "",
-    classroom: {
-      message: "",
-      list: [],
-    },
-    teacher: {
-      message: "",
-      list: [],
-    },
-  });
 
-  // Modals states
   const [showModal, setShowModal] = useState(false);
   const [showRefuseModal, setShowRefuseModal] = useState(false);
   const [reasonText, setReasonText] = useState(
     "Su solicitud de reserva fue rechazada, contacte con el administrador para mas informacion."
   );
-  // Accept modal
   const [showAcceptModal, setShowAcceptModal] = useState(false);
-  // Error modal
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorTextModal, setErrorTextModal] = useState("");
-
   const [spinnerInModal, setSpinnerInModal] = useState(false);
+  const [conflicts, setConflicts] = useState({
+    quantity: "",
+    classroom: {
+      message: "",
+      list: ["", ""],
+    },
+  });
 
   const {
     reservation_id,
@@ -45,27 +35,37 @@ export default function AttentionRequest(props) {
     classrooms,
     reason_name,
     priority,
-    reservation_status,
   } = props;
 
-  // fetchData
-  // for conflicts
   const conflictsFetch = async () => {
-    if (conflicts) {
-      await fetch(URL + `reservations/${reservation_id}/conflicts`)
-        .then((res) => res.json())
-        .then((data) => {
-          setConflicts(data);
-        })
-        .catch((err) => {
-          if (err) throw console.error(err);
-        });
+    try {
+      if (conflicts) {
+        await fetch(URL + `reservations/${reservation_id}/conflicts`)
+          .then((res) => res.json())
+          .then((data) => {
+            setConflicts(data);
+          })
+          .catch((err) => {
+            if (err) throw console.error(err);
+          });
+      }
+    } catch (error) {
+      console.error(error);
+      setConflicts({
+        quantity: "",
+        classroom: {
+          message: "",
+          list: [],
+        },
+        teacher: {
+          message: "",
+          list: [],
+        },
+      });
     }
   };
 
-  // Handlers modals
   const handleShowModal = () => {
-    // Get conflicts when modal opens
     conflictsFetch();
     setShowModal(true);
   };
@@ -79,8 +79,8 @@ export default function AttentionRequest(props) {
     setReasonText(e.target.value);
   };
 
-  // Accept request
   const acceptRequest = async () => {
+    setSpinnerInModal(true);
     await fetch(URL + `reservations/${reservation_id}/assign`, {
       method: "PATCH",
       headers: {
@@ -104,38 +104,48 @@ export default function AttentionRequest(props) {
       })
       .catch((err) => {
         if (err) throw console.error(err);
+      })
+      .finally(() => {
+        setSpinnerInModal(false);
+        setShowAcceptModal(false);
       });
   };
 
-  // Refuse request
   const refuseRequest = async () => {
     setSpinnerInModal(true);
-    await fetch(URL + `reservations/${reservation_id}/reject`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error === "Esta solicitud ya fue atendida") {
-          setShowErrorModal(true);
-          setErrorTextModal("La reservacion ya fue anteriormente rechazada.");
-        } else {
-          props.reload(true);
-        }
-        setSpinnerInModal(false);
+    try {
+      await fetch(URL + `reservations/${reservation_id}/reject`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: reasonText }),
       })
-      .catch((err) => {
-        if (err) throw console.error(err);
-      });
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error === "Esta solicitud ya fue atendida") {
+            setShowErrorModal(true);
+            setErrorTextModal("La reservacion ya fue anteriormente rechazada.");
+          } else {
+            props.reload(true);
+          }
+        })
+        .catch((err) => {
+          if (err) throw console.error(err);
+        })
+        .finally(() => setSpinnerInModal(false));
+    } catch (error) {
+      setSpinnerInModal(false);
+      setShowErrorModal(true);
+      setErrorTextModal(error);
+    }
   };
 
   return (
     <>
-      <div className="container mb-2 mt-1">
+      <div className="container p-1">
         <div
-          className={`row rounded border ${
+          className={`row rounded align-self-center p-2 border ${
             priority === 1 ? "border-danger" : ""
           }`}
           style={{ minWidth: "470px" }}
@@ -151,7 +161,7 @@ export default function AttentionRequest(props) {
           </div>
           <div className="col-2">
             <button
-              className="btn btn-outline-primary"
+              className="btn btn-outline-primary w-100 text-truncate"
               onClick={handleShowModal}
             >
               Atender
@@ -159,8 +169,7 @@ export default function AttentionRequest(props) {
           </div>
         </div>
       </div>
-      {/* This code need a refactor for using too much modals per case. */}
-      {/* Attention modal */}
+
       <Modal
         show={showModal}
         onHide={() => setShowModal(false)}
@@ -182,18 +191,7 @@ export default function AttentionRequest(props) {
 
             <div className="tag-container mb-3">
               <label className="tag-label">GRUPO</label>
-              {conflicts.teacher.message === "" ? (
-                ""
-              ) : (
-                <div>
-                  <b className="text-warning">{`${
-                    conflicts.teacher.message
-                  }, ${conflicts.teacher.list.map((teachr) => {
-                    return teachr + ", ";
-                  })}`}</b>
-                </div>
-              )}
-              <div className="table-responsive">
+              <div>
                 <Table bordered>
                   <thead>
                     <tr>
@@ -224,9 +222,7 @@ export default function AttentionRequest(props) {
             {conflicts.quantity === "" ? (
               ""
             ) : (
-              <div>
-                <b className="text-warning">{conflicts.quantity}</b>
-              </div>
+              <Alert variant={"warning"}>{conflicts.quantity}</Alert>
             )}
             <div className="pb-3">
               <b>CANTIDAD DE ESTUDIANTES: </b>
@@ -242,13 +238,16 @@ export default function AttentionRequest(props) {
               {conflicts.classroom.message === "" ? (
                 ""
               ) : (
-                <div>
-                  <b className="text-warning">{`${
-                    conflicts.classroom.message
-                  }, ${conflicts.classroom.list.map((classr) => {
-                    return classr + ", ";
-                  })}`}</b>
-                </div>
+                <Alert variant={"warning"}>
+                  <div className="text-center">
+                    {conflicts.classroom.message}
+                  </div>
+                  <div>
+                    {conflicts.classroom.list.map((classr, index) => {
+                      return <div>{`${index + 1}: ${classr}`}</div>;
+                    })}
+                  </div>
+                </Alert>
               )}
               <div className="row">
                 <div className="col-sm-2">
@@ -286,6 +285,7 @@ export default function AttentionRequest(props) {
             className="btn btn-outline-success"
             onClick={() => {
               setShowAcceptModal(true);
+              setShowModal(false);
             }}
           >
             Aceptar
@@ -299,12 +299,11 @@ export default function AttentionRequest(props) {
         </Modal.Footer>
       </Modal>
 
-      {/* Accept modal */}
       <Modal
         show={showAcceptModal}
         onHide={() => setShowAcceptModal(false)}
         dialogClassName="modal-90w"
-        size="xl"
+        size="lg"
         centered={true}
         aria-labelledby="acceptModal"
       >
@@ -312,48 +311,37 @@ export default function AttentionRequest(props) {
           <Modal.Title id="acceptModal">¡Confirmacion!</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div>
-            <b>¿Esta seguro de aceptar la solicitud de reserva?</b>
-          </div>
+          <h3>¿Está seguro de aceptar la solicitud de reserva?</h3>
           {conflicts.quantity === "" ? (
             ""
           ) : conflicts.classroom.message ? (
             ""
-          ) : conflicts.teacher.message ? (
-            ""
           ) : (
-            <div>
-              <b> La solicitud contiene las siguientes advertencias:</b>
+            <div className="pt-2 pb-3">
+              <span> La solicitud contiene las siguientes advertencias:</span>
             </div>
           )}
 
           {conflicts.quantity === "" ? (
             ""
           ) : (
-            <div>
-              <b className="text-warning">{conflicts.quantity}</b>
-            </div>
+            <Alert variant={"warning"}>{conflicts.quantity}</Alert>
           )}
           {conflicts.classroom.message === "" ? (
             ""
           ) : (
-            <div>
-              <b className="text-warning">{conflicts.classroom.message}</b>
-            </div>
-          )}
-          {conflicts.teacher.message === "" ? (
-            ""
-          ) : (
-            <div>
-              <b className="text-warning">{conflicts.teacher.message}</b>
-            </div>
+            <Alert variant={"warning"}>{conflicts.classroom.message}</Alert>
           )}
         </Modal.Body>
         <Modal.Footer>
+          {spinnerInModal && (
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          )}
           <button
             className="btn btn-outline-success"
             onClick={() => {
-              setShowAcceptModal(false);
               acceptRequest();
             }}
           >
@@ -363,6 +351,7 @@ export default function AttentionRequest(props) {
             className="btn btn-outline-secondary"
             onClick={() => {
               setShowAcceptModal(false);
+              setShowModal(true);
             }}
           >
             Cancelar
@@ -370,7 +359,6 @@ export default function AttentionRequest(props) {
         </Modal.Footer>
       </Modal>
 
-      {/* Refuse  modal */}
       <Modal
         show={showRefuseModal}
         onHide={() => setShowRefuseModal(false)}
@@ -423,7 +411,6 @@ export default function AttentionRequest(props) {
         </Modal.Footer>
       </Modal>
 
-      {/* Error modal */}
       <Modal
         show={showErrorModal}
         onHide={() => setShowErrorModal(false)}
@@ -436,9 +423,7 @@ export default function AttentionRequest(props) {
           <Modal.Title id="errorModal">Mensaje</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="pb-2">
-            <b>{errorTextModal}</b>
-          </div>
+          <div className="pb-2">{errorTextModal}</div>
         </Modal.Body>
         <Modal.Footer>
           <button

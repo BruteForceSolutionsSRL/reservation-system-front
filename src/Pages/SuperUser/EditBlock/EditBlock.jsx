@@ -5,14 +5,16 @@ import BlockEdit from "./BlockEdit";
 import { searchEnvironmentsForEdit } from "../../../utils/searchRequests";
 import { getStatusBlock } from "../../../services/classrooms";
 import ReusableModal from "../EditEnvironment/ReusableModal";
+import { getBlocks, setBlock } from "../../../services/blocks";
+import { searchBlocks } from "../../../utils/searchBlocks";
 
 function EditBlock() {
   const [loading, setLoading] = useState(false);
   const [allReservations, setAllReservations] = useState([]);
-  //const [list, setList] = useState([]);
+  const [list, setList] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [msgNoResults, setMsgNoResults] = useState("");
-  //const [currentReservation, setCurrentReservation] = useState(null);
+  const [currentReservation, setCurrentReservation] = useState(null);
   const [status, setStatus] = useState([]);
   const [changedFields, setChangedFields] = useState({});
   const [showModal, setShowModal] = useState(false);
@@ -21,64 +23,13 @@ function EditBlock() {
   const [confirmations, setConfirmationsModal] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [backendError, setBackendError] = useState("");
-
   const url = import.meta.env.VITE_REACT_API_URL;
-  const blocks = [
-    {
-      id: 1,
-      name: "AULAS INF-LAB",
-      capacity_class: 6,
-      floor: 0,
-      classroom_status_name: "HABILITADO",
-      classroom_status_id: 2,
-    },
-    {
-      id: 2,
-      name: "EDIFICIO MEMI",
-      capacity_class: 6,
-      floor: 2,
-      classroom_status_name: "HABILITADO",
-      classroom_status_id: 1,
-    },
-    {
-      id: 3,
-      name: "EDIFICIO ACADEMICO 2",
-      capacity_class: 22,
-      floor: 3,
-      classroom_status_name: "HABILITADO",
-      classroom_status_id: 1,
-    },
-    {
-      id: 4,
-      name: "BLOQUE TRENCITO",
-      capacity_class: 4,
-      floor: 0,
-      classroom_status_name: "HABILITADO",
-      classroom_status_id: 1,
-    },
-    {
-      id: 5,
-      name: "BLOQUE CENTRAL - EDIFICIO DECANATURA",
-      capacity_class: 6,
-      floor: 2,
-      classroom_status_name: "HABILITADO",
-      classroom_status_id: 1,
-    },
-  ];
-
-  const [list, setList] = useState(blocks);
-  const [currentReservation, setCurrentReservation] = useState(blocks);
-
-  const getRequestStatus = async () => {
-    let rl = await getStatusBlock();
-    setStatus(rl);
-  };
 
   useEffect(() => {
-    // Actualiza allReservations con blocks al inicio
-    setAllReservations(blocks);
-    setList(blocks);
-    getRequestStatus();
+    setLoading(true);
+    Promise.all([getRequestStatus(), getBlocksList()]).finally(
+      setLoading(false)
+    );
   }, []);
 
   useEffect(() => {
@@ -86,7 +37,7 @@ function EditBlock() {
       setList(allReservations);
       setMsgNoResults("");
     } else {
-      const results = searchEnvironmentsForEdit(allReservations, searchValue);
+      const results = searchBlocks(allReservations, searchValue);
       if (results.length < 1) {
         setMsgNoResults("No se encontraron resultados");
       } else {
@@ -96,8 +47,19 @@ function EditBlock() {
     }
   }, [searchValue, allReservations]);
 
-  const handleShowModal = (reservation) => {
-    setCurrentReservation({ ...reservation, errors: {} });
+  const getRequestStatus = async () => {
+    let rl = await getStatusBlock();
+    setStatus(rl);
+  };
+
+  const getBlocksList = async () => {
+    let bl = await getBlocks();
+    setAllReservations(bl);
+    setList(bl);
+  };
+
+  const handleShowModal = (block) => {
+    setCurrentReservation({ ...block, errors: {} });
     setShowModal(true);
     setChangedFields({});
   };
@@ -148,34 +110,27 @@ function EditBlock() {
       (key) => currentReservation.errors[key]
     );
     if (!formHasErrors) {
-      const updatedReservations = allReservations.map((reservation) =>
-        reservation.classroom_id === currentReservation.classroom_id
-          ? { ...currentReservation, errors: {} }
-          : reservation
-      );
-      const newDataEnvironment = {
-        classroom_id: parseInt(currentReservation.classroom_id),
-        capacity: parseInt(currentReservation.capacity),
-        type_id: parseInt(currentReservation.classroom_type_id),
-        block_id: parseInt(currentReservation.block_id),
-        floor_number: parseInt(currentReservation.floor),
-        status_id: parseInt(currentReservation.classroom_status_id),
+      let editedBlock = {
+        block_name: currentReservation.block_name,
+        block_maxfloor: currentReservation.block_maxfloor,
+        block_maxclassrooms: currentReservation.block_maxclassrooms,
+        block_status_id: currentReservation.block_status_id,
       };
-      sendData(newDataEnvironment, currentReservation.classroom_id)
-        .then((responseMessage) => {
-          console.log("Modificación exitosa:", responseMessage);
-          console.log("Campos modificados:", changedFields);
-          setBackendError(responseMessage);
-          setAllReservations(updatedReservations);
-          setList(updatedReservations);
-        })
-        .catch((error) => {
-          console.error("Error al enviar los datos:", error);
-          setBackendError("Error al enviar los datos: " + error.message);
-        });
+      editBlock(editedBlock);
     } else {
       console.log("Formulario inválido, llene todos los campos");
     }
+  };
+
+  const editBlock = async (editedBlock) => {
+    let response = await setBlock(
+      currentReservation.block_id,
+      editedBlock
+    ).catch((error) => {
+      setBackendError("Error al enviar los datos: " + error.message);
+    });
+    setBackendError({ message: response.data });
+    getBlocksList();
   };
 
   const sendData = async (newData, classroom_id) => {
@@ -262,9 +217,9 @@ function EditBlock() {
 
   const validateCantidadClassrom = (value) => {
     const matchingBlock = list.find(
-      (list) => list.id === currentReservation.id
+      (list) => list.block_id === currentReservation.block_id
     );
-    const maxClass = parseInt(matchingBlock.capacity_class);
+    const maxClass = parseInt(matchingBlock.block_maxclassrooms);
     if (!value) {
       return `La cantidad de ambientes actual del bloque es ${maxClass} .`;
     } else if (value < maxClass || value > 25) {
@@ -275,9 +230,9 @@ function EditBlock() {
 
   const validateFloor = (value) => {
     const matchingBlock = list.find(
-      (list) => list.id === currentReservation.id
+      (list) => list.block_id === currentReservation.block_id
     );
-    const maxFloor = parseInt(matchingBlock.floor);
+    const maxFloor = parseInt(matchingBlock.block_maxfloor);
     if (!value) {
       return `Numero de pisos actual del bloque es ${maxFloor}.`;
     } else if (value < maxFloor || value > 5) {
@@ -287,8 +242,8 @@ function EditBlock() {
   };
 
   const validators = {
-    floor: validateFloor,
-    capacity_class: validateCantidadClassrom,
+    block_maxfloor: validateFloor,
+    block_maxclassrooms: validateCantidadClassrom,
   };
 
   const handleKeyDown = (event) => {
@@ -306,12 +261,11 @@ function EditBlock() {
 
   const fieldLabels = {
     block_id: "BLOQUE",
-    classroom_status_id: "ESTADO",
-    floor: "NUMERO DE PISOS",
-    capacity_class: "CANTIDAD DE AULAS",
+    block_status_id: "ESTADO",
+    block_maxfloor: "NUMERO DE PISOS",
+    block_maxclassrooms: "CANTIDAD DE AULAS",
   };
 
-  console.log("cuenre", currentReservation);
   return (
     <div className="container">
       <h1 className="text-center">Lista de Bloques</h1>
@@ -334,7 +288,11 @@ function EditBlock() {
         ) : (
           <div>
             <hr></hr>
-            {msgNoResults && <div>{msgNoResults}</div>}
+            {msgNoResults && (
+              <div className="text-center">
+                <h4>{msgNoResults}</h4>
+              </div>
+            )}
             <BlockEdit list={list} handleShowModal={handleShowModal} />
           </div>
         )}
@@ -358,9 +316,9 @@ function EditBlock() {
               <Col md={9}>
                 <Form.Control
                   type="text"
-                  name="name_block"
+                  name="block_name"
                   placeholder="Ingrese el nombre del Bloque"
-                  value={currentReservation.name}
+                  value={currentReservation.block_name}
                   onChange={handleInputChange}
                   disabled
                 />
@@ -377,13 +335,13 @@ function EditBlock() {
                 <Form.Control
                   onKeyDown={handleKeyDown}
                   type="number"
-                  name="capacity_class"
-                  value={currentReservation.capacity_class}
+                  name="block_maxclassrooms"
+                  value={currentReservation.block_maxclassrooms}
                   onChange={handleInputChange}
-                  isInvalid={!!currentReservation.errors?.capacity_class}
+                  isInvalid={!!currentReservation.errors?.block_maxclassrooms}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {currentReservation.errors?.capacity_class}
+                  {currentReservation.errors?.block_maxclassrooms}
                 </Form.Control.Feedback>
               </Col>
 
@@ -394,8 +352,8 @@ function EditBlock() {
               </Col>
               <Col md={4}>
                 <Form.Select
-                  name="classroom_status_id"
-                  value={currentReservation.classroom_status_id}
+                  name="block_status_id"
+                  value={currentReservation.block_status_id}
                   onChange={handleInputChange}
                 >
                   {status.map((option) => (
@@ -420,14 +378,14 @@ function EditBlock() {
                 <Form.Control
                   onKeyDown={handleKeyDown}
                   type="number"
-                  name="floor"
+                  name="block_maxfloor"
                   min={0}
-                  value={currentReservation.floor}
+                  value={currentReservation.block_maxfloor}
                   onChange={handleInputChange}
-                  isInvalid={!!currentReservation.errors?.floor}
+                  isInvalid={!!currentReservation.errors?.block_maxfloor}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {currentReservation.errors?.floor}
+                  {currentReservation.errors?.block_maxfloor}
                 </Form.Control.Feedback>
               </Col>
             </Row>
@@ -457,11 +415,12 @@ function EditBlock() {
             let displayValue = changedFields[fieldName];
             if (fieldName === "block_id") {
               displayValue = showBlock(displayValue);
-            } else if (fieldName === "classroom_status_id") {
+            } else if (fieldName === "block_status_id") {
               displayValue = getStatusNameById(displayValue);
-            } else if (fieldName === "classroom_type_id") {
-              displayValue = showType(displayValue);
             }
+            //  else if (fieldName === "classroom_type_id") {
+            //   displayValue = showType(displayValue);
+            // }
 
             return (
               <li key={fieldName}>

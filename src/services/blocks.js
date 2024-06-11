@@ -7,3 +7,22 @@ export function getBlocks() {
       return data;
     });
 }
+
+export function setBlock(block_id, blockEdited) {
+  let responseFetch = {};
+  return fetch(url + `blocks/${block_id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(blockEdited),
+  })
+    .then((response) => {
+      responseFetch = { ...responseFetch, status: response.status };
+      return response.json();
+    })
+    .then((data) => {
+      responseFetch = { ...responseFetch, data: data };
+      return responseFetch;
+    });
+}

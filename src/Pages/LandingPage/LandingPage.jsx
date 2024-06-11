@@ -51,7 +51,8 @@ import axios from "axios";
 import "./LandingPage.css";
 // import { FaEnvelope, FaEye, FaEyeSlash } from "react-icons/fa";
 // import { Envelope, Eye, EyeSlash } from "react-bootstrap-icons";
-import "../../../src/main";
+// import "../../../src/main";
+import NavBar from "./NavBar";
 
 const LandingPage = ({ setAuthToken }) => {
   const [email, setEmail] = useState("");
@@ -98,92 +99,104 @@ const LandingPage = ({ setAuthToken }) => {
   };
 
   return (
-    <div className="landing-page">
-      <Container>
-        <Row className="justify-content-center">
-          <Col>
-            <div className="card-container">
-              <Card className="text-center">
-                <Card.Body>
-                  <Card.Text className="card-text">
-                    <strong>SURA</strong> (Sistema Universitario de Reserva de
-                    Ambientes) es una plataforma diseñada para facilitar la
-                    reserva de ambientes en la Facultad de Ciencias y Tecnología
-                    de la <strong>Universidad Mayor de San Simón</strong>.
-                    Nuestra misión es optimizar la gestión y el uso de los
-                    espacios académicos, brindando una herramienta eficiente y
-                    accesible para estudiantes y docentes.
-                  </Card.Text>
-                </Card.Body>
-              </Card>
+    <>
+      <NavBar />
 
-              <Card>
-                <Card.Body>
-                  <h1 className="text-center">SURA</h1>
-                  <Form onSubmit={handleLogin}>
-                    <Form.Group controlId="formBasicEmail">
-                      <Form.Label>Correo electrónico</Form.Label>
-                      <InputGroup>
-                        <Form.Control
-                          type="email"
-                          placeholder="Correo electrónico"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                        />
+      <div className="landing-page">
+        <Container>
+          <Row className="justify-content-center">
+            <Col>
+              <div className="card-container">
+                <Card className="text-center">
+                  <Card.Body>
+                    <Card.Text className="card-text">
+                      <strong>SURA</strong> (Sistema Universitario de Reserva de
+                      Ambientes) es una plataforma diseñada para facilitar la
+                      reserva de ambientes en la Facultad de Ciencias y
+                      Tecnología de la{" "}
+                      <strong>Universidad Mayor de San Simón</strong>. Nuestra
+                      misión es optimizar la gestión y el uso de los espacios
+                      académicos, brindando una herramienta eficiente y
+                      accesible para estudiantes y docentes.
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
 
-                        <InputGroup.Text>
-                          {/* <FaEnvelope /> */}
-                          <Envelope />
-                        </InputGroup.Text>
-                      </InputGroup>
-                    </Form.Group>
-                    <Form.Group controlId="formBasicPassword">
-                      <Form.Label>Contraseña</Form.Label>
+                <Card>
+                  <Card.Body>
+                    <h1 className="text-center">SURA</h1>
+                    <Form onSubmit={handleLogin}>
+                      <Form.Group controlId="formBasicEmail">
+                        <Form.Label>Correo electrónico</Form.Label>
+                        <InputGroup>
+                          <Form.Control
+                            type="email"
+                            placeholder="Correo electrónico"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                          />
 
-                      <InputGroup>
-                        <Form.Control
-                          // type="password"
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Contraseña"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <InputGroup.Text onClick={togglePasswordVisibility}>
-                          {/* {showPassword ? <FaEyeSlash /> : <FaEye />} */}
-                          {showPassword ? <EyeSlash /> : <Eye />}
-                        </InputGroup.Text>
-                      </InputGroup>
-                    </Form.Group>
+                          <InputGroup.Text>
+                            {/* <FaEnvelope /> */}
+                            <i className="bi bi-envelope"></i>
+                          </InputGroup.Text>
+                        </InputGroup>
+                      </Form.Group>
+                      <Form.Group controlId="formBasicPassword">
+                        <Form.Label>Contraseña</Form.Label>
 
-                    <Button variant="primary" className="mt-3">
-                      <Link
-                        className="text-white"
-                        to="/user/home"
-                        onClick={userSession}
-                      >
-                        Usuario
-                      </Link>
-                    </Button>
+                        <InputGroup>
+                          <Form.Control
+                            // type="password"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Contraseña"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                          />
+                          <InputGroup.Text
+                            onClick={togglePasswordVisibility}
+                            style={{ cursor: "pointer" }}
+                          >
+                            {/* {showPassword ? <FaEyeSlash /> : <FaEye />} */}
+                            {showPassword ? (
+                              <i className="bi bi-eye-slash"></i>
+                            ) : (
+                              <i className="bi bi-eye"></i>
+                            )}
+                          </InputGroup.Text>
+                        </InputGroup>
+                      </Form.Group>
 
-                    <div className="mt-3">
-                      <Button variant="secondary">
+                      <Button variant="primary" className="mt-3">
                         <Link
                           className="text-white"
-                          to="/superuser/home"
-                          onClick={superUserSession}
+                          to="/user/home"
+                          onClick={userSession}
                         >
-                          Administrador
+                          Usuario
                         </Link>
                       </Button>
-                    </div>
-                  </Form>
-                </Card.Body>
-              </Card>
-            </div>
-          </Col>
-        </Row>
-      </Container>
-    </div>
+
+                      <div className="mt-3">
+                        <Button variant="secondary">
+                          <Link
+                            className="text-white"
+                            to="/superuser/home"
+                            onClick={superUserSession}
+                          >
+                            Administrador
+                          </Link>
+                        </Button>
+                      </div>
+                    </Form>
+                  </Card.Body>
+                </Card>
+              </div>
+            </Col>
+          </Row>
+        </Container>
+      </div>
+    </>
   );
 };
 

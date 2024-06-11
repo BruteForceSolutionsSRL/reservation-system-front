@@ -101,7 +101,7 @@ function BlockRegister() {
       [name]: error,
     });
   };
- 
+
   const validators = {
     name_block: validateNameBlock,
     capacity_class: validateCapacity,

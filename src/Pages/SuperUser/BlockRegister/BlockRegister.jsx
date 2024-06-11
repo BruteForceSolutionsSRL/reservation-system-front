@@ -4,7 +4,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { storeBlock } from "../../../services/classrooms";
 
 function BlockRegister() {
   const URL = import.meta.env.VITE_REACT_API_URL;
@@ -83,10 +83,23 @@ function BlockRegister() {
       if (isDuplicateName) {
         console.log("es igual");
       } else {
-        console.log(formData);
+        // console.log(formData);
+        let newBlock = {
+          block_name: formData.name_block,
+          block_maxfloor: formData.capacity_class,
+          block_maxclassrooms: formData.number_floors,
+          block_status_id: 1,
+        };
+        storeNewBlock(newBlock);
       }
     }
     console.log("LLENE EL FORMULARIO");
+  };
+
+  const storeNewBlock = async (newBlock) => {
+    let response = await storeBlock(newBlock);
+    console.log(response);
+    return response;
   };
 
   const handleChange = (event) => {

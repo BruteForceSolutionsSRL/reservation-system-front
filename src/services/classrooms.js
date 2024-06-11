@@ -45,3 +45,12 @@ export function deleteEnvironment(environment) {
       return data;
     });
 }
+
+
+export function getStatusBlock() {
+  return fetch(url + "classrooms/statuses")
+    .then((response) => response.json())
+    .then((data) => {
+      return data;
+    });
+}

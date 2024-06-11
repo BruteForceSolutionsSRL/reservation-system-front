@@ -8,6 +8,7 @@ export default function RequestInformation({
   customBottonsForModal,
   showConflicts = false,
   index,
+  title,
 }) {
   const {
     id,
@@ -29,10 +30,6 @@ export default function RequestInformation({
       message: "",
       list: [],
     },
-    teacher: {
-      message: "",
-      list: [],
-    },
   });
 
   const modalStateShow = {
@@ -50,7 +47,7 @@ export default function RequestInformation({
 
   const modalContent = {
     id: id,
-    title: <h3>ATENCION DE LA SOLICITUD</h3>,
+    title: <h3>{title}</h3>,
     body: (
       <>
         <div className="container-fluid">
@@ -77,19 +74,8 @@ export default function RequestInformation({
 
           <div className="tag-container mb-3">
             <label className="tag-label">GRUPO</label>
-            {conflictsModal?.teacher.message === "" ? (
-              ""
-            ) : (
-              <div>
-                <b className="text-warning">{`${
-                  conflictsModal?.teacher.message
-                }, ${conflictsModal?.teacher.list.map((teacher) => {
-                  return teacher + ", ";
-                })}`}</b>
-              </div>
-            )}
-            <div className="table-responsive">
-              <Table bordered>
+            <div>
+              <Table bordered className="w-100">
                 <thead>
                   <tr>
                     <th>Nombre</th>
@@ -150,7 +136,7 @@ export default function RequestInformation({
                 <b>AULA(s)</b>
               </div>
               <div className="col-sm-10">
-                <Table bordered>
+                <Table bordered className="w-100">
                   <thead>
                     <tr>
                       <th>Nombre</th>
@@ -183,7 +169,7 @@ export default function RequestInformation({
   return (
     <>
       <div
-        className="border border-dark rounded row mb-2"
+        className="border border-dark rounded row mb-2 p-2"
         style={{ minWidth: "300px" }}
       >
         <div className="col-1 align-self-center">
@@ -192,13 +178,13 @@ export default function RequestInformation({
         <div className="col-1 align-self-center">
           <b>{id}</b>
         </div>
-        <div className="col-3 align-self-center">{subject}</div>
+        <div className="col-2 align-self-center">{subject}</div>
         <div className="col-2 align-self-center">{quantity_studets}</div>
         <div className="col-2 align-self-center">{reservation_date}</div>
         <div className="col-2 align-self-center">{`${periods[0]} - ${periods[1]}`}</div>
-        <div className="col-sm-1 align-self-center">
+        <div className="col-sm-2 align-self-center">
           <button
-            className="btn btn-outline-primary btn-block"
+            className="btn btn-outline-primary btn-block w-100 text-truncate"
             onClick={handleClickModal}
           >
             <b>Detalles</b>

@@ -172,8 +172,7 @@ export default function Sidebar({ user }) {
                     className="text-decoration-none px-3 py-2 d-block"
                     onClick={() => handleItemClick("request-history")}
                   >
-                    <i className="bi bi-list-check"></i> Historial de
-                    solicitudes
+                    <i className="bi bi-x-diamond"></i> Historial de solicitudes
                   </Link>
                 </li>
               </div>
@@ -258,7 +257,7 @@ export default function Sidebar({ user }) {
                   onClick={() => handleItemClick("management-block")}
                 >
                   <div className="d-flex justify-content-between align-items-center">
-                    <i className="bi bi-houses fs-6"></i> Gestión de Bloques
+                    <i className="bi bi-building fs-6"></i> Gestión de Bloques
                     <i className="bi bi-chevron-down"></i>
                   </div>
                 </Link>
@@ -278,7 +277,7 @@ export default function Sidebar({ user }) {
                       onClick={() => handleItemClick("block-register")}
                     >
                       <div className="align-items-center">
-                        <i className="bi bi-house-add fs-6"></i> Registrar
+                        <i className="bi bi-building-add fs-6"></i> Registrar
                         bloque
                       </div>
                     </Link>
@@ -295,7 +294,7 @@ export default function Sidebar({ user }) {
                       className="text-decoration-none px-3 py-2 d-block"
                       onClick={() => handleItemClick("edit-block")}
                     >
-                      <i className="bi bi-house-gear fs-6"></i> Editar bloque
+                      <i className="bi bi-building-gear fs-6"></i> Editar bloque
                     </Link>
                   </li>
                   <li
@@ -310,7 +309,7 @@ export default function Sidebar({ user }) {
                       className="text-decoration-none px-3 py-2 d-block"
                       onClick={() => handleItemClick("delete-block")}
                     >
-                      <i className="bi bi-house-x fs-6"></i> Eliminar bloque
+                      <i className="bi bi-building-x fs-6"></i> Eliminar bloque
                     </Link>
                   </li>
                 </div>

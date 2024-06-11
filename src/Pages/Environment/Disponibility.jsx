@@ -226,57 +226,76 @@ function Disponibility() {
               </Form.Control.Feedback>
             </div>
 
-            <label className="fw-bold mt-3">AULAS</label>
-            <div className="scrol-teacher-modal">
-              <Table bordered hover className="table-tag text-center mt-2">
-                <thead>
-                  <tr>
-                    <th
-                      className="sticky-header text-center"
-                      style={{
-                        backgroundColor: "rgb(4, 94, 140)",
-                        color: "white",
-                        userSelect: "none",
-                      }}
-                    >
-                      Nombre
-                    </th>
-                    <th
-                      className="sticky-header text-center"
-                      style={{
-                        backgroundColor: "rgb(4, 94, 140)",
-                        color: "white",
-                        userSelect: "none",
-                      }}
-                    >
-                      Capacidad
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {classrom.map((item) => (
-                    <tr
-                      key={item.classroom_id}
-                      onClick={() => handleSelectClassroom(item.classroom_id)}
-                      className={
-                        selectedClassrooms.includes(item.classroom_id)
-                          ? "table-primary"
-                          : ""
-                      }
-                      style={{ cursor: "pointer" }}
-                    >
-                      <td style={{ userSelect: "none" }}>
-                        {item.classroom_name}
-                      </td>
-                      <td style={{ userSelect: "none" }}>{item.capacity}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-            <div className="invalid-feedback d-block">
-              {errors.classroom_id}
-            </div>
+            {formData.block_id !== "" ? (
+              <>
+                <label className="fw-bold mt-3">AULAS</label>
+                <div className="scrol-teacher-modal">
+                  <Table bordered hover className="table-tag text-center mt-2">
+                    <thead>
+                      <tr>
+                        <th
+                          className="sticky-header text-center"
+                          style={{
+                            backgroundColor: "rgb(4, 94, 140)",
+                            color: "white",
+                            userSelect: "none",
+                          }}
+                        >
+                          Nombre
+                        </th>
+                        <th
+                          className="sticky-header text-center"
+                          style={{
+                            backgroundColor: "rgb(4, 94, 140)",
+                            color: "white",
+                            userSelect: "none",
+                          }}
+                        >
+                          Capacidad
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {classrom.map((item) => (
+                        <tr
+                          key={item.classroom_id}
+                          onClick={() =>
+                            handleSelectClassroom(item.classroom_id)
+                          }
+                          className={
+                            selectedClassrooms.includes(item.classroom_id)
+                              ? "table-primary"
+                              : ""
+                          }
+                          style={{ cursor: "pointer" }}
+                        >
+                          <td style={{ userSelect: "none" }}>
+                            {item.classroom_name}
+                          </td>
+                          <td style={{ userSelect: "none" }}>
+                            {item.capacity}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                </div>
+                <div className="invalid-feedback d-block">
+                  {errors.classroom_id}
+                </div>
+              </>
+            ) : (
+              <div className="h-50 d-flex align-items-center justify-content-center">
+                <div>
+                  <div>
+                    <b className="fs-4">Lista de aulas no disponible.</b>
+                  </div>
+                  <div>
+                    <b className="fs-4">Seleccione un bloque.</b>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="col-6 position-relative ">

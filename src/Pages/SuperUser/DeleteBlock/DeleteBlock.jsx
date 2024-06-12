@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import SearchBar from "../../../Components/SearchBar/SearchBar";
 import { getBlocks } from "../../../services/blocks";
-import { searchEnvironments } from "../../../utils/searchRequests";
+import { searchBlocks } from "../../../utils/searchBlocks";
 import { Spinner } from "react-bootstrap";
 import BlockDelete from "./BlockDelete";
 
@@ -25,7 +25,7 @@ function DeleteBlock() {
       setEnvironments(allEnvironments);
       setMsgNoResults("");
     } else {
-      const results = searchEnvironments(allEnvironments, searchValue);
+      const results = searchBlocks(allEnvironments, searchValue);
       if (results.length < 1) {
         setMsgNoResults("No se encontraron resultados para la busqueda.");
       } else {

@@ -8,13 +8,13 @@ import ReusableModal from "../EditEnvironment/ReusableModal";
 import BlockEdit from "./BlockEdit";
 
 function EditBlock() {
+  const [listBlocks, setListBlocks] = useState([]);
+  const [allBlocks, setAllBlocks] = useState([]);
+  const [currentBlock, setCurrentBlock] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [allReservations, setAllReservations] = useState([]);
-  const [list, setList] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [msgNoResults, setMsgNoResults] = useState("");
-  const [currentReservation, setCurrentReservation] = useState(null);
-  const [status, setStatus] = useState([]);
+  const [status, setStatus] = useState([]); //para el selector de estado actualzar
   const [changedFields, setChangedFields] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [saveModal, setSaveModal] = useState(false);
@@ -32,32 +32,32 @@ function EditBlock() {
 
   useEffect(() => {
     if (searchValue === "") {
-      setList(allReservations);
+      setListBlocks(allBlocks);
       setMsgNoResults("");
     } else {
-      const results = searchBlocks(allReservations, searchValue);
+      const results = searchBlocks(allBlocks, searchValue);
       if (results.length < 1) {
         setMsgNoResults("No se encontraron resultados");
       } else {
         setMsgNoResults("");
       }
-      setList(results);
+      setListBlocks(results);
     }
-  }, [searchValue, allReservations]);
+  }, [searchValue, allBlocks]);
 
   const getRequestStatus = async () => {
-    let rl = await getStatusBlock();
-    setStatus(rl);
+    let statusSelector = await getStatusBlock();
+    setStatus(statusSelector);
   };
 
   const getBlocksList = async () => {
     let bl = await getBlocks();
-    setAllReservations(bl);
-    setList(bl);
+    setAllBlocks(bl);
+    setListBlocks(bl);
   };
 
   const handleShowModal = (block) => {
-    setCurrentReservation({ ...block, errors: {} });
+    setCurrentBlock({ ...block, errors: {} });
     setShowModal(true);
     setChangedFields({});
   };
@@ -75,8 +75,8 @@ function EditBlock() {
   };
 
   const handleSaveModal = () => {
-    const formHasErrors = Object.keys(currentReservation.errors).some(
-      (key) => currentReservation.errors[key]
+    const formHasErrors = Object.keys(currentBlock.errors).some(
+      (key) => currentBlock.errors[key]
     );
     if (!formHasErrors) {
       setSaveModal(true);
@@ -101,20 +101,20 @@ function EditBlock() {
 
   const handleCancelAceptedModal = () => {
     setCancelModal(false);
-    setCurrentReservation(null);
+    setCurrentBlock(null);
     setShowModal(false);
   };
 
   const handleSaveChanges = async () => {
-    const formHasErrors = Object.keys(currentReservation.errors).some(
-      (key) => currentReservation.errors[key]
+    const formHasErrors = Object.keys(currentBlock.errors).some(
+      (key) => currentBlock.errors[key]
     );
     if (!formHasErrors) {
       let editedBlock = {
-        block_name: currentReservation.block_name,
-        block_maxfloor: currentReservation.block_maxfloor,
-        block_maxclassrooms: currentReservation.block_maxclassrooms,
-        block_status_id: currentReservation.block_status_id,
+        block_name: currentBlock.block_name,
+        block_maxfloor: currentBlock.block_maxfloor,
+        block_maxclassrooms: currentBlock.block_maxclassrooms,
+        block_status_id: currentBlock.block_status_id,
       };
       await editBlock(editedBlock);
     } else {
@@ -124,12 +124,11 @@ function EditBlock() {
 
   const editBlock = async (editedBlock) => {
     try {
-      let response = await setBlock(
-        currentReservation.block_id,
-        editedBlock
-      ).catch((error) => {
-        setBackendError("Error al enviar los datos: " + error.message);
-      });
+      let response = await setBlock(currentBlock.block_id, editedBlock).catch(
+        (error) => {
+          setBackendError("Error al enviar los datos: " + error.message);
+        }
+      );
       setBackendError(response);
       getBlocksList();
     } catch (error) {
@@ -139,11 +138,11 @@ function EditBlock() {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setCurrentReservation({
-      ...currentReservation,
+    setCurrentBlock({
+      ...currentBlock,
       [name]: value,
       errors: {
-        ...currentReservation.errors,
+        ...currentBlock.errors,
         [name]: validators[name] ? validators[name](value) : null,
       },
     });
@@ -201,8 +200,8 @@ function EditBlock() {
   ];
 
   const validateCantidadClassrom = (value) => {
-    const matchingBlock = list.find(
-      (list) => list.block_id === currentReservation.block_id
+    const matchingBlock = listBlocks.find(
+      (list) => list.block_id === currentBlock.block_id
     );
     const maxClass = parseInt(matchingBlock.block_maxclassrooms);
     if (!value) {
@@ -214,8 +213,8 @@ function EditBlock() {
   };
 
   const validateFloor = (value) => {
-    const matchingBlock = list.find(
-      (list) => list.block_id === currentReservation.block_id
+    const matchingBlock = listBlocks.find(
+      (list) => list.block_id === currentBlock.block_id
     );
     const maxFloor = parseInt(matchingBlock.block_maxfloor);
     if (!value) {
@@ -251,7 +250,6 @@ function EditBlock() {
     block_maxclassrooms: "CANTIDAD DE AULAS",
   };
 
-  console.log(backendError);
   return (
     <div className="container">
       <h1 className="text-center">Lista de Bloques</h1>
@@ -279,7 +277,7 @@ function EditBlock() {
                 <h4>{msgNoResults}</h4>
               </div>
             )}
-            <BlockEdit list={list} handleShowModal={handleShowModal} />
+            <BlockEdit list={listBlocks} handleShowModal={handleShowModal} />
           </div>
         )}
       </div>
@@ -291,7 +289,7 @@ function EditBlock() {
         footerButtons={footerButtonsModal}
         size="lg"
       >
-        {currentReservation && (
+        {currentBlock && (
           <Form>
             <Row className="mb-3 align-items-center">
               <Col md={3} className="d-flex align-items-center">
@@ -304,7 +302,7 @@ function EditBlock() {
                   type="text"
                   name="block_name"
                   placeholder="Ingrese el nombre del Bloque"
-                  value={currentReservation.block_name}
+                  value={currentBlock.block_name}
                   onChange={handleInputChange}
                   disabled
                 />
@@ -322,12 +320,12 @@ function EditBlock() {
                   onKeyDown={handleKeyDown}
                   type="number"
                   name="block_maxclassrooms"
-                  value={currentReservation.block_maxclassrooms}
+                  value={currentBlock.block_maxclassrooms}
                   onChange={handleInputChange}
-                  isInvalid={!!currentReservation.errors?.block_maxclassrooms}
+                  isInvalid={!!currentBlock.errors?.block_maxclassrooms}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {currentReservation.errors?.block_maxclassrooms}
+                  {currentBlock.errors?.block_maxclassrooms}
                 </Form.Control.Feedback>
               </Col>
 
@@ -339,7 +337,7 @@ function EditBlock() {
               <Col md={4}>
                 <Form.Select
                   name="block_status_id"
-                  value={currentReservation.block_status_id}
+                  value={currentBlock.block_status_id}
                   onChange={handleInputChange}
                 >
                   {status.map((option) => (
@@ -366,12 +364,12 @@ function EditBlock() {
                   type="number"
                   name="block_maxfloor"
                   min={0}
-                  value={currentReservation.block_maxfloor}
+                  value={currentBlock.block_maxfloor}
                   onChange={handleInputChange}
-                  isInvalid={!!currentReservation.errors?.block_maxfloor}
+                  isInvalid={!!currentBlock.errors?.block_maxfloor}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {currentReservation.errors?.block_maxfloor}
+                  {currentBlock.errors?.block_maxfloor}
                 </Form.Control.Feedback>
               </Col>
             </Row>

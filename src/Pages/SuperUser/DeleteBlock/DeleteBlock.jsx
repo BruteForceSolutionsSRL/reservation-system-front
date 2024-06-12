@@ -6,8 +6,8 @@ import { Spinner } from "react-bootstrap";
 import BlockDelete from "./BlockDelete";
 
 function DeleteBlock() {
-  const [allEnvironments, setAllEnvironments] = useState([]);
-  const [environments, setEnvironments] = useState([]);
+  const [allBlocks, setAllBlocks] = useState([]);
+  const [blocks, setBlocks] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [msgNoResults, setMsgNoResults] = useState("");
   const [loading, setLoading] = useState(false);
@@ -16,41 +16,37 @@ function DeleteBlock() {
   useEffect(() => {
     setReloadList(false);
     setLoading(true);
-    getEnvironmentsList();
-    getEnvironmentsList();
+    getBlockList();
   }, [reloadList]);
 
   useEffect(() => {
     if (searchValue === "") {
-      setEnvironments(allEnvironments);
+      setBlocks(allBlocks);
       setMsgNoResults("");
     } else {
-      const results = searchBlocks(allEnvironments, searchValue);
+      const results = searchBlocks(allBlocks, searchValue);
       if (results.length < 1) {
         setMsgNoResults("No se encontraron resultados para la busqueda.");
       } else {
         setMsgNoResults("");
       }
-      setEnvironments(results);
+      setBlocks(results);
     }
   }, [searchValue]);
 
-  const getEnvironmentsList = async () => {
+  const getBlockList = async () => {
     let envl = await getBlocks()
       .finally(() => {
         setLoading(false);
       })
       .catch((err) => console.error(err));
-    setAllEnvironments(envl);
-    //console.log(envl);
-    setEnvironments(envl);
+    setAllBlocks(envl);
+    setBlocks(envl);
   };
-
-  console.log("dsdsd", environments);
 
   return (
     <div className="container">
-      <h1 className="text-center">Eliminar Bloque</h1>
+      <h1 className="text-center">Lista de Bloque</h1>
       <SearchBar
         value={searchValue}
         onChange={(event) => {
@@ -68,26 +64,23 @@ function DeleteBlock() {
           </Spinner>
         </div>
       ) : (
-        <>
-          {environments.length > 0 ? (
+        <div>
+          {blocks.length > 0 ? (
             <>
-              {environments.map((each) => {
-                return (
-                  <div key={each.id}>
-                    <BlockDelete
-                      {...each}
-                      reloadList={(change) => setReloadList(change)}
-                    />
-                  </div>
-                );
-              })}
+              {blocks.map((each) => (
+                <BlockDelete
+                  key={each.block_id}
+                  {...each}
+                  reloadList={(change) => setReloadList(change)}
+                />
+              ))}
             </>
           ) : (
             <>
               <h3 className="text-center">{msgNoResults}</h3>
             </>
           )}
-        </>
+        </div>
       )}
     </div>
   );

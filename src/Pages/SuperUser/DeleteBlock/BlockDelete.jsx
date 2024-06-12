@@ -12,13 +12,13 @@ function BlockDelete(props) {
     block_maxfloor,
     block_status_name,
   } = props;
-  const [show, setShow] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [requestsList, setRequestsList] = useState([]);
+  const [environment, setEnvironment] = useState([]);
   const [stadisticsBlock, setStadisticsBlock] = useState([]);
   const [loadingDelete, setLoadingDelete] = useState(false);
-  const [msgModal, setMsgModal] = useState({ status: "", message: "" });
+  const [showConfirm, setShowConfirm] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
+  const [show, setShow] = useState(false);
+  const [msgModal, setMsgModal] = useState({ status: "", message: "" });
 
   const handleClose = () => {
     setShow(false);
@@ -28,22 +28,21 @@ function BlockDelete(props) {
     setShowConfirm(false);
   };
 
-  const getRequestsList = async () => {
-    let rl = await getClassroomsByBlock(block_id);
-    setRequestsList(rl);
+  const getEnvironmentBlock = async () => {
+    let environment = await getClassroomsByBlock(block_id);
+    setEnvironment(environment);
     let stadistics = await getStadisticsBlock(block_id);
-    console.log("estadiscticas del bloque", stadistics, block_id);
     setStadisticsBlock(stadistics);
     setShow(true);
   };
 
-  const sendDeleteEnvironment = async () => {
+  const sendDeleteBlock = async () => {
     setLoadingDelete(true);
     let response = await deleteBlock(block_id).finally(() => {
       setLoadingDelete(false);
       setShowConfirm(false);
     });
-    if (response.message === "Ambiente eliminado exitosamente.") {
+    if (response.message === "Bloque eliminado exitosamente.") {
       setMsgModal({ status: "Exito", message: response.message });
     } else {
       setMsgModal({ status: "Error", message: response.message });
@@ -58,8 +57,7 @@ function BlockDelete(props) {
     props.reloadList(true);
   };
 
-  console.log(msgModal);
-    return (
+  return (
     <>
       <div
         className="row border border-black rounded p-2 mb-2"
@@ -96,7 +94,7 @@ function BlockDelete(props) {
           <button
             className="btn btn-sm btn-outline-danger"
             type="button"
-            onClick={getRequestsList}
+            onClick={getEnvironmentBlock}
           >
             <b>Eliminar</b>
           </button>
@@ -108,16 +106,18 @@ function BlockDelete(props) {
           <h4>BLOQUE: {block_name}</h4>
           <b>El bloque tiene los siguientes ambientes que seran eliminados:</b>
           <div className="m-3">
-            {requestsList.length === 0 ? (
+            {environment.length === 0 ? (
               <div className="text-center">
-                <b>El ambiente no tiene solicitudes.</b>
+                <h4 className="text-danger">
+                  El BLOQUE no tiene ambientes registrados.
+                </h4>
               </div>
             ) : (
               <div
                 className="d-flex flex-wrap gap-1"
                 style={{ maxHeight: "85px", overflowY: "auto" }}
               >
-                {requestsList.map((each) => {
+                {environment.map((each) => {
                   return (
                     <div
                       key={each.reservation_id}
@@ -211,7 +211,7 @@ function BlockDelete(props) {
             )}
             <button
               className="btn btn-outline-danger m-1"
-              onClick={sendDeleteEnvironment}
+              onClick={sendDeleteBlock}
             >
               Confirmar
             </button>

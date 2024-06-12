@@ -208,6 +208,7 @@ function BlockRegister() {
       ...formData,
       block_name: transformedValue,
     });
+
     const error = validators.block_name(transformedValue);
     setErrors({
       ...errors,
@@ -229,13 +230,13 @@ function BlockRegister() {
               </Col>
               <Col md={9}>
                 <Form.Control
-                  type="text"
+                  type="input"
                   name="block_name"
                   placeholder="Ingrese el nombre del Bloque"
-                  onKeyDown={handleEnvironmentNameChange}
                   value={formData.block_name}
                   onChange={handleEnvironmentNameChange}
                   isInvalid={!!errors.block_name}
+                  autoComplete="off"
                 />
                 <Form.Control.Feedback type="invalid">
                   {errors.block_name}

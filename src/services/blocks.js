@@ -8,6 +8,23 @@ export function getBlocks() {
     });
 }
 
+export function getStadisticsBlock(id) {
+  return fetch(url + `blocks/${id}/statistics`)
+    .then((response) => response.json())
+    .then((data) => {
+      return data;
+    });
+}
+export function deleteBlock(id) {
+  return fetch(url + `blocks/${id}`, {
+    method: "DELETE",
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      return data;
+    });
+}
+
 export function setBlock(block_id, blockEdited) {
   let responseFetch = {};
   return fetch(url + `blocks/${block_id}`, {

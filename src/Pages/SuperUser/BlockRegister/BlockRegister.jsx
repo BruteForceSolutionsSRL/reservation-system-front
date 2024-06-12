@@ -1,24 +1,31 @@
 import React, { useState, useEffect } from "react";
 import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
+import { Spinner, Form, Button, Row, Col, Modal } from "react-bootstrap";
 import { storeBlock } from "../../../services/classrooms";
 
 function BlockRegister() {
   const URL = import.meta.env.VITE_REACT_API_URL;
   const [block, setBlock] = useState([]);
+  const [registerModal, setRegisterModal] = useState(false);
+  const [cancelRegisterModal, setCancelRegisterModal] = useState(false);
+  const [existBlockModal, setExistBlockModal] = useState(false);
+  const [confimationModal, setConfimationModal] = useState(false);
+
+  const [backendError, setBackendError] = useState({});
+  const [confirmationLoading, setConfirmationLoading] = useState(false);
+
   const [formData, setFormData] = useState({
-    name_block: "",
-    capacity_class: "",
-    number_floors: "",
+    block_name: "",
+    block_maxclassrooms: "",
+    block_maxfloor: "",
+    block_status_id: 1,
   });
 
   const [errors, setErrors] = useState({
-    name_block: "",
-    capacity_class: "",
-    number_floors: "",
+    block_name: "",
+    block_maxclassrooms: "",
+    block_maxfloor: "",
+    block_status_id: 1,
   });
 
   useEffect(() => {
@@ -33,11 +40,70 @@ function BlockRegister() {
       }
       const data = await response.json();
       setterFunction(data);
-      console.log(data);
+      // console.log(data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+
+  /*/************ */
+  function cancelRegister() {
+    setCancelRegisterModal(true);
+  }
+
+  function clearFormRegister() {
+    clearDataForm();
+    setCancelRegisterModal(false);
+  }
+
+  function backRegisterClear() {
+    setCancelRegisterModal(false);
+  }
+
+  function blockExist() {
+    setExistBlockModal(false);
+  }
+  /*************************************** */
+  // CANCELAR Y CERRAR BOTON X
+  const handleSaveCancelModal = () => {
+    setRegisterModal(false);
+  };
+
+  // REGISTRAR BLOQUE
+  const handleSaveModal = () => {
+    setRegisterModal(true);
+  };
+
+  const saveBlock = async () => {
+    setConfirmationLoading(true);
+    const response = await storeNewBlock(formData);
+    setBackendError(response);
+    setConfirmationLoading(false);
+    setRegisterModal(false);
+    setConfimationModal(true);
+    clearDataForm();
+  };
+
+  function saveBlockClose() {
+    setConfimationModal(false);
+    fetchData(`blocks`, setBlock);
+  }
+  /*************************** */
+
+  function clearDataForm() {
+    setFormData({
+      block_name: "",
+      block_maxclassrooms: "",
+      block_maxfloor: "",
+      block_status_id: 1,
+    });
+    setErrors({
+      block_name: "",
+      block_maxclassrooms: "",
+      block_maxfloor: "",
+      block_status_id: 1,
+    });
+  }
 
   const validateNameBlock = (value) => {
     if (!value) {
@@ -67,30 +133,28 @@ function BlockRegister() {
   const handleSubmit = (e) => {
     e.preventDefault();
     let newErrors = {};
-    newErrors.name_block = validateNameBlock(formData.name_block);
-    newErrors.capacity_class = validateCapacity(formData.capacity_class);
-    newErrors.number_floors = validateFloor(formData.number_floors);
+    newErrors.block_name = validateNameBlock(formData.block_name);
+    newErrors.block_maxclassrooms = validateCapacity(
+      formData.block_maxclassrooms
+    );
+    newErrors.block_maxfloor = validateFloor(formData.block_maxfloor);
 
     setErrors(newErrors);
     if (
-      !newErrors.name_block &&
-      !newErrors.capacity_class &&
-      !newErrors.number_floors
+      !newErrors.block_name &&
+      !newErrors.block_maxclassrooms &&
+      !newErrors.block_maxfloor
     ) {
       const isDuplicateName = block.some(
-        (block) => block.block_name === formData.name_block
+        (block) => block.block_name === formData.block_name
       );
       if (isDuplicateName) {
-        console.log("es igual");
+        setExistBlockModal(true);
+        console.log(`El bloque ${formData.block_name}  ya existe.`);
       } else {
-        // console.log(formData);
-        let newBlock = {
-          block_name: formData.name_block,
-          block_maxfloor: formData.capacity_class,
-          block_maxclassrooms: formData.number_floors,
-          block_status_id: 1,
-        };
-        storeNewBlock(newBlock);
+        //GUARDAMOS Y ENVIAMOS AL BACK EL NUEVO AMBIENTE
+        handleSaveModal();
+        console.log("lo que envuamos a l back", formData);
       }
     }
     console.log("LLENE EL FORMULARIO");
@@ -98,7 +162,6 @@ function BlockRegister() {
 
   const storeNewBlock = async (newBlock) => {
     let response = await storeBlock(newBlock);
-    console.log(response);
     return response;
   };
 
@@ -116,9 +179,9 @@ function BlockRegister() {
   };
 
   const validators = {
-    name_block: validateNameBlock,
-    capacity_class: validateCapacity,
-    number_floors: validateFloor,
+    block_name: validateNameBlock,
+    block_maxclassrooms: validateCapacity,
+    block_maxfloor: validateFloor,
   };
 
   const handleKeyDown = (event) => {
@@ -143,96 +206,159 @@ function BlockRegister() {
       .join("");
     setFormData({
       ...formData,
-      name_block: transformedValue,
+      block_name: transformedValue,
     });
-    const error = validators.name_block(transformedValue);
+    const error = validators.block_name(transformedValue);
     setErrors({
       ...errors,
-      name_block: error,
+      block_name: error,
     });
   };
 
   return (
-    <Container>
-      <h1 className="text-center my-4">Registrar Bloque</h1>
-      <Form noValidate onSubmit={handleSubmit}>
-        <div>
+    <div>
+      <Container>
+        <h1 className="text-center my-4">Registrar Bloque</h1>
+        <Form noValidate onSubmit={handleSubmit}>
+          <div>
+            <Row className="mb-3 align-items-center">
+              <Col md={3} className="d-flex align-items-center">
+                <Form.Label className="fw-bold col-form-label mb-0">
+                  NOMBRE DEL BLOQUE
+                </Form.Label>
+              </Col>
+              <Col md={9}>
+                <Form.Control
+                  type="text"
+                  name="block_name"
+                  placeholder="Ingrese el nombre del Bloque"
+                  onKeyDown={handleEnvironmentNameChange}
+                  value={formData.block_name}
+                  onChange={handleEnvironmentNameChange}
+                  isInvalid={!!errors.block_name}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.block_name}
+                </Form.Control.Feedback>
+              </Col>
+            </Row>
+          </div>
+
           <Row className="mb-3 align-items-center">
             <Col md={3} className="d-flex align-items-center">
               <Form.Label className="fw-bold col-form-label mb-0">
-                NOMBRE DEL BLOQUE
+                CAPACIDAD DE AULAS
               </Form.Label>
             </Col>
-            <Col md={9}>
+            <Col md={4}>
               <Form.Control
-                type="text"
-                name="name_block"
-                placeholder="Ingrese el nombre del Bloque"
-                onKeyDown={handleEnvironmentNameChange}
-                value={formData.name_block}
-                onChange={handleEnvironmentNameChange}
-                isInvalid={!!errors.name_block}
+                type="number"
+                name="block_maxclassrooms"
+                onKeyDown={handleKeyDown}
+                placeholder="Ingrese la capacidad de aulas"
+                value={formData.block_maxclassrooms}
+                onChange={handleChange}
+                isInvalid={!!errors.block_maxclassrooms}
               />
               <Form.Control.Feedback type="invalid">
-                {errors.name_block}
+                {errors.block_maxclassrooms}
+              </Form.Control.Feedback>
+            </Col>
+
+            <Col md={2} className="d-flex align-items-center">
+              <Form.Label className="fw-bold col-form-label mb-0">
+                NUMERO DE PISOS
+              </Form.Label>
+            </Col>
+            <Col md={3}>
+              <Form.Control
+                type="number"
+                name="block_maxfloor"
+                min={0}
+                onKeyDown={handleKeyDown}
+                placeholder="Ingrese el número de pisos"
+                value={formData.block_maxfloor}
+                onChange={handleChange}
+                isInvalid={!!errors.block_maxfloor}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.block_maxfloor}
               </Form.Control.Feedback>
             </Col>
           </Row>
-        </div>
 
-        <Row className="mb-3 align-items-center">
-          <Col md={3} className="d-flex align-items-center">
-            <Form.Label className="fw-bold col-form-label mb-0">
-              CAPACIDAD DE AULAS
-            </Form.Label>
-          </Col>
-          <Col md={4}>
-            <Form.Control
-              type="number"
-              name="capacity_class"
-              onKeyDown={handleKeyDown}
-              placeholder="Ingrese la capacidad de aulas"
-              value={formData.capacity_class}
-              onChange={handleChange}
-              isInvalid={!!errors.capacity_class}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.capacity_class}
-            </Form.Control.Feedback>
-          </Col>
+          <div className="d-flex justify-content-end mt-4">
+            <Button className="me-3" variant="primary" type="submit">
+              Registrar
+            </Button>
+            <Button variant="secondary" type="button" onClick={cancelRegister}>
+              Cancelar
+            </Button>
+          </div>
+        </Form>
+      </Container>
 
-          <Col md={2} className="d-flex align-items-center">
-            <Form.Label className="fw-bold col-form-label mb-0">
-              NUMERO DE PISOS
-            </Form.Label>
-          </Col>
-          <Col md={3}>
-            <Form.Control
-              type="number"
-              name="number_floors"
-              min={0}
-              onKeyDown={handleKeyDown}
-              placeholder="Ingrese el número de pisos"
-              value={formData.number_floors}
-              onChange={handleChange}
-              isInvalid={!!errors.number_floors}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.number_floors}
-            </Form.Control.Feedback>
-          </Col>
-        </Row>
-
-        <div className="d-flex justify-content-end mt-4">
-          <Button className="me-3" variant="primary" type="submit">
-            Registrar
-          </Button>
-          <Button variant="secondary" type="button">
+      <Modal show={registerModal} onHide={handleSaveCancelModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>¡Confirmación!</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div>¿Está seguro de registrar el BLOQUE?</div>
+        </Modal.Body>
+        <Modal.Footer>
+          {confirmationLoading && (
+            <div className="d-flex justify-content-center">
+              <Spinner animation="border" role="status" />
+            </div>
+          )}
+          <Button onClick={saveBlock}>Aceptar</Button>
+          <Button variant="secondary" onClick={handleSaveCancelModal}>
             Cancelar
           </Button>
-        </div>
-      </Form>
-    </Container>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={cancelRegisterModal} onHide={backRegisterClear}>
+        <Modal.Header closeButton>
+          <Modal.Title>Cancelar Registro</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p style={{ color: "red" }}>¿Estás seguro que quieres cancelar?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={clearFormRegister}>Aceptar</Button>
+          <Button variant="secondary" onClick={backRegisterClear}>
+            Atras
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={existBlockModal} onHide={blockExist}>
+        <Modal.Header closeButton>
+          <Modal.Title>¡Advertencia!</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p style={{ color: "red" }}>
+            El ambiente {formData.block_name} ya existe.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={blockExist}>Aceptar</Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={confimationModal} onHide={saveBlockClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>!Confirmacion¡</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p style={{ color: "red" }}>{backendError.data}</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={saveBlockClose}>Aceptar</Button>
+        </Modal.Footer>
+      </Modal>
+    </div>
   );
 }
 

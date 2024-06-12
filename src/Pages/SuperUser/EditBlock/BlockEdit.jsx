@@ -1,34 +1,6 @@
-import { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
 
 const BlockEdit = ({ list, handleShowModal }) => {
-  const [status, setStatus] = useState([]);
-  const url = import.meta.env.VITE_REACT_API_URL;
-
-  useEffect(() => {
-    statusTypes();
-  }, []);
-
-  const statusTypes = async () => {
-    try {
-      const response = await fetch(url + "classrooms/statuses");
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      setStatus([...data]);
-    } catch (error) {
-      console.error("Error fetching options:", error);
-    }
-  };
-
-  const showStatus = (key) => {
-    const selectedElement = status.find(
-      (elemento) => elemento.classroom_status_id === parseInt(key)
-    );
-    return selectedElement ? selectedElement.classroom_status_name : "";
-  };
-
   return (
     <div>
       {list.map((block, index) => (
@@ -47,7 +19,7 @@ const BlockEdit = ({ list, handleShowModal }) => {
                       : "bg-danger"
                   }`}
                 >
-                  {showStatus(block.block_status_id)}
+                  {block.block_status_name}
                 </b>
               </div>
               <div>

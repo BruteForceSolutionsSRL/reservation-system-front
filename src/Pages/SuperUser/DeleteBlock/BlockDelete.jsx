@@ -1,13 +1,21 @@
 import { useState } from "react";
 import { Modal, Spinner, Table } from "react-bootstrap";
 import { getClassroomsByBlock } from "../../../services/classrooms";
-import { deleteEnvironment } from "../../../services/classrooms";
+import { getStadisticsBlock } from "../../../services/blocks";
+import { deleteBlock } from "../../../services/blocks";
 
 function BlockDelete(props) {
-  const { id, name, capacity_class, floor, status_name, statistics } = props;
+  const {
+    block_id,
+    block_name,
+    block_maxclassrooms,
+    block_maxfloor,
+    block_status_name,
+  } = props;
   const [show, setShow] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [requestsList, setRequestsList] = useState([]);
+  const [stadisticsBlock, setStadisticsBlock] = useState([]);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [msgModal, setMsgModal] = useState({ status: "", message: "" });
   const [showMsg, setShowMsg] = useState(false);
@@ -21,14 +29,17 @@ function BlockDelete(props) {
   };
 
   const getRequestsList = async () => {
-    let rl = await getClassroomsByBlock(id);
+    let rl = await getClassroomsByBlock(block_id);
     setRequestsList(rl);
+    let stadistics = await getStadisticsBlock(block_id);
+    console.log("estadiscticas del bloque", stadistics, block_id);
+    setStadisticsBlock(stadistics);
     setShow(true);
   };
 
   const sendDeleteEnvironment = async () => {
     setLoadingDelete(true);
-    let response = await deleteEnvironment(id).finally(() => {
+    let response = await deleteBlock(block_id).finally(() => {
       setLoadingDelete(false);
       setShowConfirm(false);
     });
@@ -47,7 +58,8 @@ function BlockDelete(props) {
     props.reloadList(true);
   };
 
-  return (
+  console.log(msgModal);
+    return (
     <>
       <div
         className="row border border-black rounded p-2 mb-2"
@@ -58,25 +70,25 @@ function BlockDelete(props) {
             <b className="col text-primary">ESTADO: </b>
             <b
               className={`text-light rounded p-1 ${
-                status_name === "HABILITADO" ? "bg-success" : "bg-danger"
+                block_status_name === "HABILITADO" ? "bg-success" : "bg-danger"
               }`}
             >
-              {status_name}
+              {block_status_name}
             </b>
           </div>
           <div>
             <b className="text-primary">NOMBRE: </b>
-            <b>{name}</b>
+            <b>{block_name}</b>
           </div>
         </div>
         <div className="col-sm-4">
           <div>
             <b className="text-primary">CANTIDAD DE AULAS: </b>
-            <b>{capacity_class}</b>
+            <b>{block_maxclassrooms}</b>
           </div>
           <div>
             <b className="text-primary">NUMERO DE PISO: </b>
-            <b>{floor}</b>
+            <b>{block_maxfloor}</b>
           </div>
         </div>
 
@@ -93,7 +105,7 @@ function BlockDelete(props) {
       <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Body>
           <h3>¿Esta seguro de eliminar el bloque?</h3>
-          <h4>BLOQUE: {name}</h4>
+          <h4>BLOQUE: {block_name}</h4>
           <b>El bloque tiene los siguientes ambientes que seran eliminados:</b>
           <div className="m-3">
             {requestsList.length === 0 ? (
@@ -126,19 +138,19 @@ function BlockDelete(props) {
           <div className="align-self-center ps-3 pe-3 pt-3">
             <div className=" d-flex justify-content-center">
               <b className="text-light bg-success rounded p-1 me-1">
-                Aceptadas: {statistics.accepted_reservations}
+                Aceptadas: {stadisticsBlock.accepted}
               </b>
               <b className="text-light bg-danger rounded p-1 me-1">
-                Rechazadas: {statistics.rejected_reservations}
+                Rechazadas: {stadisticsBlock.rejected}
               </b>
               <b className="text-light bg-warning rounded p-1 me-1">
-                Pendientes: {statistics.pending_reservations}
+                Pendientes: {stadisticsBlock.pending}
               </b>
             </div>
             <hr />
             <div className="d-flex justify-content-center">
               <b className="text-light bg-secondary rounded p-1 me-1">
-                Total solicitudes: {statistics.total_reservations}
+                Total solicitudes: {stadisticsBlock.total}
               </b>
             </div>
           </div>
@@ -189,7 +201,7 @@ function BlockDelete(props) {
         <Modal.Body>
           <h3>¡Advertencia!</h3>
           <div className="d-flex justify-content-center">
-            <p>¿Está seguro de elimnar el ambiente?</p>
+            <p>¿Está seguro de elimnar el Bloque?</p>
           </div>
           <div className="d-flex justify-content-end">
             {loadingDelete && (

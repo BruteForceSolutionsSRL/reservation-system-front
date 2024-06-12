@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import SearchBar from "../../../Components/SearchBar/SearchBar";
-import BlockDelete from "./BlockDelete";
-import { getClassroomsForDeleteList } from "../../../services/classrooms";
+import { getBlocks } from "../../../services/blocks";
 import { searchEnvironments } from "../../../utils/searchRequests";
 import { Spinner } from "react-bootstrap";
+import BlockDelete from "./BlockDelete";
 
 function DeleteBlock() {
   const [allEnvironments, setAllEnvironments] = useState([]);
@@ -13,79 +13,11 @@ function DeleteBlock() {
   const [loading, setLoading] = useState(false);
   const [reloadList, setReloadList] = useState(false);
 
-  const blocks = [
-    {
-      id: 1,
-      name: "AULAS INF-LAB",
-      capacity_class: 6,
-      floor: 0,
-      status_name: "HABILITADO",
-      statistics: {
-        accepted_reservations: 1,
-        rejected_reservations: 0,
-        pending_reservations: 0,
-        total_reservations: 1,
-      },
-    },
-    {
-      id: 2,
-      name: "EDIFICIO MEMI",
-      capacity_class: 6,
-      floor: 3,
-      status_name: "HABILITADO",
-      statistics: {
-        accepted_reservations: 1,
-        rejected_reservations: 0,
-        pending_reservations: 0,
-        total_reservations: 1,
-      },
-    },
-    {
-      id: 3,
-      name: "EDIFICIO ACADEMICO 2",
-      capacity_class: 20,
-      floor: 3,
-      status_name: "DESABILITADO",
-      statistics: {
-        accepted_reservations: 1,
-        rejected_reservations: 0,
-        pending_reservations: 0,
-        total_reservations: 1,
-      },
-    },
-    {
-      id: 4,
-      name: "BLOQUE TRENCITO",
-      capacity_class: 6,
-      floor: 3,
-      status_name: "HABILITADO",
-      statistics: {
-        accepted_reservations: 1,
-        rejected_reservations: 0,
-        pending_reservations: 0,
-        total_reservations: 1,
-      },
-    },
-    {
-      id: 5,
-      name: "BLOQUE CENTRAL - EDIFICIO DECANATURA",
-      capacity_class: 6,
-      floor: 3,
-      status_name: "HABILITADO",
-      statistics: {
-        accepted_reservations: 1,
-        rejected_reservations: 0,
-        pending_reservations: 0,
-        total_reservations: 1,
-      },
-    },
-  ];
-
   useEffect(() => {
     setReloadList(false);
     setLoading(true);
     getEnvironmentsList();
-    //getEnvironmentsList();
+    getEnvironmentsList();
   }, [reloadList]);
 
   useEffect(() => {
@@ -103,21 +35,18 @@ function DeleteBlock() {
     }
   }, [searchValue]);
 
-  /*const getEnvironmentsList = async () => {
-    let envl = await getClassroomsForDeleteList()
-        .finally(() => {
-          setLoading(false);
-        })
-        .catch((err) => console.error(err));
+  const getEnvironmentsList = async () => {
+    let envl = await getBlocks()
+      .finally(() => {
+        setLoading(false);
+      })
+      .catch((err) => console.error(err));
     setAllEnvironments(envl);
+    //console.log(envl);
     setEnvironments(envl);
-  };*/
+  };
 
-  function getEnvironmentsList() {
-    setAllEnvironments(blocks);
-    setEnvironments(blocks);
-    setLoading(false);
-  }
+  console.log("dsdsd", environments);
 
   return (
     <div className="container">

@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { Spinner, Form, Button, Container, Row, Col } from "react-bootstrap";
+import { Spinner, Form, Button, Row, Col, Modal } from "react-bootstrap";
 import SearchBar from "../../../Components/SearchBar/SearchBar";
-import BlockEdit from "./BlockEdit";
-import { searchEnvironmentsForEdit } from "../../../utils/searchRequests";
 import { getStatusBlock } from "../../../services/classrooms";
-import ReusableModal from "../EditEnvironment/ReusableModal";
 import { getBlocks, setBlock } from "../../../services/blocks";
 import { searchBlocks } from "../../../utils/searchBlocks";
+import ReusableModal from "../EditEnvironment/ReusableModal";
+import BlockEdit from "./BlockEdit";
 
 function EditBlock() {
   const [loading, setLoading] = useState(false);
@@ -21,13 +20,12 @@ function EditBlock() {
   const [saveModal, setSaveModal] = useState(false);
   const [cancelModal, setCancelModal] = useState(false);
   const [confirmations, setConfirmationsModal] = useState(false);
-  const [confirmationMessage, setConfirmationMessage] = useState("");
   const [backendError, setBackendError] = useState("");
-  const url = import.meta.env.VITE_REACT_API_URL;
+  const [confirmationLoading, setConfirmationLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    Promise.all([getRequestStatus(), getBlocksList()]).finally(
+    Promise.all([getRequestStatus(), getBlocksList()]).finally(() =>
       setLoading(false)
     );
   }, []);
@@ -64,10 +62,12 @@ function EditBlock() {
     setChangedFields({});
   };
 
-  const handleSaveConfirmationsModal = () => {
+  const handleSaveConfirmationsModal = async () => {
+    setConfirmationLoading(true);
+    await handleSaveChanges();
+    setConfirmationLoading(false);
     setSaveModal(false);
     setConfirmationsModal(true);
-    handleSaveChanges();
   };
 
   const handleCloseConfirmationsModal = () => {
@@ -105,7 +105,7 @@ function EditBlock() {
     setShowModal(false);
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     const formHasErrors = Object.keys(currentReservation.errors).some(
       (key) => currentReservation.errors[key]
     );
@@ -116,38 +116,24 @@ function EditBlock() {
         block_maxclassrooms: currentReservation.block_maxclassrooms,
         block_status_id: currentReservation.block_status_id,
       };
-      editBlock(editedBlock);
+      await editBlock(editedBlock);
     } else {
       console.log("Formulario inválido, llene todos los campos");
     }
   };
 
   const editBlock = async (editedBlock) => {
-    let response = await setBlock(
-      currentReservation.block_id,
-      editedBlock
-    ).catch((error) => {
-      setBackendError("Error al enviar los datos: " + error.message);
-    });
-    setBackendError({ message: response.data });
-    getBlocksList();
-  };
-
-  const sendData = async (newData, classroom_id) => {
     try {
-      const response = await fetch(url + `classrooms/${classroom_id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newData),
-        mode: "cors",
+      let response = await setBlock(
+        currentReservation.block_id,
+        editedBlock
+      ).catch((error) => {
+        setBackendError("Error al enviar los datos: " + error.message);
       });
-      const data = await response.json();
-      return data;
+      setBackendError(response);
+      getBlocksList();
     } catch (error) {
-      console.error(error);
-      throw error;
+      console.error("Error while editing block:", error);
     }
   };
 
@@ -161,7 +147,6 @@ function EditBlock() {
         [name]: validators[name] ? validators[name](value) : null,
       },
     });
-
     setChangedFields({
       ...changedFields,
       [name]: value,
@@ -266,6 +251,7 @@ function EditBlock() {
     block_maxclassrooms: "CANTIDAD DE AULAS",
   };
 
+  console.log(backendError);
   return (
     <div className="container">
       <h1 className="text-center">Lista de Bloques</h1>
@@ -402,68 +388,80 @@ function EditBlock() {
         Se descartarán los cambios realizados.
       </ReusableModal>
 
-      <ReusableModal
-        show={saveModal}
-        handleClose={handleSaveCancelModal}
-        title="¡Confirmación!"
-        footerButtons={saveButtonsModal}
-      >
-        ¿Está seguro de actualizar el BLOQUE? Se modificaran los siguientes
-        campos:
-        <ul>
-          {Object.keys(changedFields).map((fieldName) => {
-            let displayValue = changedFields[fieldName];
-            if (fieldName === "block_id") {
-              displayValue = showBlock(displayValue);
-            } else if (fieldName === "block_status_id") {
-              displayValue = getStatusNameById(displayValue);
-            }
-            //  else if (fieldName === "classroom_type_id") {
-            //   displayValue = showType(displayValue);
-            // }
-
-            return (
-              <li key={fieldName}>
-                <span style={{ color: "red" }}>
-                  {fieldLabels[fieldName] || fieldName}
-                </span>
-                : {displayValue}
-              </li>
-            );
-          })}
-        </ul>
-        {Object.keys(changedFields).includes("classroom_status_id") ? (
-          <>
-            {changedFields.classroom_status_id === "1" ? (
-              <p>
-                El BLOQUE quedará{" "}
-                <span style={{ color: "green" }}>HABILITADO</span> y los
-                ambientes que forman parte quedaran{" "}
-                <span style={{ color: "green" }}>HABILITADOS</span> y estaran
-                disponibles para hacer reservas.
-              </p>
+      <Modal show={saveModal} onHide={handleSaveCancelModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>¡Confirmación!</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div>
+            ¿Está seguro de actualizar el BLOQUE? Se modificarán los siguientes
+            campos:
+            <ul>
+              {Object.keys(changedFields).map((fieldName) => {
+                let displayValue = changedFields[fieldName];
+                if (fieldName === "block_id") {
+                  displayValue = showBlock(displayValue);
+                } else if (fieldName === "block_status_id") {
+                  displayValue = getStatusNameById(displayValue);
+                }
+                return (
+                  <li key={fieldName}>
+                    <span style={{ color: "red" }}>
+                      {fieldLabels[fieldName] || fieldName}
+                    </span>
+                    : {displayValue}
+                  </li>
+                );
+              })}
+            </ul>
+            {Object.keys(changedFields).includes("block_status_id") ? (
+              <>
+                {changedFields.block_status_id === "1" ? (
+                  <p>
+                    El BLOQUE quedará{" "}
+                    <span style={{ color: "green" }}>HABILITADO</span> y los
+                    ambientes que forman parte quedarán{" "}
+                    <span style={{ color: "green" }}>HABILITADOS</span> y
+                    estarán disponibles para hacer reservas.
+                  </p>
+                ) : (
+                  <p>
+                    El BLOQUE quedará{" "}
+                    <span style={{ color: "red" }}>DESHABILITADO</span>. Todas
+                    las solicitudes pendientes y aceptadas de los ambientes que
+                    son parte del BLOQUE serán{" "}
+                    <span style={{ color: "red" }}>RECHAZADAS</span>.
+                  </p>
+                )}
+              </>
             ) : (
-              <p>
-                El BLOQUE quedará{" "}
-                <span style={{ color: "red" }}>DESHABILITADO</span>. Todas las
-                solicitudes pendientes y aceptadas de los ambientes que son
-                parte del BLOQUE seran{" "}
-                <span style={{ color: "red" }}>RECHAZADAS</span>.
-              </p>
+              <p></p>
             )}
-          </>
-        ) : (
-          <p></p>
-        )}
-      </ReusableModal>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          {confirmationLoading && (
+            <Spinner animation="border" variant="secondary" role="status" />
+          )}
+          {saveButtonsModal.map((button, index) => (
+            <Button
+              key={index}
+              variant={button.variant}
+              onClick={button.onClick}
+            >
+              {button.label}
+            </Button>
+          ))}
+        </Modal.Footer>
+      </Modal>
 
       <ReusableModal
         show={confirmations}
         handleClose={handleCloseConfirmationsModal}
-        title="¡Éxito!"
+        title={backendError.status === 200 ? "!Confirmación!" : "Error"}
         footerButtons={saveButtonsConfirmationsModal}
       >
-        {backendError && <p style={{ color: "red" }}>{backendError.message}</p>}
+        <p style={{ color: "red" }}>{backendError.data}</p>
       </ReusableModal>
     </div>
   );

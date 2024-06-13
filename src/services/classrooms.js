@@ -37,7 +37,7 @@ export function getClassroomsForDeleteList() {
 }
 
 export function deleteEnvironment(environment) {
-  return fetch(url + `classroom/delete/${environment}`, {
+  return fetch(url + `classrooms/delete/${environment}`, {
     method: "DELETE",
   })
     .then((response) => response.json())
@@ -62,7 +62,6 @@ export function getClassromsTypes() {
     });
 }
 
-
 export function getStatusBlock() {
   return fetch(url + "classrooms/statuses")
     .then((response) => response.json())
@@ -70,8 +69,6 @@ export function getStatusBlock() {
       return data;
     });
 }
-
-
 
 export function storeBlock(block) {
   let responseFetch = {};

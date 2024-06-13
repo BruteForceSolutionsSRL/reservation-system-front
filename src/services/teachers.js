@@ -7,3 +7,21 @@ export function getTeachersBySubject(idSubject) {
       return data;
     });
 }
+
+export function getTeachers() {
+  let responseFetch = {};
+  return fetch(url + `users/teachers`)
+    .then((response) => {
+      responseFetch = { ...responseFetch, status: response.status };
+      return response.json();
+    })
+    .then((data) => {
+      responseFetch = { ...responseFetch, data: data };
+      return responseFetch;
+    })
+    .catch((err) => {
+      console.error(err);
+      responseFetch = { status: 500, data: [] };
+      return responseFetch;
+    });
+}

@@ -5,10 +5,10 @@ import Disponibility from "../Pages/Environment/Disponibility";
 import EnvironmentRegistration from "../Pages/SuperUser/EnvironmentRegistration/EnvironmentRegistration";
 import AttentionList from "../Pages/SuperUser/AttentionRequests/AttentionList";
 import ErrorPage from "../Components/ErrorPage/ErrorPage";
-import RequestsHistory from "../Pages/RequestsHistory/RequestsHistory";
 import EditEnvironment from "../Pages/SuperUser/EditEnvironment/EditEnvironment";
 import DeleteEnvironment from "../Pages/SuperUser/DeleteEnvironment/DeleteEnvironment";
 import StatisticsAmbience from "../Pages/Statistics/Ambience/StatisticsAmbience";
+import SendNotification from "../Pages/SuperUser/SendNotification/SendNotification";
 
 export default function SuperUserRoutes() {
   return (
@@ -25,6 +25,7 @@ export default function SuperUserRoutes() {
         <Route path="delete-environment" element={<DeleteEnvironment />} />
         <Route path="*" element={<ErrorPage />} />
         <Route path="statistics-ambience" element={<StatisticsAmbience />} />
+        <Route path="send-notification" element={<SendNotification />} />
       </Route>
     </Routes>
   );

@@ -251,6 +251,61 @@ export default function Sidebar({ user }) {
             </ul>
           )}
 
+          <ul className="list-unstyled px-2">
+            <li className={activeItem === "notifications" ? "active" : ""}>
+              <Link
+                to="#"
+                className="text-decoration-none px-3 d-block"
+                onClick={() => handleItemClick("notifications")}
+              >
+                <i className="bi bi-bell fs-6"></i> Notificaciones
+                <i className="bi bi-chevron-down"></i>
+              </Link>
+            </li>
+            <Collapse in={openItems["notifications"]}>
+              <div>
+                {user === "superuser" && (
+                  <li
+                    className={
+                      activeItem === "send-notification"
+                        ? "active list-unstyled px-2"
+                        : "list-unstyled px-2"
+                    }
+                  >
+                    <Link
+                      to="send-notification"
+                      className="text-decoration-none px-3 py-2 d-block"
+                      onClick={() => handleItemClick("send-notification")}
+                    >
+                      <div className="align-items-center">
+                        <i className="bi bi-send"></i> Crear notificación
+                      </div>
+                    </Link>
+                  </li>
+                )}
+                {user === "user" && (
+                  <li
+                    className={
+                      activeItem === "notifications-list"
+                        ? "active list-unstyled px-2"
+                        : "list-unstyled px-2"
+                    }
+                  >
+                    <Link
+                      to="notifications-list"
+                      className="text-decoration-none px-3 py-2 d-block"
+                      onClick={() => handleItemClick("notifications-list")}
+                    >
+                      <div className="align-items-center">
+                        <i className="bi bi-send"></i> Ver notificationes
+                      </div>
+                    </Link>
+                  </li>
+                )}
+              </div>
+            </Collapse>
+          </ul>
+
           <hr className="h-color mx-2" />
           <ul className="list-unstyled px-2">
             <li className="">

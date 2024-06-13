@@ -37,7 +37,7 @@
 //   );
 // }
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Form,
   Button,
@@ -49,18 +49,29 @@ import {
 } from "react-bootstrap";
 import axios from "axios";
 import "./LandingPage.css";
-// import { FaEnvelope, FaEye, FaEyeSlash } from "react-icons/fa";
-// import { Envelope, Eye, EyeSlash } from "react-bootstrap-icons";
-// import "../../../src/main";
-import NavBar from "./NavBar";
 
 const LandingPage = ({ setAuthToken }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({ email: "", password: "" });
+
+  const [activeTab, setActiveTab] = useState("DOCENTES");
+
+  const navigate = useNavigate();
 
   const handleLogin = async (event) => {
     event.preventDefault();
+
+    let validationErrors = {};
+    if (!email) validationErrors.email = "El correo electrónico es obligatorio";
+    if (!password) validationErrors.password = "La contraseña es obligatoria";
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
     try {
       const response = await axios.post("http://localhost:8000/api/login", {
         email,
@@ -76,8 +87,24 @@ const LandingPage = ({ setAuthToken }) => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    sessionStorage.clear();
+    navigate("/");
+  };
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    setErrors({ ...errors, email: "" }); // Limpiar el mensaje de error
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    setErrors({ ...errors, password: "" }); // Limpiar el mensaje de error
   };
 
   const userSession = () => {
@@ -100,20 +127,65 @@ const LandingPage = ({ setAuthToken }) => {
 
   return (
     <>
-      <NavBar />
+      <Container className="landing-container p-4">
+        <div>
+          <Row className="row-container">
+            <Col xs="3">
+              <h1 className="pb-4">SURA</h1>
+            </Col>
+            <Col xs="3">
+              <Button
+                variant={
+                  activeTab === "ADMINISTRADORES"
+                    ? "primary"
+                    : "outline-primary"
+                }
+                onClick={() => setActiveTab("ADMINISTRADORES")}
+                className="nav-button"
+              >
+                ADMINISTRADORES
+              </Button>
+            </Col>
+            <Col xs="3">
+              <Button
+                variant={
+                  activeTab === "DOCENTES" ? "primary" : "outline-primary"
+                }
+                onClick={() => setActiveTab("DOCENTES")}
+                className="nav-button"
+              >
+                DOCENTES
+              </Button>
+            </Col>
+            <Col xs="3">
+              <Button
+                variant={
+                  activeTab === "INVITADOS" ? "primary" : "outline-primary"
+                }
+                onClick={() => setActiveTab("INVITADOS")}
+                className="nav-button"
+              >
+                INVITADOS
+              </Button>
+            </Col>
+          </Row>
+        </div>
+        {/* Resto del formulario */}
+      </Container>
+      {/* <NavBar /> */}
 
       <div className="landing-page">
-        <Container>
+        <Container className="landing-container">
           <Row className="justify-content-center">
             <Col>
               <div className="card-container">
                 <Card className="text-center">
                   <Card.Body>
                     <Card.Text className="card-text">
-                      <strong>SURA</strong> (Sistema Universitario de Reserva de
-                      Ambientes) es una plataforma diseñada para facilitar la
-                      reserva de ambientes en la Facultad de Ciencias y
-                      Tecnología de la{" "}
+                      <strong>SURA</strong>
+                      <br /> (Sistema Universitario de Reserva de Ambientes) es
+                      una plataforma diseñada para facilitar la reserva de
+                      ambientes en la Facultad de Ciencias y Tecnología de la{" "}
                       <strong>Universidad Mayor de San Simón</strong>. Nuestra
                       misión es optimizar la gestión y el uso de los espacios
                       académicos, brindando una herramienta eficiente y
@@ -124,40 +196,43 @@ const LandingPage = ({ setAuthToken }) => {
 
                 <Card>
                   <Card.Body>
-                    <h1 className="text-center">SURA</h1>
+                    <h2 className="text-center">{activeTab}</h2>
+                    <hr />
+                    <h3 className="text-center">Iniciar Sesión</h3>
                     <Form onSubmit={handleLogin}>
                       <Form.Group controlId="formBasicEmail">
-                        <Form.Label>Correo electrónico</Form.Label>
-                        <InputGroup>
+                        {/* <Form.Label>Correo electrónico</Form.Label> */}
+                        <InputGroup className="p-1">
                           <Form.Control
                             type="email"
                             placeholder="Correo electrónico"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={handleEmailChange}
                           />
 
                           <InputGroup.Text>
-                            {/* <FaEnvelope /> */}
                             <i className="bi bi-envelope"></i>
                           </InputGroup.Text>
                         </InputGroup>
+
+                        {errors.email && (
+                          <div style={{ color: "red" }}>{errors.email}</div>
+                        )}
                       </Form.Group>
                       <Form.Group controlId="formBasicPassword">
-                        <Form.Label>Contraseña</Form.Label>
+                        {/* <Form.Label>Contraseña</Form.Label> */}
 
-                        <InputGroup>
+                        <InputGroup className="p-1">
                           <Form.Control
-                            // type="password"
                             type={showPassword ? "text" : "password"}
                             placeholder="Contraseña"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={handlePasswordChange}
                           />
                           <InputGroup.Text
                             onClick={togglePasswordVisibility}
                             style={{ cursor: "pointer" }}
                           >
-                            {/* {showPassword ? <FaEyeSlash /> : <FaEye />} */}
                             {showPassword ? (
                               <i className="bi bi-eye-slash"></i>
                             ) : (
@@ -165,19 +240,33 @@ const LandingPage = ({ setAuthToken }) => {
                             )}
                           </InputGroup.Text>
                         </InputGroup>
+                        {errors.password && (
+                          <div style={{ color: "red" }}>{errors.password}</div>
+                        )}
                       </Form.Group>
 
-                      <Button variant="primary" className="mt-3">
-                        <Link
-                          className="text-white"
-                          to="/user/home"
-                          onClick={userSession}
+                      <div className="d-flex justify-content-center">
+                        <Button
+                          variant="primary"
+                          className="mt-3 px-5"
+                          onClick={handleLogin}
                         >
-                          Usuario
-                        </Link>
-                      </Button>
+                          Iniciar Sesión
+                        </Button>
+                      </div>
+                      {/* <div className="d-flex justify-content-center">
+                        <Button variant="primary" className="mt-3 px-5">
+                          <Link
+                            className="text-white text-decoration-none"
+                            to="/user/home"
+                            onClick={userSession}
+                          >
+                            Iniciar Sesion
+                          </Link>
+                        </Button>
+                      </div> */}
 
-                      <div className="mt-3">
+                      {/* <div className="mt-3">
                         <Button variant="secondary">
                           <Link
                             className="text-white"
@@ -187,8 +276,9 @@ const LandingPage = ({ setAuthToken }) => {
                             Administrador
                           </Link>
                         </Button>
-                      </div>
+                      </div> */}
                     </Form>
+                    <hr />
                   </Card.Body>
                 </Card>
               </div>
@@ -196,6 +286,17 @@ const LandingPage = ({ setAuthToken }) => {
           </Row>
         </Container>
       </div>
+      <Container className="landing-container">
+        <div className="contact-info">
+          <p>
+            <strong>Contacto:</strong>
+            <a href="mailto:bruteforcesolutionsbfs@gmail.com">
+              {" "}
+              bruteforcesolutionsbfs@gmail.com
+            </a>
+          </p>
+        </div>
+      </Container>
     </>
   );
 };

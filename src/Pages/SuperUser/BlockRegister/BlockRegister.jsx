@@ -353,7 +353,7 @@ function BlockRegister() {
           <Modal.Title>!Confirmacion¡</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p style={{ color: "red" }}>{backendError.data}</p>
+          <p>{backendError.data}</p>
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={saveBlockClose}>Aceptar</Button>

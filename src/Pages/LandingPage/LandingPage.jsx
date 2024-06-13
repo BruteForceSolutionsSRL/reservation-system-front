@@ -168,7 +168,7 @@ const LandingPage = ({ setAuthToken }) => {
                 DOCENTES
               </Button>
             </Col>
-            <Col xs="3">
+            {/* <Col xs="3">
               <Button
                 variant={
                   activeTab === "INVITADOS" ? "primary" : "outline-primary"
@@ -178,7 +178,7 @@ const LandingPage = ({ setAuthToken }) => {
               >
                 INVITADOS
               </Button>
-            </Col>
+            </Col> */}
           </Row>
         </div>
       </Container>

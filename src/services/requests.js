@@ -59,3 +59,21 @@ export function sendRequest(request) {
       return responseFetch;
     });
 }
+
+export function getSingleRequest(request_id) {
+  let responseFetch = {};
+  return fetch(url + `reservations/${request_id}`)
+    .then((response) => {
+      responseFetch = { ...responseFetch, status: response.status };
+      return response.json();
+    })
+    .then((data) => {
+      responseFetch = { ...responseFetch, data: data };
+      return responseFetch;
+    })
+    .catch((err) => {
+      console.log(err);
+      responseFetch = { status: 500, data: {} };
+      return responseFetch;
+    });
+}

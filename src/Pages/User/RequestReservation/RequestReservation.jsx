@@ -254,7 +254,9 @@ export default function RequestReservation() {
       return total;
     };
     totalClassroomsCapacity = totalCapacity();
-    return quantityParsed > totalClassroomsCapacity * 0.5;
+    return (
+      quantityParsed > totalClassroomsCapacity + totalClassroomsCapacity * 0.5
+    );
   };
 
   const handleDateChange = (e) => {
@@ -435,12 +437,23 @@ export default function RequestReservation() {
     );
 
     if (response.status >= 200 && response.status < 300) {
-      // Exito
-      setModalSendRequest({
-        content: { title: "Exito", body: response.data.message },
-        show: true,
-      });
-      setToInitalStateForm();
+      if (response.data.message === "La solicitud de reserva fue rechazada.") {
+        // Rechazada automaticamente
+        setModalSendRequest({
+          content: {
+            title: "Solicitud rechazada",
+            body: response.data.message,
+          },
+          show: true,
+        });
+      } else {
+        // Aceptada automaticamente
+        setModalSendRequest({
+          content: { title: "Solicitud aceptada", body: response.data.message },
+          show: true,
+        });
+        setToInitalStateForm();
+      }
     } else if (response.status >= 400 && response.status < 500) {
       // Mala solicitud.
       setModalSendRequest({
@@ -550,7 +563,7 @@ export default function RequestReservation() {
   const setToInitalStateForm = () => {
     setSubjectSelected("");
     setQuantity("");
-    setDateValue("");
+    setDateValue(getCurrentDate());
     setReasonSelected("");
     setStartTime("");
     setEndTime("");
@@ -970,7 +983,7 @@ export default function RequestReservation() {
               </div>
             </>
           )}
-          {modalSendRequest.content.title !== "Error" && (
+          {modalSendRequest.content.title === "Confirmacion" && (
             <div className="d-flex justify-content-end p-3">
               {loadingSendRequest && (
                 <div className="p-2">

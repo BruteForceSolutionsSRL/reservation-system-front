@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "@react-pdf/renderer";
 
-export default function ReportTable({ reportData }) {
+export default function ReportTable({ report }) {
   const styles = StyleSheet.create({
     table: {
       display: "table",
@@ -14,15 +14,16 @@ export default function ReportTable({ reportData }) {
       flexDirection: "row",
     },
     tableColHeader: {
-      width: "14.28%",
+      width: "16.67%",
       borderStyle: "solid",
       borderWidth: 1,
       borderLeftWidth: 0,
       borderTopWidth: 0,
       padding: 2,
+      backgroundColor: "#E9ECEF",
     },
     tableCol: {
-      width: "14.28%",
+      width: "16.67%",
       borderStyle: "solid",
       borderWidth: 1,
       borderLeftWidth: 0,
@@ -31,37 +32,19 @@ export default function ReportTable({ reportData }) {
     },
     tableCellHeader: {
       textAlign: "center",
-      fontSize: 11,
+      fontSize: 9,
       fontWeight: "bold",
     },
     tableCell: {
       textAlign: "center",
-      fontSize: 11,
+      fontSize: 9,
     },
-    summarizeSection: {
-      textAlign: "left",
-      fontSize: 11,
-    },
-    line: {
-      borderBottomWidth: 1,
-    }
   });
-
-  const {
-    accepted_reservations,
-    rejected_reservations,
-    canceled_reservations,
-    total_reservations,
-    report,
-  } = reportData;
 
   return (
     <View>
       <View style={styles.table} key={1}>
         <View style={styles.tableRow}>
-          <View style={styles.tableColHeader}>
-            <Text style={styles.tableCellHeader}>Fecha</Text>
-          </View>
           <View style={styles.tableColHeader}>
             <Text style={styles.tableCellHeader}>Docente</Text>
           </View>
@@ -69,27 +52,21 @@ export default function ReportTable({ reportData }) {
             <Text style={styles.tableCellHeader}>Bloque</Text>
           </View>
           <View style={styles.tableColHeader}>
-            <Text style={styles.tableCellHeader}>Aula</Text>
+            <Text style={styles.tableCellHeader}>Aula(s)</Text>
           </View>
           <View style={styles.tableColHeader}>
             <Text style={styles.tableCellHeader}>Período de reserva</Text>
           </View>
           <View style={styles.tableColHeader}>
-            <Text style={styles.tableCellHeader}>Fecha de envío</Text>
+            <Text style={styles.tableCellHeader}>Fecha solicitada</Text>
           </View>
           <View style={styles.tableColHeader}>
-            <Text style={styles.tableCellHeader}>Fecha de aprobación</Text>
+            <Text style={styles.tableCellHeader}>Motivo de reserva</Text>
           </View>
         </View>
-
         {report?.map((row, i) => {
           return (
             <View style={styles.tableRow} key={i + 1} wrap={false}>
-              <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>
-                  {row.date}
-                </Text>
-              </View>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCell}>
                   {row.teacher}
@@ -112,25 +89,17 @@ export default function ReportTable({ reportData }) {
               </View>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCell}>
-                  {row.date_send}
+                  {row.date}
                 </Text>
               </View>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCell}>
-                  {row.date_approval}
+                  {row.reservation_reason}
                 </Text>
               </View>
             </View>
           )
         })}
-      </View>
-      <View style={{ paddingTop: 10 }}>
-        <View style={styles.summarizeSection}>
-          <Text>Total de solicitudes aprobadas: {accepted_reservations}</Text>
-          <Text>Total de solicitudes rechazadas: {rejected_reservations}</Text>
-          <Text style={styles.line}>Total de solicitudes canceladas: {canceled_reservations}</Text>
-          <Text>Total de solicitudes: {total_reservations}</Text>
-        </View>
       </View>
     </View>
   );

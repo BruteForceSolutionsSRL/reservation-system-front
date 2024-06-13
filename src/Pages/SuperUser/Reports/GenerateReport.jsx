@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { Form } from "react-bootstrap";
+import { Form, Modal } from "react-bootstrap";
 import { getAllSubjects } from "../../../services/subjects";
-import { getReservationStatuses } from "../../../services/statuses";
 import { getBlocks } from "../../../services/blocks";
 import { getClassroomsByBlock } from "../../../services/classrooms";
-import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
+import { PDFDownloadLink, PDFViewer, pdf } from "@react-pdf/renderer";
 import ReportPage from "../../../Components/PDF/ReportPage"
-import { getCurrentDate } from "../../../utils/getCurrentDate";
 import { getTeachersBySubject } from "../../../services/teachers";
 import { generateReport } from "../../../services/reports";
 
@@ -25,9 +23,12 @@ export default function GenerateReport() {
   const reservationStatuses = [ 
     { reservation_status_id: 1, reservation_status_name: "ACEPTADO" },
     { reservation_status_id: 2, reservation_status_name: "RECHAZADO" },
-    { reservation_status_id: 3, reservation_status_name: "CANCELADO" },
+    { reservation_status_id: 4, reservation_status_name: "CANCELADO" },
   ];
-  const [selectedReservationStatus, setSelectedReservationStatus] = useState("");
+  const [
+    selectedReservationStatus,
+    setSelectedReservationStatus
+  ] = useState("");
   // for subject
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState("");
@@ -38,6 +39,8 @@ export default function GenerateReport() {
   const [reportData, setReportData] = useState(undefined);
   // for show report
   const [showReport, setShowReport] = useState(false);
+  // modal
+  const [showModalClearReport, setShowModalClearReport] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -106,8 +109,29 @@ export default function GenerateReport() {
     }
 
     const reportDataResponse = await generateReport(request);
+    const reports = reportDataResponse.report;
+    const acceptedRequests = reports.filter(
+      r => r.reservation_status.toUpperCase() === "ACEPTADO"
+    );
+    const rejectedRequests = reports.filter(
+      r => r.reservation_status.toUpperCase() === "RECHAZADO"
+    );
+    const cancelledRequests = reports.filter(
+      r => r.reservation_status.toUpperCase() === "CANCELADO"
+    );
 
-    setReportData(reportDataResponse);
+    const tmpReportData = {
+      accepted_reservations: reportDataResponse.accepted_reservations,
+      rejected_reservations: reportDataResponse.rejected_reservations,
+      cancelled_reservations: reportDataResponse.canceled_reservations,
+      total_reservations: reportDataResponse.total_reservations,
+      acceptedRequests: acceptedRequests,
+      rejectedRequests: rejectedRequests,
+      cancelledRequests: cancelledRequests,
+    }
+
+    setReportData(tmpReportData);
+    setShowReport(true);
   }
 
   const handleChangeBlocks = (e) => {
@@ -159,7 +183,42 @@ export default function GenerateReport() {
   
   const handleGenerateReport = () => {
     fetchReports();
-    setShowReport(true);
+  }
+
+  const handleCleanButton = () => {
+    setStartDateValue("2024-02-02");
+    setEndDateValue("2024-07-06");
+    setSelectedBlock("");
+    setSelectedClassroom("");
+    setSelectedReservationStatus("");
+    setSelectedSubject("");
+    setSelectedTeacher("");
+    setReportData(undefined);
+    setShowReport(false);
+    setShowModalClearReport(false);
+  }
+
+  const handlePrint = async () => {
+    if (showReport) {
+      const blob = await pdf(
+        <ReportPage 
+          startDate={startDateValue} 
+          endDate={endDateValue}
+          reportData={reportData}
+        />).toBlob();
+      const pdfUrl = URL.createObjectURL(blob);
+      const iframe = document.createElement("iframe");
+
+      iframe.style.display = "none";
+      iframe.src = pdfUrl;
+
+      document.body.appendChild(iframe);
+
+      iframe.onload = () => {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      };
+    }
   }
 
   return (
@@ -227,6 +286,7 @@ export default function GenerateReport() {
             <button
               type="button"
               className="btn"
+              onClick={() => setShowModalClearReport(true)}
             >
               <span>Vaciar </span>
               <i className="bi bi-trash"></i>
@@ -274,8 +334,6 @@ export default function GenerateReport() {
               })}
             </Form.Select>
           </div>
-        </div>
-        <div className="row pt-3">
           <div className="col-md-3">
             <label htmlFor="teacher">Docente</label>
             <Form.Select
@@ -315,39 +373,49 @@ export default function GenerateReport() {
             <button
               type="button"
               className="btn btn-md"
-            >
-              <i className="bi bi-envelope fs-3"></i>
-            </button>
-            <button
-              type="button"
-              className="btn btn-md"
+              onClick={handlePrint}
             >
               <i className="bi bi-printer fs-3"></i>
             </button>
-            <PDFDownloadLink
-              document={
-                <ReportPage
-                  startDate={startDateValue}
-                  endDate={endDateValue}
-                  reportData={reportData}
-                />
-              }
-              fileName="reporte.pdf"
-            >
+            {showReport ? (
+              <PDFDownloadLink
+                document={
+                  <ReportPage
+                    startDate={startDateValue}
+                    endDate={endDateValue}
+                    reportData={reportData}
+                  />
+                }
+                fileName="reporte.pdf"
+              >
+                <button
+                  type="button"
+                  className="btn btn-md"
+                >
+                  <i className="bi bi-download fs-3"></i>
+                </button>
+              </PDFDownloadLink>
+            ) : (
               <button
                 type="button"
                 className="btn btn-md"
               >
                 <i className="bi bi-download fs-3"></i>
               </button>
-            </PDFDownloadLink>
+            )}
           </div>
         </div>
       </Form>
-      {(reportData !== undefined) && (
-        <div className="row">
+
+      <div style={{ borderTop: "1px solid black" }}></div>
+
+      {showReport && (
+        <div className="pt-2 row">
           <div className="col-12">
-            <PDFViewer style={{ width: "100%", height: "90vh" }} showToolbar={false}>
+            <PDFViewer
+              style={{ width: "100%", height: "90vh" }}
+              showToolbar={false}
+            >
               <ReportPage
                 startDate={startDateValue} 
                 endDate={endDateValue} 
@@ -357,6 +425,36 @@ export default function GenerateReport() {
           </div>
         </div>
       )}
+
+      <Modal
+        show={showModalClearReport}
+        onHide={() => setShowModalClearReport(false)}
+        centered
+      >
+        <Modal.Title className="p-3">
+          ¡Alerta!
+        </Modal.Title>
+        <Modal.Body>
+          <div className="p-1">
+            <span>Se eliminará el reporte generado</span>
+          </div>
+
+          <div className="d-flex justify-content-end p-3">
+            <button
+              className="m-1 btn btn-outline-dark"
+              onClick={handleCleanButton}
+            >
+              Aceptar
+            </button>
+            <button
+              className="m-1 btn btn-outline-dark"
+              onClick={() => setShowModalClearReport(false)}
+            >
+              Cancelar
+            </button>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

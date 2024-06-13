@@ -1,4 +1,11 @@
-import { Document, Image, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+import {
+  Document, 
+  Image, 
+  Page, 
+  StyleSheet, 
+  Text, 
+  View 
+} from "@react-pdf/renderer";
 import logoFcyt from "../../assets/img/logoFcyt.png";
 import ReportTable from "./ReportTable";
 
@@ -11,7 +18,7 @@ export default function ReportPage({ startDate, endDate, reportData }) {
       paddingLeft: "2cm"
     },
     logo: {
-      width: "3cm"
+      width: "2.5cm"
     },
     header: {
       display: "flex",
@@ -23,7 +30,16 @@ export default function ReportPage({ startDate, endDate, reportData }) {
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-    }
+    },
+    textStyle: {
+      textAlign: "left",
+      fontSize: 9,
+    },
+    line: {
+      width: "45%",
+      textAlign: "left",
+      borderBottomWidth: 1,
+    },
   });
 
   return (
@@ -47,10 +63,64 @@ export default function ReportPage({ startDate, endDate, reportData }) {
               </Text>
             </View>
           </View>
-          <View style={{ paddingTop: 20 }}>
-            { reportData &&
-              (<ReportTable reportData={reportData} />)
-            }
+          {reportData.acceptedRequests.length > 0 && (
+            <View>
+              <View style={{ paddingTop: 10 }}>
+                <Text style={styles.textStyle}>
+                  Reporte generado por estado de solicitud:
+                </Text>
+              </View>
+              <View style={{ paddingTop: 10 }}>
+                <Text style={styles.textStyle}>
+                  Solicitudes Aceptadas:
+                </Text>
+              </View>
+              <View style={{ paddingTop: 10 }}>
+                { reportData &&
+                  (<ReportTable report={reportData.acceptedRequests} />)
+                }
+              </View>
+            </View>
+          )}
+          {reportData.rejectedRequests.length > 0 && (
+            <View>
+              <View style={{ paddingTop: 10 }}>
+                <Text style={styles.textStyle}>
+                  Solicitudes Rechazadas:
+                </Text>
+              </View>
+              <View style={{ paddingTop: 10 }}>
+                <ReportTable report={reportData.rejectedRequests} />
+              </View>
+            </View>
+          )}
+          {reportData.cancelledRequests.length > 0 && (
+            <View>
+              <View style={{ paddingTop: 10 }}>
+                <Text style={styles.textStyle}>
+                  Solicitudes Canceladas:
+                </Text>
+              </View>
+              <View style={{ paddingTop: 10 }}>
+                <ReportTable report={reportData.cancelledRequests} />
+              </View>
+            </View>
+          )}
+          <View style={{ paddingTop: 10 }}>
+            <View style={styles.textStyle}>
+              <Text>
+                Total de solicitudes aprobadas: {reportData.accepted_reservations}
+              </Text>
+              <Text>
+                Total de solicitudes rechazadas: {reportData.rejected_reservations}
+              </Text>
+              <Text style={styles.line}>
+                Total de solicitudes canceladas: {reportData.cancelled_reservations}
+              </Text>
+              <Text>
+                Total de solicitudes: {reportData.total_reservations}
+              </Text>
+            </View>
           </View>
         </View>
       </Page>

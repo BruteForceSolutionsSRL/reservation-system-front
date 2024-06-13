@@ -35,7 +35,7 @@ export default function Sidebar({ user }) {
         <div className={`sidebar ${menuOpen ? "active" : ""}`} id="side_nav">
           <div className="header-box px-2 pt-3 pb-4 d-flex justify-content-between">
             <h1 className="fs-5">
-              <span className="text-black">Sistema de reservas FCyT</span>
+              <span className="text-black">SURA - Sistema de reservas </span>
             </h1>
             <button
               className="btn d-md-none d-block close-btn px-1 py-0 text-black"

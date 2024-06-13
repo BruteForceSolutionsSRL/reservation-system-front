@@ -118,43 +118,48 @@ export default function EnvironmentToDelete(props) {
                 <b>El ambiente no tiene solicitudes.</b>
               </div>
             ) : (
-              <Table borderless responsive>
-                <thead>
-                  <tr>
-                    <th>MATERIA</th>
-                    <th>MOTIVO</th>
-                    <th>FECHA</th>
-                    <th># ESTUDIANTES</th>
-                    <th>ESTADO</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {requestsList?.map((each) => {
-                    return (
-                      <tr key={each.reservation_id}>
-                        <td>{each.subject_name}</td>
-                        <td>{each.reason_name}</td>
-                        <td>{each.reservation_date}</td>
-                        <td>{each.quantity}</td>
-                        <td>
-                          <b
-                            className={`p-1 rounded text-light bg-${
-                              each.reservation_status === "ACCEPTED"
-                                ? "success"
-                                : each.reservation_status === "REJECTED"
-                                ? "danger"
-                                : each.reservation_status === "PENDING" &&
-                                  "warning"
-                            }`}
-                          >
-                            {each.reservation_status}
-                          </b>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
+              <div
+                className="h-100 overflow-y-auto"
+                style={{ maxHeight: "300px" }}
+              >
+                <Table borderless>
+                  <thead>
+                    <tr>
+                      <th>MATERIA</th>
+                      <th>MOTIVO</th>
+                      <th>FECHA</th>
+                      <th># ESTUDIANTES</th>
+                      <th>ESTADO</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {requestsList?.map((each) => {
+                      return (
+                        <tr key={each.reservation_id}>
+                          <td>{each.subject_name}</td>
+                          <td>{each.reason_name}</td>
+                          <td>{each.reservation_date}</td>
+                          <td>{each.quantity}</td>
+                          <td>
+                            <b
+                              className={`p-1 rounded text-light bg-${
+                                each.reservation_status === "ACCEPTED"
+                                  ? "success"
+                                  : each.reservation_status === "REJECTED"
+                                  ? "danger"
+                                  : each.reservation_status === "PENDING" &&
+                                    "warning"
+                              }`}
+                            >
+                              {each.reservation_status}
+                            </b>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </Table>
+              </div>
             )}
           </div>
           <b>Cantidad de solicitudes del ambiente:</b>

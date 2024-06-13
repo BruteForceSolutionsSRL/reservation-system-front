@@ -46,6 +46,7 @@ import {
   Col,
   Card,
   InputGroup,
+  Alert,
 } from "react-bootstrap";
 import axios from "axios";
 import "./LandingPage.css";
@@ -55,9 +56,9 @@ const LandingPage = ({ setAuthToken }) => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({ email: "", password: "" });
-
   const [activeTab, setActiveTab] = useState("DOCENTES");
-
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (event) => {
@@ -71,7 +72,6 @@ const LandingPage = ({ setAuthToken }) => {
       setErrors(validationErrors);
       return;
     }
-
     try {
       const response = await axios.post("http://localhost:8000/api/login", {
         email,
@@ -80,10 +80,17 @@ const LandingPage = ({ setAuthToken }) => {
       const { token } = response.data;
       localStorage.setItem("token", token);
       setAuthToken(token);
-      // Redirigir a la página de inicio del usuario
-      window.location.href = "/user/home";
+      navigate("/user/home");
     } catch (error) {
-      console.error("Error al iniciar sesion:", error);
+      console.error("Error al iniciar sesión:", error);
+      if (error.response) {
+        setAlertMessage("Credenciales incorrectas. Intente nuevamente.");
+      } else {
+        setAlertMessage(
+          "Error al intentar iniciar sesión. Intente nuevamente más tarde."
+        );
+      }
+      setShowAlert(true);
     }
   };
 
@@ -100,11 +107,13 @@ const LandingPage = ({ setAuthToken }) => {
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
     setErrors({ ...errors, email: "" }); // Limpiar el mensaje de error
+    setShowAlert(false); // Ocultar la alerta al empezar a corregir el campo
   };
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
     setErrors({ ...errors, password: "" }); // Limpiar el mensaje de error
+    setShowAlert(false); // Ocultar la alerta al empezar a corregir el campo
   };
 
   const userSession = () => {
@@ -114,15 +123,17 @@ const LandingPage = ({ setAuthToken }) => {
     };
     sessionStorage.setItem("userloged", "user");
     sessionStorage.setItem("userInformation", JSON.stringify(user));
+    // navigate("/user/home");
   };
 
   const superUserSession = () => {
     const user = {
       name: "Juanito Perez ",
-      teacher_id: 2,
+      teacher_id: 20,
     };
     sessionStorage.setItem("userloged", "superuser");
     sessionStorage.setItem("userInformation", JSON.stringify(user));
+    // navigate("/superuser/home");
   };
 
   return (
@@ -170,10 +181,7 @@ const LandingPage = ({ setAuthToken }) => {
             </Col>
           </Row>
         </div>
-        {/* Resto del formulario */}
       </Container>
-      {/* <NavBar /> */}
-
       <div className="landing-page">
         <Container className="landing-container">
           <Row className="justify-content-center">
@@ -199,6 +207,16 @@ const LandingPage = ({ setAuthToken }) => {
                     <h2 className="text-center">{activeTab}</h2>
                     <hr />
                     <h3 className="text-center">Iniciar Sesión</h3>
+
+                    {showAlert && (
+                      <Alert
+                        variant="danger"
+                        onClose={() => setShowAlert(false)}
+                        dismissible
+                      >
+                        {alertMessage}
+                      </Alert>
+                    )}
                     <Form onSubmit={handleLogin}>
                       <Form.Group controlId="formBasicEmail">
                         {/* <Form.Label>Correo electrónico</Form.Label> */}
@@ -254,29 +272,6 @@ const LandingPage = ({ setAuthToken }) => {
                           Iniciar Sesión
                         </Button>
                       </div>
-                      {/* <div className="d-flex justify-content-center">
-                        <Button variant="primary" className="mt-3 px-5">
-                          <Link
-                            className="text-white text-decoration-none"
-                            to="/user/home"
-                            onClick={userSession}
-                          >
-                            Iniciar Sesion
-                          </Link>
-                        </Button>
-                      </div> */}
-
-                      {/* <div className="mt-3">
-                        <Button variant="secondary">
-                          <Link
-                            className="text-white"
-                            to="/superuser/home"
-                            onClick={superUserSession}
-                          >
-                            Administrador
-                          </Link>
-                        </Button>
-                      </div> */}
                     </Form>
                     <hr />
                   </Card.Body>
@@ -295,6 +290,26 @@ const LandingPage = ({ setAuthToken }) => {
               bruteforcesolutionsbfs@gmail.com
             </a>
           </p>
+          <div>
+            <div>
+              <Link
+                className="text-decoration-none"
+                to="/user/home"
+                onClick={userSession}
+              >
+                Ingresar como usuario
+              </Link>
+            </div>
+            <div>
+              <Link
+                className="text-decoration-none"
+                to="/superuser/home"
+                onClick={superUserSession}
+              >
+                Ingresar como administrador
+              </Link>
+            </div>
+          </div>
         </div>
       </Container>
     </>

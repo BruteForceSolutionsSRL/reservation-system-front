@@ -1,7 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getUserNotifications } from "../../../services/notifications";
 import { NotificationElement } from "./NotificationElement";
-import { useState } from "react";
 import { Spinner } from "react-bootstrap";
 
 export default function SeeNotifications() {
@@ -9,6 +8,7 @@ export default function SeeNotifications() {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
 
   const user = JSON.parse(sessionStorage.getItem("userInformation"));
 
@@ -19,7 +19,9 @@ export default function SeeNotifications() {
   }, []);
 
   const getNotifications = async () => {
-    let response = await getUserNotifications(user.teacher_id);
+    let response = await getUserNotifications(user.teacher_id).finally(() =>
+      setLoading(false)
+    );
     if (response.status >= 200 && response.status < 300) {
       if (response.data.length === 0) {
         setErrorMessage("No tienes notificaciones por el momento.");
@@ -47,6 +49,18 @@ export default function SeeNotifications() {
       paginatedArray.push(page);
     }
     setPagination(paginatedArray);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < pagination.length - 1) {
+      setCurrentPage(currentPage + 1);
+    }
   };
 
   return (
@@ -78,21 +92,27 @@ export default function SeeNotifications() {
                 <i
                   className="bi bi-arrow-clockwise fs-1 pe-2"
                   style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    setLoading(true);
+                    getNotifications();
+                  }}
                 ></i>
                 <div className="d-flex justify-content-end">
                   <div className="align-self-center">
                     <i className="p-4 text-center align-self-center">
-                      {pagination.length} de {notificationsList.length}
+                      {currentPage + 1} de {pagination.length}
                     </i>
                   </div>
                   <div>
                     <i
                       className="bi bi-arrow-left fs-1 pe-2"
                       style={{ cursor: "pointer" }}
+                      onClick={handlePrevPage}
                     ></i>
                     <i
                       className="bi bi-arrow-right fs-1"
                       style={{ cursor: "pointer" }}
+                      onClick={handleNextPage}
                     ></i>
                   </div>
                 </div>
@@ -101,13 +121,12 @@ export default function SeeNotifications() {
                 className="w-100 overflow-x-auto overflow-y-auto"
                 style={{ maxHeight: "75vh" }}
               >
-                {notificationsList.map((notification, index) => {
-                  return (
+                {pagination[currentPage] &&
+                  pagination[currentPage].map((notification, index) => (
                     <div key={index + notification.id}>
                       <NotificationElement {...notification} />
                     </div>
-                  );
-                })}
+                  ))}
               </div>
             </>
           )}

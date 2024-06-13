@@ -13,7 +13,7 @@ export default function LandingPage() {
   const superUserSession = () => {
     const user = {
       name: "Juanito Perez ",
-      teacher_id: 2,
+      teacher_id: 20,
     };
     sessionStorage.setItem("userloged", "superuser");
     sessionStorage.setItem("userInformation", JSON.stringify(user));

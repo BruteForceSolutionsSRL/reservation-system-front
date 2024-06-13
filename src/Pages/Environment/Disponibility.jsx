@@ -229,7 +229,10 @@ function Disponibility() {
             {formData.block_id !== "" ? (
               <>
                 <label className="fw-bold mt-3">AULAS</label>
-                <div className="scrol-teacher-modal">
+                <div
+                  className="scrol-teacher-modal h-100 overflow-y-auto"
+                  style={{ maxHeight: "200px" }}
+                >
                   <Table bordered hover className="table-tag text-center mt-2">
                     <thead>
                       <tr>
@@ -349,8 +352,8 @@ function Disponibility() {
                 {errors.date}
               </Form.Control.Feedback>
             </div>
-            <div className="mt-3">
-              <Button className="button-verify" type="submit">
+            <div className="mt-3 d-flex justify-content-center">
+              <Button className="button-verify " type="submit">
                 Verificar
               </Button>
             </div>

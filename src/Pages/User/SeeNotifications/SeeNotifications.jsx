@@ -123,7 +123,7 @@ export default function SeeNotifications() {
               >
                 {pagination[currentPage] &&
                   pagination[currentPage].map((notification, index) => (
-                    <div key={index + notification.id}>
+                    <div key={index}>
                       <NotificationElement {...notification} />
                     </div>
                   ))}

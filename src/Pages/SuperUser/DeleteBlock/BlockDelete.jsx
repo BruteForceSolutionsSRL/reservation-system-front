@@ -120,7 +120,7 @@ function BlockDelete(props) {
                 {environment.map((each) => {
                   return (
                     <div
-                      key={each.reservation_id}
+                      key={each.classroom_id}
                       className="p-1 text-light rounded bg-secondary text-center"
                       style={{ minWidth: "80px", margin: "3px" }}
                     >

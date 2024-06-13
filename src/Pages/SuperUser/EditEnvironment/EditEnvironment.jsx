@@ -7,8 +7,10 @@ import Col from "react-bootstrap/Col";
 import Spinner from "react-bootstrap/Spinner";
 import SearchBar from "../../../Components/SearchBar/SearchBar";
 import { searchEnvironmentsForEdit } from "../../../utils/searchRequests";
-import RequestInformation from "../../../Components/RequestInformation/RequestInformation";
-import { getRequests, getTeacherRequests } from "../../../services/requests";
+import {
+  getStatusClassroms,
+  getClassromsTypes,
+} from "../../../services/classrooms";
 import ReusableModal from "./ReusableModal";
 import ListEnvironment from "./ListEnvironment";
 
@@ -31,16 +33,15 @@ function EditEnvironment() {
   const [cancelModal, setCancelModal] = useState(false);
   const [confirmations, setConfirmationsModal] = useState(false);
   const url = import.meta.env.VITE_REACT_API_URL;
-  const [confirmationMessage, setConfirmationMessage] = useState("");
   const [backendError, setBackendError] = useState("");
 
   useEffect(() => {
     setLoading(true);
     Promise.all([
       fetchBlockOptions(),
-      fetchTypes(),
+      getClassromTypes(),
       allEnvironments(),
-      statusTypes(),
+      getStatusTypes(),
     ]).finally(() => setLoading(false));
   }, []);
 
@@ -245,7 +246,7 @@ function EditEnvironment() {
       });
   };
 
-  const fetchTypes = async () => {
+  /*const getClassromTypes = async () => {
     await fetch(url + "classrooms/types")
       .then((response) => {
         if (!response.ok) {
@@ -260,9 +261,14 @@ function EditEnvironment() {
       .catch((error) => {
         console.error("Error fetching options:", error);
       });
+  };*/
+
+  const getClassromTypes = async () => {
+    let envl = await getClassromsTypes().catch((err) => console.error(err));
+    setTypeOptions(envl);
   };
 
-  const statusTypes = async () => {
+  /* const statusTypes = async () => {
     await fetch(url + "classrooms/statuses")
       .then((response) => {
         if (!response.ok) {
@@ -277,6 +283,11 @@ function EditEnvironment() {
       .catch((error) => {
         console.error("Error fetching options:", error);
       });
+  };*/
+
+  const getStatusTypes = async () => {
+    let envl = await getStatusClassroms().catch((err) => console.error(err));
+    setStatus(envl);
   };
 
   const allEnvironments = async () => {
@@ -295,6 +306,9 @@ function EditEnvironment() {
         console.error("Error fetching options:", error);
       });
   };
+
+  console.log("clasdroms", allReservations);
+  console.log("bloques", blockOptions);
 
   const validateCantidad = (value) => {
     if (!value) {
@@ -394,10 +408,7 @@ function EditEnvironment() {
           <div>
             <hr></hr>
             {msgNoResults && <div>{msgNoResults}</div>}
-            <ListEnvironment
-              list={list}
-              handleShowModal={handleShowModal}
-            />
+            <ListEnvironment list={list} handleShowModal={handleShowModal} />
           </div>
         )}
       </div>

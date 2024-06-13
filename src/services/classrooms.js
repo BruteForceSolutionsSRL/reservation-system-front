@@ -46,6 +46,23 @@ export function deleteEnvironment(environment) {
     });
 }
 
+export function getStatusClassroms() {
+  return fetch(url + "classrooms/statuses")
+    .then((response) => response.json())
+    .then((data) => {
+      return data;
+    });
+}
+
+export function getClassromsTypes() {
+  return fetch(url + "classrooms/types")
+    .then((response) => response.json())
+    .then((data) => {
+      return data;
+    });
+}
+
+
 export function getStatusBlock() {
   return fetch(url + "classrooms/statuses")
     .then((response) => response.json())
@@ -53,6 +70,8 @@ export function getStatusBlock() {
       return data;
     });
 }
+
+
 
 export function storeBlock(block) {
   let responseFetch = {};

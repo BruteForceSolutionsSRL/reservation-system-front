@@ -466,7 +466,7 @@ function EditEnvironment() {
       <ReusableModal
         show={cancelModal}
         handleClose={handleCancelAceptedModal}
-        title="!Alerta¡"
+        title="¡Alerta!"
         footerButtons={cancelButtonsModal}
       >
         Se descartaran los cambios realizados
@@ -546,11 +546,11 @@ function EditEnvironment() {
       <ReusableModal
         show={confirmations}
         handleClose={handleCloseConfirmationsModal}
-        title={backendError.status === 200 ? "!Exito!" : "!Error¡"}
+        title={backendError.status === 200 ? "¡Exito!" : "¡Error!"}
         footerButtons={saveButtonsConfirmationsModal}
       >
         {backendError && (
-          <p style={{ color: "red" }}>{backendError.data.message}</p>
+          <p>{backendError.data.message}</p>
         )}
       </ReusableModal>
     </div>

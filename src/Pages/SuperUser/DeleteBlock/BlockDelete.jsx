@@ -43,9 +43,9 @@ function BlockDelete(props) {
       setShowConfirm(false);
     });
     if (response.message === "Bloque eliminado exitosamente.") {
-      setMsgModal({ status: "Exito", message: response.message });
+      setMsgModal({ status: "Exito", message: response });
     } else {
-      setMsgModal({ status: "Error", message: response.message });
+      setMsgModal({ status: "Error", message: response });
     }
     setShowMsg(true);
   };

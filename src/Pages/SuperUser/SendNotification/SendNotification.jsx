@@ -3,6 +3,7 @@ import { Form, Modal } from "react-bootstrap";
 import Select from "react-select";
 import { getTeachers } from "../../../services/teachers";
 import { Spinner } from "react-bootstrap";
+import { sendNotification } from "../../../services/notifications";
 
 export default function SendNotification() {
   const [notificateTo, setNotificateTo] = useState([]);
@@ -18,6 +19,8 @@ export default function SendNotification() {
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState({});
   const [loadingRequest, setLoadingSendRequest] = useState(false);
+
+  const superuser = JSON.parse(sessionStorage.getItem("userInformation"));
 
   useEffect(() => {
     getTeachersList();
@@ -98,7 +101,6 @@ export default function SendNotification() {
 
   const handleChangeNotificateTo = (event) => {
     setNotificateTo(event);
-
     if (event.length === 0) {
       setErrorNotificateTo({
         invalid: true,
@@ -162,21 +164,36 @@ export default function SendNotification() {
   };
   const handleSubmit = async () => {
     setLoadingSendRequest(true);
-    let response = await getTeachers().finally(() =>
-      setLoadingSendRequest(false)
-    ); //Cambiar funcion
-    console.log(response);
+    let to = notificateTo.map(({ value }) => value);
+    let data = {
+      title: title,
+      body: body,
+      type: notificationType,
+      to: to,
+    };
 
-    // Terminar con los mensajes de error y etcetera.
+    let response = await sendNotification(superuser.teacher_id, data).finally(
+      () => setLoadingSendRequest(false)
+    );
+
     let content = {};
     if (response.status >= 200 && response.status < 300) {
-      content = { title: "Exito", body: response.data.message };
+      content = {
+        title: "Exito",
+        body: "La notificacion fue enviada.",
+      };
       setModalContent(content);
     } else if (response.status >= 300 && response.status < 400) {
-      content = { title: "Error", body: response.data.message };
+      content = {
+        title: "Error",
+        body: "Ocurrio un error que no permitio enviar la notificacion",
+      };
       setModalContent(content);
     } else if (response.status >= 400 && response.status < 500) {
-      content = { title: "Error", body: response.data.message };
+      content = {
+        title: "Error",
+        body: "Ocurrio un error que no permitio enviar la notificacion",
+      };
       setModalContent(content);
     } else if (response.status >= 500) {
       content = {
@@ -226,8 +243,7 @@ export default function SendNotification() {
                   >
                     <option value="">Seleccione una opcion</option>
                     <option value="1">Informativo</option>
-                    <option value="2">Rechazado</option>
-                    <option value="3">Advertencia</option>
+                    <option value="5">Advertencia</option>
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">
                     {errorNotificationType.message}

@@ -14,6 +14,7 @@ export default function SingleNotification() {
   const [errorMessage, setErrorMessage] = useState({});
   const [showRequest, setShowRequest] = useState(false);
   const [modalContent, setModalContent] = useState({});
+  const [request, setRequest] = useState(undefined);
 
   useEffect(() => {
     getNotificationInfo();
@@ -34,7 +35,9 @@ export default function SingleNotification() {
       } else {
         setNotification(response.data);
         setErrorMessage({});
-        getRequest(response.data.reservation_id);
+        if (response.data.reservation_id) {
+          getRequest(response.data.reservation_id);
+        }
       }
     } else if (response.status >= 300 && response.status < 400) {
       setNotification({});
@@ -53,7 +56,7 @@ export default function SingleNotification() {
 
   const getRequest = async (reservation_id) => {
     let response = await getSingleRequest(reservation_id);
-    console.log(response);
+    setRequest(response);
     setContentModal(response.data);
   };
 
@@ -240,7 +243,7 @@ export default function SingleNotification() {
                     ) : notification.type === "INFORMATIVO" ? (
                       <div className="text-center">
                         <div>
-                          <i className="bi bi-exclamation-circle-fill fs-1 text-danger"></i>
+                          <i className="bi bi-exclamation-circle-fill fs-1 text-primary"></i>
                         </div>
                         <div>
                           <span>{notification.type}</span>
@@ -286,14 +289,16 @@ export default function SingleNotification() {
                     <div className="text-center">
                       <span>Hora y fecha</span>
                     </div>
-                    <div className="text-center pt-3 pb-4">
-                      <button
-                        className="btn btn-outline-primary"
-                        onClick={() => setShowRequest(true)}
-                      >
-                        Ver solicitud
-                      </button>
-                    </div>
+                    {request && (
+                      <div className="text-center pt-3 pb-4">
+                        <button
+                          className="btn btn-outline-primary"
+                          onClick={() => setShowRequest(true)}
+                        >
+                          Ver solicitud
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <p

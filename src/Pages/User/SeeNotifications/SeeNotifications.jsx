@@ -27,8 +27,8 @@ export default function SeeNotifications() {
         setErrorMessage("No tienes notificaciones por el momento.");
         setNotificationsList(response.data);
       } else {
-        orderPerPage(response.data);
-        setNotificationsList(response.data);
+        orderPerPage(response.data.reverse());
+        setNotificationsList(response.data.reverse());
       }
     } else if (response.status >= 300 && response.status < 400) {
       setErrorMessage(response.data.message);

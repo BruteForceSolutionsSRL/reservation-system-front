@@ -35,3 +35,27 @@ export function getSingleNotification(person_id, notification_id) {
       return responseFetch;
     });
 }
+
+export function sendNotification(person_id, content) {
+  let responseFetch = {};
+  return fetch(url + `notifications/send/${person_id}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(content),
+  })
+    .then((response) => {
+      responseFetch = { ...responseFetch, status: response.status };
+      return response.json();
+    })
+    .then((data) => {
+      responseFetch = { ...responseFetch, data: data };
+      return responseFetch;
+    })
+    .catch((err) => {
+      console.error(err);
+      responseFetch = { status: 500, data: { message: "Error inesperado" } };
+      return responseFetch;
+    });
+}

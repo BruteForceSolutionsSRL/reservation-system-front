@@ -20,7 +20,7 @@ export default function SendNotification() {
   const [modalContent, setModalContent] = useState({});
   const [loadingRequest, setLoadingSendRequest] = useState(false);
 
-  const superuser = JSON.parse(sessionStorage.getItem("userInformation"));
+  const superuser = JSON.parse(localStorage.getItem("userInformation"));
 
   useEffect(() => {
     getTeachersList();
@@ -172,7 +172,7 @@ export default function SendNotification() {
       to: to,
     };
 
-    let response = await sendNotification(superuser.teacher_id, data).finally(
+    let response = await sendNotification(superuser.person_id, data).finally(
       () => setLoadingSendRequest(false)
     );
 

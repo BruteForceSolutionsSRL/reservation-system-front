@@ -1,5 +1,5 @@
 import { Link, Outlet } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Collapse from "react-bootstrap/Collapse";
 import "./Sidebar.css";
 
@@ -7,6 +7,23 @@ export default function Sidebar({ user }) {
   const [activeItem, setActiveItem] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [openItems, setOpenItems] = useState({});
+
+  useEffect(() => {
+    setInterval(() => {
+      isLogged();
+    }, 5000);
+  });
+
+  const isLogged = () => {
+    let token = localStorage.getItem("token");
+    if (!token) {
+      // Colocar un modal que al presionar "Aceptar" lo redirija a la pantalla
+      // de inicio para iniciar sesion
+
+      // Quitar si provoca mucha molestia al momento de probar
+      window.location.href = "/";
+    }
+  };
 
   const handleMenuOpen = () => {
     setMenuOpen(true);
@@ -25,8 +42,9 @@ export default function Sidebar({ user }) {
   };
 
   const logout = () => {
-    sessionStorage.removeItem("userloged");
-    sessionStorage.removeItem("userInformation");
+    localStorage.removeItem("token");
+    localStorage.removeItem("userInformation");
+    window.location.href = "/";
   };
 
   return (
@@ -382,15 +400,53 @@ export default function Sidebar({ user }) {
             )}
           </div>
 
+          {user === "superuser" && (
+            <ul className="list-unstyled px-2">
+              <li className={activeItem === "report" ? "active" : ""}>
+                <Link
+                  to="#"
+                  className="text-decoration-none px-3 d-block"
+                  onClick={() => handleItemClick("report")}
+                >
+                  <div className="d-flex justify-content-start align-items-center">
+                    <i className="bi bi-clipboard-data fs-6"></i> Reportes 
+                    <i className="bi bi-chevron-down"></i>
+                  </div>
+                </Link>
+              </li>
+              <Collapse in={openItems["report"]}>
+                <div>
+                  <li
+                    className={
+                      activeItem === "generate-report"
+                        ? "active list-unstyled px-2"
+                        : "list-unstyled px-2"
+                    }
+                  >
+                    <Link
+                      to="generate-report"
+                      className="text-decoration-none px-3 py-2 d-block"
+                      onClick={() => handleItemClick("generate-report")}
+                    >
+                      <div className="align-items-center">
+                        <i className="bi bi-file-earmark-spreadsheet fs-6"></i> Generar
+                        Reporte
+                      </div>
+                    </Link>
+                  </li>
+                </div>
+              </Collapse>
+            </ul>
+          )}
+
           <hr className="h-color mx-2" />
           <ul className="list-unstyled px-2">
             <li className="">
               <Link
-                to="/"
                 className="text-decoration-none px-3 py-2 d-block"
                 onClick={() => {
                   logout();
-                  handleItemClick("home");
+                  handleItemClick("logout");
                 }}
               >
                 <i className="bi bi-box-arrow-left"></i> Cerrar sesión

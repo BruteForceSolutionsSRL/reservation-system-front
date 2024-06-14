@@ -9,10 +9,8 @@ export function getRequests() {
 }
 
 export function getTeacherRequests() {
-  let userInformation = JSON.parse(sessionStorage.getItem("userInformation"));
-  return fetch(
-    url + `reservations/history/teacher/${userInformation.teacher_id}`
-  )
+  let user = JSON.parse(localStorage.getItem("userInformation"));
+  return fetch(url + `reservations/history/teacher/${user.person_id}`)
     .then((response) => response.json())
     .then((data) => {
       return data;

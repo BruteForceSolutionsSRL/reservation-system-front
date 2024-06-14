@@ -4,14 +4,14 @@ import "./NotificationElement.css";
 export function NotificationElement(props) {
   const { body, id, reservation_id, sendBy, title, to, type } = props;
   const [notificationReaded, setNotificationReaded] = useState(false);
-  const user = JSON.parse(sessionStorage.getItem("userInformation"));
+  const user = JSON.parse(localStorage.getItem("userInformation"));
 
   useEffect(() => {
     isNotificationReaded();
   }, []);
 
   const isNotificationReaded = () => {
-    let person = to.find((person) => person.person_id === user.teacher_id);
+    let person = to.find((person) => person.person_id === user.person_id);
     if (person) {
       if (person.readed === 1) {
         setNotificationReaded(true);

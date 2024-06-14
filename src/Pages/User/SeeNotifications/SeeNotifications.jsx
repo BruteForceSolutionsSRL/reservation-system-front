@@ -10,8 +10,6 @@ export default function SeeNotifications() {
   const [pagination, setPagination] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
 
-  const user = JSON.parse(sessionStorage.getItem("userInformation"));
-
   useEffect(() => {
     getNotifications().finally(() => {
       setLoading(false);
@@ -19,7 +17,7 @@ export default function SeeNotifications() {
   }, []);
 
   const getNotifications = async () => {
-    let response = await getUserNotifications(user.teacher_id).finally(() =>
+    let response = await getUserNotifications().finally(() =>
       setLoading(false)
     );
     if (response.status >= 200 && response.status < 300) {

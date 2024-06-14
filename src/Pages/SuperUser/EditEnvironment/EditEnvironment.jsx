@@ -337,11 +337,11 @@ function EditEnvironment() {
       >
         {currentReservation && (
           <Form>
-            <Row className="mb-3">
-              <Col className="mb-3" xs={2}>
-                <Form.Group controlId="formEnvironmentName">
-                  <Form.Label>NOMBRE DE AMBIENTE</Form.Label>
-                </Form.Group>
+            <Row className="align-items-center">
+              <Col md={2}>
+                <Form.Label className="fw-bold col-form-label">
+                  NOMBRE DE AMBIENTE
+                </Form.Label>
               </Col>
               <Col>
                 <Form.Control
@@ -355,11 +355,12 @@ function EditEnvironment() {
                 />
               </Col>
             </Row>
-            <Row className="mb-3">
-              <Col xs={2}>
-                <Form.Group controlId="formEnvironmentType">
-                  <Form.Label>TIPO DE AMBIENTE</Form.Label>
-                </Form.Group>
+
+            <Row className="mb-2 align-items-center">
+              <Col md={2}>
+                <Form.Label className="fw-bold col-form-label ">
+                  TIPO DE AMBIENTE
+                </Form.Label>
               </Col>
               <Col>
                 <Form.Select
@@ -377,13 +378,14 @@ function EditEnvironment() {
                 </Form.Select>
               </Col>
             </Row>
+
             <Row className="mb-3">
-              <Col xs={2}>
-                <Form.Group controlId="formEnvironmentCapacity">
-                  <Form.Label>CAPACIDAD DE AMBIENTE</Form.Label>
-                </Form.Group>
+              <Col md={3} className="d-flex">
+                <Form.Label className="fw-bold col-form-label mb-0">
+                  CAPACIDAD DE AMBIENTE
+                </Form.Label>
               </Col>
-              <Col xs={2}>
+              <Col md={4}>
                 <Form.Control
                   type="number"
                   onKeyDown={handleKeyDown}
@@ -397,12 +399,13 @@ function EditEnvironment() {
                   {currentReservation.errors?.capacity}
                 </Form.Control.Feedback>
               </Col>
-              <Col xs={2}>
-                <Form.Group controlId="formEnvironmentStatus">
-                  <Form.Label>ESTADO</Form.Label>
-                </Form.Group>
+
+              <Col md={1} className="d-flex ">
+                <Form.Label className="fw-bold col-form-label mb-0">
+                  ESTADO
+                </Form.Label>
               </Col>
-              <Col>
+              <Col md={4}>
                 <Form.Select
                   name="classroom_status_id"
                   value={currentReservation.classroom_status_id}
@@ -419,13 +422,14 @@ function EditEnvironment() {
                 </Form.Select>
               </Col>
             </Row>
-            <div className="tag-container position-relative mb-3">
+
+            <div className="tag-container position-relative mb-3 mt-4">
               <label className="tag-label">Ubicación del Ambiente</label>
               <Container>
                 <Row className="mb-3">
                   <Col xs={12} md={6}>
                     <Form.Group controlId="formBlock">
-                      <Form.Label>BLOQUE</Form.Label>
+                      <Form.Label className="fw-bold">BLOQUE</Form.Label>
                       <Form.Select
                         name="block_id"
                         value={currentReservation.block_id}
@@ -441,10 +445,11 @@ function EditEnvironment() {
                   </Col>
                   <Col xs={12} md={6}>
                     <Form.Group controlId="formFloor">
-                      <Form.Label>PISO</Form.Label>
+                      <Form.Label className="fw-bold">PISO</Form.Label>
                       <Form.Control
                         onKeyDown={handleKeyDown}
                         type="number"
+                        max={50}
                         min={0}
                         name="floor"
                         value={currentReservation.floor}
@@ -549,9 +554,7 @@ function EditEnvironment() {
         title={backendError.status === 200 ? "¡Exito!" : "¡Error!"}
         footerButtons={saveButtonsConfirmationsModal}
       >
-        {backendError && (
-          <p>{backendError.data.message}</p>
-        )}
+        {backendError && <p>{backendError.data.message}</p>}
       </ReusableModal>
     </div>
   );

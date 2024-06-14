@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Form, Modal } from "react-bootstrap";
+import { Alert, Form, Modal } from "react-bootstrap";
 import { getAllSubjects } from "../../../services/subjects";
 import { getBlocks } from "../../../services/blocks";
 import { getClassroomsByBlock } from "../../../services/classrooms";
@@ -41,6 +41,11 @@ export default function GenerateReport() {
   const [showReport, setShowReport] = useState(false);
   // modal
   const [showModalClearReport, setShowModalClearReport] = useState(false);
+  // error
+  const [errorDate, setErrorDate] = useState({ 
+    message: null,
+    isInvalid: false, 
+  });
 
   useEffect(() => {
     Promise.all([
@@ -145,6 +150,11 @@ export default function GenerateReport() {
 
     const value = e.target.value;
 
+    setErrorDate({ 
+      message: "La fecha de fin debe ser mayor o igual a la fecha inicio",
+      isInvalid: value > endDateValue,
+    });
+
     if (value) {
       setStartDateValue(value);
     }
@@ -154,6 +164,11 @@ export default function GenerateReport() {
     e.preventDefault();
 
     const value = e.target.value;
+
+    setErrorDate({ 
+      message: "La fecha de fin debe ser mayor o igual a la fecha inicio",
+      isInvalid: value < startDateValue,
+    });
 
     if (value) {
       setEndDateValue(value);
@@ -205,7 +220,8 @@ export default function GenerateReport() {
           startDate={startDateValue} 
           endDate={endDateValue}
           reportData={reportData}
-        />).toBlob();
+        />
+      ).toBlob();
       const pdfUrl = URL.createObjectURL(blob);
       const iframe = document.createElement("iframe");
 
@@ -227,22 +243,28 @@ export default function GenerateReport() {
       <Form>
         <div className="row d-flex align-items-center">
           <div className="col-sm">
-            <label>Fechas</label>
+            <label htmlFor="startDate">Fecha inicio</label>
             <Form.Control
               type="date"
+              name="startDate"
               className="form-control"
               value={startDateValue}
               onChange={handleStartDateChange}
             />
           </div>
           <div className="col-sm">
-            <label>&nbsp;</label>
+            <label htmlFor="endDate">Fecha fin</label>
             <Form.Control
               type="date"
+              name="endDate"
               className="form-control"
               value={endDateValue}
               onChange={handleEndDateChange}
+              isInvalid={errorDate.isInvalid}
             />
+            <Form.Control.Feedback type="invalid">
+              {errorDate.message}
+            </Form.Control.Feedback>
           </div>
           <div className="col-md">
             <label htmlFor="block">Bloque</label>
@@ -286,7 +308,13 @@ export default function GenerateReport() {
             <button
               type="button"
               className="btn"
-              onClick={() => setShowModalClearReport(true)}
+              onClick={(e) => {
+                e.preventDefault();
+
+                if (showReport) {
+                  setShowModalClearReport(true);
+                }
+              }}
             >
               <span>Vaciar </span>
               <i className="bi bi-trash"></i>
@@ -363,7 +391,10 @@ export default function GenerateReport() {
               className="btn btn-primary"
               onClick={(e) => {
                 e.preventDefault();
-                handleGenerateReport();
+
+                if (!errorDate.isInvalid) {
+                  handleGenerateReport();
+                }
               }}
             >
               Generar Reporte
@@ -441,13 +472,13 @@ export default function GenerateReport() {
 
           <div className="d-flex justify-content-end p-3">
             <button
-              className="m-1 btn btn-outline-dark"
+              className="m-1 btn btn-outline-danger"
               onClick={handleCleanButton}
             >
               Aceptar
             </button>
             <button
-              className="m-1 btn btn-outline-dark"
+              className="m-1 btn btn-outline-secondary"
               onClick={() => setShowModalClearReport(false)}
             >
               Cancelar

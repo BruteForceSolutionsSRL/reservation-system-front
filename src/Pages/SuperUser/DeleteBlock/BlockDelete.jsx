@@ -36,8 +36,6 @@ function BlockDelete(props) {
     setShow(true);
   };
 
-  console.log("aulas del bloque", environment);
-
   const sendDeleteBlock = async () => {
     setLoadingDelete(true);
     let response = await deleteBlock(block_id).finally(() => {
@@ -231,11 +229,11 @@ function BlockDelete(props) {
 
       <Modal show={showMsg} onHide={handleCloseMsgModal} size="md" centered>
         <Modal.Body>
-          <h3>{msgModal.status}</h3>
-          <b>{msgModal.message}</b>
+          <h3>¡{msgModal.status}!</h3>
+          <b className="mt-2">{msgModal.message}</b>
           {msgModal.status === "Error" && (
             <div
-              className="d-flex flex-wrap gap-1"
+              className="d-flex flex-wrap gap-1 mt-2"
               style={{ maxHeight: "85px", overflowY: "auto" }}
             >
               {environment
@@ -251,6 +249,8 @@ function BlockDelete(props) {
                 ))}
             </div>
           )}
+        </Modal.Body>
+        <Modal.Footer>
           <div className="d-flex justify-content-end">
             <button
               className="btn btn-outline-secondary"
@@ -259,7 +259,7 @@ function BlockDelete(props) {
               Aceptar
             </button>
           </div>
-        </Modal.Body>
+        </Modal.Footer>
       </Modal>
     </>
   );

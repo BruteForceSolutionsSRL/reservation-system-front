@@ -1,25 +1,24 @@
 import { useState } from "react";
 import { Modal, Spinner, Table } from "react-bootstrap";
-import { getReservationsPerClassrooms } from "../../../services/requests";
-import { deleteEnvironment } from "../../../services/classrooms";
+import { getClassroomsByBlock } from "../../../services/classrooms";
+import { getStadisticsBlock } from "../../../services/blocks";
+import { deleteBlock } from "../../../services/blocks";
 
-export default function EnvironmentToDelete(props) {
+function BlockDelete(props) {
   const {
-    id,
-    name,
-    capacity,
-    floor,
+    block_id,
     block_name,
-    type_description,
-    status_name,
-    statistics,
+    block_maxclassrooms,
+    block_maxfloor,
+    block_status_name,
   } = props;
-  const [show, setShow] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [requestsList, setRequestsList] = useState([]);
+  const [environment, setEnvironment] = useState([]);
+  const [stadisticsBlock, setStadisticsBlock] = useState([]);
   const [loadingDelete, setLoadingDelete] = useState(false);
-  const [msgModal, setMsgModal] = useState({ status: "", message: "" });
+  const [showConfirm, setShowConfirm] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
+  const [show, setShow] = useState(false);
+  const [msgModal, setMsgModal] = useState({ status: "", message: "" });
 
   const handleClose = () => {
     setShow(false);
@@ -29,22 +28,24 @@ export default function EnvironmentToDelete(props) {
     setShowConfirm(false);
   };
 
-  const getRequestsList = async () => {
-    let rl = await getReservationsPerClassrooms(id);
-    setRequestsList(rl);
+  const getEnvironmentBlock = async () => {
+    let environment = await getClassroomsByBlock(block_id);
+    setEnvironment(environment);
+    let stadistics = await getStadisticsBlock(block_id);
+    setStadisticsBlock(stadistics);
     setShow(true);
   };
 
-  const sendDeleteEnvironment = async () => {
+  const sendDeleteBlock = async () => {
     setLoadingDelete(true);
-    let response = await deleteEnvironment(id).finally(() => {
+    let response = await deleteBlock(block_id).finally(() => {
       setLoadingDelete(false);
       setShowConfirm(false);
     });
-    if (response.message === "Ambiente eliminado exitosamente.") {
-      setMsgModal({ status: "Exito", message: response.message });
+    if (response.message === "Bloque eliminado exitosamente.") {
+      setMsgModal({ status: "Exito", message: response });
     } else {
-      setMsgModal({ status: "Error", message: response.message });
+      setMsgModal({ status: "Error", message: response });
     }
     setShowMsg(true);
   };
@@ -62,47 +63,38 @@ export default function EnvironmentToDelete(props) {
         className="row border border-black rounded p-2 mb-2"
         style={{ minWidth: "400px" }}
       >
-        <div className="col-sm-4">
+        <div className="col-sm-6">
           <div>
             <b className="col text-primary">ESTADO: </b>
             <b
               className={`text-light rounded p-1 ${
-                status_name === "HABILITADO" ? "bg-success" : "bg-danger"
+                block_status_name === "HABILITADO" ? "bg-success" : "bg-danger"
               }`}
             >
-              {status_name}
+              {block_status_name}
             </b>
           </div>
           <div>
             <b className="text-primary">NOMBRE: </b>
-            <b>{name}</b>
+            <b>{block_name}</b>
           </div>
         </div>
         <div className="col-sm-4">
           <div>
-            <b className="text-primary">BLOQUE: </b>
-            <b>{block_name}</b>
+            <b className="text-primary">CANTIDAD DE AULAS: </b>
+            <b>{block_maxclassrooms}</b>
           </div>
           <div>
-            <b className="text-primary">TIPO: </b>
-            <b>{type_description}</b>
+            <b className="text-primary">NUMERO DE PISO: </b>
+            <b>{block_maxfloor}</b>
           </div>
         </div>
-        <div className="col-sm-2">
-          <div>
-            <b className="text-primary">CAPACIDAD: </b>
-            <b>{capacity}</b>
-          </div>
-          <div>
-            <b className="text-primary">PISO: </b>
-            <b>{floor}</b>
-          </div>
-        </div>
+
         <div className="col-sm-2 align-self-center d-flex justify-content-end">
           <button
             className="btn btn-sm btn-outline-danger"
             type="button"
-            onClick={getRequestsList}
+            onClick={getEnvironmentBlock}
           >
             <b>Eliminar</b>
           </button>
@@ -110,98 +102,78 @@ export default function EnvironmentToDelete(props) {
       </div>
       <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Body>
-          <h3>¿Esta seguro de eliminar el ambiente?</h3>
-          <b>El ambiente tiene las siguientes reservas asignadas:</b>
+          <h3>¿Esta seguro de eliminar el bloque?</h3>
+          <h4>BLOQUE: {block_name}</h4>
+          <b>El bloque tiene los siguientes ambientes que seran eliminados:</b>
           <div className="m-3">
-            {requestsList.length === 0 ? (
+            {environment.length === 0 ? (
               <div className="text-center">
-                <b>El ambiente no tiene solicitudes.</b>
+                <h4 className="text-danger">
+                  El BLOQUE no tiene ambientes registrados.
+                </h4>
               </div>
             ) : (
               <div
-                className="h-100 overflow-y-auto"
-                style={{ maxHeight: "300px" }}
+                className="d-flex flex-wrap gap-1"
+                style={{ maxHeight: "85px", overflowY: "auto" }}
               >
-                <Table borderless>
-                  <thead>
-                    <tr>
-                      <th>MATERIA</th>
-                      <th>MOTIVO</th>
-                      <th>FECHA</th>
-                      <th># ESTUDIANTES</th>
-                      <th>ESTADO</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {requestsList?.map((each) => {
-                      return (
-                        <tr key={each.reservation_id}>
-                          <td>{each.subject_name}</td>
-                          <td>{each.reason_name}</td>
-                          <td>{each.reservation_date}</td>
-                          <td>{each.quantity}</td>
-                          <td>
-                            <b
-                              className={`p-1 rounded text-light bg-${
-                                each.reservation_status === "ACCEPTED"
-                                  ? "success"
-                                  : each.reservation_status === "REJECTED"
-                                  ? "danger"
-                                  : each.reservation_status === "PENDING" &&
-                                    "warning"
-                              }`}
-                            >
-                              {each.reservation_status}
-                            </b>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </Table>
+                {environment.map((each) => {
+                  return (
+                    <div
+                      key={each.classroom_id}
+                      className="p-1 text-light rounded bg-secondary text-center"
+                      style={{ minWidth: "80px", margin: "3px" }}
+                    >
+                      {each.classroom_name}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
-          <b>Cantidad de solicitudes del ambiente:</b>
+          <b>
+            El bloque tiene en sus ambientes asignado las siguientes
+            solicitudes:
+          </b>
           <div className="align-self-center ps-3 pe-3 pt-3">
             <div className=" d-flex justify-content-center">
               <b className="text-light bg-success rounded p-1 me-1">
-                Aceptadas: {statistics.accepted_reservations}
+                Aceptadas: {stadisticsBlock.accepted}
               </b>
               <b className="text-light bg-danger rounded p-1 me-1">
-                Rechazadas: {statistics.rejected_reservations}
+                Rechazadas: {stadisticsBlock.rejected}
               </b>
               <b className="text-light bg-warning rounded p-1 me-1">
-                Pendientes: {statistics.pending_reservations}
+                Pendientes: {stadisticsBlock.pending}
               </b>
             </div>
             <hr />
             <div className="d-flex justify-content-center">
               <b className="text-light bg-secondary rounded p-1 me-1">
-                Total solicitudes: {statistics.total_reservations}
+                Total solicitudes: {stadisticsBlock.total}
               </b>
             </div>
           </div>
           <div className="m-4">
             <div>
-              <b className="text-danger">
-                Eliminar el ambiente tendrá las siguientes concecuencias:
+              <b className="">
+                Eliminar el BLOQUE tendrá las siguientes concecuencias:
               </b>
             </div>
             <div className="ps-3">
               <b className="text-danger">
-                *Todas las solicitudes pendientes/aceptadas serán
+                * Todas las solicitudes pendientes/aceptadas serán
                 rechazadas/canceladas.
               </b>
             </div>
             <div className="ps-3">
               <b className="text-danger">
-                *El ambiente ya no podrá ser seleccionado al momento de realizar
-                una nueva solicitud de reserva.
+                * Al eliminar el BLOQUE todos los ambientes pertenecientes
+                tambien seran eliminados.
               </b>
             </div>
             <div className="ps-3">
-              <b className="text-danger">*El ambiente ya no será editable.</b>
+              <b className="text-danger">* El BLOQUE ya no será editable.</b>
             </div>
           </div>
 
@@ -229,7 +201,7 @@ export default function EnvironmentToDelete(props) {
         <Modal.Body>
           <h3>¡Advertencia!</h3>
           <div className="d-flex justify-content-center">
-            <p>¿Está seguro de elimnar el ambiente?</p>
+            <p>¿Está seguro de elimnar el Bloque?</p>
           </div>
           <div className="d-flex justify-content-end">
             {loadingDelete && (
@@ -239,7 +211,7 @@ export default function EnvironmentToDelete(props) {
             )}
             <button
               className="btn btn-outline-danger m-1"
-              onClick={sendDeleteEnvironment}
+              onClick={sendDeleteBlock}
             >
               Confirmar
             </button>
@@ -270,3 +242,5 @@ export default function EnvironmentToDelete(props) {
     </>
   );
 }
+
+export default BlockDelete;

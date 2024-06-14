@@ -15,7 +15,7 @@ import { Spinner } from "react-bootstrap";
 
 export default function RequestReservation() {
   // Information user loged
-  const user = JSON.parse(sessionStorage.getItem("userInformation"));
+  const user = JSON.parse(localStorage.getItem("userInformation"));
   // For subjects
   const [subjects, setSubjects] = useState(null);
   const [subjectSelected, setSubjectSelected] = useState("");
@@ -317,7 +317,7 @@ export default function RequestReservation() {
     // Validations
     let newErrorsMessages = { ...errorsMessages };
     let tchrInList = !!tchrList.find((teacher) => {
-      return teacher.person_id === user.teacher_id;
+      return teacher.person_id === user.person_id;
     });
 
     if (tchrList.length !== 0) {

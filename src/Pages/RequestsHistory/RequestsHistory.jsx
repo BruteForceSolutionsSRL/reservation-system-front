@@ -11,19 +11,12 @@ export default function RequestsHistory() {
   const [list, setList] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [msgNoResults, setMsgNoResults] = useState("");
-  const userLogged = sessionStorage.getItem("userloged");
 
-  // getReservations
   useEffect(() => {
     setLoading(true);
-    if (userLogged === "user") {
-      teacherHistory();
-    } else {
-      superUserHistory();
-    }
+    teacherHistory();
   }, []);
 
-  // Useeffect for search
   useEffect(() => {
     if (searchValue === "") {
       setList(allReservations);
@@ -43,16 +36,12 @@ export default function RequestsHistory() {
     const th = await getTeacherRequests()
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
+    th.length === 0 &&
+      setMsgNoResults(
+        "No cuenta con un historial de solicitudes por el momento."
+      );
     setAllReservations(th);
     setList(th);
-  };
-
-  const superUserHistory = async () => {
-    const su = await getRequests()
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-    setAllReservations(su);
-    setList(su);
   };
 
   return (

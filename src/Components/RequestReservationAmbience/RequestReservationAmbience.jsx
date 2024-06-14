@@ -971,10 +971,7 @@ function RequestReservationAmbience() {
         </div>
 
         <div className="col-12 mt-2" style={{ textAlign: "right" }}>
-          <Button 
-            variant="outline-success m-3" 
-            type="submit"
-            >
+          <Button variant="outline-success m-3" type="submit">
             Reservar
           </Button>
         </div>

@@ -6,13 +6,15 @@ export default function ListCancel() {
   const [reservations, setReservations] = useState([]);
   const [reload, setReload] = useState(false);
 
+  const user = JSON.parse(localStorage.getItem("userInformation"));
+
   useEffect(() => {
     fetchData();
     setReload(false);
   }, [reload]);
 
   const fetchData = async () => {
-    await fetch(URL + `reservations/teacher/${2}`)
+    await fetch(URL + `reservations/teacher/${user.person_id}`)
       .then((res) => res.json())
       .then((data) => {
         setReservations(data);
@@ -21,6 +23,7 @@ export default function ListCancel() {
         if (err) throw console.error(err);
       });
   };
+
   return (
     <div className="container">
       <h1 className="text-center">Lista de solicitudes</h1>

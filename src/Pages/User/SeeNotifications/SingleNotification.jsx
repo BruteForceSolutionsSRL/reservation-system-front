@@ -8,7 +8,6 @@ import ModalRequestInformation from "../../../Components/RequestInformation/Moda
 export default function SingleNotification() {
   const { notificationId } = useParams();
 
-  const user = JSON.parse(sessionStorage.getItem("userInformation"));
   const [notification, setNotification] = useState({});
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState({});
@@ -21,10 +20,9 @@ export default function SingleNotification() {
   }, []);
 
   const getNotificationInfo = async () => {
-    let response = await getSingleNotification(
-      user.teacher_id,
-      notificationId
-    ).finally(() => setLoading(false));
+    let response = await getSingleNotification(notificationId).finally(() =>
+      setLoading(false)
+    );
     if (response.status >= 200 && response.status < 300) {
       if (typeof response.data === "object" && response.data.length === 0) {
         setNotification({});

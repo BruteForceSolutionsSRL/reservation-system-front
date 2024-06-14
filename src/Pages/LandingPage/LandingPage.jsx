@@ -1,42 +1,4 @@
-// import { Link } from "react-router-dom";
-// import "./LandingPage.css";
-
-// export default function LandingPage() {
-//   const userSession = () => {
-//     const user = {
-//       name: "MAGDA LENA PEETERS ILONAA",
-//       teacher_id: 2,
-//     };
-//     sessionStorage.setItem("userloged", "user");
-//     sessionStorage.setItem("userInformation", JSON.stringify(user));
-//   };
-//   const superUserSession = () => {
-//     const user = {
-//       name: "Juanito Perez ",
-//       teacher_id: 2,
-//     };
-//     sessionStorage.setItem("userloged", "superuser");
-//     sessionStorage.setItem("userInformation", JSON.stringify(user));
-//   };
-//   return (
-//     <div className="bg text-center">
-//       <h1>This is a landing page</h1>
-//       <div>
-//         <div>
-//           <Link to="/user/home" onClick={userSession}>
-//             Ingresar como usuario
-//           </Link>
-//         </div>
-//         <div>
-//           <Link to="/superuser/home" onClick={superUserSession}>
-//             Ingresar como administrador
-//           </Link>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Form,
@@ -51,7 +13,7 @@ import {
 import axios from "axios";
 import "./LandingPage.css";
 
-const LandingPage = ({ setAuthToken }) => {
+const LandingPage = ({ setAuthToken, authToken }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -60,6 +22,19 @@ const LandingPage = ({ setAuthToken }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const navigate = useNavigate();
+
+  const url = import.meta.env.VITE_REACT_API_URL;
+
+  useEffect(() => {
+    // verificar el rol, falta completar cuando esten los roles.
+    if (!!authToken) {
+      if (activeTab === "DOCENTES") {
+        navigate("/user/home");
+      } else {
+        navigate("/superuser/home");
+      }
+    }
+  }, []);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -72,13 +47,18 @@ const LandingPage = ({ setAuthToken }) => {
       setErrors(validationErrors);
       return;
     }
+
     try {
-      const response = await axios.post("http://localhost:8000/api/login", {
+      const response = await axios.post(url + "login", {
         email,
         password,
       });
       const { token } = response.data;
       localStorage.setItem("token", token);
+      localStorage.setItem(
+        "userInformation",
+        JSON.stringify(response.data.user)
+      );
       setAuthToken(token);
       navigate("/user/home");
     } catch (error) {
@@ -96,7 +76,7 @@ const LandingPage = ({ setAuthToken }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    sessionStorage.clear();
+    localStorage.clear();
     navigate("/");
   };
 
@@ -121,8 +101,8 @@ const LandingPage = ({ setAuthToken }) => {
       name: "MAGDA LENA PEETERS ILONAA",
       teacher_id: 2,
     };
-    sessionStorage.setItem("userloged", "user");
-    sessionStorage.setItem("userInformation", JSON.stringify(user));
+    localStorage.setItem("userloged", "user");
+    localStorage.setItem("userInformation", JSON.stringify(user));
     // navigate("/user/home");
   };
 
@@ -131,8 +111,8 @@ const LandingPage = ({ setAuthToken }) => {
       name: "Juanito Perez ",
       teacher_id: 20,
     };
-    sessionStorage.setItem("userloged", "superuser");
-    sessionStorage.setItem("userInformation", JSON.stringify(user));
+    localStorage.setItem("userloged", "superuser");
+    localStorage.setItem("userInformation", JSON.stringify(user));
     // navigate("/superuser/home");
   };
 
@@ -284,9 +264,8 @@ const LandingPage = ({ setAuthToken }) => {
       <Container className="landing-container">
         <div className="contact-info">
           <p>
-            <strong>Contacto:</strong>
+            <strong className="pe-1">Contacto:</strong>
             <a href="mailto:bruteforcesolutionsbfs@gmail.com">
-              {" "}
               bruteforcesolutionsbfs@gmail.com
             </a>
           </p>

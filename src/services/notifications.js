@@ -1,8 +1,13 @@
 const url = import.meta.env.VITE_REACT_API_URL;
 
-export function getUserNotifications(person_id) {
+export function getUserNotifications() {
   let responseFetch = {};
-  return fetch(url + `notifications/inbox/${person_id}`)
+  let token = localStorage.getItem("token");
+
+  return fetch(url + `notifications/inbox`, {
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
+  })
     .then((response) => {
       responseFetch = { ...responseFetch, status: response.status };
       return response.json();
@@ -18,9 +23,12 @@ export function getUserNotifications(person_id) {
     });
 }
 
-export function getSingleNotification(person_id, notification_id) {
+export function getSingleNotification(notification_id) {
   let responseFetch = {};
-  return fetch(url + `notifications/inbox/${person_id}/${notification_id}`)
+  let token = localStorage.getItem("token");
+  return fetch(url + `notifications/inbox/${notification_id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
     .then((response) => {
       responseFetch = { ...responseFetch, status: response.status };
       return response.json();

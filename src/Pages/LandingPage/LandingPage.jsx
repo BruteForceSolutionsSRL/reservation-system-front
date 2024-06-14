@@ -60,7 +60,11 @@ const LandingPage = ({ setAuthToken, authToken }) => {
         JSON.stringify(response.data.user)
       );
       setAuthToken(token);
-      navigate("/user/home");
+      if (activeTab === "DOCENTES") {
+        navigate("/user/home");
+      } else {
+        navigate("/superuser/home");
+      }
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       if (error.response) {

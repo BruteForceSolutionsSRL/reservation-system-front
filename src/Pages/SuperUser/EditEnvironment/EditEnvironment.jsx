@@ -151,11 +151,9 @@ function EditEnvironment() {
     try {
       const response = await fetch(url + `classrooms/${classroom_id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: JSON.stringify(newData),
-        mode: "cors",
+        mode: "no-cors",
       });
       const data = response.json();
       return data;
@@ -230,7 +228,11 @@ function EditEnvironment() {
   ];
 
   const fetchBlockOptions = async () => {
-    await fetch(url + "blocks")
+    let token = localStorage.getItem("token");
+    await fetch(url + "blocks", {
+      headers: { Authorization: `Bearer ${token}` },
+      mode: "no-cors",
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -291,7 +293,11 @@ function EditEnvironment() {
   };
 
   const allEnvironments = async () => {
-    await fetch(url + "classrooms")
+    let token = localStorage.getItem("token");
+    await fetch(url + "classrooms", {
+      headers: { Authorization: `Bearer ${token}` },
+      mode: "no-cors",
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");

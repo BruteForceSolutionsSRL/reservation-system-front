@@ -28,6 +28,7 @@ export function getSingleNotification(notification_id) {
   let token = localStorage.getItem("token");
   return fetch(url + `notifications/inbox/${notification_id}`, {
     headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
   })
     .then((response) => {
       responseFetch = { ...responseFetch, status: response.status };
@@ -45,12 +46,12 @@ export function getSingleNotification(notification_id) {
 }
 
 export function sendNotification(person_id, content) {
+  let token = localStorage.getItem("token");
   let responseFetch = {};
   return fetch(url + `notifications/send/${person_id}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
     body: JSON.stringify(content),
   })
     .then((response) => {

@@ -54,7 +54,11 @@ const EnvironmentRegistration = () => {
   }, [reload]);
 
   const fetchBlockOptions = () => {
-    fetch(url + "blocks")
+    let token = localStorage.getItem("token");
+    fetch(url + "blocks", {
+      headers: { Authorization: `Bearer ${token}` },
+      mode: "no-cors",
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -74,7 +78,11 @@ const EnvironmentRegistration = () => {
   };
 
   const fetchTypes = () => {
-    fetch(url + "classrooms/types")
+    let token = localStorage.getItem("token");
+    fetch(url + "classrooms/types", {
+      headers: { Authorization: `Bearer ${token}` },
+      mode: "no-cors",
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -94,7 +102,11 @@ const EnvironmentRegistration = () => {
   };
 
   const fetchClassrooms = () => {
-    fetch(url + "classrooms")
+    let token = localStorage.getItem("token");
+    fetch(url + "classrooms", {
+      headers: { Authorization: `Bearer ${token}` },
+      mode: "no-cors",
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error de conexion");
@@ -322,14 +334,12 @@ const EnvironmentRegistration = () => {
     };
 
     const url = import.meta.env.VITE_REACT_API_URL;
-
+    let token = localStorage.getItem("token");
     return fetch(url + "classrooms", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: `Bearer ${token}` },
       body: JSON.stringify(formData),
-      mode: "cors",
+      mode: "no-cors",
     })
       .then(async (response) => {
         if (!response.ok) {

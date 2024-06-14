@@ -1,7 +1,11 @@
 const url = import.meta.env.VITE_REACT_API_URL;
 
 export function getRequests() {
-  return fetch(url + "reservations/history")
+  let token = localStorage.getItem("token");
+  return fetch(url + "reservations/history", {
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
+  })
     .then((response) => response.json())
     .then((data) => {
       return data;
@@ -9,8 +13,12 @@ export function getRequests() {
 }
 
 export function getTeacherRequests() {
+  let token = localStorage.getItem("token");
   let user = JSON.parse(localStorage.getItem("userInformation"));
-  return fetch(url + `reservations/history/teacher/${user.person_id}`)
+  return fetch(url + `reservations/history/teacher/${user.person_id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
+  })
     .then((response) => response.json())
     .then((data) => {
       return data;
@@ -18,16 +26,23 @@ export function getTeacherRequests() {
 }
 
 export function getReservationsPerClassrooms(id) {
-  return fetch(url + `reservations/classroom/${id}`)
+  let token = localStorage.getItem("token");
+  return fetch(url + `reservations/classroom/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
+  })
     .then((response) => response.json())
     .then((data) => {
       return data;
     });
 }
 
-// Talvez esto no deberia estar aqui.
 export function getRequestsReasons() {
-  return fetch(url + `reservations/reasons`)
+  let token = localStorage.getItem("token");
+  return fetch(url + `reservations/reasons`, {
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
+  })
     .then((response) => response.json())
     .then((data) => {
       return data;
@@ -35,12 +50,12 @@ export function getRequestsReasons() {
 }
 
 export function sendRequest(request) {
+  let token = localStorage.getItem("token");
   let responseFetch = {};
   return fetch(url + "reservations", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
     body: JSON.stringify(request),
   })
     .then((response) => {
@@ -59,8 +74,12 @@ export function sendRequest(request) {
 }
 
 export function getSingleRequest(request_id) {
+  let token = localStorage.getItem("token");
   let responseFetch = {};
-  return fetch(url + `reservations/${request_id}`)
+  return fetch(url + `reservations/${request_id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
+  })
     .then((response) => {
       responseFetch = { ...responseFetch, status: response.status };
       return response.json();

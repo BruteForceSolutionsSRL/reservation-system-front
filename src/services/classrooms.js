@@ -1,7 +1,11 @@
 const url = import.meta.env.VITE_REACT_API_URL;
 
 export function getClassroomsByBlock(id) {
-  return fetch(url + `classrooms/block/${id}`)
+  let token = localStorage.getItem("token");
+  return fetch(url + `classrooms/block/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
+  })
     .then((response) => response.json())
     .then((data) => {
       return data;
@@ -9,12 +13,12 @@ export function getClassroomsByBlock(id) {
 }
 
 export function getSuggestsClassrooms(dataSugg) {
+  let token = localStorage.getItem("token");
   let responseFetch = {};
   return fetch(url + "classrooms/reservation/suggest", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
     body: JSON.stringify(dataSugg),
   })
     .then((response) => {
@@ -29,7 +33,11 @@ export function getSuggestsClassrooms(dataSugg) {
 }
 
 export function getClassroomsForDeleteList() {
-  return fetch(url + "classrooms/statistics/list")
+  let token = localStorage.getItem("token");
+  return fetch(url + "classrooms/statistics/list", {
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
+  })
     .then((response) => response.json())
     .then((data) => {
       return data;
@@ -37,8 +45,11 @@ export function getClassroomsForDeleteList() {
 }
 
 export function deleteEnvironment(environment) {
+  let token = localStorage.getItem("token");
   return fetch(url + `classrooms/delete/${environment}`, {
     method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
   })
     .then((response) => response.json())
     .then((data) => {
@@ -47,7 +58,11 @@ export function deleteEnvironment(environment) {
 }
 
 export function getStatusClassroms() {
-  return fetch(url + "classrooms/statuses")
+  let token = localStorage.getItem("token");
+  return fetch(url + "classrooms/statuses", {
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
+  })
     .then((response) => response.json())
     .then((data) => {
       return data;
@@ -55,7 +70,11 @@ export function getStatusClassroms() {
 }
 
 export function getClassromsTypes() {
-  return fetch(url + "classrooms/types")
+  let token = localStorage.getItem("token");
+  return fetch(url + "classrooms/types", {
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
+  })
     .then((response) => response.json())
     .then((data) => {
       return data;
@@ -63,7 +82,11 @@ export function getClassromsTypes() {
 }
 
 export function getStatusBlock() {
-  return fetch(url + "classrooms/statuses")
+  let token = localStorage.getItem("token");
+  return fetch(url + "classrooms/statuses", {
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
+  })
     .then((response) => response.json())
     .then((data) => {
       return data;
@@ -71,12 +94,12 @@ export function getStatusBlock() {
 }
 
 export function storeBlock(block) {
+  let token = localStorage.getItem("token");
   let responseFetch = {};
   return fetch(url + "blocks", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
     body: JSON.stringify(block),
   })
     .then((response) => {

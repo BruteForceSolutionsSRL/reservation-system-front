@@ -40,7 +40,11 @@ export default function AttentionRequest(props) {
   const conflictsFetch = async () => {
     try {
       if (conflicts) {
-        await fetch(URL + `reservations/${reservation_id}/conflicts`)
+        let token = localStorage.getItem("token");
+        await fetch(URL + `reservations/${reservation_id}/conflicts`, {
+          headers: { Authorization: `Bearer ${token}` },
+          mode: "no-cors",
+        })
           .then((res) => res.json())
           .then((data) => {
             setConflicts(data);
@@ -81,11 +85,11 @@ export default function AttentionRequest(props) {
 
   const acceptRequest = async () => {
     setSpinnerInModal(true);
+    let token = localStorage.getItem("token");
     await fetch(URL + `reservations/${reservation_id}/assign`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: `Bearer ${token}` },
+      mode: "no-cors",
     })
       .then((res) => res.json())
       .then((data) => {
@@ -114,11 +118,11 @@ export default function AttentionRequest(props) {
   const refuseRequest = async () => {
     setSpinnerInModal(true);
     try {
+      let token = localStorage.getItem("token");
       await fetch(URL + `reservations/${reservation_id}/reject`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { Authorization: `Bearer ${token}` },
+        mode: "no-cors",
         body: JSON.stringify({ message: reasonText }),
       })
         .then((res) => res.json())

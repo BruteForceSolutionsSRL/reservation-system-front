@@ -13,7 +13,11 @@ const ListEnvironment = ({ list, handleShowModal }) => {
   }, []);
 
   const fetchBlockOptions = () => {
-    fetch(url + "blocks")
+    let token = localStorage.getItem("token");
+    fetch(url + "blocks", {
+      headers: { Authorization: `Bearer ${token}` },
+      mode: "no-cors",
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -30,7 +34,11 @@ const ListEnvironment = ({ list, handleShowModal }) => {
   };
 
   const fetchTypes = () => {
-    fetch(url + "classrooms/types")
+    let token = localStorage.getItem("token");
+    fetch(url + "classrooms/types", {
+      headers: { Authorization: `Bearer ${token}` },
+      mode: "no-cors",
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -47,7 +55,11 @@ const ListEnvironment = ({ list, handleShowModal }) => {
   };
 
   const statusTypes = () => {
-    fetch(url + "classrooms/statuses")
+    let token = localStorage.getItem("token");
+    fetch(url + "classrooms/statuses", {
+      headers: { Authorization: `Bearer ${token}` },
+      mode: "no-cors",
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");

@@ -225,7 +225,7 @@ function EditEnvironment() {
     if (!value) {
       return "Ingrese una cantidad.";
     } else if (value < 25 || value > 500) {
-      return "La cantidad de estudiantes debe ser mayor a 25 y menor a 1000.";
+      return "La cantidad de estudiantes debe ser mayor a 25 y menor o igual a 500.";
     }
     return null;
   };
@@ -388,12 +388,16 @@ function EditEnvironment() {
               <Col md={4}>
                 <Form.Control
                   type="number"
-                  onKeyDown={handleKeyDown}
-                  required
+                  min={0}
+                  max={1000}
                   name="capacity"
+                  onKeyDown={handleKeyDown}
                   value={currentReservation.capacity}
                   onChange={handleInputChange}
                   isInvalid={!!currentReservation.errors?.capacity}
+                  onPaste={(e) => {
+                    e.preventDefault();
+                  }}
                 />
                 <Form.Control.Feedback type="invalid">
                   {currentReservation.errors?.capacity}
@@ -447,14 +451,17 @@ function EditEnvironment() {
                     <Form.Group controlId="formFloor">
                       <Form.Label className="fw-bold">PISO</Form.Label>
                       <Form.Control
-                        onKeyDown={handleKeyDown}
                         type="number"
                         max={50}
                         min={0}
                         name="floor"
+                        onKeyDown={handleKeyDown}
                         value={currentReservation.floor}
                         onChange={handleInputChange}
                         isInvalid={!!currentReservation.errors?.floor}
+                        onPaste={(e) => {
+                          e.preventDefault();
+                        }}
                       />
                       <Form.Control.Feedback type="invalid">
                         {currentReservation.errors?.floor}

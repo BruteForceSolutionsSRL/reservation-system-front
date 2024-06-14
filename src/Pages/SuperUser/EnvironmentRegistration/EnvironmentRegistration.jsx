@@ -375,7 +375,7 @@ const EnvironmentRegistration = () => {
 
   return (
     <div>
-      <h1 className="mt-5 mb-3">Registrar Ambiente</h1>
+      <h1 className="mt-3  mb-3">Registrar Ambiente</h1>
       {loading === true ? (
         <div className="text-center">
           <Spinner animation="border" variant="secondary" role="status">
@@ -387,35 +387,38 @@ const EnvironmentRegistration = () => {
           <Container>
             <Form onSubmit={handleRegister} noValidate>
               <Row className="mb-3">
-                <Col className="mb-3" xs={2}>
+                <Col xs={12} md={2}>
                   <Form.Group controlId="formEnvironmentName">
-                    <Form.Label>NOMBRE DE AMBIENTE</Form.Label>
+                    <Form.Label className="fw-bold">
+                      NOMBRE DE AMBIENTE
+                    </Form.Label>
                   </Form.Group>
                 </Col>
-                <Col>
+                <Col xs={12} md={10}>
                   <Form.Control
-                    type="input"
-                    rows={1}
+                    type="text"
                     value={environmentName}
                     onChange={handleEnvironmentNameChange}
-                    isInvalid={nameError} // true = error
+                    isInvalid={nameError}
                     required
                   />
                   {nameError && (
-                    <Form.Text className="text-danger">
+                    <Form.Text className="text-danger mt-2">
                       El nombre no debe tener caracteres especiales.
                     </Form.Text>
                   )}
                 </Col>
               </Row>
+
               <Row className="mb-3">
-                <Col xs={2}>
+                <Col xs={12} md={2} >
                   <Form.Group controlId="formEnvironmentType">
-                    <Form.Label>TIPO DE AMBIENTE</Form.Label>
+                    <Form.Label className="fw-bold">
+                      TIPO DE AMBIENTE
+                    </Form.Label>
                   </Form.Group>
                 </Col>
-
-                <Col>
+                <Col xs={12} md={10}>
                   <Form.Select
                     aria-label="Select environment type"
                     value={environmentType}
@@ -430,21 +433,22 @@ const EnvironmentRegistration = () => {
                     ))}
                   </Form.Select>
                   {typeError && (
-                    <Form.Text className="text-danger">
+                    <Form.Text className="text-danger mt-2">
                       Debes seleccionar un tipo de ambiente válido.
                     </Form.Text>
                   )}
                 </Col>
               </Row>
 
-              <Row className="mb-3">
-                <Col xs={2}>
+              <Row className="mb-3 mt-4">
+                <Col xs={12} md={2}>
                   <Form.Group controlId="formEnvironmentCapacity">
-                    <Form.Label>CAPACIDAD DE AMBIENTE</Form.Label>
+                    <Form.Label className="fw-bold">
+                      CAPACIDAD DE AMBIENTE
+                    </Form.Label>
                   </Form.Group>
                 </Col>
-
-                <Col>
+                <Col xs={12} md={10}>
                   <Form.Control
                     type="number"
                     max={1000}
@@ -459,20 +463,20 @@ const EnvironmentRegistration = () => {
                     required
                   />
                   {capacityError && (
-                    <Form.Text className="text-danger">
-                      La capacidad del ambiente debe ser positivo.
+                    <Form.Text className="text-danger mt-2">
+                      La capacidad del ambiente debe ser positiva.
                     </Form.Text>
                   )}
                 </Col>
               </Row>
 
-              <div className="tag-container position-relative mb-3">
+              <div className="tag-container position-relative mb-3 mt-4">
                 <label className="tag-label">Ubicacion del Ambiente</label>
                 <Container>
                   <Row className="mb-3">
                     <Col xs={12} md={6}>
                       <Form.Group controlId="formBlock">
-                        <Form.Label>BLOQUE</Form.Label>
+                        <Form.Label className="fw-bold">BLOQUE</Form.Label>
                         <Form.Select
                           value={environmentBlock}
                           onChange={handleBlockChange}
@@ -498,7 +502,7 @@ const EnvironmentRegistration = () => {
 
                     <Col xs={12} md={6}>
                       <Form.Group controlId="formFloor">
-                        <Form.Label>PISO</Form.Label>
+                        <Form.Label className="fw-bold">PISO</Form.Label>
                         <Form.Control
                           type="number"
                           onKeyDown={handleKeyDown}

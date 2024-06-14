@@ -7,6 +7,7 @@ import AttentionList from "../Pages/SuperUser/AttentionRequests/AttentionList";
 import ErrorPage from "../Components/ErrorPage/ErrorPage";
 import EditEnvironment from "../Pages/SuperUser/EditEnvironment/EditEnvironment";
 import DeleteEnvironment from "../Pages/SuperUser/DeleteEnvironment/DeleteEnvironment";
+import GenerateReport from "../Pages/SuperUser/Reports/GenerateReport";
 import StatisticsAmbience from "../Pages/Statistics/Ambience/StatisticsAmbience";
 import SendNotification from "../Pages/SuperUser/SendNotification/SendNotification";
 import BlockRegister from "../Pages/SuperUser/BlockRegister/BlockRegister";
@@ -32,6 +33,7 @@ export default function SuperUserRoutes() {
         <Route path="*" element={<ErrorPage />} />
         <Route path="statistics-ambience" element={<StatisticsAmbience />} />
         <Route path="send-notification" element={<SendNotification />} />
+        <Route path="generate-report" element={<GenerateReport />} />
       </Route>
     </Routes>
   );

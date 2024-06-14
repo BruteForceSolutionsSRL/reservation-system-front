@@ -42,10 +42,12 @@ function BlockDelete(props) {
       setLoadingDelete(false);
       setShowConfirm(false);
     });
+
+    console.log(response);
     if (response.message === "Bloque eliminado exitosamente.") {
-      setMsgModal({ status: "Exito", message: response });
+      setMsgModal({ status: "Exito", message: response.message });
     } else {
-      setMsgModal({ status: "Error", message: response });
+      setMsgModal({ status: "Error", message: response.message });
     }
     setShowMsg(true);
   };
@@ -227,8 +229,28 @@ function BlockDelete(props) {
 
       <Modal show={showMsg} onHide={handleCloseMsgModal} size="md" centered>
         <Modal.Body>
-          <h3>{msgModal.status}</h3>
-          <b>{msgModal.message}</b>
+          <h3>¡{msgModal.status}!</h3>
+          <b className="mt-2">{msgModal.message}</b>
+          {msgModal.status === "Error" && (
+            <div
+              className="d-flex flex-wrap gap-1 mt-2"
+              style={{ maxHeight: "85px", overflowY: "auto" }}
+            >
+              {environment
+                .filter((each) => each.classroom_status_name === "HABILITADO")
+                .map((each) => (
+                  <div
+                    key={each.classroom_id}
+                    className="p-1 text-light rounded bg-secondary text-center"
+                    style={{ minWidth: "80px", margin: "3px" }}
+                  >
+                    {each.classroom_name}
+                  </div>
+                ))}
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
           <div className="d-flex justify-content-end">
             <button
               className="btn btn-outline-secondary"
@@ -237,7 +259,7 @@ function BlockDelete(props) {
               Aceptar
             </button>
           </div>
-        </Modal.Body>
+        </Modal.Footer>
       </Modal>
     </>
   );

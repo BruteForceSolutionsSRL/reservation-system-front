@@ -456,10 +456,10 @@ function EditBlock() {
       <ReusableModal
         show={confirmations}
         handleClose={handleCloseConfirmationsModal}
-        title={backendError.status === 200 ? "!Confirmación!" : "Error"}
+        title={backendError.status === 200 ? "¡Confirmación!" : "¡Error!"}
         footerButtons={saveButtonsConfirmationsModal}
       >
-        <p style={{ color: "red" }}>{backendError.data}</p>
+        <p>{backendError.data}</p>
       </ReusableModal>
     </div>
   );

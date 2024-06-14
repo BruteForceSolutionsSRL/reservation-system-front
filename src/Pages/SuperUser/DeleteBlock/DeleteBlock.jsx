@@ -46,7 +46,7 @@ function DeleteBlock() {
 
   return (
     <div className="container">
-      <h1 className="text-center">Lista de Bloque</h1>
+      <h1 className="text-center">Lista de Bloques</h1>
       <SearchBar
         value={searchValue}
         onChange={(event) => {

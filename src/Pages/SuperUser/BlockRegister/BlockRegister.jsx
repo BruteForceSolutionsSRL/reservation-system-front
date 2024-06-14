@@ -10,10 +10,8 @@ function BlockRegister() {
   const [cancelRegisterModal, setCancelRegisterModal] = useState(false);
   const [existBlockModal, setExistBlockModal] = useState(false);
   const [confimationModal, setConfimationModal] = useState(false);
-
   const [backendError, setBackendError] = useState({});
   const [confirmationLoading, setConfirmationLoading] = useState(false);
-
   const [formData, setFormData] = useState({
     block_name: "",
     block_maxclassrooms: "",
@@ -44,7 +42,6 @@ function BlockRegister() {
       }
       const data = await response.json();
       setterFunction(data);
-      // console.log(data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -126,10 +123,10 @@ function BlockRegister() {
   };
 
   const validateFloor = (value) => {
-    if (!value) {
+    if (!value && value !== 0) {
       return "Ingrese un número de piso.";
-    } else if (value > 6) {
-      return "El número de pisos debe ser menor a 6";
+    } else if (value < 0 || value >= 7) {
+      return "El número de pisos debe ser mayor o igual a 0 y menor a 7.";
     }
     return null;
   };
@@ -154,14 +151,11 @@ function BlockRegister() {
       );
       if (isDuplicateName) {
         setExistBlockModal(true);
-        console.log(`El bloque ${formData.block_name}  ya existe.`);
+        //console.log(`El bloque ${formData.block_name}  ya existe.`);
       } else {
-        //GUARDAMOS Y ENVIAMOS AL BACK EL NUEVO AMBIENTE
         handleSaveModal();
-        console.log("lo que envuamos a l back", formData);
       }
     }
-    console.log("LLENE EL FORMULARIO");
   };
 
   const storeNewBlock = async (newBlock) => {
@@ -171,11 +165,23 @@ function BlockRegister() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
+    let updatedValue = value;
+    if (name === "block_maxclassrooms" || name === "block_maxfloor") {
+      if (updatedValue.length > 1 && updatedValue.startsWith("0")) {
+        updatedValue = updatedValue.substring(1);
+      }
+      if (name === "block_maxclassrooms" && updatedValue > 50) {
+        updatedValue = 1;
+      }
+      if (name === "block_maxfloor" && updatedValue > 30) {
+        updatedValue = 0;
+      }
+    }
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: updatedValue,
     });
-    const error = validators[name](value);
+    const error = validators[name](updatedValue);
     setErrors({
       ...errors,
       [name]: error,
@@ -249,8 +255,8 @@ function BlockRegister() {
             </Row>
           </div>
 
-          <Row className="mb-3 align-items-center">
-            <Col md={3} className="d-flex align-items-center">
+          <Row className="mb-3">
+            <Col md={3} className=" align-items-center">
               <Form.Label className="fw-bold col-form-label mb-0">
                 CAPACIDAD DE AULAS
               </Form.Label>
@@ -264,13 +270,18 @@ function BlockRegister() {
                 value={formData.block_maxclassrooms}
                 onChange={handleChange}
                 isInvalid={!!errors.block_maxclassrooms}
+                max={50}
+                min={1}
+                onPaste={(e) => {
+                  e.preventDefault();
+                }}
               />
               <Form.Control.Feedback type="invalid">
                 {errors.block_maxclassrooms}
               </Form.Control.Feedback>
             </Col>
 
-            <Col md={2} className="d-flex align-items-center">
+            <Col md={2} className="d-flex ">
               <Form.Label className="fw-bold col-form-label mb-0">
                 NUMERO DE PISOS
               </Form.Label>
@@ -279,12 +290,16 @@ function BlockRegister() {
               <Form.Control
                 type="number"
                 name="block_maxfloor"
-                min={0}
                 onKeyDown={handleKeyDown}
                 placeholder="Ingrese el número de pisos"
                 value={formData.block_maxfloor}
                 onChange={handleChange}
                 isInvalid={!!errors.block_maxfloor}
+                max={30}
+                min={1}
+                onPaste={(e) => {
+                  e.preventDefault();
+                }}
               />
               <Form.Control.Feedback type="invalid">
                 {errors.block_maxfloor}
@@ -343,9 +358,7 @@ function BlockRegister() {
           <Modal.Title>¡Advertencia!</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p style={{ color: "red" }}>
-            El ambiente {formData.block_name} ya existe.
-          </p>
+          <p>El ambiente {formData.block_name} ya existe.</p>
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={blockExist}>Aceptar</Button>
@@ -354,10 +367,12 @@ function BlockRegister() {
 
       <Modal show={confimationModal} onHide={saveBlockClose}>
         <Modal.Header closeButton>
-          <Modal.Title>!Confirmacion¡</Modal.Title>
+          <Modal.Title>
+            {backendError.status === 200 ? "¡Confirmación!" : "¡Error!"}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p style={{ color: "red" }}>{backendError.data}</p>
+          <p>{backendError.data}</p>
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={saveBlockClose}>Aceptar</Button>

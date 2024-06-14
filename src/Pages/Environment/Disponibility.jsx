@@ -43,8 +43,12 @@ function Disponibility() {
   }, [formData.block_id]);
 
   const fetchData = async (endpoint, setterFunction) => {
+    let token = localStorage.getItem("token");
     try {
-      const response = await fetch(URL + endpoint);
+      const response = await fetch(URL + endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+        mode: "no-cors",
+      });
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -57,12 +61,12 @@ function Disponibility() {
 
   const sendDataAndGetResponse = async (data, dataDisponibility) => {
     const requestData = data;
+    let token = localStorage.getItem("token");
     try {
       const response = await fetch(URL + "classrooms/disponibility", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { Authorization: `Bearer ${token}` },
+        mode: "no-cors",
         body: JSON.stringify(requestData),
       });
       if (!response.ok) {

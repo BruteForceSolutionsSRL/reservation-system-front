@@ -14,7 +14,11 @@ export default function ListCancel() {
   }, [reload]);
 
   const fetchData = async () => {
-    await fetch(URL + `reservations/teacher/${user.person_id}`)
+    let token = localStorage.getItem("token");
+    await fetch(URL + `reservations/teacher/${user.person_id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      mode: "no-cors",
+    })
       .then((res) => res.json())
       .then((data) => {
         setReservations(data);

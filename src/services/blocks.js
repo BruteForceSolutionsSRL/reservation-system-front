@@ -1,7 +1,11 @@
 const url = import.meta.env.VITE_REACT_API_URL;
 
 export function getBlocks() {
-  return fetch(url + `blocks`)
+  let token = localStorage.getItem("token");
+  return fetch(url + `blocks`, {
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
+  })
     .then((response) => response.json())
     .then((data) => {
       return data;
@@ -9,15 +13,22 @@ export function getBlocks() {
 }
 
 export function getStadisticsBlock(id) {
-  return fetch(url + `blocks/${id}/statistics`)
+  let token = localStorage.getItem("token");
+  return fetch(url + `blocks/${id}/statistics`, {
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
+  })
     .then((response) => response.json())
     .then((data) => {
       return data;
     });
 }
 export function deleteBlock(id) {
+  let token = localStorage.getItem("token");
   return fetch(url + `blocks/${id}`, {
     method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
   })
     .then((response) => response.json())
     .then((data) => {
@@ -26,12 +37,12 @@ export function deleteBlock(id) {
 }
 
 export function setBlock(block_id, blockEdited) {
+  let token = localStorage.getItem("token");
   let responseFetch = {};
   return fetch(url + `blocks/${block_id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
     body: JSON.stringify(blockEdited),
   })
     .then((response) => {

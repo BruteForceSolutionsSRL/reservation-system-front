@@ -1,8 +1,12 @@
 const URL = import.meta.env.VITE_REACT_API_URL;
 
 export async function getClassrooms() {
+  let token = localStorage.getItem("token");
   let responseFetch = {};
-  return await fetch(URL + "classrooms?status=ALL")
+  return await fetch(URL + "classrooms?status=ALL", {
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
+  })
     .then((res) => {
       responseFetch.status = res.status;
       return res.json();
@@ -15,12 +19,12 @@ export async function getClassrooms() {
 }
 
 export async function getDataPerRange(dataBody) {
+  let token = localStorage.getItem("token");
   let responseFetch = {};
-  return fetch(URL + "classrooms/stats", {
+  return await fetch(URL + "classrooms/stats", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { Authorization: `Bearer ${token}` },
+    mode: "no-cors",
     body: JSON.stringify(dataBody),
   })
     .then((res) => {

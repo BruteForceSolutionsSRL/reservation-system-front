@@ -18,9 +18,11 @@ export default function ElementCancel(props) {
   } = props;
 
   const cancelRequest = async () => {
+    let token = localStorage.getItem("token");
     await fetch(URL + `reservations/${reservation_id}/cancel`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: { Authorization: `Bearer ${token}` },
+      mode: "no-cors",
     })
       .then((res) => res.json())
       .then((data) => {

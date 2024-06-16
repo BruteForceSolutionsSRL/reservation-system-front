@@ -47,7 +47,6 @@ function Disponibility() {
     try {
       const response = await fetch(URL + endpoint, {
         headers: { Authorization: `Bearer ${token}` },
-        mode: "no-cors",
       });
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -65,8 +64,8 @@ function Disponibility() {
     try {
       const response = await fetch(URL + "classrooms/disponibility", {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        mode: "no-cors",
+        headers: { Authorization: `Bearer ${token}`,
+        "Content-Type":  "application/json"  },
         body: JSON.stringify(requestData),
       });
       if (!response.ok) {

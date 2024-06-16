@@ -98,7 +98,7 @@ export default function SeeNotifications() {
                 <div className="d-flex justify-content-end">
                   <div className="align-self-center">
                     <i className="p-4 text-center align-self-center">
-                      {currentPage + 1} de {pagination.length}
+                      Página {currentPage + 1} de {pagination.length}
                     </i>
                   </div>
                   <div>

@@ -103,11 +103,11 @@ export default function SingleNotification() {
               <b>ESTADO: </b>{" "}
               <label
                 className={`rounded p-1  bg-${
-                  state === "ACCEPTED"
+                  state === "ACEPTADO"
                     ? "success text-light"
-                    : state === "CANCELLED"
+                    : state === "CANCELADO"
                     ? "secondary text-light"
-                    : state === "REJECTED"
+                    : state === "RECHAZADO"
                     ? "danger text-light"
                     : "dark text-white"
                 }`}

@@ -1,12 +1,13 @@
 import { Link, Outlet } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import Collapse from "react-bootstrap/Collapse";
+import {Collapse, Modal} from "react-bootstrap";
 import "./Sidebar.css";
 
 export default function Sidebar({ user }) {
   const [activeItem, setActiveItem] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [openItems, setOpenItems] = useState({});
+  const [modalContent, setModalContent] = useState({})
 
   useEffect(() => {
     setInterval(() => {
@@ -16,12 +17,22 @@ export default function Sidebar({ user }) {
 
   const isLogged = () => {
     let token = localStorage.getItem("token");
+    let userInformation = JSON.parse(localStorage.getItem("userInformation"))
     if (!token) {
-      // Colocar un modal que al presionar "Aceptar" lo redirija a la pantalla
-      // de inicio para iniciar sesion
-
-      // Quitar si provoca mucha molestia al momento de probar
+      let content = {
+        show: true,
+        title: "Sesion expirada",
+        body: "El tiempo de la sesion expiró, será dirigido al inicio de sesion."
+      }
+      setModalContent(content)
       window.location.href = "/";
+    } else {
+      let content = {
+        show: false,
+        title: "",
+        body: ""
+      }
+      setModalContent(content)
     }
   };
 
@@ -479,6 +490,22 @@ export default function Sidebar({ user }) {
           </div>
         </div>
       </div>
+      <Modal
+        show={modalContent.show}
+        onHide={() => setModalContent({...modalContent, show: false})}
+        size="lg"
+        centered={true}
+        backdrop
+      >
+        <Modal.Header>
+          <Modal.Title>{modalContent.title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="pt-3 pb-3">
+            <span>{modalContent.body}</span>
+          </div>
+        </Modal.Body>
+      </Modal>
     </>
   );
 }

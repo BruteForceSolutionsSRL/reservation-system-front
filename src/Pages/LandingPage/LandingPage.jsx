@@ -26,9 +26,19 @@ const LandingPage = ({ setAuthToken, authToken }) => {
   const url = import.meta.env.VITE_REACT_API_URL;
 
   useEffect(() => {
-    // verificar el rol, falta completar cuando esten los roles.
-    if (!!authToken) {
-      if (activeTab === "DOCENTES") {
+    // if (!!authToken) {
+    //     if (activeTab === "DOCENTES") {
+    //         navigate("/user/home");
+    //       } else {
+    //           navigate("/superuser/home");
+    //         }
+    //       }
+    let userLogged = JSON.parse(localStorage.getItem("userInformation"));
+    let token = localStorage.getItem("token")
+    console.log(userLogged)
+    console.log(token)
+    if (!!token) {
+      if (userLogged.roles[0] === "DOCENTE") {
         navigate("/user/home");
       } else {
         navigate("/superuser/home");
@@ -53,6 +63,7 @@ const LandingPage = ({ setAuthToken, authToken }) => {
         email,
         password,
       });
+      console.log(response)
       const { token } = response.data;
       localStorage.setItem("token", token);
       localStorage.setItem(
@@ -60,11 +71,20 @@ const LandingPage = ({ setAuthToken, authToken }) => {
         JSON.stringify(response.data.user)
       );
       setAuthToken(token);
-      if (activeTab === "DOCENTES") {
+
+      // if (activeTab === "DOCENTE") {
+      //   navigate("/user/home");
+      // } else {
+      //   navigate("/superuser/home");
+      // }
+      
+      console.log(response.data.user)
+      if (response.data.user.roles[0] === "DOCENTE") {
         navigate("/user/home");
       } else {
         navigate("/superuser/home");
       }
+
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       if (error.response) {
@@ -98,26 +118,6 @@ const LandingPage = ({ setAuthToken, authToken }) => {
     setPassword(e.target.value);
     setErrors({ ...errors, password: "" }); // Limpiar el mensaje de error
     setShowAlert(false); // Ocultar la alerta al empezar a corregir el campo
-  };
-
-  const userSession = () => {
-    const user = {
-      name: "MAGDA LENA PEETERS ILONAA",
-      teacher_id: 2,
-    };
-    localStorage.setItem("userloged", "user");
-    localStorage.setItem("userInformation", JSON.stringify(user));
-    // navigate("/user/home");
-  };
-
-  const superUserSession = () => {
-    const user = {
-      name: "Juanito Perez ",
-      teacher_id: 20,
-    };
-    localStorage.setItem("userloged", "superuser");
-    localStorage.setItem("userInformation", JSON.stringify(user));
-    // navigate("/superuser/home");
   };
 
   return (
@@ -273,26 +273,6 @@ const LandingPage = ({ setAuthToken, authToken }) => {
               bruteforcesolutionsbfs@gmail.com
             </a>
           </p>
-          <div>
-            <div>
-              <Link
-                className="text-decoration-none"
-                to="/user/home"
-                onClick={userSession}
-              >
-                Ingresar como usuario
-              </Link>
-            </div>
-            <div>
-              <Link
-                className="text-decoration-none"
-                to="/superuser/home"
-                onClick={superUserSession}
-              >
-                Ingresar como administrador
-              </Link>
-            </div>
-          </div>
         </div>
       </Container>
     </>

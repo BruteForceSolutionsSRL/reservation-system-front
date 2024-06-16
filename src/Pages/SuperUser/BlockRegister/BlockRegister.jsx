@@ -35,7 +35,6 @@ function BlockRegister() {
       let token = localStorage.setItem("token");
       const response = await fetch(URL + endpoint, {
         headers: { Authorization: `Bearer ${token}` },
-        mode: "no-cors",
       });
       if (!response.ok) {
         throw new Error("Network response was not ok");

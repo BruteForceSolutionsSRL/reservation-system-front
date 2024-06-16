@@ -377,6 +377,7 @@ export default function RequestReservation() {
       quantity: quantity,
       date: dateValue,
     };
+    console.log(dateValue);
     const suggests = await getSuggestsClassrooms(dataSugg);
     if (suggests.status >= 200 && suggests.status < 300) {
       const suggList = () => {
@@ -446,6 +447,7 @@ export default function RequestReservation() {
           },
           show: true,
         });
+        setToInitalStateForm();
       } else {
         // Aceptada automaticamente
         setModalSendRequest({
@@ -567,6 +569,7 @@ export default function RequestReservation() {
     setReasonSelected("");
     setStartTime("");
     setEndTime("");
+    setEndTimeSlots([]);
     setBlockSelected("");
     setTeachersSelectedInModal([]);
     setClassroomsSelectedInModal([]);

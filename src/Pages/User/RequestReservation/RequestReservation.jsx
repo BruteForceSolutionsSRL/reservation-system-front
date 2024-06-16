@@ -419,7 +419,7 @@ export default function RequestReservation() {
   const handleSendRequest = async () => {
     setLoadingSendRequest(true);
     let groups = [...teachersSelectedInModal];
-    let groupNumbers = groups.map(({ group_number }) => group_number);
+    let groupNumbers = groups.map(({ teacher_subject_id }) => teacher_subject_id);
     let classrooms = [...classroomsSelectedInModal];
     let classroomIds = classrooms.map(({ classroom_id }) => classroom_id);
     let request = {
@@ -786,7 +786,7 @@ export default function RequestReservation() {
                         <tbody>
                           {teachersSelectedInModal.map((each) => {
                             return (
-                              <tr key={each.id}>
+                              <tr key={each.teacher_subject_id}>
                                 <td>
                                   {each.teacher_name} {each.teacher_last_name}
                                 </td>
@@ -1033,7 +1033,7 @@ export default function RequestReservation() {
           const isSelected = teachersSelectedInModal?.includes(each);
           return (
             <tr
-              key={each.id}
+              key={each.teacher_subject_id}
               onClick={() => handleClickTeacherRow(each)}
               className={`${isSelected ? "table-primary" : ""}`}
             >

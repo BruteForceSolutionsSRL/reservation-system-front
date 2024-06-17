@@ -52,8 +52,8 @@ function EditBlock() {
 
   const getBlocksList = async () => {
     let bl = await getBlocks();
-    setAllBlocks(bl);
-    setListBlocks(bl);
+    setAllBlocks(bl.data);
+    setListBlocks(bl.data);
   };
 
   const handleShowModal = (block) => {

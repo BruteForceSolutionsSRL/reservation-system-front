@@ -20,8 +20,6 @@ export default function SendNotification() {
   const [modalContent, setModalContent] = useState({});
   const [loadingRequest, setLoadingSendRequest] = useState(false);
 
-  const superuser = JSON.parse(localStorage.getItem("userInformation"));
-
   useEffect(() => {
     getTeachersList();
   }, []);
@@ -39,6 +37,7 @@ export default function SendNotification() {
           label: person.person_fullname,
         };
       });
+      teachers.unshift({ value: "TODOS", label: "TODOS" });
       setListTeachers(teachers);
     } else if (response.status >= 300 && response.status < 400) {
       console.log(response.data.message);
@@ -100,11 +99,21 @@ export default function SendNotification() {
   };
 
   const handleChangeNotificateTo = (event) => {
-    setNotificateTo(event);
+    const selectedTodos = event.some((e) => e.value === "TODOS");
+    const currentTodosSelected = notificateTo.some((e) => e.value === "TODOS");
+
+    if (selectedTodos && !currentTodosSelected) {
+      setNotificateTo([{ value: "TODOS", label: "TODOS" }]);
+    } else if (selectedTodos && event.length > 1) {
+      setNotificateTo(event.filter((e) => e.value !== "TODOS"));
+    } else {
+      setNotificateTo(event);
+    }
+
     if (event.length === 0) {
       setErrorNotificateTo({
         invalid: true,
-        message: "Seleccione una opcion.",
+        message: "Seleccione una opción.",
       });
     } else {
       setErrorNotificateTo({
@@ -130,6 +139,7 @@ export default function SendNotification() {
       });
     }
   };
+
   const handleClickSend = () => {
     const content = {
       title: "Confirmacion",
@@ -162,6 +172,7 @@ export default function SendNotification() {
     setModalContent({});
     setLoadingSendRequest(false);
   };
+
   const handleSubmit = async () => {
     setLoadingSendRequest(true);
     let to = notificateTo.map(({ value }) => value);
@@ -269,7 +280,6 @@ export default function SendNotification() {
                 }
                 placeholder="Enviar a..."
               />
-
               {errorNotificateTo.invalid && (
                 <div className="d-block invalid-feedback">
                   {errorNotificateTo.message}
@@ -304,7 +314,6 @@ export default function SendNotification() {
           </div>
         </Form>
       </div>
-
       <Modal show={showModal} centered backdrop>
         <Modal.Title className="p-3">{modalContent.title}</Modal.Title>
         <Modal.Body>

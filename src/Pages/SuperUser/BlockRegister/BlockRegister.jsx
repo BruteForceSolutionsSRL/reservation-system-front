@@ -79,12 +79,29 @@ function BlockRegister() {
 
   const saveBlock = async () => {
     setConfirmationLoading(true);
-    const response = await storeNewBlock(formData);
-    setBackendError(response);
-    setConfirmationLoading(false);
-    setRegisterModal(false);
+    const response = await storeNewBlock(formData).finally(() => {
+      setConfirmationLoading(false);
+
+      setRegisterModal(false);
+    });
+    if (response.status >= 200 && response.status < 300) {
+      setBackendError({ status: response.status, data: response.data.message });
+      clearDataForm();
+    } else if (response.status >= 300 && response.status < 400) {
+      setBackendError({ status: response.status, data: response.data.message });
+    } else if (response.status >= 400 && response.status < 500) {
+      setBackendError({ status: response.status, data: response.data.message });
+    } else if (response.status >= 500) {
+      if (response.data.message) {
+        setBackendError({
+          status: response.status,
+          data: response.data.message,
+        });
+      } else {
+        setBackendError("Ocurrio un error inesperado, intente nuevamente.");
+      }
+    }
     setConfimationModal(true);
-    clearDataForm();
   };
 
   function saveBlockClose() {

@@ -119,7 +119,10 @@ export default function AttentionRequest(props) {
       let token = localStorage.getItem("token");
       await fetch(URL + `reservations/${reservation_id}/reject`, {
         method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "aplication/json",
+        },
         body: JSON.stringify({ message: reasonText }),
       })
         .then((res) => res.json())

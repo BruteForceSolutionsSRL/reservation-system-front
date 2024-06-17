@@ -85,12 +85,13 @@ export default function ReservationInformation(props) {
     let token = localStorage.getItem("token");
     fetch(url + `reservation/reject/${id}`, {
       method: "PUT",
-      headers: { Authorization: `Bearer ${token}` },
-      mode: "no-cors",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setToastMessage(`La solicitud ${id} fue rechazada`);
         setBg("danger");
         setShowToast(true);

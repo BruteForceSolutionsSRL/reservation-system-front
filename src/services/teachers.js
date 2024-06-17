@@ -3,8 +3,10 @@ const url = import.meta.env.VITE_REACT_API_URL;
 export function getTeachersBySubject(idSubject) {
   let token = localStorage.getItem("token");
   return fetch(url + `teacher-subjects/subject/${idSubject}`, {
-    headers: { Authorization: `Bearer ${token}`,
-    "Content-Type":  "application/json"  },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
+    },
   })
     .then((response) => response.json())
     .then((data) => {
@@ -16,8 +18,10 @@ export function getTeachers() {
   let token = localStorage.getItem("token");
   let responseFetch = {};
   return fetch(url + `users/teachers`, {
-    headers: { Authorization: `Bearer ${token}` },
-    mode: "no-cors",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
+    },
   })
     .then((response) => {
       responseFetch = { ...responseFetch, status: response.status };

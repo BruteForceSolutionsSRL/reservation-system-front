@@ -8,7 +8,6 @@ import Modal from "react-bootstrap/Modal";
 import Spinner from "react-bootstrap/Spinner";
 import "./EnvironmentRegistration.css";
 
-// export default function EnvironmentRegistration() {
 const EnvironmentRegistration = () => {
   const [environmentName, setEnvironmentName] = useState("");
   const [environmentType, setEnvironmentType] = useState("");
@@ -40,24 +39,21 @@ const EnvironmentRegistration = () => {
 
   useEffect(() => {
     setLoading(true);
-    const fetchData = async () => {
-      await fetchBlockOptions();
-      await fetchTypes();
-      await fetchClassrooms();
-      setTimeout(() => {
+    Promise.all([fetchBlockOptions(), fetchTypes(), fetchClassrooms()]).finally(
+      () => {
         setLoading(false);
         setReload(false);
-      }, 200);
-    };
-
-    fetchData();
+      }
+    );
   }, [reload]);
 
   const fetchBlockOptions = () => {
     let token = localStorage.getItem("token");
     fetch(url + "blocks", {
-      headers: { Authorization: `Bearer ${token}` },
-      mode: "no-cors",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
     })
       .then((response) => {
         if (!response.ok) {
@@ -80,8 +76,10 @@ const EnvironmentRegistration = () => {
   const fetchTypes = () => {
     let token = localStorage.getItem("token");
     fetch(url + "classrooms/types", {
-      headers: { Authorization: `Bearer ${token}` },
-      mode: "no-cors",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
     })
       .then((response) => {
         if (!response.ok) {
@@ -104,8 +102,10 @@ const EnvironmentRegistration = () => {
   const fetchClassrooms = () => {
     let token = localStorage.getItem("token");
     fetch(url + "classrooms", {
-      headers: { Authorization: `Bearer ${token}` },
-      mode: "no-cors",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
     })
       .then((response) => {
         if (!response.ok) {
@@ -301,7 +301,7 @@ const EnvironmentRegistration = () => {
         onAccept: handleSubmit,
         showCancel: true,
       });
-    }, 1000);
+    }, 100);
   };
 
   const handleSubmit = () => {
@@ -337,9 +337,11 @@ const EnvironmentRegistration = () => {
     let token = localStorage.getItem("token");
     return fetch(url + "classrooms", {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
       body: JSON.stringify(formData),
-      mode: "no-cors",
     })
       .then(async (response) => {
         if (!response.ok) {
@@ -385,7 +387,7 @@ const EnvironmentRegistration = () => {
 
   return (
     <div>
-      <h1 className="mt-5 mb-3">Registrar Ambiente</h1>
+      <h1 className="mt-3  mb-3">Registrar Ambiente</h1>
       {loading === true ? (
         <div className="text-center">
           <Spinner animation="border" variant="secondary" role="status">
@@ -397,35 +399,38 @@ const EnvironmentRegistration = () => {
           <Container>
             <Form onSubmit={handleRegister} noValidate>
               <Row className="mb-3">
-                <Col className="mb-3" xs={2}>
+                <Col xs={12} md={2}>
                   <Form.Group controlId="formEnvironmentName">
-                    <Form.Label>NOMBRE DE AMBIENTE</Form.Label>
+                    <Form.Label className="fw-bold">
+                      NOMBRE DE AMBIENTE
+                    </Form.Label>
                   </Form.Group>
                 </Col>
-                <Col>
+                <Col xs={12} md={10}>
                   <Form.Control
-                    type="input"
-                    rows={1}
+                    type="text"
                     value={environmentName}
                     onChange={handleEnvironmentNameChange}
-                    isInvalid={nameError} // true = error
+                    isInvalid={nameError}
                     required
                   />
                   {nameError && (
-                    <Form.Text className="text-danger">
+                    <Form.Text className="text-danger mt-2">
                       El nombre no debe tener caracteres especiales.
                     </Form.Text>
                   )}
                 </Col>
               </Row>
+
               <Row className="mb-3">
-                <Col xs={2}>
+                <Col xs={12} md={2} >
                   <Form.Group controlId="formEnvironmentType">
-                    <Form.Label>TIPO DE AMBIENTE</Form.Label>
+                    <Form.Label className="fw-bold">
+                      TIPO DE AMBIENTE
+                    </Form.Label>
                   </Form.Group>
                 </Col>
-
-                <Col>
+                <Col xs={12} md={10}>
                   <Form.Select
                     aria-label="Select environment type"
                     value={environmentType}
@@ -440,21 +445,22 @@ const EnvironmentRegistration = () => {
                     ))}
                   </Form.Select>
                   {typeError && (
-                    <Form.Text className="text-danger">
+                    <Form.Text className="text-danger mt-2">
                       Debes seleccionar un tipo de ambiente válido.
                     </Form.Text>
                   )}
                 </Col>
               </Row>
 
-              <Row className="mb-3">
-                <Col xs={2}>
+              <Row className="mb-3 mt-4">
+                <Col xs={12} md={2}>
                   <Form.Group controlId="formEnvironmentCapacity">
-                    <Form.Label>CAPACIDAD DE AMBIENTE</Form.Label>
+                    <Form.Label className="fw-bold">
+                      CAPACIDAD DE AMBIENTE
+                    </Form.Label>
                   </Form.Group>
                 </Col>
-
-                <Col>
+                <Col xs={12} md={10}>
                   <Form.Control
                     type="number"
                     max={1000}
@@ -469,20 +475,20 @@ const EnvironmentRegistration = () => {
                     required
                   />
                   {capacityError && (
-                    <Form.Text className="text-danger">
-                      La capacidad del ambiente debe ser positivo.
+                    <Form.Text className="text-danger mt-2">
+                      La capacidad del ambiente debe ser positiva.
                     </Form.Text>
                   )}
                 </Col>
               </Row>
 
-              <div className="tag-container position-relative mb-3">
+              <div className="tag-container position-relative mb-3 mt-4">
                 <label className="tag-label">Ubicacion del Ambiente</label>
                 <Container>
                   <Row className="mb-3">
                     <Col xs={12} md={6}>
                       <Form.Group controlId="formBlock">
-                        <Form.Label>BLOQUE</Form.Label>
+                        <Form.Label className="fw-bold">BLOQUE</Form.Label>
                         <Form.Select
                           value={environmentBlock}
                           onChange={handleBlockChange}
@@ -508,7 +514,7 @@ const EnvironmentRegistration = () => {
 
                     <Col xs={12} md={6}>
                       <Form.Group controlId="formFloor">
-                        <Form.Label>PISO</Form.Label>
+                        <Form.Label className="fw-bold">PISO</Form.Label>
                         <Form.Control
                           type="number"
                           onKeyDown={handleKeyDown}

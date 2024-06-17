@@ -30,6 +30,9 @@ export function searchEnvironments(list, searchValue) {
 export function searchEnvironmentsForEdit(list, searchValue) {
   return list.filter(
     (each) =>
-      each.classroom_name.toLowerCase().includes(searchValue.toLowerCase())
+      each.block_name.toLowerCase().includes(searchValue.toLowerCase()) ||
+      each.classroom_name.toLowerCase().includes(searchValue.toLowerCase()) ||
+      each.classroom_status_name.toLowerCase().includes(searchValue.toLowerCase()) ||
+      each.classroom_type_name.toLowerCase().includes(searchValue.toLowerCase()) 
   );
 }

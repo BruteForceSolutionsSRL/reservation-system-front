@@ -41,13 +41,13 @@ export default function SendNotification() {
       });
       setListTeachers(teachers);
     } else if (response.status >= 300 && response.status < 400) {
-      console.log(response);
+      console.log(response.data.message);
       setListTeachers(response.data);
     } else if (response.status >= 400 && response.status < 500) {
-      console.log(response);
+      console.log(response.data.message);
       setListTeachers(response.data);
     } else if (response.status >= 500) {
-      console.log(response);
+      console.log(response.data.message);
       setListTeachers(response.data);
     }
   };
@@ -172,8 +172,8 @@ export default function SendNotification() {
       to: to,
     };
 
-    let response = await sendNotification(superuser.person_id, data).finally(
-      () => setLoadingSendRequest(false)
+    let response = await sendNotification(data).finally(() =>
+      setLoadingSendRequest(false)
     );
 
     let content = {};
@@ -335,18 +335,18 @@ export default function SendNotification() {
                   </div>
                 )}
                 <button
-                  className="btn btn-outline-secondary m-2"
-                  onClick={() => setShowModal(false)}
-                  disabled={loadingRequest}
-                >
-                  Cancelar
-                </button>
-                <button
                   className="btn btn-outline-success m-2"
                   onClick={handleSubmit}
                   disabled={loadingRequest}
                 >
                   Aceptar
+                </button>
+                <button
+                  className="btn btn-outline-secondary m-2"
+                  onClick={() => setShowModal(false)}
+                  disabled={loadingRequest}
+                >
+                  Cancelar
                 </button>
               </>
             )}

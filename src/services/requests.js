@@ -15,9 +15,9 @@ export function getTeacherRequests() {
   let token = localStorage.getItem("token");
   let user = JSON.parse(localStorage.getItem("userInformation"));
   return fetch(url + `reservations/history/teacher/${user.person_id}`, {
-    headers: { 
+    headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json"
+      "Content-Type": "aplication/json",
     },
   })
     .then((response) => response.json())
@@ -40,8 +40,10 @@ export function getReservationsPerClassrooms(id) {
 export function getRequestsReasons() {
   let token = localStorage.getItem("token");
   return fetch(url + `reservations/reasons`, {
-    headers: { Authorization: `Bearer ${token}`,
-    "Content-Type":  "application/json"  },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
+    },
   })
     .then((response) => response.json())
     .then((data) => {
@@ -54,9 +56,9 @@ export function sendRequest(request) {
   let responseFetch = {};
   return fetch(url + "reservations", {
     method: "POST",
-    headers: { 
+    headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type":  "application/json" 
+      "Content-Type": "aplication/json",
     },
     body: JSON.stringify(request),
   })
@@ -79,8 +81,10 @@ export function getSingleRequest(request_id) {
   let token = localStorage.getItem("token");
   let responseFetch = {};
   return fetch(url + `reservations/${request_id}`, {
-    headers: { Authorization: `Bearer ${token}`,
-    "Content-Type":  "application/json"  },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
+    },
   })
     .then((response) => {
       responseFetch = { ...responseFetch, status: response.status };
@@ -91,7 +95,7 @@ export function getSingleRequest(request_id) {
       return responseFetch;
     })
     .catch((err) => {
-      console.log(err);
+      console.error(err);
       responseFetch = { status: 500, data: {} };
       return responseFetch;
     });

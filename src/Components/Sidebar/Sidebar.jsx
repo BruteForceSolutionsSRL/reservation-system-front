@@ -1,38 +1,39 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, useNavigate, Outlet } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import {Collapse, Modal} from "react-bootstrap";
+import { Collapse, Modal } from "react-bootstrap";
 import "./Sidebar.css";
 
 export default function Sidebar({ user }) {
   const [activeItem, setActiveItem] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [openItems, setOpenItems] = useState({});
-  const [modalContent, setModalContent] = useState({})
+  const [modalContent, setModalContent] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setInterval(() => {
-      isLogged();
-    }, 5000);
-  });
+    isLogged();
+  }, []);
 
   const isLogged = () => {
     let token = localStorage.getItem("token");
-    let userInformation = JSON.parse(localStorage.getItem("userInformation"))
     if (!token) {
       let content = {
         show: true,
         title: "Sesion expirada",
-        body: "El tiempo de la sesion expiró, será dirigido al inicio de sesion."
-      }
-      setModalContent(content)
-      window.location.href = "/";
+        body: "El tiempo de la sesion expiró, será dirigido al inicio de sesion.",
+      };
+      setModalContent(content);
+      localStorage.removeItem("token");
+      localStorage.removeItem("userInformation");
+
+      navigate("/");
     } else {
       let content = {
         show: false,
         title: "",
-        body: ""
-      }
-      setModalContent(content)
+        body: "",
+      };
+      setModalContent(content);
     }
   };
 
@@ -55,7 +56,7 @@ export default function Sidebar({ user }) {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userInformation");
-    window.location.href = "/";
+    navigate("/");
   };
 
   return (
@@ -409,59 +410,60 @@ export default function Sidebar({ user }) {
                 </Collapse>
               </ul>
             )}
-          </div>
 
-          {user === "superuser" && (
-            <ul className="list-unstyled px-2">
-              <li className={activeItem === "report" ? "active" : ""}>
-                <Link
-                  to="#"
-                  className="text-decoration-none px-3 d-block"
-                  onClick={() => handleItemClick("report")}
-                >
-                  <div className="d-flex justify-content-start align-items-center">
-                    <i className="bi bi-clipboard-data fs-6"></i> Reportes 
-                    <i className="bi bi-chevron-down"></i>
-                  </div>
-                </Link>
-              </li>
-              <Collapse in={openItems["report"]}>
-                <div>
-                  <li
-                    className={
-                      activeItem === "generate-report"
-                        ? "active list-unstyled px-2"
-                        : "list-unstyled px-2"
-                    }
+            {user === "superuser" && (
+              <ul className="list-unstyled px-2">
+                <li className={activeItem === "report" ? "active" : ""}>
+                  <Link
+                    to="#"
+                    className="text-decoration-none px-3 d-block"
+                    onClick={() => handleItemClick("report")}
                   >
-                    <Link
-                      to="generate-report"
-                      className="text-decoration-none px-3 py-2 d-block"
-                      onClick={() => handleItemClick("generate-report")}
+                    <div className="d-flex justify-content-start align-items-center">
+                      <i className="bi bi-clipboard-data fs-6"></i> Reportes
+                      <i className="bi bi-chevron-down"></i>
+                    </div>
+                  </Link>
+                </li>
+                <Collapse in={openItems["report"]}>
+                  <div>
+                    <li
+                      className={
+                        activeItem === "generate-report"
+                          ? "active list-unstyled px-2"
+                          : "list-unstyled px-2"
+                      }
                     >
-                      <div className="align-items-center">
-                        <i className="bi bi-file-earmark-spreadsheet fs-6"></i> Generar
-                        Reporte
-                      </div>
-                    </Link>
-                  </li>
-                </div>
-              </Collapse>
-            </ul>
-          )}
+                      <Link
+                        to="generate-report"
+                        className="text-decoration-none px-3 py-2 d-block"
+                        onClick={() => handleItemClick("generate-report")}
+                      >
+                        <div className="align-items-center">
+                          <i className="bi bi-file-earmark-spreadsheet fs-6"></i>{" "}
+                          Generar Reporte
+                        </div>
+                      </Link>
+                    </li>
+                  </div>
+                </Collapse>
+              </ul>
+            )}
+          </div>
 
           <hr className="h-color mx-2" />
           <ul className="list-unstyled px-2">
             <li className="">
-              <Link
+              <span
                 className="text-decoration-none px-3 py-2 d-block"
                 onClick={() => {
-                  logout();
                   handleItemClick("logout");
+                  logout();
                 }}
+                style={{ cursor: "pointer" }}
               >
                 <i className="bi bi-box-arrow-left"></i> Cerrar sesión
-              </Link>
+              </span>
             </li>
           </ul>
         </div>
@@ -492,7 +494,7 @@ export default function Sidebar({ user }) {
       </div>
       <Modal
         show={modalContent.show}
-        onHide={() => setModalContent({...modalContent, show: false})}
+        onHide={() => setModalContent({ ...modalContent, show: false })}
         size="lg"
         centered={true}
         backdrop

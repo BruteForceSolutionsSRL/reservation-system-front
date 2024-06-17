@@ -17,11 +17,11 @@ export default function AttentionList() {
   const reloadListt = async () => {
     let token = localStorage.getItem("token");
     const fetchData = await fetch(URL + "reservations/pending", {
-      headers: { 
-        Authorization: `Bearer ${token}`, 
-        'Content-Type': 'application/json'
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
       },
-      mode: 'cors'
+      mode: "cors",
     })
       .then((res) => {
         if (!res.ok) throw new Error("Network response was not ok.");

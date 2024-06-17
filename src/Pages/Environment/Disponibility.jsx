@@ -64,8 +64,10 @@ function Disponibility() {
     try {
       const response = await fetch(URL + "classrooms/disponibility", {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}`,
-        "Content-Type":  "application/json"  },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "aplication/json",
+        },
         body: JSON.stringify(requestData),
       });
       if (!response.ok) {

@@ -153,7 +153,7 @@ export default function RequestReservation() {
 
   const fetchBlocks = async () => {
     const blks = await getBlocks();
-    setBlocks(blks);
+    setBlocks(blks.data);
   };
 
   const fetchTeachersBySubject = async (subject_id) => {

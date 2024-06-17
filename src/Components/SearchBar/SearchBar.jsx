@@ -1,5 +1,5 @@
 import "./SearchBar.css";
-export default function SearchBar({ value, onChange, className }) {
+export default function SearchBar({ value, onChange, className, onPaste }) {
   return (
     <>
       <b className="me-2">Buscar</b>
@@ -11,6 +11,7 @@ export default function SearchBar({ value, onChange, className }) {
           placeholder="Buscar..."
           onChange={onChange}
           value={value}
+          onPaste={onPaste}
         />
       </div>
     </>

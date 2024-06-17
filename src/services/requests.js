@@ -1,7 +1,10 @@
 const url = import.meta.env.VITE_REACT_API_URL;
 
 export function getRequests() {
-  return fetch(url + "reservations/history")
+  let token = localStorage.getItem("token");
+  return fetch(url + "reservations/history", {
+    headers: { Authorization: `Bearer ${token}` },
+  })
     .then((response) => response.json())
     .then((data) => {
       return data;
@@ -9,10 +12,14 @@ export function getRequests() {
 }
 
 export function getTeacherRequests() {
-  let userInformation = JSON.parse(sessionStorage.getItem("userInformation"));
-  return fetch(
-    url + `reservations/history/teacher/${userInformation.teacher_id}`
-  )
+  let token = localStorage.getItem("token");
+  let user = JSON.parse(localStorage.getItem("userInformation"));
+  return fetch(url + `reservations/history/teacher/${user.person_id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
+    },
+  })
     .then((response) => response.json())
     .then((data) => {
       return data;
@@ -20,16 +27,24 @@ export function getTeacherRequests() {
 }
 
 export function getReservationsPerClassrooms(id) {
-  return fetch(url + `reservations/classroom/${id}`)
+  let token = localStorage.getItem("token");
+  return fetch(url + `reservations/classroom/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
     .then((response) => response.json())
     .then((data) => {
       return data;
     });
 }
 
-// Talvez esto no deberia estar aqui.
 export function getRequestsReasons() {
-  return fetch(url + `reservations/reasons`)
+  let token = localStorage.getItem("token");
+  return fetch(url + `reservations/reasons`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
+    },
+  })
     .then((response) => response.json())
     .then((data) => {
       return data;
@@ -37,16 +52,51 @@ export function getRequestsReasons() {
 }
 
 export function sendRequest(request) {
+  let token = localStorage.getItem("token");
+  let responseFetch = {};
   return fetch(url + "reservations", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
     },
     body: JSON.stringify(request),
   })
-    .then((response) => response.json())
+    .then((response) => {
+      let status = response.status;
+      responseFetch = { ...responseFetch, status: status };
+      return response.json();
+    })
     .then((data) => {
-      console.log(data);
-      return data;
+      responseFetch = { ...responseFetch, data: data };
+      return responseFetch;
+    })
+    .catch((error) => {
+      responseFetch.data = error.message;
+      return responseFetch;
+    });
+}
+
+export function getSingleRequest(request_id) {
+  let token = localStorage.getItem("token");
+  let responseFetch = {};
+  return fetch(url + `reservations/${request_id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
+    },
+  })
+    .then((response) => {
+      responseFetch = { ...responseFetch, status: response.status };
+      return response.json();
+    })
+    .then((data) => {
+      responseFetch = { ...responseFetch, data: data };
+      return responseFetch;
+    })
+    .catch((err) => {
+      console.error(err);
+      responseFetch = { status: 500, data: {} };
+      return responseFetch;
     });
 }

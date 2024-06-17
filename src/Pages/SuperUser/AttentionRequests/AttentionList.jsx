@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-// Bootstrap and css imports
 import Spinner from "react-bootstrap/Spinner";
 import AttentionRequest from "./AttentionRequest";
 
@@ -16,7 +15,14 @@ export default function AttentionList() {
   }, [reload]);
 
   const reloadListt = async () => {
-    const fetchData = await fetch(URL + "reservations/pending")
+    let token = localStorage.getItem("token");
+    const fetchData = await fetch(URL + "reservations/pending", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
+      mode: "cors",
+    })
       .then((res) => {
         if (!res.ok) throw new Error("Network response was not ok.");
         return res.json();
@@ -38,18 +44,26 @@ export default function AttentionList() {
         <h1 className="text-center">Atender solicitudes pendientes</h1>
       </div>
       {loading === true ? (
-        <div className="text-center">
-          <Spinner animation="border" variant="secondary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </Spinner>
+        <div className="h-50 d-flex align-items-center justify-content-center">
+          <div>
+            <Spinner animation="border" variant="secondary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </div>
+          <div className="ps-2">
+            <b className="fs-4">Cargando</b>
+          </div>
         </div>
       ) : reservations.length === 0 ? (
-        <h1 className="text-center">
-          No tienes mas solicitudes pendientes por atender
-        </h1>
+        <div className="h-100 d-flex align-items-center justify-content-center">
+          <i className="bi bi-check-circle fs-1"></i>
+          <b className="text-center fs-2 ps-3">
+            No tienes mas solicitudes pendientes por atender
+          </b>
+        </div>
       ) : (
         <>
-          <div className="container overflow-x-scroll text-center">
+          <div className="container overflow-x-auto text-center">
             <div className="row" style={{ minWidth: "470px" }}>
               <div className="col-1">
                 <i>ID</i>

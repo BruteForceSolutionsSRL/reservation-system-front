@@ -44,8 +44,14 @@ hr.h-color {
 }
 
 .scroll {
-  height: 90vh;
-  overflow-x: hidden;
-  overflow-y: scroll;
+  height: 100vh;
+  overflow-x: auto;
+  overflow-y: auto;
   width: 100%;
+}
+
+.sidebar h1 {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 20px;
 }

@@ -8,6 +8,7 @@ import Modal from "react-bootstrap/Modal";
 import "./Classrooms.css";
 
 const BlocksSelect = (blocks) => (
+ 
   <Form.Group>
 		<option value="">Seleccione...</option>
     {blocks.map((block_id, block_name) => (

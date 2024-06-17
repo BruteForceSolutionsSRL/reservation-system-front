@@ -304,7 +304,6 @@ function RequestReservationAmbience() {
   //validador en tiempo real
   const handleChange = (event) => {
     const { name, value } = event.target;
-    console.log(name, value);
     if (name === "start" || name === "end") {
       setFormData((prevFormData) => {
         let newTimeSlotId = [...prevFormData.time_slot_id];
@@ -971,10 +970,7 @@ function RequestReservationAmbience() {
         </div>
 
         <div className="col-12 mt-2" style={{ textAlign: "right" }}>
-          <Button 
-            variant="outline-success m-3" 
-            type="submit"
-            >
+          <Button variant="outline-success m-3" type="submit">
             Reservar
           </Button>
         </div>

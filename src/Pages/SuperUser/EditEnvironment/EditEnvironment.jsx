@@ -1,37 +1,78 @@
 import React, { useState, useEffect } from "react";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
+import { Spinner, Form, Button, Row, Col, Modal } from "react-bootstrap";
 import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Spinner from "react-bootstrap/Spinner";
 import SearchBar from "../../../Components/SearchBar/SearchBar";
 import { searchEnvironmentsForEdit } from "../../../utils/searchRequests";
-import RequestInformation from "../../../Components/RequestInformation/RequestInformation";
-import { getRequests, getTeacherRequests } from "../../../services/requests";
+import { getStatusClassroms } from "../../../services/classrooms";
+import { getClassromsTypes } from "../../../services/classrooms";
+import { getEnvironments } from "../../../services/classrooms";
+import { getBlocks } from "../../../services/classrooms";
+import { setEnvironment } from "../../../services/classrooms";
 import ReusableModal from "./ReusableModal";
-import ListEnvironment from "./ListEnvironment"; // Importa el nuevo componente
+import ListEnvironment from "./ListEnvironment";
 
 function EditEnvironment() {
-  const [loading, setLoading] = useState(false);
-  const [allReservations, setAllReservations] = useState([]);
-  const [list, setList] = useState([]);
-  const [searchValue, setSearchValue] = useState("");
-  const [msgNoResults, setMsgNoResults] = useState("");
-
   const [currentReservation, setCurrentReservation] = useState(null);
-
+  const [environments, setEnvironments] = useState([]);
+  const [list, setList] = useState([]);
+  const [changedFields, setChangedFields] = useState({});
   const [typeOptions, setTypeOptions] = useState([]);
   const [blockOptions, setBlockOptions] = useState([]);
   const [status, setStatus] = useState([]);
-  const [changedFields, setChangedFields] = useState({});
-
+  const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [saveModal, setSaveModal] = useState(false);
   const [cancelModal, setCancelModal] = useState(false);
   const [confirmations, setConfirmationsModal] = useState(false);
-  const url = import.meta.env.VITE_REACT_API_URL;
-  const [confirmationMessage, setConfirmationMessage] = useState("");
+  const [confirmationLoading, setConfirmationLoading] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [msgNoResults, setMsgNoResults] = useState("");
+  const [backendError, setBackendError] = useState("");
+
+  useEffect(() => {
+    setLoading(true);
+    Promise.all([
+      getBlockOptions(),
+      getClassromTypes(),
+      getAllEnvironments(),
+      getStatusTypes(),
+    ]).finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (searchValue === "") {
+      setList(environments);
+      setMsgNoResults("");
+    } else {
+      const results = searchEnvironmentsForEdit(environments, searchValue);
+      if (results.length < 1) {
+        setMsgNoResults("No se encontraron resultados");
+      } else {
+        setMsgNoResults("");
+      }
+      setList(results);
+    }
+  }, [searchValue, environments]);
+
+  const getBlockOptions = async () => {
+    let envl = await getBlocks();
+    setBlockOptions(envl.data);
+  };
+
+  const getClassromTypes = async () => {
+    let envl = await getClassromsTypes();
+    setTypeOptions(envl);
+  };
+
+  const getStatusTypes = async () => {
+    let envl = await getStatusClassroms();
+    setStatus(envl);
+  };
+
+  const getAllEnvironments = async () => {
+    let envl = await getEnvironments();
+    setEnvironments(envl);
+  };
 
   const handleShowModal = (reservation) => {
     setCurrentReservation({ ...reservation, errors: {} });
@@ -39,19 +80,19 @@ function EditEnvironment() {
     setChangedFields({});
   };
 
-  const handleSaveConfirmationsModal = () => {
+  const handleSaveConfirmationsModal = async () => {
+    setConfirmationLoading(true);
+    await handleSaveChanges();
+    setConfirmationLoading(false);
     setSaveModal(false);
     setConfirmationsModal(true);
   };
+
   const handleCloseConfirmationsModal = () => {
     setConfirmationsModal(false);
-    //Save in BackEnd
-    handleSaveChanges();
   };
 
-  /******************************************************** */
   const handleSaveModal = () => {
-    //REFACTORIZAR SE REPITE
     const formHasErrors = Object.keys(currentReservation.errors).some(
       (key) => currentReservation.errors[key]
     );
@@ -66,7 +107,6 @@ function EditEnvironment() {
     setShowModal(true);
   };
 
-  /******************************************************/
   const handleCancelModal = () => {
     setCancelModal(true);
     setShowModal(false);
@@ -83,58 +123,37 @@ function EditEnvironment() {
     setShowModal(false);
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     const formHasErrors = Object.keys(currentReservation.errors).some(
       (key) => currentReservation.errors[key]
     );
     if (!formHasErrors) {
-      const updatedReservations = allReservations.map((reservation) =>
-        reservation.classroom_id === currentReservation.classroom_id
-          ? { ...currentReservation, errors: {} }
-          : reservation
-      );
-      const newDataEnvironment = {
-        classroom_id: currentReservation.classroom_id,
-        capacity: currentReservation.capacity,
-        type_id: currentReservation.classroom_type_id,
-        block_id: currentReservation.block_id,
-        floor_number: currentReservation.floor,
-        status_id: currentReservation.classroom_status_id,
+      let editedEnvironment = {
+        classroom_id: parseInt(currentReservation.classroom_id),
+        capacity: parseInt(currentReservation.capacity),
+        type_id: parseInt(currentReservation.classroom_type_id),
+        block_id: parseInt(currentReservation.block_id),
+        floor_number: parseInt(currentReservation.floor),
+        status_id: parseInt(currentReservation.classroom_status_id),
       };
-
-      //Send in BackEnd
-      sendData(newDataEnvironment, currentReservation.classroom_id)
-        .then((responseMessage) => {
-          console.log("Modificacion exitosa:", responseMessage);
-          console.log("Campos modificados:", changedFields);
-
-          //Estatus and update list
-          setAllReservations(updatedReservations);
-          setList(updatedReservations);
-        })
-        .catch((error) => {
-          console.error("Error al enviar los datos:", error);
-        });
+      await editEnvironment(editedEnvironment);
     } else {
       console.log("Formulario inválido, llene todos los campos");
     }
   };
 
-  const sendData = async (newData, classroom_id) => {
+  const editEnvironment = async (editedEnvironment) => {
     try {
-      const response = await fetch(url + `classrooms/${classroom_id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newData),
-        mode: "cors",
+      let response = await setEnvironment(
+        currentReservation.classroom_id,
+        editedEnvironment
+      ).catch((error) => {
+        setBackendError("Error al enviar los datos: " + error.message);
       });
-      const data = await response.json();
-      return data;
+      setBackendError(response);
+      getAllEnvironments();
     } catch (error) {
-      console.error(error);
-      throw error;
+      console.error("Error while editing block:", error);
     }
   };
 
@@ -155,7 +174,6 @@ function EditEnvironment() {
     });
   };
 
-  // Botones personalizados para el modal
   const footerButtonsModal = [
     {
       label: "Guardar",
@@ -168,7 +186,7 @@ function EditEnvironment() {
       onClick: handleCancelModal,
     },
   ];
-  //  Botton Cancel
+
   const cancelButtonsModal = [
     {
       label: "Aceptar",
@@ -181,7 +199,7 @@ function EditEnvironment() {
       onClick: handleCancelBackModal,
     },
   ];
-  // Botton Save
+
   const saveButtonsModal = [
     {
       label: "Aceptar",
@@ -195,7 +213,6 @@ function EditEnvironment() {
     },
   ];
 
-  // Botton Save confirmnations
   const saveButtonsConfirmationsModal = [
     {
       label: "Aceptar",
@@ -204,114 +221,15 @@ function EditEnvironment() {
     },
   ];
 
-  // useEffect para búsqueda
-  useEffect(() => {
-    if (searchValue === "") {
-      setList(allReservations);
-      setMsgNoResults("");
-    } else {
-      const results = searchEnvironmentsForEdit(allReservations, searchValue);
-      if (results.length < 1) {
-        setMsgNoResults("No se encontraron resultados");
-      } else {
-        setMsgNoResults("");
-      }
-      setList(results);
-    }
-  }, [searchValue, allReservations]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      //setLoading(true);
-      await fetchBlockOptions();
-      await fetchTypes();
-      await allEnvironments();
-      await statusTypes();
-      //setLoading(false);
-    };
-
-    fetchData();
-  }, []);
-
-  const fetchBlockOptions = () => {
-    fetch(url + "blocks")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        const optionsWithDefault = [...data];
-        setBlockOptions(optionsWithDefault);
-      })
-      .catch((error) => {
-        console.error("Error fetching options:", error);
-      });
-  };
-
-  const fetchTypes = () => {
-    fetch(url + "classrooms/types")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        const optionsWithDefault = [...data];
-        setTypeOptions(optionsWithDefault);
-      })
-      .catch((error) => {
-        console.error("Error fetching options:", error);
-      });
-  };
-
-  const statusTypes = () => {
-    fetch(url + "classrooms/statuses")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        const optionsWithDefault = [...data];
-        setStatus(optionsWithDefault);
-      })
-      .catch((error) => {
-        console.error("Error fetching options:", error);
-      });
-  };
-
-  const allEnvironments = () => {
-    fetch(url + "classrooms")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        const optionsWithDefault = [...data];
-        setAllReservations(optionsWithDefault);
-      })
-      .catch((error) => {
-        console.error("Error fetching options:", error);
-      });
-  };
-
-  // Validador de cantidad
   const validateCantidad = (value) => {
     if (!value) {
       return "Ingrese una cantidad.";
     } else if (value < 25 || value > 500) {
-      return "La cantidad de estudiantes debe ser mayor a 25 y menor a 1000.";
+      return "La cantidad de estudiantes debe ser mayor a 25 y menor o igual a 500.";
     }
     return null;
   };
 
-  // Validador de piso
   const validateFloor = (value) => {
     const maxFloor = getFloor(currentReservation.block_id);
     if (!value) {
@@ -328,7 +246,6 @@ function EditEnvironment() {
   };
 
   function getFloor(key) {
-    console.log("SE VERIFICO", key);
     const selectedElement = blockOptions.find(
       (elemento) => elemento.block_id === parseInt(key)
     );
@@ -382,7 +299,6 @@ function EditEnvironment() {
   return (
     <div className="container">
       <h1 className="text-center">Lista de Ambientes</h1>
-
       <SearchBar
         value={searchValue}
         onChange={(event) => {
@@ -396,17 +312,22 @@ function EditEnvironment() {
         {loading ? (
           <div className="text-center">
             <Spinner animation="border" variant="secondary" role="status">
-              <span className="visually-hidden">Cargando...</span>
+              <span className="visually-hidden">Loading...</span>
             </Spinner>
           </div>
         ) : (
           <div>
             <hr></hr>
-            {msgNoResults && <div>{msgNoResults}</div>}
+            {msgNoResults && (
+              <div className="text-center">
+                <h4>{msgNoResults}</h4>
+              </div>
+            )}
             <ListEnvironment list={list} handleShowModal={handleShowModal} />
           </div>
         )}
       </div>
+
       <ReusableModal
         show={showModal}
         handleClose={handleCancelModal}
@@ -416,11 +337,11 @@ function EditEnvironment() {
       >
         {currentReservation && (
           <Form>
-            <Row className="mb-3">
-              <Col className="mb-3" xs={2}>
-                <Form.Group controlId="formEnvironmentName">
-                  <Form.Label>NOMBRE DE AMBIENTE</Form.Label>
-                </Form.Group>
+            <Row className="align-items-center">
+              <Col md={2}>
+                <Form.Label className="fw-bold col-form-label">
+                  NOMBRE DE AMBIENTE
+                </Form.Label>
               </Col>
               <Col>
                 <Form.Control
@@ -434,11 +355,12 @@ function EditEnvironment() {
                 />
               </Col>
             </Row>
-            <Row className="mb-3">
-              <Col xs={2}>
-                <Form.Group controlId="formEnvironmentType">
-                  <Form.Label>TIPO DE AMBIENTE</Form.Label>
-                </Form.Group>
+
+            <Row className="mb-2 align-items-center">
+              <Col md={2}>
+                <Form.Label className="fw-bold col-form-label ">
+                  TIPO DE AMBIENTE
+                </Form.Label>
               </Col>
               <Col>
                 <Form.Select
@@ -456,32 +378,38 @@ function EditEnvironment() {
                 </Form.Select>
               </Col>
             </Row>
+
             <Row className="mb-3">
-              <Col xs={2}>
-                <Form.Group controlId="formEnvironmentCapacity">
-                  <Form.Label>CAPACIDAD DE AMBIENTE</Form.Label>
-                </Form.Group>
+              <Col md={3} className="d-flex">
+                <Form.Label className="fw-bold col-form-label mb-0">
+                  CAPACIDAD DE AMBIENTE
+                </Form.Label>
               </Col>
-              <Col xs={2}>
+              <Col md={4}>
                 <Form.Control
                   type="number"
-                  onKeyDown={handleKeyDown}
-                  required
+                  min={0}
+                  max={1000}
                   name="capacity"
+                  onKeyDown={handleKeyDown}
                   value={currentReservation.capacity}
                   onChange={handleInputChange}
                   isInvalid={!!currentReservation.errors?.capacity}
+                  onPaste={(e) => {
+                    e.preventDefault();
+                  }}
                 />
                 <Form.Control.Feedback type="invalid">
                   {currentReservation.errors?.capacity}
                 </Form.Control.Feedback>
               </Col>
-              <Col xs={2}>
-                <Form.Group controlId="formEnvironmentStatus">
-                  <Form.Label>ESTADO</Form.Label>
-                </Form.Group>
+
+              <Col md={1} className="d-flex ">
+                <Form.Label className="fw-bold col-form-label mb-0">
+                  ESTADO
+                </Form.Label>
               </Col>
-              <Col>
+              <Col md={4}>
                 <Form.Select
                   name="classroom_status_id"
                   value={currentReservation.classroom_status_id}
@@ -498,13 +426,14 @@ function EditEnvironment() {
                 </Form.Select>
               </Col>
             </Row>
-            <div className="tag-container position-relative mb-3">
+
+            <div className="tag-container position-relative mb-3 mt-4">
               <label className="tag-label">Ubicación del Ambiente</label>
               <Container>
                 <Row className="mb-3">
                   <Col xs={12} md={6}>
                     <Form.Group controlId="formBlock">
-                      <Form.Label>BLOQUE</Form.Label>
+                      <Form.Label className="fw-bold">BLOQUE</Form.Label>
                       <Form.Select
                         name="block_id"
                         value={currentReservation.block_id}
@@ -520,15 +449,19 @@ function EditEnvironment() {
                   </Col>
                   <Col xs={12} md={6}>
                     <Form.Group controlId="formFloor">
-                      <Form.Label>PISO</Form.Label>
+                      <Form.Label className="fw-bold">PISO</Form.Label>
                       <Form.Control
-                        onKeyDown={handleKeyDown}
                         type="number"
+                        max={50}
                         min={0}
                         name="floor"
+                        onKeyDown={handleKeyDown}
                         value={currentReservation.floor}
                         onChange={handleInputChange}
                         isInvalid={!!currentReservation.errors?.floor}
+                        onPaste={(e) => {
+                          e.preventDefault();
+                        }}
                       />
                       <Form.Control.Feedback type="invalid">
                         {currentReservation.errors?.floor}
@@ -545,69 +478,92 @@ function EditEnvironment() {
       <ReusableModal
         show={cancelModal}
         handleClose={handleCancelAceptedModal}
-        title="!Alerta¡"
+        title="¡Alerta!"
         footerButtons={cancelButtonsModal}
       >
         Se descartaran los cambios realizados
       </ReusableModal>
 
-      <ReusableModal
-        show={saveModal}
-        handleClose={handleSaveCancelModal}
-        title="¡Confirmación!"
-        footerButtons={saveButtonsModal}
-      >
-        ¿Está seguro de actualizar el ambiente? Se modificarán los siguientes
-        campos:
-        <ul>
-          {Object.keys(changedFields).map((fieldName) => {
-            let displayValue = changedFields[fieldName];
-            if (fieldName === "block_id") {
-              displayValue = getBlockNameById(displayValue);
-            } else if (fieldName === "classroom_status_id") {
-              displayValue = getStatusNameById(displayValue);
-            } else if (fieldName === "classroom_type_id") {
-              displayValue = getTypeNameById(displayValue);
-            }
+      <Modal show={saveModal} onHide={handleSaveCancelModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>¡Confirmación!</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div>
+            ¿Está seguro de actualizar el ambiente? Se modificarán los
+            siguientes campos:
+            <ul>
+              {Object.keys(changedFields).map((fieldName) => {
+                let displayValue = changedFields[fieldName];
+                if (fieldName === "block_id") {
+                  displayValue = getBlockNameById(displayValue);
+                } else if (fieldName === "classroom_status_id") {
+                  displayValue = getStatusNameById(displayValue);
+                } else if (fieldName === "classroom_type_id") {
+                  displayValue = getTypeNameById(displayValue);
+                }
 
-            return (
-              <li key={fieldName}>
-                <span style={{ color: "red" }}>
-                  {fieldLabels[fieldName] || fieldName}
-                </span>
-                : {displayValue}
-              </li>
-            );
-          })}
-        </ul>
-        {Object.keys(changedFields).includes("classroom_status_id") ? (
-          <>
-            <p>
-              El ambiente quedará{" "}
-              <span style={{ color: "red" }}>DESHABILITADO</span>. Todas las
-              solicitudes pendientes y aceptadas hasta el momento que incluyan
-              al ambiente serán <span style={{ color: "red" }}>RECHAZADAS</span>
-              .
-            </p>
-          </>
-        ) : (
-          <p>
-            Todas las solicitudes pendientes y aceptadas asociadas al ambiente
-            se actualizarán con la nueva información.
-          </p>
-        )}
-      </ReusableModal>
+                return (
+                  <li key={fieldName}>
+                    <span style={{ color: "red" }}>
+                      {fieldLabels[fieldName] || fieldName}
+                    </span>
+                    : {displayValue}
+                  </li>
+                );
+              })}
+            </ul>
+            {Object.keys(changedFields).includes("classroom_status_id") ? (
+              <>
+                {changedFields.classroom_status_id === "1" ? (
+                  <p>
+                    El ambiente quedara{" "}
+                    <span style={{ color: "green" }}>HABILITADO</span> para
+                    hacer reservas.
+                  </p>
+                ) : (
+                  <p>
+                    El ambiente quedará{" "}
+                    <span style={{ color: "red" }}>DESHABILITADO</span>. Todas
+                    las solicitudes pendientes y aceptadas hasta el momento que
+                    incluyan al ambiente serán{" "}
+                    <span style={{ color: "red" }}>RECHAZADAS</span>.
+                  </p>
+                )}
+              </>
+            ) : (
+              <p>
+                Todas las solicitudes pendientes y aceptadas asociadas al
+                ambiente se actualizarán con la nueva información.
+              </p>
+            )}
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          {confirmationLoading && (
+            <Spinner animation="border" variant="secondary" role="status" />
+          )}
+          {saveButtonsModal.map((button, index) => (
+            <Button
+              key={index}
+              variant={button.variant}
+              onClick={button.onClick}
+            >
+              {button.label}
+            </Button>
+          ))}
+        </Modal.Footer>
+      </Modal>
 
       <ReusableModal
         show={confirmations}
         handleClose={handleCloseConfirmationsModal}
-        title="¡Éxito!"
+        title={backendError.status === 200 ? "¡Exito!" : "¡Error!"}
         footerButtons={saveButtonsConfirmationsModal}
       >
-        El ambiente se actualizo con exito
+        {backendError && <p>{backendError.data.message}</p>}
       </ReusableModal>
     </div>
   );
 }
-/*CORREGIR EL VALIDOS DE MENSAJE SE CONFIRMACION*/
 export default EditEnvironment;

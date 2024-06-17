@@ -1,27 +1,22 @@
 /*Font negrita*/
 .bold-text {
-    font-weight: bold;
+  font-weight: bold;
 }
-
 
 /*Buttton Edit*/
 .custom-button {
-    width: 120px;
+  width: 120px;
 }
 
 /*Estatus de Environment*/
 .bg-green {
-    background-color:rgb(46,
-        204,
-        113);
-    color: black;
-    border-radius: 7px;
+  background-color: rgb(46, 204, 113);
+  color: black;
+  border-radius: 7px;
 }
 
 .bg-red {
-    background-color: rgb(236,
-        112,
-        99);
-    color: black;
-    border-radius: 7px;
+  background-color: rgb(236, 112, 99);
+  color: black;
+  border-radius: 7px;
 }

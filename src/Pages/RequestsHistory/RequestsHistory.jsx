@@ -11,19 +11,12 @@ export default function RequestsHistory() {
   const [list, setList] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [msgNoResults, setMsgNoResults] = useState("");
-  const userLogged = sessionStorage.getItem("userloged");
 
-  // getReservations
   useEffect(() => {
     setLoading(true);
-    if (userLogged === "user") {
-      teacherHistory();
-    } else {
-      superUserHistory();
-    }
+    teacherHistory();
   }, []);
 
-  // Useeffect for search
   useEffect(() => {
     if (searchValue === "") {
       setList(allReservations);
@@ -43,45 +36,46 @@ export default function RequestsHistory() {
     const th = await getTeacherRequests()
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
+    th.length === 0 &&
+      setMsgNoResults(
+        "No cuenta con un historial de solicitudes por el momento."
+      );
     setAllReservations(th);
     setList(th);
-  };
-
-  const superUserHistory = async () => {
-    const su = await getRequests()
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-    setAllReservations(su);
-    setList(su);
   };
 
   return (
     <div className="container">
       <h1 className="text-center">Historial de solicitudes</h1>
 
-      <SearchBar
-        value={searchValue}
-        onChange={(event) => {
-          const regex = /^[a-zA-Z0-9\s]*$/;
-          if (regex.test(event.target.value) || event.target.value === "") {
-            setSearchValue(event.target.value);
-          }
-        }}
-      />
+      <div className="pb-3">
+        <SearchBar
+          value={searchValue}
+          onChange={(event) => {
+            const regex = /^[a-zA-Z0-9\s]*$/;
+            if (regex.test(event.target.value) || event.target.value === "") {
+              setSearchValue(event.target.value);
+            }
+          }}
+        />
+      </div>
       <div className="container">
         {loading ? (
-          <div className="text-center">
+          <div className="h-100 d-flex align-items-center justify-content-center">
             <Spinner animation="border" variant="secondary" role="status">
               <span className="visually-hidden">Cargando...</span>
             </Spinner>
           </div>
         ) : (
           <div>
-            <div className="row text-center" style={{ minWidth: "350px" }}>
+            <div className="row" style={{ minWidth: "350px" }}>
+              <div className="col-1 mt-1 mb-1">
+                <i>#</i>
+              </div>
               <div className="col-1 mt-1 mb-1">
                 <i>ID</i>
               </div>
-              <div className="col-3 mt-1 mb-1">
+              <div className="col-2 mt-1 mb-1">
                 <i>Materia(s)</i>
               </div>
               <div className="col-2 mt-1 mb-1">
@@ -97,7 +91,7 @@ export default function RequestsHistory() {
             </div>
             <hr />
             {list.length > 0 ? (
-              list.map((each) => {
+              list.map((each, index) => {
                 let content = {
                   id: each.reservation_id,
                   subject: each.subject_name,
@@ -112,12 +106,23 @@ export default function RequestsHistory() {
                 };
                 return (
                   <div key={each.reservation_id}>
-                    <RequestInformation content={content} />
+                    <RequestInformation
+                      content={content}
+                      index={index + 1}
+                      title={"SOLICITUD DE RESERVA"}
+                    />
                   </div>
                 );
               })
             ) : (
-              <h3 className="text-center">{msgNoResults}</h3>
+              <div className="text-center">
+                <div>
+                  <i className="bi bi-question-circle fs-1 pe-2"></i>
+                </div>
+                <div>
+                  <h3>{msgNoResults}</h3>
+                </div>
+              </div>
             )}
           </div>
         )}

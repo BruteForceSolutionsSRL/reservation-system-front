@@ -5,7 +5,6 @@ export default function ModalTable({
   title,
   headers,
   contentTable,
-  callbackSelectedOptions,
 }) {
   return (
     <Modal
@@ -17,12 +16,14 @@ export default function ModalTable({
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Table bordered hover>
-          <thead>
-            <tr>{headers}</tr>
-          </thead>
-          <tbody>{contentTable}</tbody>
-        </Table>
+        <div className="h-100 overflow-y-auto" style={{ maxHeight: "300px" }}>
+          <Table bordered hover>
+            <thead>
+              <tr>{headers}</tr>
+            </thead>
+            <tbody>{contentTable}</tbody>
+          </Table>
+        </div>
       </Modal.Body>
     </Modal>
   );

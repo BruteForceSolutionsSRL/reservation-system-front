@@ -7,6 +7,8 @@ export default function RequestInformation({
   content,
   customBottonsForModal,
   showConflicts = false,
+  index,
+  title,
 }) {
   const {
     id,
@@ -28,10 +30,6 @@ export default function RequestInformation({
       message: "",
       list: [],
     },
-    teacher: {
-      message: "",
-      list: [],
-    },
   });
 
   const modalStateShow = {
@@ -49,7 +47,7 @@ export default function RequestInformation({
 
   const modalContent = {
     id: id,
-    title: <h3>ATENCION DE LA SOLICITUD</h3>,
+    title: <h3>{title}</h3>,
     body: (
       <>
         <div className="container-fluid">
@@ -61,11 +59,11 @@ export default function RequestInformation({
             <b>ESTADO: </b>{" "}
             <label
               className={`rounded p-1  bg-${
-                state === "ACCEPTED"
+                state === "ACEPTADO"
                   ? "success text-light"
-                  : state === "CANCELLED"
+                  : state === "CANCELADO"
                   ? "secondary text-light"
-                  : state === "REJECTED"
+                  : state === "RECHAZADO"
                   ? "danger text-light"
                   : "dark text-white"
               }`}
@@ -76,19 +74,8 @@ export default function RequestInformation({
 
           <div className="tag-container mb-3">
             <label className="tag-label">GRUPO</label>
-            {conflictsModal?.teacher.message === "" ? (
-              ""
-            ) : (
-              <div>
-                <b className="text-warning">{`${
-                  conflictsModal?.teacher.message
-                }, ${conflictsModal?.teacher.list.map((teacher) => {
-                  return teacher + ", ";
-                })}`}</b>
-              </div>
-            )}
-            <div className="table-responsive">
-              <Table bordered>
+            <div>
+              <Table bordered className="w-100">
                 <thead>
                   <tr>
                     <th>Nombre</th>
@@ -96,9 +83,9 @@ export default function RequestInformation({
                   </tr>
                 </thead>
                 <tbody>
-                  {groups.map((each) => {
+                  {groups.map((each, index) => {
                     return (
-                      <tr key={each.group_number}>
+                      <tr key={each.group_number + "" + index}>
                         <td>{each.teacher_name}</td>
                         <td>{each.group_number}</td>
                       </tr>
@@ -149,7 +136,7 @@ export default function RequestInformation({
                 <b>AULA(s)</b>
               </div>
               <div className="col-sm-10">
-                <Table bordered>
+                <Table bordered className="w-100">
                   <thead>
                     <tr>
                       <th>Nombre</th>
@@ -182,22 +169,25 @@ export default function RequestInformation({
   return (
     <>
       <div
-        className="border border-dark rounded row mt-2 mb-2 text-center"
+        className="border border-dark rounded row mb-2 p-2"
         style={{ minWidth: "300px" }}
       >
-        <div className="col-1 mt-1 mb-1">
+        <div className="col-1 align-self-center">
+          <b>{`${index}.`}</b>
+        </div>
+        <div className="col-1 align-self-center">
           <b>{id}</b>
         </div>
-        <div className="col-3 mt-1 mb-1">{subject}</div>
-        <div className="col-2 mt-1 mb-1">{quantity_studets}</div>
-        <div className="col-2 mt-1 mb-1">{reservation_date}</div>
-        <div className="col-2 mt-1 mb-1">{`${periods[0]} - ${periods[1]}`}</div>
-        <div className="col-sm-2 mt-1 mb-1">
+        <div className="col-2 align-self-center">{subject}</div>
+        <div className="col-2 align-self-center">{quantity_studets}</div>
+        <div className="col-2 align-self-center">{reservation_date}</div>
+        <div className="col-2 align-self-center">{`${periods[0]} - ${periods[1]}`}</div>
+        <div className="col-sm-2 align-self-center">
           <button
-            className="btn btn-outline-primary mt-1"
+            className="btn btn-outline-primary btn-block w-100 text-truncate"
             onClick={handleClickModal}
           >
-            Detalles
+            <b>Detalles</b>
           </button>
         </div>
       </div>

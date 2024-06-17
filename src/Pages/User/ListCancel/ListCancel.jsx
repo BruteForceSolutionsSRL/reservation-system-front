@@ -6,13 +6,21 @@ export default function ListCancel() {
   const [reservations, setReservations] = useState([]);
   const [reload, setReload] = useState(false);
 
+  const user = JSON.parse(localStorage.getItem("userInformation"));
+
   useEffect(() => {
     fetchData();
     setReload(false);
   }, [reload]);
 
   const fetchData = async () => {
-    await fetch(URL + `reservations/teacher/${2}`)
+    let token = localStorage.getItem("token");
+    await fetch(URL + `reservations/teacher/${user.person_id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         setReservations(data);
@@ -21,6 +29,7 @@ export default function ListCancel() {
         if (err) throw console.error(err);
       });
   };
+
   return (
     <div className="container">
       <h1 className="text-center">Lista de solicitudes</h1>
@@ -30,12 +39,12 @@ export default function ListCancel() {
         </div>
       ) : (
         <div
-          className="container overflow-x-scroll"
+          className="container overflow-x-auto"
           style={{ minWidth: "470px" }}
         >
           <h3>Pendientes</h3>
           {reservations.map((each) => {
-            if (each.reservation_status === "PENDING") {
+            if (each.reservation_status === "PENDIENTE") {
               return (
                 <div key={each.reservation_id}>
                   <ElementCancel
@@ -48,7 +57,7 @@ export default function ListCancel() {
           })}
           <h3>Aceptadas</h3>
           {reservations.map((each) => {
-            if (each.reservation_status === "ACCEPTED") {
+            if (each.reservation_status === "ACEPTADO") {
               return (
                 <div key={each.reservation_id}>
                   <ElementCancel

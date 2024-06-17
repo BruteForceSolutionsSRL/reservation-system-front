@@ -107,6 +107,58 @@ export function getStatusBlock() {
     });
 }
 
+/***************************************** */
+export function getEnvironments() {
+  let token = localStorage.getItem("token");
+  return fetch(url + "classrooms?status=ALL", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      return data;
+    });
+}
+
+export function getBlocks() {
+  let token = localStorage.getItem("token");
+  return fetch(url + "blocks", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      return data;
+    });
+}
+
+export function setEnvironment(classroom_id, environmentEdited) {
+  let responseFetch = {};
+  let token = localStorage.getItem("token");
+  return fetch(url + `classrooms/${classroom_id}`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(environmentEdited),
+  })
+    .then((response) => {
+      responseFetch = { ...responseFetch, status: response.status };
+      return response.json();
+    })
+    .then((data) => {
+      responseFetch = { ...responseFetch, data: data };
+      return responseFetch;
+    });
+}
+
+/********************************************* */
+
 export function storeBlock(block) {
   let token = localStorage.getItem("token");
   let responseFetch = {};

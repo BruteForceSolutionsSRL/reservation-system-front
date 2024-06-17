@@ -34,9 +34,9 @@ const LandingPage = ({ setAuthToken, authToken }) => {
     //         }
     //       }
     let userLogged = JSON.parse(localStorage.getItem("userInformation"));
-    let token = localStorage.getItem("token")
-    console.log(userLogged)
-    console.log(token)
+    let token = localStorage.getItem("token");
+    console.log(userLogged);
+    console.log(token);
     if (!!token) {
       if (userLogged.roles[0] === "DOCENTE") {
         navigate("/user/home");
@@ -63,7 +63,7 @@ const LandingPage = ({ setAuthToken, authToken }) => {
         email,
         password,
       });
-      console.log(response)
+      console.log(response);
       const { token } = response.data;
       localStorage.setItem("token", token);
       localStorage.setItem(
@@ -77,14 +77,13 @@ const LandingPage = ({ setAuthToken, authToken }) => {
       // } else {
       //   navigate("/superuser/home");
       // }
-      
-      console.log(response.data.user)
+
+      console.log(response.data.user);
       if (response.data.user.roles[0] === "DOCENTE") {
         navigate("/user/home");
       } else {
         navigate("/superuser/home");
       }
-
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       if (error.response) {
@@ -136,7 +135,7 @@ const LandingPage = ({ setAuthToken, authToken }) => {
                     : "outline-primary"
                 }
                 onClick={() => setActiveTab("ADMINISTRADORES")}
-                className="nav-button"
+                className="nav-button text-truncate"
               >
                 ADMINISTRADORES
               </Button>
@@ -147,7 +146,7 @@ const LandingPage = ({ setAuthToken, authToken }) => {
                   activeTab === "DOCENTES" ? "primary" : "outline-primary"
                 }
                 onClick={() => setActiveTab("DOCENTES")}
-                className="nav-button"
+                className="nav-button text-truncate"
               >
                 DOCENTES
               </Button>
@@ -169,104 +168,99 @@ const LandingPage = ({ setAuthToken, authToken }) => {
       <div className="landing-page">
         <Container className="landing-container">
           <Row className="justify-content-center">
-            <Col>
-              <div className="card-container">
-                <Card className="text-center">
-                  <Card.Body>
-                    <Card.Text className="card-text">
-                      <strong>SURA</strong>
-                      <br /> (Sistema Universitario de Reserva de Ambientes) es
-                      una plataforma diseñada para facilitar la reserva de
-                      ambientes en la Facultad de Ciencias y Tecnología de la{" "}
-                      <strong>Universidad Mayor de San Simón</strong>. Nuestra
-                      misión es optimizar la gestión y el uso de los espacios
-                      académicos, brindando una herramienta eficiente y
-                      accesible para estudiantes y docentes.
-                    </Card.Text>
-                  </Card.Body>
-                </Card>
+            <Col xs={12} md={6} className="mb-3">
+              <Card className="text-center">
+                <Card.Body>
+                  <Card.Text className="card-text">
+                    <strong>SURA</strong>
+                    <br /> (Sistema Universitario de Reserva de Ambientes) es
+                    una plataforma diseñada para facilitar la reserva de
+                    ambientes en la Facultad de Ciencias y Tecnología de la{" "}
+                    <strong>Universidad Mayor de San Simón</strong>. Nuestra
+                    misión es optimizar la gestión y el uso de los espacios
+                    académicos, brindando una herramienta eficiente y accesible
+                    para estudiantes y docentes.
+                  </Card.Text>
+                </Card.Body>
+              </Card>
+            </Col>
 
-                <Card>
-                  <Card.Body>
-                    <h2 className="text-center">{activeTab}</h2>
-                    <hr />
-                    <h3 className="text-center">Iniciar Sesión</h3>
+            <Col xs={12} md={6}>
+              <Card>
+                <Card.Body>
+                  <h2 className="text-center text-truncate">{activeTab}</h2>
+                  <hr />
+                  <h3 className="text-center">Iniciar Sesión</h3>
 
-                    {showAlert && (
-                      <Alert
-                        variant="danger"
-                        onClose={() => setShowAlert(false)}
-                        dismissible
-                      >
-                        {alertMessage}
-                      </Alert>
-                    )}
-                    <Form onSubmit={handleLogin}>
-                      <Form.Group controlId="formBasicEmail">
-                        {/* <Form.Label>Correo electrónico</Form.Label> */}
-                        <InputGroup className="p-1">
-                          <Form.Control
-                            type="email"
-                            placeholder="Correo electrónico"
-                            value={email}
-                            onChange={handleEmailChange}
-                          />
-
-                          <InputGroup.Text>
-                            <i className="bi bi-envelope"></i>
-                          </InputGroup.Text>
-                        </InputGroup>
-
-                        {errors.email && (
-                          <div style={{ color: "red" }}>{errors.email}</div>
-                        )}
-                      </Form.Group>
-                      <Form.Group controlId="formBasicPassword">
-                        {/* <Form.Label>Contraseña</Form.Label> */}
-
-                        <InputGroup className="p-1">
-                          <Form.Control
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Contraseña"
-                            value={password}
-                            onChange={handlePasswordChange}
-                          />
-                          <InputGroup.Text
-                            onClick={togglePasswordVisibility}
-                            style={{ cursor: "pointer" }}
-                          >
-                            {showPassword ? (
-                              <i className="bi bi-eye-slash"></i>
-                            ) : (
-                              <i className="bi bi-eye"></i>
-                            )}
-                          </InputGroup.Text>
-                        </InputGroup>
-                        {errors.password && (
-                          <div style={{ color: "red" }}>{errors.password}</div>
-                        )}
-                      </Form.Group>
-
-                      <div className="d-flex justify-content-center">
-                        <Button
-                          variant="primary"
-                          className="mt-3 px-5"
-                          onClick={handleLogin}
+                  {showAlert && (
+                    <Alert
+                      variant="danger"
+                      onClose={() => setShowAlert(false)}
+                      dismissible
+                    >
+                      {alertMessage}
+                    </Alert>
+                  )}
+                  <Form onSubmit={handleLogin}>
+                    <Form.Group controlId="formBasicEmail">
+                      <InputGroup className="p-1">
+                        <Form.Control
+                          type="email"
+                          placeholder="Correo electrónico"
+                          value={email}
+                          onChange={handleEmailChange}
+                        />
+                        <InputGroup.Text>
+                          <i className="bi bi-envelope"></i>
+                        </InputGroup.Text>
+                      </InputGroup>
+                      {errors.email && (
+                        <div style={{ color: "red" }}>{errors.email}</div>
+                      )}
+                    </Form.Group>
+                    <Form.Group controlId="formBasicPassword">
+                      <InputGroup className="p-1">
+                        <Form.Control
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Contraseña"
+                          value={password}
+                          onChange={handlePasswordChange}
+                        />
+                        <InputGroup.Text
+                          onClick={togglePasswordVisibility}
+                          style={{ cursor: "pointer" }}
                         >
-                          Iniciar Sesión
-                        </Button>
-                      </div>
-                    </Form>
-                    <hr />
-                  </Card.Body>
-                </Card>
-              </div>
+                          {showPassword ? (
+                            <i className="bi bi-eye-slash"></i>
+                          ) : (
+                            <i className="bi bi-eye"></i>
+                          )}
+                        </InputGroup.Text>
+                      </InputGroup>
+                      {errors.password && (
+                        <div style={{ color: "red" }}>{errors.password}</div>
+                      )}
+                    </Form.Group>
+
+                    <div className="d-flex justify-content-center">
+                      <Button
+                        variant="primary"
+                        className="mt-3 px-5"
+                        onClick={handleLogin}
+                      >
+                        Iniciar Sesión
+                      </Button>
+                    </div>
+                  </Form>
+                  <hr />
+                </Card.Body>
+              </Card>
             </Col>
           </Row>
         </Container>
       </div>
       <Container className="landing-container">
-        <div className="contact-info">
+        <div className="contact-info text-truncate">
           <p>
             <strong className="pe-1">Contacto:</strong>
             <a href="mailto:bruteforcesolutionsbfs@gmail.com">

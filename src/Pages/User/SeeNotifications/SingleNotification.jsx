@@ -152,6 +152,8 @@ export default function SingleNotification() {
                     ? "secondary text-light"
                     : state === "RECHAZADO"
                     ? "danger text-light"
+                    : state === "PENDIENTE"
+                    ? "warning text-white"
                     : "dark text-white"
                 }`}
               >

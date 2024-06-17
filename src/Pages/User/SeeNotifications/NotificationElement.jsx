@@ -67,6 +67,8 @@ export function NotificationElement(props) {
           <i className="bi bi-x-octagon-fill fs-1 text-secondary"></i>
         ) : type === "ADVERTENCIA" ? (
           <i className="bi bi-exclamation-triangle-fill fs-1 text-danger"></i>
+        ) : type === "PENDIENTE" ? (
+          <i className="bi bi-exclamation-triangle-fill fs-1 text-warning"></i>
         ) : (
           <i className="bi bi-circle-fill fs-1 text-primary"></i>
         )}

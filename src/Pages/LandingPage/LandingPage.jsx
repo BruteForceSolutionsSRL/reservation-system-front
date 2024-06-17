@@ -58,13 +58,17 @@ const LandingPage = () => {
 
   const loginUser = async () => {
     let response = await login(email, password);
-    let { token, user } = response.data;
-    if (token && user) {
+    if (response.status >= 200 && response.status < 300) {
+      let { token, user } = response.data;
       localStorage.setItem("token", token);
       localStorage.setItem("userInformation", JSON.stringify(user));
       redirect(user);
-    } else {
-      return new Error();
+      if (token && user) {
+      } else {
+        return new Error();
+      }
+    } else if (response.status >= 300 && response.status < 500) {
+      setErrors({ ...errors, email: response.data.message });
     }
   };
 

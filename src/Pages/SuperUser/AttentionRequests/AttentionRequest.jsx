@@ -43,7 +43,6 @@ export default function AttentionRequest(props) {
         let token = localStorage.getItem("token");
         await fetch(URL + `reservations/${reservation_id}/conflicts`, {
           headers: { Authorization: `Bearer ${token}` },
-          mode: "no-cors",
         })
           .then((res) => res.json())
           .then((data) => {
@@ -89,7 +88,6 @@ export default function AttentionRequest(props) {
     await fetch(URL + `reservations/${reservation_id}/assign`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${token}` },
-      mode: "no-cors",
     })
       .then((res) => res.json())
       .then((data) => {
@@ -121,8 +119,10 @@ export default function AttentionRequest(props) {
       let token = localStorage.getItem("token");
       await fetch(URL + `reservations/${reservation_id}/reject`, {
         method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
-        mode: "no-cors",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "aplication/json",
+        },
         body: JSON.stringify({ message: reasonText }),
       })
         .then((res) => res.json())

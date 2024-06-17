@@ -5,8 +5,10 @@ export function getUserNotifications() {
   let token = localStorage.getItem("token");
 
   return fetch(url + `notifications/inbox`, {
-    headers: { Authorization: `Bearer ${token}` },
-    mode: "no-cors",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
+    },
   })
     .then((response) => {
       responseFetch = { ...responseFetch, status: response.status };
@@ -27,8 +29,10 @@ export function getSingleNotification(notification_id) {
   let responseFetch = {};
   let token = localStorage.getItem("token");
   return fetch(url + `notifications/inbox/${notification_id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-    mode: "no-cors",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
+    },
   })
     .then((response) => {
       responseFetch = { ...responseFetch, status: response.status };
@@ -45,13 +49,15 @@ export function getSingleNotification(notification_id) {
     });
 }
 
-export function sendNotification(person_id, content) {
+export function sendNotification(content) {
   let token = localStorage.getItem("token");
   let responseFetch = {};
-  return fetch(url + `notifications/send/${person_id}`, {
+  return fetch(url + `notifications/send/`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-    mode: "no-cors",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
+    },
     body: JSON.stringify(content),
   })
     .then((response) => {

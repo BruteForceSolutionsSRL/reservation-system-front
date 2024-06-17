@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react";
 import "./NotificationElement.css";
+import { useNavigate } from "react-router-dom";
 
 export function NotificationElement(props) {
-  const { body, id, reservation_id, sendBy, title, to, type } = props;
+  const { body, id, sendBy, title, to, type, hour, minutes, date } = props;
   const [notificationReaded, setNotificationReaded] = useState(false);
   const user = JSON.parse(localStorage.getItem("userInformation"));
+  const [showDate, setShowDate] = useState(false);
+  const [formatedDate, setFormatedDate] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     isNotificationReaded();
+    isTodayDate();
+    formatMonth();
   }, []);
 
   const isNotificationReaded = () => {
@@ -22,7 +28,24 @@ export function NotificationElement(props) {
   };
 
   const singleNotification = () => {
-    window.location.href = `notifications/${id}`;
+    navigate(`/user/notifications/${id}`);
+  };
+
+  const isTodayDate = () => {
+    const givenDate = new Date(date);
+    const today = new Date();
+    const isSameDay =
+      givenDate.getDate() === today.getDate() &&
+      givenDate.getMonth() === today.getMonth() &&
+      givenDate.getFullYear() === today.getFullYear();
+    setShowDate(isSameDay);
+  };
+
+  const formatMonth = () => {
+    const options = { day: "2-digit", month: "short", timeZone: "UTC" };
+    let givenDate = new Date(date);
+    let newFormat = givenDate.toLocaleDateString("es-ES", options);
+    setFormatedDate(newFormat);
   };
 
   return (
@@ -67,7 +90,7 @@ export function NotificationElement(props) {
         style={{ maxWidth: "250px" }}
       >
         <div className="pe-3 w-100">
-          <b>12:30</b>
+          {showDate ? <i>{formatedDate}</i> : <i>{`${hour}:${minutes}`}</i>}
         </div>
         <div className="pe-3 w-100">
           <i

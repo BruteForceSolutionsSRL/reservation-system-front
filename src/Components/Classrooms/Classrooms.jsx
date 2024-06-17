@@ -20,7 +20,6 @@ const BlocksSelect = (blocks) => (
 );
 
 export default function Classrooms({ blocks, classrooms }) {
-   console.log(blocks);
   return (
     <>
       <div className="ubicacion-container position-relative mb-3">

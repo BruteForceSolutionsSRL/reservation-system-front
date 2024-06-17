@@ -43,7 +43,6 @@ function BlockDelete(props) {
       setShowConfirm(false);
     });
 
-    console.log(response);
     if (response.message === "Bloque eliminado exitosamente.") {
       setMsgModal({ status: "Exito", message: response.message });
     } else {

@@ -7,7 +7,7 @@ export default function ErrorPage() {
       <p>
         Ocurrio un error, la direccion ingresada no puede encontrarse {`:(`}
       </p>
-      <Link to="home">Pagina principal</Link>
+      <Link to="/">Inicio</Link>
     </div>
   );
 }

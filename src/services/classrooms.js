@@ -123,6 +123,7 @@ export function getEnvironments() {
 }
 
 export function getBlocks() {
+  let responseFetch = {};
   let token = localStorage.getItem("token");
   return fetch(url + "blocks", {
     headers: {
@@ -130,9 +131,13 @@ export function getBlocks() {
       "Content-Type": "aplication/json",
     },
   })
-    .then((response) => response.json())
+    .then((response) => {
+      responseFetch.status = response.status;
+      return response.json();
+    })
     .then((data) => {
-      return data;
+      responseFetch.data = data;
+      return responseFetch;
     });
 }
 

@@ -40,8 +40,8 @@ function DeleteBlock() {
         setLoading(false);
       })
       .catch((err) => console.error(err));
-    setAllBlocks(envl);
-    setBlocks(envl);
+    setAllBlocks(envl.data);
+    setBlocks(envl.data);
   };
 
   return (

@@ -2,6 +2,7 @@ import { Link, useNavigate, Outlet } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { Collapse, Modal } from "react-bootstrap";
 import "./Sidebar.css";
+import { getBlocks } from "../../services/classrooms";
 
 export default function Sidebar({ user }) {
   const [activeItem, setActiveItem] = useState("");
@@ -11,22 +12,29 @@ export default function Sidebar({ user }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    isLogged();
-  }, []);
+    setInterval(() => isLogged(), 90000);
+  });
 
   const isLogged = () => {
-    let token = localStorage.getItem("token");
-    if (!token) {
+    verifyTokenExpired();
+  };
+
+  const verifyTokenExpired = async () => {
+    let response = await getBlocks();
+    if (
+      response.status === 402 ||
+      response.data.status === "Token expirado" ||
+      response.data.status === "Token invalido"
+    ) {
       let content = {
         show: true,
         title: "Sesion expirada",
-        body: "El tiempo de la sesion expiró, será dirigido al inicio de sesion.",
+        body: "Sesion terminada, redireccionando a la pagina principal",
       };
-      setModalContent(content);
       localStorage.removeItem("token");
       localStorage.removeItem("userInformation");
-
-      navigate("/");
+      setModalContent(content);
+      setTimeout(() => navigate("/"), 3000);
     } else {
       let content = {
         show: false,
@@ -492,13 +500,7 @@ export default function Sidebar({ user }) {
           </div>
         </div>
       </div>
-      <Modal
-        show={modalContent.show}
-        onHide={() => setModalContent({ ...modalContent, show: false })}
-        size="lg"
-        centered={true}
-        backdrop
-      >
+      <Modal show={modalContent.show} size="lg" centered={true} backdrop>
         <Modal.Header>
           <Modal.Title>{modalContent.title}</Modal.Title>
         </Modal.Header>

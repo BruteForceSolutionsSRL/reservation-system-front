@@ -4,7 +4,7 @@ import { getAllSubjects } from "../../../services/subjects";
 import { getBlocks } from "../../../services/blocks";
 import { getClassroomsByBlock } from "../../../services/classrooms";
 import { PDFDownloadLink, PDFViewer, pdf } from "@react-pdf/renderer";
-import ReportPage from "../../../Components/PDF/ReportPage"
+import ReportPage from "../../../Components/PDF/ReportPage";
 import { getTeachersBySubject } from "../../../services/teachers";
 import { generateReport } from "../../../services/reports";
 import { getReservationStatuses } from "../../../services/statuses";
@@ -26,10 +26,8 @@ export default function GenerateReport() {
     { reservation_status_id: 2, reservation_status_name: "RECHAZADO" },
     { reservation_status_id: 4, reservation_status_name: "CANCELADO" },
   ];*/
-  const [
-    selectedReservationStatus,
-    setSelectedReservationStatus
-  ] = useState("");
+  const [selectedReservationStatus, setSelectedReservationStatus] =
+    useState("");
   // for subject
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState("");
@@ -43,9 +41,9 @@ export default function GenerateReport() {
   // modal
   const [showModalClearReport, setShowModalClearReport] = useState(false);
   // error
-  const [errorDate, setErrorDate] = useState({ 
+  const [errorDate, setErrorDate] = useState({
     message: null,
-    isInvalid: false, 
+    isInvalid: false,
   });
 
   useEffect(() => {
@@ -65,33 +63,40 @@ export default function GenerateReport() {
   }, [selectedSubject]);
 
   const fetchBlocks = async () => {
-    const blocks = await getBlocks();
-    setBlocks(blocks);
-  }
+    const response = await getBlocks().catch((err) => {
+      setBlocks([]);
+    });
+    setBlocks(response.data);
+  };
 
   const fetchReservationStatuses = async () => {
     const reservationStatuses = await getReservationStatuses();
-    const tmpReservationStatuses = reservationStatuses.filter(rs => {
+    const tmpReservationStatuses = reservationStatuses.filter((rs) => {
       const status = rs.reservation_status_name.toUpperCase();
-      return status === "ACEPTADO" || status === "ACCEPTED"
-        || status === "RECHAZADO" || status === "REJECTED"
-        || status === "CANCELADO" || status === "CANCELLED"
+      return (
+        status === "ACEPTADO" ||
+        status === "ACCEPTED" ||
+        status === "RECHAZADO" ||
+        status === "REJECTED" ||
+        status === "CANCELADO" ||
+        status === "CANCELLED"
+      );
     });
 
     setReservationStatuses(tmpReservationStatuses);
-  }
+  };
 
   const fetchSubjects = async () => {
     const subjects = await getAllSubjects();
     setSubjects(subjects);
-  }
+  };
 
   const fetchClassroomsByBlock = async () => {
     if (selectedBlock !== "") {
       const classrooms = await getClassroomsByBlock(selectedBlock);
       setClassroomsByBlock(classrooms);
     }
-  }
+  };
 
   const fetchTeachersBySubject = async () => {
     if (selectedSubject !== "") {
@@ -99,7 +104,7 @@ export default function GenerateReport() {
       const teachers = [];
       const ids = [];
 
-      tmpTeachers.forEach(teacher => {
+      tmpTeachers.forEach((teacher) => {
         if (!ids[teacher.person_id]) {
           teachers.push(teacher);
           ids[teacher.person_id] = true;
@@ -108,7 +113,7 @@ export default function GenerateReport() {
 
       setTeachersBySubject(teachers);
     }
-  }
+  };
 
   const fetchReports = async () => {
     const request = {
@@ -119,22 +124,25 @@ export default function GenerateReport() {
       reservation_status_id: selectedReservationStatus,
       university_subject_id: selectedSubject,
       person_id: selectedTeacher,
-    }
+    };
 
     try {
       const reportDataResponse = await generateReport(request);
       const reports = reportDataResponse.report;
       const acceptedRequests = reports.filter(
-        r => r.reservation_status.toUpperCase() === "ACEPTADO"
-          ||  r.reservation_status.toUpperCase() === "ACCEPTED"
+        (r) =>
+          r.reservation_status.toUpperCase() === "ACEPTADO" ||
+          r.reservation_status.toUpperCase() === "ACCEPTED"
       );
       const rejectedRequests = reports.filter(
-        r => r.reservation_status.toUpperCase() === "RECHAZADO"
-          ||  r.reservation_status.toUpperCase() === "REJECTED"
+        (r) =>
+          r.reservation_status.toUpperCase() === "RECHAZADO" ||
+          r.reservation_status.toUpperCase() === "REJECTED"
       );
       const cancelledRequests = reports.filter(
-        r => r.reservation_status.toUpperCase() === "CANCELADO"
-          ||  r.reservation_status.toUpperCase() === "CANCELLED"
+        (r) =>
+          r.reservation_status.toUpperCase() === "CANCELADO" ||
+          r.reservation_status.toUpperCase() === "CANCELLED"
       );
 
       const tmpReportData = {
@@ -145,7 +153,7 @@ export default function GenerateReport() {
         acceptedRequests: acceptedRequests,
         rejectedRequests: rejectedRequests,
         cancelledRequests: cancelledRequests,
-      }
+      };
 
       setReportData(tmpReportData);
       setShowReport(true);
@@ -153,20 +161,20 @@ export default function GenerateReport() {
       setReportData(undefined);
       setShowReport(false);
     }
-  }
+  };
 
   const handleChangeBlocks = (e) => {
     e.preventDefault();
     setSelectedClassroom("");
     setSelectedBlock(e.currentTarget.value);
-  }
+  };
 
   const handleStartDateChange = (e) => {
     e.preventDefault();
 
     const value = e.target.value;
 
-    setErrorDate({ 
+    setErrorDate({
       message: "La fecha de fin debe ser mayor o igual a la fecha inicio",
       isInvalid: value > endDateValue,
     });
@@ -174,14 +182,14 @@ export default function GenerateReport() {
     if (value) {
       setStartDateValue(value);
     }
-  }
+  };
 
   const handleEndDateChange = (e) => {
     e.preventDefault();
 
     const value = e.target.value;
 
-    setErrorDate({ 
+    setErrorDate({
       message: "La fecha de fin debe ser mayor o igual a la fecha inicio",
       isInvalid: value < startDateValue,
     });
@@ -189,32 +197,32 @@ export default function GenerateReport() {
     if (value) {
       setEndDateValue(value);
     }
-  }
+  };
 
   const handleChangeSubjects = (e) => {
     e.preventDefault();
     setSelectedTeacher("");
     setSelectedSubject(e.currentTarget.value);
-  }
+  };
 
   const handleChangeClassroom = (e) => {
     e.preventDefault();
     setSelectedClassroom(e.currentTarget.value);
-  }
+  };
 
   const handleChangeTeacher = (e) => {
     e.preventDefault();
     setSelectedTeacher(e.currentTarget.value);
-  }
+  };
 
   const handleChangeReservationStatus = (e) => {
     e.preventDefault();
     setSelectedReservationStatus(e.currentTarget.value);
-  }
-  
+  };
+
   const handleGenerateReport = () => {
     fetchReports();
-  }
+  };
 
   const handleCleanButton = () => {
     setStartDateValue("2024-02-02");
@@ -227,13 +235,13 @@ export default function GenerateReport() {
     setReportData(undefined);
     setShowReport(false);
     setShowModalClearReport(false);
-  }
+  };
 
   const handlePrint = async () => {
     if (showReport) {
       const blob = await pdf(
-        <ReportPage 
-          startDate={startDateValue} 
+        <ReportPage
+          startDate={startDateValue}
           endDate={endDateValue}
           reportData={reportData}
         />
@@ -251,7 +259,7 @@ export default function GenerateReport() {
         iframe.contentWindow.print();
       };
     }
-  }
+  };
 
   return (
     <div className="container">
@@ -368,8 +376,8 @@ export default function GenerateReport() {
               <option value=""></option>
               {subjects.map((subject) => {
                 return (
-                  <option 
-                    key={subject.university_subject_id} 
+                  <option
+                    key={subject.university_subject_id}
                     value={subject.university_subject_id}
                   >
                     {subject.university_subject_name}
@@ -389,10 +397,7 @@ export default function GenerateReport() {
               <option value=""></option>
               {teachersBySubject?.map((teacher) => {
                 return (
-                  <option 
-                    key={teacher.person_id} 
-                    value={teacher.person_id}
-                  >
+                  <option key={teacher.person_id} value={teacher.person_id}>
                     {teacher.teacher_name + " " + teacher.teacher_last_name}
                   </option>
                 );
@@ -417,11 +422,7 @@ export default function GenerateReport() {
             </button>
           </div>
           <div className="col-sm d-flex justify-content-end">
-            <button
-              type="button"
-              className="btn btn-md"
-              onClick={handlePrint}
-            >
+            <button type="button" className="btn btn-md" onClick={handlePrint}>
               <i className="bi bi-printer fs-3"></i>
             </button>
             {showReport ? (
@@ -435,18 +436,12 @@ export default function GenerateReport() {
                 }
                 fileName="reporte.pdf"
               >
-                <button
-                  type="button"
-                  className="btn btn-md"
-                >
+                <button type="button" className="btn btn-md">
                   <i className="bi bi-download fs-3"></i>
                 </button>
               </PDFDownloadLink>
             ) : (
-              <button
-                type="button"
-                className="btn btn-md"
-              >
+              <button type="button" className="btn btn-md">
                 <i className="bi bi-download fs-3"></i>
               </button>
             )}
@@ -464,9 +459,9 @@ export default function GenerateReport() {
               showToolbar={false}
             >
               <ReportPage
-                startDate={startDateValue} 
-                endDate={endDateValue} 
-                reportData={reportData} 
+                startDate={startDateValue}
+                endDate={endDateValue}
+                reportData={reportData}
               />
             </PDFViewer>
           </div>
@@ -478,9 +473,7 @@ export default function GenerateReport() {
         onHide={() => setShowModalClearReport(false)}
         centered
       >
-        <Modal.Title className="p-3">
-          ¡Alerta!
-        </Modal.Title>
+        <Modal.Title className="p-3">¡Alerta!</Modal.Title>
         <Modal.Body>
           <div className="p-1">
             <span>Se eliminará el reporte generado</span>
@@ -505,4 +498,3 @@ export default function GenerateReport() {
     </div>
   );
 }
-

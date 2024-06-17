@@ -38,6 +38,7 @@ export function getStadisticsBlock(id) {
     });
 }
 export function deleteBlock(id) {
+  let responseFetch = {};
   let token = localStorage.getItem("token");
   return fetch(url + `blocks/${id}`, {
     method: "DELETE",
@@ -46,9 +47,13 @@ export function deleteBlock(id) {
       "Content-Type": "aplication/json",
     },
   })
-    .then((response) => response.json())
+    .then((response) => {
+      responseFetch.status = response.status;
+      return response.json();
+    })
     .then((data) => {
-      return data;
+      responseFetch.data = data;
+      return responseFetch;
     });
 }
 

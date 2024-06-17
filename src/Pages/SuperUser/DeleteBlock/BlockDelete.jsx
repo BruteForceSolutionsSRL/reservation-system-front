@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Modal, Spinner, Table } from "react-bootstrap";
+import { Modal, Spinner } from "react-bootstrap";
 import { getClassroomsByBlock } from "../../../services/classrooms";
 import { getStadisticsBlock } from "../../../services/blocks";
 import { deleteBlock } from "../../../services/blocks";
@@ -42,11 +42,18 @@ function BlockDelete(props) {
       setLoadingDelete(false);
       setShowConfirm(false);
     });
-
-    if (response.message === "Bloque eliminado exitosamente.") {
-      setMsgModal({ status: "Exito", message: response.message });
-    } else {
-      setMsgModal({ status: "Error", message: response.message });
+    if (response.status >= 200 && response.status < 300) {
+      setMsgModal({ status: "Exito", message: response.data.message });
+    } else if (
+      (response.status >= 300 && response.status < 400) ||
+      (response.status >= 400 && response.status < 500)
+    ) {
+      setMsgModal({ status: "Error", message: response.data.message });
+    } else if (response.status >= 500) {
+      setMsgModal({
+        status: "Error",
+        message: "Ocurrio un error inesperado, intentelo nuevamente.",
+      });
     }
     setShowMsg(true);
   };

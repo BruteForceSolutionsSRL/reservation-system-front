@@ -1,5 +1,25 @@
 const url = import.meta.env.VITE_REACT_API_URL;
 
+export function getClassrooms() {
+  let token = localStorage.getItem("token");
+  let responseFetch = {};
+  return fetch(url + "classrooms", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
+    },
+  })
+    .then((response) => {
+      let status = response.status;
+      responseFetch = { ...responseFetch, status: status };
+      return response.json();
+    })
+    .then((data) => {
+      responseFetch = { ...responseFetch, data: data };
+      return responseFetch;
+    });
+}
+
 export function getClassroomsByBlock(id) {
   let token = localStorage.getItem("token");
   return fetch(url + `classrooms/block/${id}`, {
@@ -107,7 +127,6 @@ export function getStatusBlock() {
     });
 }
 
-/***************************************** */
 export function getEnvironments() {
   let token = localStorage.getItem("token");
   return fetch(url + "classrooms?status=ALL", {
@@ -161,8 +180,6 @@ export function setEnvironment(classroom_id, environmentEdited) {
       return responseFetch;
     });
 }
-
-/********************************************* */
 
 export function storeBlock(block) {
   let token = localStorage.getItem("token");

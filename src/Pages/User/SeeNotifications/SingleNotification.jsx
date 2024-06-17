@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getSingleNotification } from "../../../services/notifications";
-import { Spinner, Table } from "react-bootstrap";
+import { Modal, Spinner, Table } from "react-bootstrap";
 import { getSingleRequest } from "../../../services/requests";
 import ModalRequestInformation from "../../../Components/RequestInformation/ModalRequestInformation";
+import { getBlocks, getClassrooms } from "../../../services/classrooms";
 
 export default function SingleNotification() {
   const { notificationId } = useParams();
@@ -14,6 +15,11 @@ export default function SingleNotification() {
   const [showRequest, setShowRequest] = useState(false);
   const [modalContent, setModalContent] = useState({});
   const [request, setRequest] = useState(undefined);
+  const [block, setBlock] = useState(undefined);
+  const [environment, setEnvironment] = useState(undefined);
+  const [blockModalContent, setBlockModalContent] = useState(undefined);
+  const [classroomModalContent, setClassroomModalContent] = useState(undefined);
+  const [modalClassAndBlock, setModalClassAndBlock] = useState(false);
   const [time, setTime] = useState({});
   const navigate = useNavigate();
 
@@ -40,8 +46,14 @@ export default function SingleNotification() {
           date: response.data.date,
         });
         setErrorMessage({});
-        if (response.data.reservation_id) {
-          getRequest(response.data.reservation_id);
+
+        let { reservation_id, block_id, classroom_id } = response.data;
+        if (reservation_id) {
+          getRequest(reservation_id);
+        } else if (block_id) {
+          getBlock(block_id);
+        } else if (classroom_id) {
+          getClassroom(classroom_id);
         }
       }
     } else if (response.status >= 300 && response.status < 400) {
@@ -63,6 +75,30 @@ export default function SingleNotification() {
     let response = await getSingleRequest(reservation_id);
     setRequest(response);
     setContentModal(response.data);
+  };
+
+  const getBlock = async (block_id) => {
+    let response = await getBlocks();
+    if (response.status >= 200 && response.status < 300) {
+      let block = response.data.find((block) => block.block_id === block_id);
+      if (block) {
+        setBlock(block);
+        setBlockContent(block);
+      }
+    }
+  };
+
+  const getClassroom = async (classroom_id) => {
+    let response = await getClassrooms();
+    if (response.status >= 200 && response.status < 300) {
+      let classroom = response.data.find(
+        (classroom) => classroom.classroom_id === classroom_id
+      );
+      if (classroom) {
+        setEnvironment(classroom);
+        setContentClassroom(classroom);
+      }
+    }
   };
 
   const goBackToList = () => {
@@ -199,6 +235,73 @@ export default function SingleNotification() {
     });
   };
 
+  const setContentClassroom = (classroom) => {
+    let content = (
+      <>
+        <div className="p-2">
+          <b>Nombre de ambiente: </b>
+          <span>{classroom.classroom_name}</span>
+        </div>
+        <div className="p-2">
+          <b>Capacidad: </b>
+          <span>{classroom.capacity}</span>
+        </div>
+        <div className="p-2">
+          <b>Estado: </b>
+          <b
+            className={`p-1 rounded bg-${
+              classroom.classroom_status_id === 1 ? "success" : "danger"
+            } text-light`}
+          >
+            {classroom.classroom_status_name}
+          </b>
+        </div>
+        <div className="p-2">
+          <b>Tipo de ambiente: </b>
+          <span>{classroom.classroom_type_name}</span>
+        </div>
+        <div className="tag-container position-relative mb-3 mt-4">
+          <label className="tag-label">Ubicación del Ambiente</label>
+          <div>
+            <label className="fw-bold pe-2">BLOQUE: </label>
+            <span>{classroom.block_name}</span>
+          </div>
+          <div>
+            <label className="fw-bold pe-2">PISO</label>
+            <span>{classroom.floor}</span>
+          </div>
+        </div>
+      </>
+    );
+    setClassroomModalContent(content);
+  };
+
+  const setBlockContent = (block) => {
+    let content = (
+      <>
+        <div className="p-2">
+          <b>Nombre de bloque: </b>
+          <span>{block.block_name}</span>
+        </div>
+        <div className="p-2">
+          <b>Estado: </b>
+          <b
+            className={`p-1 rounded bg-${
+              block.block_status_id === 1 ? "success" : "danger"
+            } text-light`}
+          >
+            {block.block_status_name}
+          </b>
+        </div>
+        <div className="p-2">
+          <label className="fw-bold pe-2">PISO</label>
+          <span>{block.block_maxfloor}</span>
+        </div>
+      </>
+    );
+    setBlockModalContent(content);
+  };
+
   return (
     <div className="container" style={{ height: "90vh" }}>
       {loading ? (
@@ -295,7 +398,7 @@ export default function SingleNotification() {
                       <i className="pe-2">{`${time.hour}:${time.minutes}`}</i>
                       <i>{time.date}</i>
                     </div>
-                    {request && (
+                    {request ? (
                       <div className="text-center pt-3 pb-4">
                         <button
                           className="btn btn-outline-primary"
@@ -304,6 +407,26 @@ export default function SingleNotification() {
                           Ver solicitud
                         </button>
                       </div>
+                    ) : block ? (
+                      <div className="text-center pt-3 pb-4">
+                        <button
+                          className="btn btn-outline-primary"
+                          onClick={() => setModalClassAndBlock(true)}
+                        >
+                          Ver informacion de bloque
+                        </button>
+                      </div>
+                    ) : (
+                      environment && (
+                        <div className="text-center pt-3 pb-4">
+                          <button
+                            className="btn btn-outline-primary"
+                            onClick={() => setModalClassAndBlock(true)}
+                          >
+                            Ver informacion de ambiente
+                          </button>
+                        </div>
+                      )
                     )}
                   </div>
                 </div>
@@ -325,13 +448,37 @@ export default function SingleNotification() {
           )}
         </>
       )}
-      {/* Modal */}
 
       <ModalRequestInformation
         show={showRequest}
         setShow={(change) => setShowRequest(change)}
         content={modalContent}
       />
+
+      <Modal
+        show={modalClassAndBlock}
+        onHide={() => setModalClassAndBlock(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {blockModalContent
+              ? "Informacion de bloque."
+              : classroomModalContent
+              ? "Informacion de ambiente"
+              : ""}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{blockModalContent || classroomModalContent}</Modal.Body>
+        <Modal.Footer>
+          <button
+            className="btn btn-primary w-100 text-truncate"
+            onClick={() => setModalClassAndBlock(false)}
+          >
+            Cerrar
+          </button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

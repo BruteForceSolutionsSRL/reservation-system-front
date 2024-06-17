@@ -410,46 +410,46 @@ export default function Sidebar({ user }) {
                 </Collapse>
               </ul>
             )}
-          </div>
 
-          {user === "superuser" && (
-            <ul className="list-unstyled px-2">
-              <li className={activeItem === "report" ? "active" : ""}>
-                <Link
-                  to="#"
-                  className="text-decoration-none px-3 d-block"
-                  onClick={() => handleItemClick("report")}
-                >
-                  <div className="d-flex justify-content-start align-items-center">
-                    <i className="bi bi-clipboard-data fs-6"></i> Reportes
-                    <i className="bi bi-chevron-down"></i>
-                  </div>
-                </Link>
-              </li>
-              <Collapse in={openItems["report"]}>
-                <div>
-                  <li
-                    className={
-                      activeItem === "generate-report"
-                        ? "active list-unstyled px-2"
-                        : "list-unstyled px-2"
-                    }
+            {user === "superuser" && (
+              <ul className="list-unstyled px-2">
+                <li className={activeItem === "report" ? "active" : ""}>
+                  <Link
+                    to="#"
+                    className="text-decoration-none px-3 d-block"
+                    onClick={() => handleItemClick("report")}
                   >
-                    <Link
-                      to="generate-report"
-                      className="text-decoration-none px-3 py-2 d-block"
-                      onClick={() => handleItemClick("generate-report")}
+                    <div className="d-flex justify-content-start align-items-center">
+                      <i className="bi bi-clipboard-data fs-6"></i> Reportes
+                      <i className="bi bi-chevron-down"></i>
+                    </div>
+                  </Link>
+                </li>
+                <Collapse in={openItems["report"]}>
+                  <div>
+                    <li
+                      className={
+                        activeItem === "generate-report"
+                          ? "active list-unstyled px-2"
+                          : "list-unstyled px-2"
+                      }
                     >
-                      <div className="align-items-center">
-                        <i className="bi bi-file-earmark-spreadsheet fs-6"></i>{" "}
-                        Generar Reporte
-                      </div>
-                    </Link>
-                  </li>
-                </div>
-              </Collapse>
-            </ul>
-          )}
+                      <Link
+                        to="generate-report"
+                        className="text-decoration-none px-3 py-2 d-block"
+                        onClick={() => handleItemClick("generate-report")}
+                      >
+                        <div className="align-items-center">
+                          <i className="bi bi-file-earmark-spreadsheet fs-6"></i>{" "}
+                          Generar Reporte
+                        </div>
+                      </Link>
+                    </li>
+                  </div>
+                </Collapse>
+              </ul>
+            )}
+          </div>
 
           <hr className="h-color mx-2" />
           <ul className="list-unstyled px-2">

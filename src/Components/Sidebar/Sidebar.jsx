@@ -10,16 +10,23 @@ export default function Sidebar({ user }) {
   const [openItems, setOpenItems] = useState({});
   const [modalContent, setModalContent] = useState({});
   const navigate = useNavigate();
+  const [repitRequest, setRepitRequest] = useState(true);
 
   useEffect(() => {
-    setInterval(() => isLogged(), 90000);
-  });
+    if (repitRequest) {
+      isLogged();
+      setRepitRequest(false);
+    }
+  }, [repitRequest]);
 
   const isLogged = () => {
     verifyTokenExpired();
   };
 
   const verifyTokenExpired = async () => {
+    setInterval(() => {
+      setRepitRequest(true);
+    }, 10000);
     let response = await getBlocks();
     if (
       response.status === 402 ||

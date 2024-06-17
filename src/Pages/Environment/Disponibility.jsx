@@ -160,6 +160,7 @@ function Disponibility() {
   };
 
   function clear() {
+    setShowTable(false)
     setClassrom([]);
     setSelectedClassrooms([]);
     setFormData((prevData) => ({

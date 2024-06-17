@@ -129,7 +129,34 @@ function EditBlock() {
           setBackendError("Error al enviar los datos: " + error.message);
         }
       );
-      setBackendError(response);
+      if (response.status >= 200 && response.status < 300) {
+        let content = {};
+        content.status = response.status;
+        content.data = response.data.message;
+        setBackendError(content);
+      } else if (response.status >= 300 && response.status < 400) {
+        let content = {};
+        content.status = response.status;
+        content.data = response.data.message;
+        setBackendError(content);
+      } else if (response.status >= 400 && response.status < 500) {
+        let content = {};
+        content.status = response.status;
+        content.data = response.data.message;
+        setBackendError(content);
+      } else if (response.status >= 500) {
+        if (response.data.message) {
+          let content = {};
+          content.status = response.status;
+          content.data = response.data.message;
+          setBackendError(content);
+        } else {
+          let content = {};
+          content.status = response.status;
+          content.data = "Ocurrio un error inesperado, intente nuevamente.";
+          setBackendError(content);
+        }
+      }
       getBlocksList();
     } catch (error) {
       console.error("Error while editing block:", error);
@@ -262,23 +289,34 @@ function EditBlock() {
           }
         }}
       />
-      <div className="container">
+      <div className="container" style={{ height: "90vh" }}>
         {loading ? (
-          <div className="text-center">
-            <Spinner animation="border" variant="secondary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
+          <div className="h-100 text-center d-flex justify-content-center align-items-center">
+            <div>
+              <Spinner animation="border" variant="secondary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+              <div>
+                <span className="fs-2 ps-2">Cargando</span>
+              </div>
+            </div>
           </div>
         ) : (
-          <div>
+          <>
             <hr></hr>
-            {msgNoResults && (
-              <div className="text-center">
-                <h4>{msgNoResults}</h4>
-              </div>
-            )}
-            <BlockEdit list={listBlocks} handleShowModal={handleShowModal} />
-          </div>
+            <div className="h-100">
+              {msgNoResults && (
+                <div className="h-50 text-center d-flex justify-content-center align-items-center">
+                  <div>
+                    <i className="bi bi-question-circle fs-1"></i>
+                    <h2>{msgNoResults}</h2>
+                  </div>
+                </div>
+              )}
+
+              <BlockEdit list={listBlocks} handleShowModal={handleShowModal} />
+            </div>
+          </>
         )}
       </div>
 

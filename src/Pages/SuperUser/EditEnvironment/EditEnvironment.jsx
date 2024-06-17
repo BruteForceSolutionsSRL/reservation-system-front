@@ -56,7 +56,7 @@ function EditEnvironment() {
 
   const getBlockOptions = async () => {
     let envl = await getBlocks();
-    setBlockOptions(envl);
+    setBlockOptions(envl.data);
   };
 
   const getClassromTypes = async () => {

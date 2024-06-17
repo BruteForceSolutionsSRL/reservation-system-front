@@ -18,20 +18,6 @@ function Homepage() {
           <div className="logo-container d-flex align-items-center">
             <img src={imageLogo} alt="Sura Logo" className="logo-image" />
           </div>
-          <ul className="nav">
-            {[
-              { label: "Home", href: "#home" },
-              { label: "Information", href: "#services" },
-              { label: "About", href: "#about" },
-              { label: "Contact", href: "#contact" },
-            ].map((item, index) => (
-              <li key={index}>
-                <a href={item.href} className="nav-link">
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
 

@@ -32,9 +32,12 @@ function BlockRegister() {
 
   const fetchData = async (endpoint, setterFunction) => {
     try {
-      let token = localStorage.setItem("token");
+      let token = localStorage.getItem("token");
       const response = await fetch(URL + endpoint, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "aplication/json",
+        },
       });
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -150,7 +153,6 @@ function BlockRegister() {
       );
       if (isDuplicateName) {
         setExistBlockModal(true);
-        //console.log(`El bloque ${formData.block_name}  ya existe.`);
       } else {
         handleSaveModal();
       }

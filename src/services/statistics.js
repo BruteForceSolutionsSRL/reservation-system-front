@@ -24,7 +24,7 @@ export async function getDataPerRange(dataBody) {
     method: "POST",
     headers: { 
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json' 
+      'Content-Type': 'aplication/json' 
     },
     body: JSON.stringify(dataBody),
     mode: 'cors'

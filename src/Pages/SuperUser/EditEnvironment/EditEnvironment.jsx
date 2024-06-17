@@ -148,12 +148,15 @@ function EditEnvironment() {
       newData,
       classroom_id
     );
+    let token = localStorage.getItem("token");
     try {
       const response = await fetch(url + `classrooms/${classroom_id}`, {
         method: "PUT",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "aplication/json",
+        },
         body: JSON.stringify(newData),
-        mode: "no-cors",
       });
       const data = response.json();
       return data;
@@ -230,8 +233,10 @@ function EditEnvironment() {
   const fetchBlockOptions = async () => {
     let token = localStorage.getItem("token");
     await fetch(url + "blocks", {
-      headers: { Authorization: `Bearer ${token}` },
-      mode: "no-cors",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
     })
       .then((response) => {
         if (!response.ok) {
@@ -295,8 +300,10 @@ function EditEnvironment() {
   const allEnvironments = async () => {
     let token = localStorage.getItem("token");
     await fetch(url + "classrooms", {
-      headers: { Authorization: `Bearer ${token}` },
-      mode: "no-cors",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
     })
       .then((response) => {
         if (!response.ok) {
@@ -312,9 +319,6 @@ function EditEnvironment() {
         console.error("Error fetching options:", error);
       });
   };
-
-  console.log("clasdroms", allReservations);
-  console.log("bloques", blockOptions);
 
   const validateCantidad = (value) => {
     if (!value) {

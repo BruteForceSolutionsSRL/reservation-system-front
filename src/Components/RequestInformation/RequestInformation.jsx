@@ -59,11 +59,11 @@ export default function RequestInformation({
             <b>ESTADO: </b>{" "}
             <label
               className={`rounded p-1  bg-${
-                state === "ACCEPTED"
+                state === "ACEPTADO"
                   ? "success text-light"
-                  : state === "CANCELLED"
+                  : state === "CANCELADO"
                   ? "secondary text-light"
-                  : state === "REJECTED"
+                  : state === "RECHAZADO"
                   ? "danger text-light"
                   : "dark text-white"
               }`}
@@ -83,9 +83,9 @@ export default function RequestInformation({
                   </tr>
                 </thead>
                 <tbody>
-                  {groups.map((each) => {
+                  {groups.map((each, index) => {
                     return (
-                      <tr key={each.group_number}>
+                      <tr key={each.group_number + "" + index}>
                         <td>{each.teacher_name}</td>
                         <td>{each.group_number}</td>
                       </tr>

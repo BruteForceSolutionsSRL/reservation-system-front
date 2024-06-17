@@ -15,8 +15,10 @@ const ListEnvironment = ({ list, handleShowModal }) => {
   const fetchBlockOptions = () => {
     let token = localStorage.getItem("token");
     fetch(url + "blocks", {
-      headers: { Authorization: `Bearer ${token}` },
-      mode: "no-cors",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
     })
       .then((response) => {
         if (!response.ok) {
@@ -36,8 +38,10 @@ const ListEnvironment = ({ list, handleShowModal }) => {
   const fetchTypes = () => {
     let token = localStorage.getItem("token");
     fetch(url + "classrooms/types", {
-      headers: { Authorization: `Bearer ${token}` },
-      mode: "no-cors",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
     })
       .then((response) => {
         if (!response.ok) {
@@ -57,8 +61,10 @@ const ListEnvironment = ({ list, handleShowModal }) => {
   const statusTypes = () => {
     let token = localStorage.getItem("token");
     fetch(url + "classrooms/statuses", {
-      headers: { Authorization: `Bearer ${token}` },
-      mode: "no-cors",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
     })
       .then((response) => {
         if (!response.ok) {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Form,
   Button,
@@ -10,10 +10,10 @@ import {
   InputGroup,
   Alert,
 } from "react-bootstrap";
-import axios from "axios";
 import "./LandingPage.css";
+import login from "../../services/login";
 
-const LandingPage = ({ setAuthToken, authToken }) => {
+const LandingPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -23,27 +23,10 @@ const LandingPage = ({ setAuthToken, authToken }) => {
   const [alertMessage, setAlertMessage] = useState("");
   const navigate = useNavigate();
 
-  const url = import.meta.env.VITE_REACT_API_URL;
-
   useEffect(() => {
-    // if (!!authToken) {
-    //     if (activeTab === "DOCENTES") {
-    //         navigate("/user/home");
-    //       } else {
-    //           navigate("/superuser/home");
-    //         }
-    //       }
+    let token = localStorage.getItem("token");
     let userLogged = JSON.parse(localStorage.getItem("userInformation"));
-    let token = localStorage.getItem("token")
-    console.log(userLogged)
-    console.log(token)
-    if (!!token) {
-      if (userLogged.roles[0] === "DOCENTE") {
-        navigate("/user/home");
-      } else {
-        navigate("/superuser/home");
-      }
-    }
+    if (!!token) redirect(userLogged);
   }, []);
 
   const handleLogin = async (event) => {
@@ -59,32 +42,7 @@ const LandingPage = ({ setAuthToken, authToken }) => {
     }
 
     try {
-      const response = await axios.post(url + "login", {
-        email,
-        password,
-      });
-      console.log(response)
-      const { token } = response.data;
-      localStorage.setItem("token", token);
-      localStorage.setItem(
-        "userInformation",
-        JSON.stringify(response.data.user)
-      );
-      setAuthToken(token);
-
-      // if (activeTab === "DOCENTE") {
-      //   navigate("/user/home");
-      // } else {
-      //   navigate("/superuser/home");
-      // }
-      
-      console.log(response.data.user)
-      if (response.data.user.roles[0] === "DOCENTE") {
-        navigate("/user/home");
-      } else {
-        navigate("/superuser/home");
-      }
-
+      loginUser();
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       if (error.response) {
@@ -98,10 +56,24 @@ const LandingPage = ({ setAuthToken, authToken }) => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.clear();
-    navigate("/");
+  const loginUser = async () => {
+    let response = await login(email, password);
+    let { token, user } = response.data;
+    if (token && user) {
+      localStorage.setItem("token", token);
+      localStorage.setItem("userInformation", JSON.stringify(user));
+      redirect(user);
+    } else {
+      return new Error();
+    }
+  };
+
+  const redirect = (user) => {
+    if (user.roles[0] === "DOCENTE") {
+      navigate("/user/home");
+    } else if (user.roles[0] === "ENCARGADO") {
+      navigate("/superuser/home");
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -110,14 +82,14 @@ const LandingPage = ({ setAuthToken, authToken }) => {
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
-    setErrors({ ...errors, email: "" }); // Limpiar el mensaje de error
-    setShowAlert(false); // Ocultar la alerta al empezar a corregir el campo
+    setErrors({ ...errors, email: "" });
+    setShowAlert(false);
   };
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
-    setErrors({ ...errors, password: "" }); // Limpiar el mensaje de error
-    setShowAlert(false); // Ocultar la alerta al empezar a corregir el campo
+    setErrors({ ...errors, password: "" });
+    setShowAlert(false);
   };
 
   return (
@@ -152,17 +124,6 @@ const LandingPage = ({ setAuthToken, authToken }) => {
                 DOCENTES
               </Button>
             </Col>
-            {/* <Col xs="3">
-              <Button
-                variant={
-                  activeTab === "INVITADOS" ? "primary" : "outline-primary"
-                }
-                onClick={() => setActiveTab("INVITADOS")}
-                className="nav-button"
-              >
-                INVITADOS
-              </Button>
-            </Col> */}
           </Row>
         </div>
       </Container>

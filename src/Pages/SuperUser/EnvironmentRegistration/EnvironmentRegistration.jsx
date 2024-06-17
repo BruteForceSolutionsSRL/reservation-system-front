@@ -8,7 +8,6 @@ import Modal from "react-bootstrap/Modal";
 import Spinner from "react-bootstrap/Spinner";
 import "./EnvironmentRegistration.css";
 
-// export default function EnvironmentRegistration() {
 const EnvironmentRegistration = () => {
   const [environmentName, setEnvironmentName] = useState("");
   const [environmentType, setEnvironmentType] = useState("");
@@ -40,24 +39,21 @@ const EnvironmentRegistration = () => {
 
   useEffect(() => {
     setLoading(true);
-    const fetchData = async () => {
-      await fetchBlockOptions();
-      await fetchTypes();
-      await fetchClassrooms();
-      setTimeout(() => {
+    Promise.all([fetchBlockOptions(), fetchTypes(), fetchClassrooms()]).finally(
+      () => {
         setLoading(false);
         setReload(false);
-      }, 200);
-    };
-
-    fetchData();
+      }
+    );
   }, [reload]);
 
   const fetchBlockOptions = () => {
     let token = localStorage.getItem("token");
     fetch(url + "blocks", {
-      headers: { Authorization: `Bearer ${token}` },
-      mode: "no-cors",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
     })
       .then((response) => {
         if (!response.ok) {
@@ -80,8 +76,10 @@ const EnvironmentRegistration = () => {
   const fetchTypes = () => {
     let token = localStorage.getItem("token");
     fetch(url + "classrooms/types", {
-      headers: { Authorization: `Bearer ${token}` },
-      mode: "no-cors",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
     })
       .then((response) => {
         if (!response.ok) {
@@ -104,8 +102,10 @@ const EnvironmentRegistration = () => {
   const fetchClassrooms = () => {
     let token = localStorage.getItem("token");
     fetch(url + "classrooms", {
-      headers: { Authorization: `Bearer ${token}` },
-      mode: "no-cors",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
     })
       .then((response) => {
         if (!response.ok) {
@@ -301,7 +301,7 @@ const EnvironmentRegistration = () => {
         onAccept: handleSubmit,
         showCancel: true,
       });
-    }, 1000);
+    }, 100);
   };
 
   const handleSubmit = () => {
@@ -337,9 +337,11 @@ const EnvironmentRegistration = () => {
     let token = localStorage.getItem("token");
     return fetch(url + "classrooms", {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
       body: JSON.stringify(formData),
-      mode: "no-cors",
     })
       .then(async (response) => {
         if (!response.ok) {

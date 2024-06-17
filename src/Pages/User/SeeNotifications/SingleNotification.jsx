@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getSingleNotification } from "../../../services/notifications";
 import { Spinner, Table } from "react-bootstrap";
 import { getSingleRequest } from "../../../services/requests";
@@ -14,6 +14,8 @@ export default function SingleNotification() {
   const [showRequest, setShowRequest] = useState(false);
   const [modalContent, setModalContent] = useState({});
   const [request, setRequest] = useState(undefined);
+  const [time, setTime] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     getNotificationInfo();
@@ -32,6 +34,11 @@ export default function SingleNotification() {
         });
       } else {
         setNotification(response.data);
+        setTime({
+          hour: response.data.hour,
+          minutes: response.data.minutes,
+          date: response.data.date,
+        });
         setErrorMessage({});
         if (response.data.reservation_id) {
           getRequest(response.data.reservation_id);
@@ -59,7 +66,7 @@ export default function SingleNotification() {
   };
 
   const goBackToList = () => {
-    window.location.href = "/user/notifications-list";
+    navigate("/user/notifications-list");
   };
 
   const setContentModal = (request) => {
@@ -285,7 +292,8 @@ export default function SingleNotification() {
                       </div>
                     )}
                     <div className="text-center">
-                      <span>Hora y fecha</span>
+                      <i className="pe-2">{`${time.hour}:${time.minutes}`}</i>
+                      <i>{time.date}</i>
                     </div>
                     {request && (
                       <div className="text-center pt-3 pb-4">

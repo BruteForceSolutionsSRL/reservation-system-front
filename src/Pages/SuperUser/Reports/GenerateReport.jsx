@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Form, Modal } from "react-bootstrap";
+import { Form, Modal } from "react-bootstrap";
 import { getAllSubjects } from "../../../services/subjects";
 import { getBlocks } from "../../../services/blocks";
 import { getClassroomsByBlock } from "../../../services/classrooms";
@@ -7,6 +7,7 @@ import { PDFDownloadLink, PDFViewer, pdf } from "@react-pdf/renderer";
 import ReportPage from "../../../Components/PDF/ReportPage"
 import { getTeachersBySubject } from "../../../services/teachers";
 import { generateReport } from "../../../services/reports";
+import { getReservationStatuses } from "../../../services/statuses";
 
 export default function GenerateReport() {
   // for Date
@@ -19,12 +20,12 @@ export default function GenerateReport() {
   const [classroomsByBlock, setClassroomsByBlock] = useState([]);
   const [selectedClassroom, setSelectedClassroom] = useState("");
   // for request's type (reservation statuses)
-  // const [reservationStatuses, setReservationStatuses] = useState([]);
-  const reservationStatuses = [ 
+  const [reservationStatuses, setReservationStatuses] = useState([]);
+  /*const reservationStatuses = [ 
     { reservation_status_id: 1, reservation_status_name: "ACEPTADO" },
     { reservation_status_id: 2, reservation_status_name: "RECHAZADO" },
     { reservation_status_id: 4, reservation_status_name: "CANCELADO" },
-  ];
+  ];*/
   const [
     selectedReservationStatus,
     setSelectedReservationStatus
@@ -50,7 +51,7 @@ export default function GenerateReport() {
   useEffect(() => {
     Promise.all([
       fetchBlocks(),
-      // fetchReservationStatuses(),
+      fetchReservationStatuses(),
       fetchSubjects(),
     ]).catch((error) => console.error(error));
   }, []);
@@ -68,10 +69,17 @@ export default function GenerateReport() {
     setBlocks(blocks);
   }
 
-  //const fetchReservationStatuses = async () => {
-  //  const reservationStatuses = await getReservationStatuses();
-  //  setReservationStatuses(reservationStatuses);
-  //}
+  const fetchReservationStatuses = async () => {
+    const reservationStatuses = await getReservationStatuses();
+    const tmpReservationStatuses = reservationStatuses.filter(rs => {
+      const status = rs.reservation_status_name.toUpperCase();
+      return status === "ACEPTADO" || status === "ACCEPTED"
+        || status === "RECHAZADO" || status === "REJECTED"
+        || status === "CANCELADO" || status === "CANCELLED"
+    });
+
+    setReservationStatuses(tmpReservationStatuses);
+  }
 
   const fetchSubjects = async () => {
     const subjects = await getAllSubjects();
@@ -113,30 +121,38 @@ export default function GenerateReport() {
       person_id: selectedTeacher,
     }
 
-    const reportDataResponse = await generateReport(request);
-    const reports = reportDataResponse.report;
-    const acceptedRequests = reports.filter(
-      r => r.reservation_status.toUpperCase() === "ACEPTADO"
-    );
-    const rejectedRequests = reports.filter(
-      r => r.reservation_status.toUpperCase() === "RECHAZADO"
-    );
-    const cancelledRequests = reports.filter(
-      r => r.reservation_status.toUpperCase() === "CANCELADO"
-    );
+    try {
+      const reportDataResponse = await generateReport(request);
+      const reports = reportDataResponse.report;
+      const acceptedRequests = reports.filter(
+        r => r.reservation_status.toUpperCase() === "ACEPTADO"
+          ||  r.reservation_status.toUpperCase() === "ACCEPTED"
+      );
+      const rejectedRequests = reports.filter(
+        r => r.reservation_status.toUpperCase() === "RECHAZADO"
+          ||  r.reservation_status.toUpperCase() === "REJECTED"
+      );
+      const cancelledRequests = reports.filter(
+        r => r.reservation_status.toUpperCase() === "CANCELADO"
+          ||  r.reservation_status.toUpperCase() === "CANCELLED"
+      );
 
-    const tmpReportData = {
-      accepted_reservations: reportDataResponse.accepted_reservations,
-      rejected_reservations: reportDataResponse.rejected_reservations,
-      cancelled_reservations: reportDataResponse.canceled_reservations,
-      total_reservations: reportDataResponse.total_reservations,
-      acceptedRequests: acceptedRequests,
-      rejectedRequests: rejectedRequests,
-      cancelledRequests: cancelledRequests,
+      const tmpReportData = {
+        accepted_reservations: reportDataResponse.accepted_reservations,
+        rejected_reservations: reportDataResponse.rejected_reservations,
+        cancelled_reservations: reportDataResponse.canceled_reservations,
+        total_reservations: reportDataResponse.total_reservations,
+        acceptedRequests: acceptedRequests,
+        rejectedRequests: rejectedRequests,
+        cancelledRequests: cancelledRequests,
+      }
+
+      setReportData(tmpReportData);
+      setShowReport(true);
+    } catch (error) {
+      setReportData(undefined);
+      setShowReport(false);
     }
-
-    setReportData(tmpReportData);
-    setShowReport(true);
   }
 
   const handleChangeBlocks = (e) => {
@@ -342,7 +358,7 @@ export default function GenerateReport() {
               })}
             </Form.Select>
           </div>
-          <div className="col-md-3">
+          <div className="col-md-4">
             <label htmlFor="subject">Materia</label>
             <Form.Select
               name="subject"
@@ -362,7 +378,7 @@ export default function GenerateReport() {
               })}
             </Form.Select>
           </div>
-          <div className="col-md-3">
+          <div className="col-md-4">
             <label htmlFor="teacher">Docente</label>
             <Form.Select
               name="teacher"

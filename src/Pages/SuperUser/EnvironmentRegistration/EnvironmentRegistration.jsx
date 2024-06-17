@@ -8,7 +8,6 @@ import Modal from "react-bootstrap/Modal";
 import Spinner from "react-bootstrap/Spinner";
 import "./EnvironmentRegistration.css";
 
-// export default function EnvironmentRegistration() {
 const EnvironmentRegistration = () => {
   const [environmentName, setEnvironmentName] = useState("");
   const [environmentType, setEnvironmentType] = useState("");
@@ -40,21 +39,22 @@ const EnvironmentRegistration = () => {
 
   useEffect(() => {
     setLoading(true);
-    const fetchData = async () => {
-      await fetchBlockOptions();
-      await fetchTypes();
-      await fetchClassrooms();
-      setTimeout(() => {
+    Promise.all([fetchBlockOptions(), fetchTypes(), fetchClassrooms()]).finally(
+      () => {
         setLoading(false);
         setReload(false);
-      }, 200);
-    };
-
-    fetchData();
+      }
+    );
   }, [reload]);
 
   const fetchBlockOptions = () => {
-    fetch(url + "blocks")
+    let token = localStorage.getItem("token");
+    fetch(url + "blocks", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -74,7 +74,13 @@ const EnvironmentRegistration = () => {
   };
 
   const fetchTypes = () => {
-    fetch(url + "classrooms/types")
+    let token = localStorage.getItem("token");
+    fetch(url + "classrooms/types", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -94,7 +100,13 @@ const EnvironmentRegistration = () => {
   };
 
   const fetchClassrooms = () => {
-    fetch(url + "classrooms")
+    let token = localStorage.getItem("token");
+    fetch(url + "classrooms", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error de conexion");
@@ -289,7 +301,7 @@ const EnvironmentRegistration = () => {
         onAccept: handleSubmit,
         showCancel: true,
       });
-    }, 1000);
+    }, 100);
   };
 
   const handleSubmit = () => {
@@ -322,14 +334,14 @@ const EnvironmentRegistration = () => {
     };
 
     const url = import.meta.env.VITE_REACT_API_URL;
-
+    let token = localStorage.getItem("token");
     return fetch(url + "classrooms", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
       },
       body: JSON.stringify(formData),
-      mode: "cors",
     })
       .then(async (response) => {
         if (!response.ok) {

@@ -143,11 +143,11 @@ export default function EnvironmentToDelete(props) {
                           <td>
                             <b
                               className={`p-1 rounded text-light bg-${
-                                each.reservation_status === "ACCEPTED"
+                                each.reservation_status === "ACEPTADO"
                                   ? "success"
-                                  : each.reservation_status === "REJECTED"
+                                  : each.reservation_status === "RECHAZADO"
                                   ? "danger"
-                                  : each.reservation_status === "PENDING" &&
+                                  : each.reservation_status === "PENDIENTE" &&
                                     "warning"
                               }`}
                             >

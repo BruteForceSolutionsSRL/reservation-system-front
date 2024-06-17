@@ -304,7 +304,6 @@ function RequestReservationAmbience() {
   //validador en tiempo real
   const handleChange = (event) => {
     const { name, value } = event.target;
-    console.log(name, value);
     if (name === "start" || name === "end") {
       setFormData((prevFormData) => {
         let newTimeSlotId = [...prevFormData.time_slot_id];

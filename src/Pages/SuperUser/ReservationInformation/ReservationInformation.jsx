@@ -28,11 +28,11 @@ export default function ReservationInformation(props) {
 
   const handleAcceptModal = () => {
     let url = import.meta.env.VITE_REACT_API_URL;
+    let token = localStorage.getItem("token");
     fetch(url + "reservation/assign", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: `Bearer ${token}` },
+      mode: "no-cors",
       body: JSON.stringify({
         id: id,
       }),
@@ -82,12 +82,16 @@ export default function ReservationInformation(props) {
 
   const refuseRequest = () => {
     let url = import.meta.env.VITE_REACT_API_URL;
+    let token = localStorage.getItem("token");
     fetch(url + `reservation/reject/${id}`, {
       method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setToastMessage(`La solicitud ${id} fue rechazada`);
         setBg("danger");
         setShowToast(true);

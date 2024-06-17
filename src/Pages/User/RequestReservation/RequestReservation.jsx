@@ -14,45 +14,34 @@ import ModalTable from "../../../Components/ModalTable/ModalTable";
 import { Spinner } from "react-bootstrap";
 
 export default function RequestReservation() {
-  // Information user loged
   const user = JSON.parse(localStorage.getItem("userInformation"));
-  // For subjects
   const [subjects, setSubjects] = useState(null);
   const [subjectSelected, setSubjectSelected] = useState("");
-  // For quantity
   const [quantity, setQuantity] = useState("");
   const [quantityWarnings, setQuantityWarnings] = useState({});
-  // For Date
   const [dateValue, setDateValue] = useState("");
-  // For reasons
   const [reasons, setReasons] = useState([]);
   const [reasonSelected, setReasonSelected] = useState("");
-  // For timeSlots
   const [timeSlots, setTimeSlots] = useState([]);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [startTimeSlots, setStartTimeSlots] = useState([]);
   const [endTimeSlots, setEndTimeSlots] = useState([]);
-  // For blocks
   const [blocks, setBlocks] = useState([]);
   const [blockSelected, setBlockSelected] = useState("");
-  // For teachers
   const [teachersBySubject, setTeachersBySubject] = useState([]);
   const [showTeachersModal, setShowTeachersModal] = useState(false);
   const [teachersSelectedInModal, setTeachersSelectedInModal] = useState([]);
-  // For classrooms
   const [classroomsByBlock, setClassroomsByBlock] = useState([]);
   const [showClassroomssModal, setShowClassroomsModal] = useState(false);
   const [classroomsSelectedInModal, setClassroomsSelectedInModal] = useState(
     []
   );
-  // Suggests
   const [suggAvailable, setSuggAvailable] = useState(false);
   const [suggMessage, setSuggMessage] = useState({
     message: "",
     invalid: false,
   });
-  // Errors messages
   const errorsInitialState = {
     subject: {
       message: null,
@@ -183,7 +172,6 @@ export default function RequestReservation() {
     setSubjectSelected(value);
     fetchTeachersBySubject(value);
 
-    // Validations.
     let newErrorsMessages = { ...errorsMessages };
     if (value === "") {
       newErrorsMessages.subject = {
@@ -268,7 +256,6 @@ export default function RequestReservation() {
 
   const handleChangeReason = ({ value }) => {
     setReasonSelected(value);
-    // Validations.
     let newErrorsMessages = { ...errorsMessages };
     if (value === "") {
       newErrorsMessages.reason = {
@@ -289,7 +276,6 @@ export default function RequestReservation() {
     setBlockSelected(value);
     fetchClassroomsByBlock(value);
 
-    // Validation
     let newErrorsMessages = { ...errorsMessages };
     if (value === "") {
       newErrorsMessages.block = {
@@ -314,7 +300,6 @@ export default function RequestReservation() {
       tchrList = [...teachersSelectedInModal, teacher];
     }
 
-    // Validations
     let newErrorsMessages = { ...errorsMessages };
     let tchrInList = !!tchrList.find((teacher) => {
       return teacher.person_id === user.person_id;
@@ -352,7 +337,6 @@ export default function RequestReservation() {
       clssList = [...classroomsSelectedInModal, classroom];
     }
 
-    // Validations
     let newErrorsMessages = { ...errorsMessages };
     if (clssList.length === 0) {
       newErrorsMessages.classrooms = {
@@ -418,7 +402,9 @@ export default function RequestReservation() {
   const handleSendRequest = async () => {
     setLoadingSendRequest(true);
     let groups = [...teachersSelectedInModal];
-    let groupNumbers = groups.map(({ group_number }) => group_number);
+    let groupNumbers = groups.map(
+      ({ teacher_subject_id }) => teacher_subject_id
+    );
     let classrooms = [...classroomsSelectedInModal];
     let classroomIds = classrooms.map(({ classroom_id }) => classroom_id);
     let request = {
@@ -438,7 +424,6 @@ export default function RequestReservation() {
 
     if (response.status >= 200 && response.status < 300) {
       if (response.data.message === "La solicitud de reserva fue rechazada.") {
-        // Rechazada automaticamente
         setModalSendRequest({
           content: {
             title: "Solicitud rechazada",
@@ -446,8 +431,8 @@ export default function RequestReservation() {
           },
           show: true,
         });
+        setToInitalStateForm();
       } else {
-        // Aceptada automaticamente
         setModalSendRequest({
           content: { title: "Solicitud aceptada", body: response.data.message },
           show: true,
@@ -455,7 +440,6 @@ export default function RequestReservation() {
         setToInitalStateForm();
       }
     } else if (response.status >= 400 && response.status < 500) {
-      // Mala solicitud.
       setModalSendRequest({
         content: { title: "Error", body: response.data.message },
         show: true,
@@ -477,7 +461,6 @@ export default function RequestReservation() {
         show: true,
       });
     }
-    quantityWarnings.show = false;
   };
 
   const validatedFields = () => {
@@ -567,6 +550,7 @@ export default function RequestReservation() {
     setReasonSelected("");
     setStartTime("");
     setEndTime("");
+    setEndTimeSlots([]);
     setBlockSelected("");
     setTeachersSelectedInModal([]);
     setClassroomsSelectedInModal([]);
@@ -783,7 +767,7 @@ export default function RequestReservation() {
                         <tbody>
                           {teachersSelectedInModal.map((each) => {
                             return (
-                              <tr key={each.id}>
+                              <tr key={each.teacher_subject_id}>
                                 <td>
                                   {each.teacher_name} {each.teacher_last_name}
                                 </td>
@@ -809,11 +793,6 @@ export default function RequestReservation() {
                 </div>
 
                 {errorsMessages.teachers.isInvalid && (
-                  // This is another way for alerts.
-                  // <Alert variant={"danger"} className="text-center">
-                  //   {errorsMessages.teachers.message}
-                  // </Alert>
-                  // This is using bootstrap classes.
                   <div className="d-block invalid-feedback">
                     {errorsMessages.teachers.message}
                   </div>
@@ -916,9 +895,6 @@ export default function RequestReservation() {
                   </div>
                 </div>
                 {errorsMessages.classrooms.isInvalid && (
-                  // <Alert variant={"danger"} className="text-center">
-                  //   {errorsMessages.teachers.message}
-                  // </Alert>
                   <div className="d-block invalid-feedback">
                     {errorsMessages.classrooms.message}
                   </div>
@@ -948,7 +924,6 @@ export default function RequestReservation() {
         </div>
       </Form>
 
-      {/* Modal click "Reservar" */}
       <Modal
         show={modalSendRequest.show}
         onHide={() =>
@@ -1013,7 +988,6 @@ export default function RequestReservation() {
         </Modal.Body>
       </Modal>
 
-      {/* Modal for teachers */}
       <ModalTable
         title={"Lista de docentes"}
         showState={{
@@ -1030,7 +1004,7 @@ export default function RequestReservation() {
           const isSelected = teachersSelectedInModal?.includes(each);
           return (
             <tr
-              key={each.id}
+              key={each.teacher_subject_id}
               onClick={() => handleClickTeacherRow(each)}
               className={`${isSelected ? "table-primary" : ""}`}
             >
@@ -1042,7 +1016,6 @@ export default function RequestReservation() {
           );
         })}
       />
-      {/* Modal for classrooms */}
 
       <ModalTable
         title={"Aulas disponibles"}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Form,
   Button,
@@ -10,10 +10,10 @@ import {
   InputGroup,
   Alert,
 } from "react-bootstrap";
-import axios from "axios";
 import "./LandingPage.css";
+import login from "../../services/login";
 
-const LandingPage = ({ setAuthToken, authToken }) => {
+const LandingPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -23,17 +23,10 @@ const LandingPage = ({ setAuthToken, authToken }) => {
   const [alertMessage, setAlertMessage] = useState("");
   const navigate = useNavigate();
 
-  const url = import.meta.env.VITE_REACT_API_URL;
-
   useEffect(() => {
-    // verificar el rol, falta completar cuando esten los roles.
-    if (!!authToken) {
-      if (activeTab === "DOCENTES") {
-        navigate("/user/home");
-      } else {
-        navigate("/superuser/home");
-      }
-    }
+    let token = localStorage.getItem("token");
+    let userLogged = JSON.parse(localStorage.getItem("userInformation"));
+    if (!!token) redirect(userLogged);
   }, []);
 
   const handleLogin = async (event) => {
@@ -49,18 +42,7 @@ const LandingPage = ({ setAuthToken, authToken }) => {
     }
 
     try {
-      const response = await axios.post(url + "login", {
-        email,
-        password,
-      });
-      const { token } = response.data;
-      localStorage.setItem("token", token);
-      localStorage.setItem(
-        "userInformation",
-        JSON.stringify(response.data.user)
-      );
-      setAuthToken(token);
-      navigate("/user/home");
+      loginUser();
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       if (error.response) {
@@ -74,10 +56,24 @@ const LandingPage = ({ setAuthToken, authToken }) => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.clear();
-    navigate("/");
+  const loginUser = async () => {
+    let response = await login(email, password);
+    let { token, user } = response.data;
+    if (token && user) {
+      localStorage.setItem("token", token);
+      localStorage.setItem("userInformation", JSON.stringify(user));
+      redirect(user);
+    } else {
+      return new Error();
+    }
+  };
+
+  const redirect = (user) => {
+    if (user.roles[0] === "DOCENTE") {
+      navigate("/user/home");
+    } else if (user.roles[0] === "ENCARGADO") {
+      navigate("/superuser/home");
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -86,34 +82,14 @@ const LandingPage = ({ setAuthToken, authToken }) => {
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
-    setErrors({ ...errors, email: "" }); // Limpiar el mensaje de error
-    setShowAlert(false); // Ocultar la alerta al empezar a corregir el campo
+    setErrors({ ...errors, email: "" });
+    setShowAlert(false);
   };
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
-    setErrors({ ...errors, password: "" }); // Limpiar el mensaje de error
-    setShowAlert(false); // Ocultar la alerta al empezar a corregir el campo
-  };
-
-  const userSession = () => {
-    const user = {
-      name: "MAGDA LENA PEETERS ILONAA",
-      teacher_id: 2,
-    };
-    localStorage.setItem("userloged", "user");
-    localStorage.setItem("userInformation", JSON.stringify(user));
-    // navigate("/user/home");
-  };
-
-  const superUserSession = () => {
-    const user = {
-      name: "Juanito Perez ",
-      teacher_id: 20,
-    };
-    localStorage.setItem("userloged", "superuser");
-    localStorage.setItem("userInformation", JSON.stringify(user));
-    // navigate("/superuser/home");
+    setErrors({ ...errors, password: "" });
+    setShowAlert(false);
   };
 
   return (
@@ -148,17 +124,6 @@ const LandingPage = ({ setAuthToken, authToken }) => {
                 DOCENTES
               </Button>
             </Col>
-            {/* <Col xs="3">
-              <Button
-                variant={
-                  activeTab === "INVITADOS" ? "primary" : "outline-primary"
-                }
-                onClick={() => setActiveTab("INVITADOS")}
-                className="nav-button"
-              >
-                INVITADOS
-              </Button>
-            </Col> */}
           </Row>
         </div>
       </Container>
@@ -269,26 +234,6 @@ const LandingPage = ({ setAuthToken, authToken }) => {
               bruteforcesolutionsbfs@gmail.com
             </a>
           </p>
-          <div>
-            <div>
-              <Link
-                className="text-decoration-none"
-                to="/user/home"
-                onClick={userSession}
-              >
-                Ingresar como usuario
-              </Link>
-            </div>
-            <div>
-              <Link
-                className="text-decoration-none"
-                to="/superuser/home"
-                onClick={superUserSession}
-              >
-                Ingresar como administrador
-              </Link>
-            </div>
-          </div>
         </div>
       </Container>
     </>

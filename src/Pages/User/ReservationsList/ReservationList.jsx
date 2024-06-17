@@ -9,7 +9,11 @@ export default function ReservationList() {
   const URL = import.meta.env.VITE_REACT_API_URL;
 
   useEffect(() => {
-    fetch(URL + "reservations")
+    let token = localStorage.getItem("token");
+    fetch(URL + "reservations", {
+      headers: { Authorization: `Bearer ${token}` },
+      mode: "no-cors",
+    })
       .then((res) => {
         if (!res.ok) throw new Error("Network response was not ok.");
         return res.json();

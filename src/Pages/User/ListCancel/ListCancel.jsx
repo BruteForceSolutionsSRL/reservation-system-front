@@ -14,7 +14,13 @@ export default function ListCancel() {
   }, [reload]);
 
   const fetchData = async () => {
-    await fetch(URL + `reservations/teacher/${user.person_id}`)
+    let token = localStorage.getItem("token");
+    await fetch(URL + `reservations/teacher/${user.person_id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         setReservations(data);
@@ -33,12 +39,12 @@ export default function ListCancel() {
         </div>
       ) : (
         <div
-          className="container overflow-x-scroll"
+          className="container overflow-x-auto"
           style={{ minWidth: "470px" }}
         >
           <h3>Pendientes</h3>
           {reservations.map((each) => {
-            if (each.reservation_status === "PENDING") {
+            if (each.reservation_status === "PENDIENTE") {
               return (
                 <div key={each.reservation_id}>
                   <ElementCancel
@@ -51,7 +57,7 @@ export default function ListCancel() {
           })}
           <h3>Aceptadas</h3>
           {reservations.map((each) => {
-            if (each.reservation_status === "ACCEPTED") {
+            if (each.reservation_status === "ACEPTADO") {
               return (
                 <div key={each.reservation_id}>
                   <ElementCancel

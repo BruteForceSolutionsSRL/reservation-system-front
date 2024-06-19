@@ -1,0 +1,24 @@
+.custom-btn-gray-outline:hover {
+  background-color: transparent !important;
+  border: 1px solid #6c757d !important;
+  color: #6c757d !important;
+}
+
+.custom-btn-green-outline:hover {
+  background-color: transparent !important;
+  border: 1px solid #28a745 !important;
+  color: #28a745 !important;
+}
+
+/* .edit-icon {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.edit-icon:hover {
+  border: 1px solid #ffffff;
+  cursor: pointer;
+} */

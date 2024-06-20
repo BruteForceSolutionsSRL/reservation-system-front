@@ -585,12 +585,12 @@ export default function RequestReservation() {
 
   return (
     <div className="container">
-      <h1 className="text-center pb-2">Reservar ambiente</h1>
+      <h1 className="text-center pb-2 mb-3">Reservar ambiente</h1>
       <Form>
         <div className="row">
           <div className="col-sm-2">
             <label htmlFor="subjects">
-              <b className="container">MATERIA</b>
+              <b className="p-2">MATERIA</b>
             </label>
           </div>
           <div className="col-sm-10">
@@ -620,7 +620,7 @@ export default function RequestReservation() {
         </div>
         <div className="row pt-3">
           <div className="col-6">
-            <b className="container">CANTIDAD DE ESTUDIANTES</b>
+            <b className="p-2">CANTIDAD DE ESTUDIANTES</b>
             <Form.Control
               type="text"
               className="form-control mb-3 mt-2"
@@ -641,7 +641,7 @@ export default function RequestReservation() {
             </Form.Control.Feedback>
           </div>
           <div className="col-6">
-            <b className="col-1">FECHA</b>
+            <b className="col-1 p-2">FECHA</b>
             <Form.Control
               type="date"
               className="col-sm form-control mb-3 mt-2"
@@ -658,7 +658,7 @@ export default function RequestReservation() {
         <div className="row pt-2">
           <div className="col-sm-2">
             <label htmlFor="reason" className="">
-              <b className="container">MOTIVO</b>
+              <b className="p-2">MOTIVO</b>
             </label>
           </div>
           <div className="col-sm-10">
@@ -691,7 +691,7 @@ export default function RequestReservation() {
           <label className="tag-label">PERIODOS</label>
           <div className="row p-3">
             <div className="col-sm-2">
-              <b>HORA INICIO</b>
+              <b className="p-1">HORA INICIO</b>
             </div>
             <div className="col-sm-4">
               <Form.Select
@@ -717,7 +717,7 @@ export default function RequestReservation() {
             </div>
 
             <div className="col-sm-2">
-              <b>HORA FIN</b>
+              <b className="p-1">HORA FIN</b>
             </div>
             <div className="col-sm-4">
               <Form.Select
@@ -782,15 +782,13 @@ export default function RequestReservation() {
                   </Form.Group>
                 </div>
                 <div className="col-sm-2 text-center align-self-center">
-                  <div>
+                  <div className="hover-edit w-100">
                     <button
                       type="button"
-                      className="btn btn-lg"
+                      className="btn w-100"
                       onClick={() => setShowTeachersModal(true)}
                     >
-                      <div className="edit-icon">
-                        <i className="bi bi-pencil-square"></i> Editar
-                      </div>
+                      <i className="bi bi-pencil-square fs-2"></i> Editar
                     </button>
                   </div>
                 </div>
@@ -804,11 +802,11 @@ export default function RequestReservation() {
             )}
           </div>
         </div>
-        <div className="tag-container position-relative mb-3 mt-4 ps-1 pe-1">
+        <div className="tag-container position-relative mb-3 mt-4 ps-1 pe-1 w-100">
           <label className="tag-label">AMBIENTE</label>
           <div className="row pt-3">
             <div className="col-sm-2">
-              <b className="container">BLOQUE: </b>
+              <b className="p-3">BLOQUE: </b>
             </div>
             <div className="col-sm-10">
               <Form.Select
@@ -835,7 +833,7 @@ export default function RequestReservation() {
           </div>
           <div className="row pt-3">
             <div className="col-sm-2">
-              <b className="container">AULA(s)</b>
+              <b className="p-3">AULA(s)</b>
             </div>
             {blockSelected === "" ? (
               <div className="text-center pb-4">
@@ -873,12 +871,12 @@ export default function RequestReservation() {
                     </Table>
                   )}
                 </div>
-                <div className="col-sm-2 align-self-center text-center">
-                  <div>
+                <div className="col-sm-2">
+                  <div className="w-100">
                     <Button
                       variant="secondary"
                       size="sm"
-                      className="custom-btn-gray mb-2 custom-btn-gray-outline"
+                      className="custom-btn-gray custom-btn-gray-outline w-100 text-truncate"
                       disabled={!suggAvailable}
                       onClick={getSuggest}
                     >
@@ -888,13 +886,14 @@ export default function RequestReservation() {
                       <Alert variant={"warning"}>{suggMessage.message}</Alert>
                     )}
                   </div>
-                  <div>
+                  <div className="hover-edit w-100 mt-1">
                     <button
                       type="button"
-                      className="btn btn-lg"
+                      className="btn w-100"
                       onClick={() => setShowClassroomsModal(true)}
                     >
-                      <i className="bi bi-pencil-square"></i> Editar
+                      <i className="bi bi-pencil-square fs-2"></i>
+                      Editar
                     </button>
                   </div>
                 </div>

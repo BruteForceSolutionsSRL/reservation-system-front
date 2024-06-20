@@ -10,15 +10,9 @@
   color: #28a745 !important;
 }
 
-/* .edit-icon {
-  display: inline-flex;
-  align-items: center;
-  padding: 5px;
-  border-radius: 4px;
-  transition: all 0.3s ease;
-}
-
-.edit-icon:hover {
-  border: 1px solid #ffffff;
+.hover-edit:hover {
+  background-color: #9c9c9c;
+  color: white;
+  border-radius: 10px;
   cursor: pointer;
-} */
+}

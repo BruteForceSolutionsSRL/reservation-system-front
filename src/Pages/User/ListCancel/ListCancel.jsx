@@ -31,10 +31,13 @@ export default function ListCancel() {
           each.reservation_status !== "RECHAZADO"
       );
       setReservations(filteredList);
-    } else if (status >= 300 && status < 400 && status >= 400 && status < 500) {
+    } else if (
+      (status >= 300 && status < 400) ||
+      (status >= 400 && status < 500)
+    ) {
       setMessage(data.message);
     } else if (status >= 500) {
-      setMessage("Ocurrio un error inesperado, intente nuevamente.");
+      setMessage("Ocurrió un error inesperado, intente nuevamente.");
     }
   };
 
@@ -45,12 +48,15 @@ export default function ListCancel() {
       ) : (
         <div className="container">
           <h1 className="text-center pb-3">Lista de solicitudes</h1>
-          <div className="overflow-y-auto overflow-x-auto">
+          <div
+            className="overflow-y-auto overflow-x-hidden"
+            style={{ height: "80vh" }}
+          >
             {reservations.length > 0 ? (
               <>
                 {reservations.map((each) => {
                   return (
-                    <div key={each.reservation_id}>
+                    <div key={each.reservation_id} className="mb-3">
                       <ElementCancel
                         {...each}
                         reload={(value) => setReload(value)}

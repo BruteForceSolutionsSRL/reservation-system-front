@@ -34,10 +34,8 @@ export default function ElementCancel(props) {
       content.title = "Mensaje";
       content.body = response.data.message;
     } else if (
-      response.status >= 300 &&
-      response.status < 400 &&
-      response.status >= 400 &&
-      response.status < 500
+      (response.status >= 300 && response.status < 400) ||
+      (response.status >= 400 && response.status < 500)
     ) {
       content.title = "Error";
       content.body = response.data.message;
@@ -52,32 +50,28 @@ export default function ElementCancel(props) {
 
   return (
     <>
-      <div
-        className="p-3 border border-dark rounded mb-2"
-        style={{ minWidth: "480px" }}
-      >
-        <div className="row ">
-          <div className="col-md-10">
-            <div className="d-flex justify-content-between align-items-center">
-              <div className="d-flex justify-content-start pt-1">
-                <span className="badge text-bg-dark">{subject_name}</span>
-                <span
-                  className={`badge text-bg-${
-                    reason_name === "EXAMEN"
-                      ? "success"
-                      : reason_name === "DEFENSA DE TESIS"
-                      ? "danger"
-                      : reason_name === "CLASES"
-                      ? "secondary"
-                      : reason_name === "PRACTICA" && "info text-white"
-                  }`}
-                >
-                  {reason_name}
-                </span>
-              </div>
-
-              <div className="pt-1">
-                <b className="p-1">ESTADO:</b>
+      <div className="border border-dark rounded mb-2 p-1">
+        <div className="row">
+          <div className="col-12 col-lg-10">
+            <div className="d-flex flex-column flex-sm-row justify-content-start align-items-start mb-2">
+              <span className="badge text-bg-dark w-100 text-truncate">
+                {subject_name}
+              </span>
+              <span
+                className={`badge text-bg-${
+                  reason_name === "EXAMEN"
+                    ? "success"
+                    : reason_name === "DEFENSA DE TESIS"
+                    ? "danger"
+                    : reason_name === "CLASES"
+                    ? "secondary"
+                    : reason_name === "PRACTICA" && "info text-white"
+                }`}
+              >
+                {reason_name}
+              </span>
+              <div className="d-flex flex-sm-row align-items-start">
+                <b>ESTADO:</b>
                 <span
                   className={`text-white badge text-bg-${
                     reservation_status === "PENDIENTE" ? "warning" : "success"
@@ -87,50 +81,51 @@ export default function ElementCancel(props) {
                 </span>
               </div>
             </div>
-            <div className="d-flex justify-content-between align-items-center">
+
+            <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start mb-2">
               <div>
-                <b className="pe-2">FECHA</b> <span>{reservation_date}</span>
+                <b>FECHA</b> <span>{reservation_date}</span>
               </div>
               <div>
-                <b className="pe-2">PERIDOS</b>
+                <b>PERIODOS</b>
                 <span>
                   {time_slot[0]}-{time_slot[1]}
                 </span>
               </div>
               <div>
-                <b className="pe-2">CANTIDAD DE ESTUDIANTES</b>
+                <b className="">CANTIDAD DE ESTUDIANTES</b>
                 <span>{quantity}</span>
               </div>
             </div>
-            <div>
+
+            <div className="d-flex flex-wrap mb-2">
               <b className="pe-2">AMBIENTES:</b>
-              {classrooms.map((classroom, index) => {
-                return (
-                  <span key={index} className="badge text-bg-secondary mx-1">
-                    {classroom.classroom_name}
-                  </span>
-                );
-              })}
+              {classrooms.map((classroom, index) => (
+                <span key={index} className="badge text-bg-secondary mx-1 mb-1">
+                  {classroom.classroom_name}
+                </span>
+              ))}
             </div>
-            <div className="pb-2">
-              <b className="">COLABORADORES:</b>
-              <span>
-                {groups.map((teacher, index) => {
-                  return (
-                    <span key={index} className="badge text-bg-primary">
-                      {teacher.teacher_name}
-                    </span>
-                  );
-                })}
-              </span>
+
+            <div className="d-flex flex-wrap mb-2">
+              <b className="pe-2">COLABORADORES:</b>
+              {groups.map((teacher, index) => (
+                <span key={index} className="badge text-bg-primary mx-1 mb-1">
+                  {teacher.teacher_name}
+                </span>
+              ))}
             </div>
           </div>
-          <div className="col-md-2 align-self-center">
+          <div className="col-12 col-lg-2 d-flex justify-content-lg-center align-items-center">
             <button
               className="w-100 btn btn-danger"
               onClick={() => setShow(true)}
             >
-              <b>Cancelar</b>
+              <b>
+                {reservation_status === "PENDIENTE"
+                  ? "Cancelar solicitud"
+                  : "Cancelar reserva"}
+              </b>
             </button>
           </div>
         </div>

@@ -1,11 +1,17 @@
 import { useState } from "react";
-import Collapse from "react-bootstrap/Collapse";
 import Modal from "react-bootstrap/Modal";
+import { cancelRequest } from "../../../services/requests";
+import { Spinner } from "react-bootstrap";
 
 export default function ElementCancel(props) {
-  const URL = import.meta.env.VITE_REACT_API_URL;
-  const [open, setOpen] = useState(false);
   const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [modalContent, setModalContent] = useState({
+    title: "Advertencia",
+    body: "¿Está seguro de cancelar la solicitud?",
+    show: false,
+    footer: 0,
+  });
   const {
     reservation_id,
     subject_name,
@@ -15,116 +21,162 @@ export default function ElementCancel(props) {
     groups,
     classrooms,
     reason_name,
+    reservation_status,
   } = props;
 
-  const cancelRequest = async () => {
-    let token = localStorage.getItem("token");
-    await fetch(URL + `reservations/${reservation_id}/cancel`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "aplication/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setShow(false);
-        props.reload(true);
-      })
-      .catch((err) => {
-        if (err) throw console.error(err);
-      });
+  const requestCancel = async () => {
+    setLoading(true);
+    let response = await cancelRequest(reservation_id).finally(() => {
+      setLoading(false);
+    });
+    let content = {};
+    if (response.status >= 200 && response.status < 300) {
+      content.title = "Mensaje";
+      content.body = response.data.message;
+    } else if (
+      response.status >= 300 &&
+      response.status < 400 &&
+      response.status >= 400 &&
+      response.status < 500
+    ) {
+      content.title = "Error";
+      content.body = response.data.message;
+    } else if (response.status >= 500) {
+      content.title = "Error";
+      content.body = "Ocurrió un error inesperado, intente nuevamente.";
+    }
+    content.show = true;
+    content.footer = 1;
+    setModalContent(content);
   };
+
   return (
     <>
-      <div className="container-sm border rounded border-dark mb-3">
-        <div className="row" style={{ minWidth: "470px" }}>
-          <div className="col-6">
-            <b className="text-success">MATERIA</b>
-            <div>{subject_name}</div>
-          </div>
-          <div className="col-2">
-            <b className="text-success">FECHA</b>
-            <div>{reservation_date}</div>
-          </div>
-          <div className="col-2">
-            <b className="text-success">PERIODOS</b>
+      <div
+        className="p-3 border border-dark rounded mb-2"
+        style={{ minWidth: "480px" }}
+      >
+        <div className="row ">
+          <div className="col-md-10">
+            <div className="d-flex justify-content-between align-items-center">
+              <div className="d-flex justify-content-start pt-1">
+                <span className="badge text-bg-dark">{subject_name}</span>
+                <span
+                  className={`badge text-bg-${
+                    reason_name === "EXAMEN"
+                      ? "success"
+                      : reason_name === "DEFENSA DE TESIS"
+                      ? "danger"
+                      : reason_name === "CLASES"
+                      ? "secondary"
+                      : reason_name === "PRACTICA" && "info text-white"
+                  }`}
+                >
+                  {reason_name}
+                </span>
+              </div>
+
+              <div className="pt-1">
+                <b className="p-1">ESTADO:</b>
+                <span
+                  className={`text-white badge text-bg-${
+                    reservation_status === "PENDIENTE" ? "warning" : "success"
+                  }`}
+                >
+                  {reservation_status}
+                </span>
+              </div>
+            </div>
+            <div className="d-flex justify-content-between align-items-center">
+              <div>
+                <b className="pe-2">FECHA</b> <span>{reservation_date}</span>
+              </div>
+              <div>
+                <b className="pe-2">PERIDOS</b>
+                <span>
+                  {time_slot[0]}-{time_slot[1]}
+                </span>
+              </div>
+              <div>
+                <b className="pe-2">CANTIDAD DE ESTUDIANTES</b>
+                <span>{quantity}</span>
+              </div>
+            </div>
             <div>
-              {time_slot[0]}-{time_slot[1]}
+              <b className="pe-2">AMBIENTES:</b>
+              {classrooms.map((classroom, index) => {
+                return (
+                  <span key={index} className="badge text-bg-secondary mx-1">
+                    {classroom.classroom_name}
+                  </span>
+                );
+              })}
+            </div>
+            <div className="pb-2">
+              <b className="">COLABORADORES:</b>
+              <span>
+                {groups.map((teacher, index) => {
+                  return (
+                    <span key={index} className="badge text-bg-primary">
+                      {teacher.teacher_name}
+                    </span>
+                  );
+                })}
+              </span>
             </div>
           </div>
-          <div className="col-2">
+          <div className="col-md-2 align-self-center">
             <button
-              className="btn btn-outline-primary text-center"
-              onClick={() => setOpen(!open)}
-              aria-controls="example-collapse-text"
-              aria-expanded={open}
+              className="w-100 btn btn-danger"
+              onClick={() => setShow(true)}
             >
-              +
+              <b>Cancelar</b>
             </button>
           </div>
         </div>
-        <div>
-          <Collapse in={open}>
-            <div id="example-collapse-text" className="">
-              <div>
-                <b className="text-success">Docente(s)</b>{" "}
-                {groups.map((teacher) => {
-                  return teacher.teacher_name + ", ";
-                })}
-              </div>
-              <div className="row">
-                <div className="col">
-                  <b className="text-success">Cantidad de estudiantes: </b>{" "}
-                  {quantity}
-                </div>
-                <div className="col">
-                  <b className="text-success">Motivo de reserva: </b>{" "}
-                  {reason_name}
-                </div>
-              </div>
-              <div>
-                <b className="text-success">Ambiente(s)</b>{" "}
-                {classrooms.map((classroom) => {
-                  return classroom.classroom_name + ", ";
-                })}
-              </div>
-              <div className="d-flex justify-content-end mb-3">
-                <button
-                  className="btn btn-outline-danger"
-                  onClick={() => setShow(true)}
-                >
-                  Cancelar solicitud
-                </button>
-              </div>
-            </div>
-          </Collapse>
-        </div>
       </div>
 
-      <Modal
-        show={show}
-        onHide={() => setShow(false)}
-        centered
-        dialogClassName="modal-90w modal-dialog-scrollable modal-sm"
-        aria-labelledby="request-modal"
-      >
+      <Modal show={show} onHide={() => setShow(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title id="request-modal">Solicitud de reserva</Modal.Title>
+          <Modal.Title>{modalContent.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div>¿Esta seguro de cancelar la solicitud?</div>
+          <div>{modalContent.body}</div>
         </Modal.Body>
         <Modal.Footer>
-          <button
-            className="btn btn-outline-secondary"
-            onClick={() => setShow(false)}
-          >
-            Cancelar
-          </button>
-          <button className="btn btn-outline-danger" onClick={cancelRequest}>
-            Aceptar
-          </button>
+          {modalContent.footer === 0 ? (
+            <>
+              {loading && (
+                <Spinner animation="border" variant="secondary" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </Spinner>
+              )}
+              <button
+                className="btn btn-outline-danger"
+                onClick={requestCancel}
+                disabled={loading}
+              >
+                Aceptar
+              </button>
+              <button
+                className="btn btn-outline-secondary"
+                onClick={() => setShow(false)}
+                disabled={loading}
+              >
+                Cancelar
+              </button>
+            </>
+          ) : (
+            <button
+              className="btn btn-outline-danger"
+              onClick={() => {
+                setShow(false);
+                props.reload(true);
+              }}
+            >
+              Aceptar
+            </button>
+          )}
         </Modal.Footer>
       </Modal>
     </>

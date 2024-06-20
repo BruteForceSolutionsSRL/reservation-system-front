@@ -26,6 +26,58 @@ export function getTeacherRequests() {
     });
 }
 
+export async function getListToCancel() {
+  let token = localStorage.getItem("token");
+  let user = JSON.parse(localStorage.getItem("userInformation"));
+  let responseFetch = {};
+  return fetch(url + `reservations/teacher/${user.person_id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
+    },
+  })
+    .then((response) => {
+      responseFetch.status = response.status;
+      return response.json();
+    })
+    .then((data) => {
+      responseFetch.data = data;
+      return responseFetch;
+    })
+    .catch((err) => {
+      console.error(err);
+      responseFetch.status = 500;
+      responseFetch.data = [];
+      return responseFetch;
+    });
+}
+
+export function cancelRequest(reservation_id) {
+  let token = localStorage.getItem("token");
+  let responseFetch = {};
+  return fetch(url + `reservations/${reservation_id}/cancel`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
+    },
+  })
+    .then((response) => {
+      responseFetch.status = response.status;
+      return response.json();
+    })
+    .then((data) => {
+      responseFetch.data = data;
+      return responseFetch;
+    })
+    .catch((err) => {
+      console.error(err);
+      responseFetch.status = 500;
+      responseFetch.data = [];
+      return responseFetch;
+    });
+}
+
 export function getReservationsPerClassrooms(id) {
   let token = localStorage.getItem("token");
   return fetch(url + `reservations/classroom/${id}`, {

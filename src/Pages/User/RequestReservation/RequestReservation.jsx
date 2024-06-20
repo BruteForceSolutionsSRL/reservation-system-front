@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Form, Modal, Table } from "react-bootstrap";
+import { Alert, Button, Form, Modal, Table } from "react-bootstrap";
 import { getSubjects } from "../../../services/subjects";
 import { getCurrentDate } from "../../../utils/getCurrentDate";
 import { getRequestsReasons, sendRequest } from "../../../services/requests";
@@ -12,6 +12,7 @@ import {
 } from "../../../services/classrooms";
 import ModalTable from "../../../Components/ModalTable/ModalTable";
 import { Spinner } from "react-bootstrap";
+import "./RequestReservation.css";
 
 export default function RequestReservation() {
   const user = JSON.parse(localStorage.getItem("userInformation"));
@@ -584,12 +585,12 @@ export default function RequestReservation() {
 
   return (
     <div className="container">
-      <h1 className="text-center pb-2">Reservar ambiente</h1>
+      <h1 className="text-center pb-2 mb-3">Reservar ambiente</h1>
       <Form>
         <div className="row">
           <div className="col-sm-2">
             <label htmlFor="subjects">
-              <b>MATERIA</b>
+              <b className="p-2">MATERIA</b>
             </label>
           </div>
           <div className="col-sm-10">
@@ -619,10 +620,10 @@ export default function RequestReservation() {
         </div>
         <div className="row pt-3">
           <div className="col-6">
-            <b className="">CANTIDAD DE ESTUDIANTES</b>
+            <b className="p-2">CANTIDAD DE ESTUDIANTES</b>
             <Form.Control
               type="text"
-              className="form-control"
+              className="form-control mb-3 mt-2"
               value={quantity ?? ""}
               onChange={handleChangeQuantity}
               placeholder="Ingrese la cantidad de estudiantes para la solicitud..."
@@ -640,10 +641,10 @@ export default function RequestReservation() {
             </Form.Control.Feedback>
           </div>
           <div className="col-6">
-            <b className="col-1">FECHA</b>
+            <b className="col-1 p-2">FECHA</b>
             <Form.Control
               type="date"
-              className="col-sm form-control"
+              className="col-sm form-control mb-3 mt-2"
               value={dateValue}
               onChange={handleDateChange}
               min={getCurrentDate()}
@@ -657,7 +658,7 @@ export default function RequestReservation() {
         <div className="row pt-2">
           <div className="col-sm-2">
             <label htmlFor="reason" className="">
-              <b>MOTIVO</b>
+              <b className="p-2">MOTIVO</b>
             </label>
           </div>
           <div className="col-sm-10">
@@ -686,11 +687,11 @@ export default function RequestReservation() {
           </div>
         </div>
 
-        <div className="mt-2 ps-1 pe-1 border rounded">
-          <b>PERIODOS</b>
+        <div className="tag-container position-relative mb-3 mt-4 ps-1 pe-1">
+          <label className="tag-label">PERIODOS</label>
           <div className="row p-3">
             <div className="col-sm-2">
-              <b>HORA INICIO</b>
+              <b className="p-1">HORA INICIO</b>
             </div>
             <div className="col-sm-4">
               <Form.Select
@@ -716,7 +717,7 @@ export default function RequestReservation() {
             </div>
 
             <div className="col-sm-2">
-              <b>HORA FIN</b>
+              <b className="p-1">HORA FIN</b>
             </div>
             <div className="col-sm-4">
               <Form.Select
@@ -737,8 +738,8 @@ export default function RequestReservation() {
           </div>
         </div>
 
-        <div className="mt-2 ps-1 pe-1 border rounded">
-          <b>DOCENTE</b>
+        <div className="tag-container position-relative mb-3 mt-4 ps-1 pe-1">
+          <label className="tag-label">DOCENTE</label>
           <div className="row p-3">
             {subjectSelected === "" ? (
               <div className="text-center pb-4">
@@ -781,13 +782,13 @@ export default function RequestReservation() {
                   </Form.Group>
                 </div>
                 <div className="col-sm-2 text-center align-self-center">
-                  <div>
+                  <div className="hover-edit w-100">
                     <button
                       type="button"
-                      className="btn btn-lg"
+                      className="btn w-100"
                       onClick={() => setShowTeachersModal(true)}
                     >
-                      <i className="bi bi-pencil-square"></i> Editar
+                      <i className="bi bi-pencil-square fs-2"></i> Editar
                     </button>
                   </div>
                 </div>
@@ -801,11 +802,11 @@ export default function RequestReservation() {
             )}
           </div>
         </div>
-        <div className="mt-2 ps-1 pe-1 border rounded">
-          <b>AMBIENTE</b>
+        <div className="tag-container position-relative mb-3 mt-4 ps-1 pe-1 w-100">
+          <label className="tag-label">AMBIENTE</label>
           <div className="row pt-3">
             <div className="col-sm-2">
-              <b>BLOQUE: </b>
+              <b className="p-3">BLOQUE: </b>
             </div>
             <div className="col-sm-10">
               <Form.Select
@@ -832,7 +833,7 @@ export default function RequestReservation() {
           </div>
           <div className="row pt-3">
             <div className="col-sm-2">
-              <b>AULA(s)</b>
+              <b className="p-3">AULA(s)</b>
             </div>
             {blockSelected === "" ? (
               <div className="text-center pb-4">
@@ -870,27 +871,29 @@ export default function RequestReservation() {
                     </Table>
                   )}
                 </div>
-                <div className="col-sm-2 align-self-center text-center">
-                  <div>
-                    <button
-                      type="button"
-                      className="btn btn-outline-secondary btn-sm mb-2"
+                <div className="col-sm-2">
+                  <div className="w-100">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="custom-btn-gray custom-btn-gray-outline w-100 text-truncate"
                       disabled={!suggAvailable}
                       onClick={getSuggest}
                     >
                       Generar sugerencia
-                    </button>
+                    </Button>
                     {suggMessage.invalid && (
                       <Alert variant={"warning"}>{suggMessage.message}</Alert>
                     )}
                   </div>
-                  <div>
+                  <div className="hover-edit w-100 mt-1">
                     <button
                       type="button"
-                      className="btn btn-lg"
+                      className="btn w-100"
                       onClick={() => setShowClassroomsModal(true)}
                     >
-                      <i className="bi bi-pencil-square"></i> Editar
+                      <i className="bi bi-pencil-square fs-2"></i>
+                      Editar
                     </button>
                   </div>
                 </div>
@@ -904,23 +907,24 @@ export default function RequestReservation() {
           </div>
         </div>
         <div className="d-flex justify-content-end m-5">
-          <button
+          <Button
+            variant="success"
             type="submit"
-            className="btn btn-outline-success"
+            className="custom-btn-green mb-2 custom-btn-green-outline"
             onClick={(e) => {
               e.preventDefault();
               validatedFields() &&
                 setModalSendRequest({
                   show: true,
                   content: {
-                    title: "Confirmacion",
+                    title: "¡Confirmación!",
                     body: "¿Esta seguro de enviar su solicitud de reserva?",
                   },
                 });
             }}
           >
             Reservar
-          </button>
+          </Button>
         </div>
       </Form>
 
@@ -932,10 +936,11 @@ export default function RequestReservation() {
             : setModalSendRequest({ ...modalSendRequest, show: false })
         }
         centered
+        backdrop="static"
       >
-        <Modal.Title className="p-3">
-          {modalSendRequest.content.title}
-        </Modal.Title>
+        <Modal.Header closeButton className="p-3">
+          <Modal.Title>{modalSendRequest.content.title}</Modal.Title>
+        </Modal.Header>
         <Modal.Body>
           <div>{modalSendRequest.content.body}</div>
           {quantityWarnings.show && (
@@ -958,34 +963,34 @@ export default function RequestReservation() {
               </div>
             </>
           )}
-          {modalSendRequest.content.title === "Confirmacion" && (
-            <div className="d-flex justify-content-end p-3">
-              {loadingSendRequest && (
-                <div className="p-2">
-                  <Spinner animation="border" variant="secondary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </Spinner>
-                </div>
-              )}
-              <button
-                className="m-1 btn btn-outline-success"
-                onClick={handleSendRequest}
-                disabled={loadingSendRequest}
-              >
-                Enviar
-              </button>
-              <button
-                className="m-1 btn btn-outline-secondary"
-                onClick={() =>
-                  setModalSendRequest({ ...modalSendRequest, show: false })
-                }
-                disabled={loadingSendRequest}
-              >
-                Cancelar
-              </button>
-            </div>
-          )}
         </Modal.Body>
+        {modalSendRequest.content.title === "¡Confirmación!" && (
+          <Modal.Footer>
+            {loadingSendRequest && (
+              <Spinner animation="border" variant="secondary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            )}
+            <Button
+              variant="success"
+              className="custom-btn-green custom-btn-green-outline"
+              onClick={handleSendRequest}
+              disabled={loadingSendRequest}
+            >
+              Enviar
+            </Button>
+            <Button
+              variant="secondary"
+              className="custom-btn-gray custom-btn-gray-outline"
+              onClick={() =>
+                setModalSendRequest({ ...modalSendRequest, show: false })
+              }
+              disabled={loadingSendRequest}
+            >
+              Cancelar
+            </Button>
+          </Modal.Footer>
+        )}
       </Modal>
 
       <ModalTable

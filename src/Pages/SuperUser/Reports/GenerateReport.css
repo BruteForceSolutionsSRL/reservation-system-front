@@ -1,0 +1,28 @@
+.custom-btn-primary-outline:hover {
+    background-color: transparent !important;
+    border: 1px solid #2478e6 !important;
+    color: #2478e6 !important;
+}
+
+.custom-btn-gray-outline:hover {
+    background-color: transparent !important;
+    border: 1px solid #6c757d !important;
+    color: #6c757d !important;
+}
+
+
+.custom-icon {
+    color: black;
+    transition: color 0.3s ease, filter 0.3s ease, text-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.custom-icon:hover {
+    color: rgb(0, 0, 0);
+    transform: scale(5);
+    /* Incrementa el tamaño para dar sensación de foco */
+    filter: brightness(5);
+    /* Incrementa el brillo del ícono */
+    text-shadow: 0 0 10px rgba(0, 0, 0, 2);
+    /* Añade un resplandor blanco */
+}
+

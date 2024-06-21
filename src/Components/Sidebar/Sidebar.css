@@ -5,28 +5,36 @@ body {
 
 #side_nav {
   background: white;
-  min-width: 200px;
+  min-width: 240px;
   max-width: 240px;
   transition: all 0.3s;
   font-size: 14px;
 }
+
 .content {
   min-height: 100vh;
   width: 100%;
 }
+
 hr.h-color {
   background: #eee;
 }
 
 .sidebar li.active {
   background: #eee;
-  border-radius: 8px;
+  border-radius: 50px;
+}
+.sidebar li:hover {
+  background-color: #eee;
+  border-radius: 50px;
 }
 
-.sidebar li.active a,
-.sidebar li.active a:hover {
-  color: #000;
+.hover:hover {
+  background-color: #eee;
+  cursor: pointer;
+  border-radius: 50px;
 }
+
 .sidebar li a {
   color: black;
 }
@@ -36,10 +44,14 @@ hr.h-color {
     margin-left: -250px;
     position: absolute;
     min-height: 100vh;
+
     z-index: 1;
   }
   #side_nav.active {
     margin-left: 0;
+  }
+  .title {
+    display: none;
   }
 }
 
@@ -48,10 +60,4 @@ hr.h-color {
   overflow-x: auto;
   overflow-y: auto;
   width: 100%;
-}
-
-.sidebar h1 {
-  font-size: 24px;
-  text-align: center;
-  margin-bottom: 20px;
 }

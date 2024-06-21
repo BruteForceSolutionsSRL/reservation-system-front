@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Modal, Spinner, Table } from "react-bootstrap";
 import { getReservationsPerClassrooms } from "../../../services/requests";
 import { deleteEnvironment } from "../../../services/classrooms";
+import "./DeleteEnvironment.css";
 
 export default function EnvironmentToDelete(props) {
   const {
@@ -100,7 +101,7 @@ export default function EnvironmentToDelete(props) {
         </div>
         <div className="col-sm-2 align-self-center d-flex justify-content-end">
           <button
-            className="btn btn-sm btn-outline-danger"
+            className="mt-1 custom-button btn btn-danger custom-btn-danger-outline"
             type="button"
             onClick={getRequestsList}
           >
@@ -108,9 +109,11 @@ export default function EnvironmentToDelete(props) {
           </button>
         </div>
       </div>
-      <Modal show={show} onHide={handleClose} size="lg">
+      <Modal show={show} onHide={handleClose} size="lg" centered>
+        <Modal.Header closeButton>
+          <h3>¿Está seguro de eliminar el ambiente?</h3>
+        </Modal.Header>
         <Modal.Body>
-          <h3>¿Esta seguro de eliminar el ambiente?</h3>
           <b>El ambiente tiene las siguientes reservas asignadas:</b>
           <div className="m-3">
             {requestsList.length === 0 ? (
@@ -184,53 +187,58 @@ export default function EnvironmentToDelete(props) {
           </div>
           <div className="m-4">
             <div>
-              <b className="text-danger">
+              <b className="">
                 Eliminar el ambiente tendrá las siguientes concecuencias:
               </b>
             </div>
             <div className="ps-3">
               <b className="text-danger">
-                *Todas las solicitudes pendientes/aceptadas serán
+                * Todas las solicitudes pendientes/aceptadas serán
                 rechazadas/canceladas.
               </b>
             </div>
             <div className="ps-3">
               <b className="text-danger">
-                *El ambiente ya no podrá ser seleccionado al momento de realizar
-                una nueva solicitud de reserva.
+                * El ambiente ya no podrá ser seleccionado al momento de
+                realizar una nueva solicitud de reserva.
               </b>
             </div>
             <div className="ps-3">
-              <b className="text-danger">*El ambiente ya no será editable.</b>
+              <b className="text-danger">* El ambiente ya no será editable.</b>
             </div>
           </div>
-
+        </Modal.Body>
+        <Modal.Footer>
           <div className="d-flex justify-content-end">
             <button
-              className="btn btn-outline-danger m-1"
+              className="btn btn-primary custom-btn-primary-outline  m-1"
               onClick={() => {
                 setShow(false);
                 setShowConfirm(true);
               }}
             >
-              Eliminar
+              Aceptar
             </button>
             <button
-              className="btn btn-outline-secondary m-1"
+              className="btn btn-secondary custom-btn-gray-outline m-1"
               onClick={() => setShow(false)}
             >
               Cancelar
             </button>
           </div>
-        </Modal.Body>
+        </Modal.Footer>
       </Modal>
 
       <Modal show={showConfirm} onHide={handleCloseConfirm} size="md" centered>
-        <Modal.Body>
+        <Modal.Header closeButton>
           <h3>¡Advertencia!</h3>
-          <div className="d-flex justify-content-center">
+        </Modal.Header>
+        <Modal.Body>
+          <div>
             <p>¿Está seguro de elimnar el ambiente?</p>
           </div>
+        </Modal.Body>
+        <Modal.Footer>
           <div className="d-flex justify-content-end">
             {loadingDelete && (
               <Spinner animation="border" variant="secondary" role="status">
@@ -238,34 +246,38 @@ export default function EnvironmentToDelete(props) {
               </Spinner>
             )}
             <button
-              className="btn btn-outline-danger m-1"
+              className="btn btn-primary custom-btn-primary-outline  m-1"
               onClick={sendDeleteEnvironment}
             >
               Confirmar
             </button>
             <button
-              className="btn btn-outline-secondary m-1"
+              className="btn btn-secondary custom-btn-gray-outline m-1"
               onClick={() => setShowConfirm(false)}
             >
               Cancelar
             </button>
           </div>
-        </Modal.Body>
+        </Modal.Footer>
       </Modal>
 
       <Modal show={showMsg} onHide={handleCloseMsgModal} size="md" centered>
+        <Modal.Header>
+          <h3>¡{msgModal.status}!</h3>
+        </Modal.Header>
         <Modal.Body>
-          <h3>{msgModal.status}</h3>
-          <b>{msgModal.message}</b>
+          <div>{msgModal.message}</div>
+        </Modal.Body>
+        <Modal.Footer>
           <div className="d-flex justify-content-end">
             <button
-              className="btn btn-outline-secondary"
+              className="btn btn-primary custom-btn-primary-outline "
               onClick={handleCloseMsgModal}
             >
               Aceptar
             </button>
           </div>
-        </Modal.Body>
+        </Modal.Footer>
       </Modal>
     </>
   );

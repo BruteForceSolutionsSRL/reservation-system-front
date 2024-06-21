@@ -331,6 +331,7 @@ function EditEnvironment() {
       <ReusableModal
         show={showModal}
         handleClose={handleCancelModal}
+        showCloseButton={true}
         title="Información del Ambiente"
         footerButtons={footerButtonsModal}
         size="lg"
@@ -478,13 +479,14 @@ function EditEnvironment() {
       <ReusableModal
         show={cancelModal}
         handleClose={handleCancelAceptedModal}
-        title="¡Alerta!"
+        showCloseButton={true}
+        title="¡Advertencia!"
         footerButtons={cancelButtonsModal}
       >
-        Se descartaran los cambios realizados
+        ¿Está seguro de descartar los cambios realizados?
       </ReusableModal>
 
-      <Modal show={saveModal} onHide={handleSaveCancelModal}>
+      <Modal show={saveModal} onHide={handleSaveCancelModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>¡Confirmación!</Modal.Title>
         </Modal.Header>
@@ -541,12 +543,17 @@ function EditEnvironment() {
         </Modal.Body>
         <Modal.Footer>
           {confirmationLoading && (
-            <Spinner animation="border" variant="secondary" role="status" />
+            <Spinner animation="border" variant="gray" role="status" />
           )}
           {saveButtonsModal.map((button, index) => (
             <Button
               key={index}
               variant={button.variant}
+              className={`me-3 ${
+                button.variant === "primary"
+                  ? "btn-primary custom-btn-primary-outline"
+                  : "btn-secondary custom-btn-gray-outline"
+              }`}
               onClick={button.onClick}
             >
               {button.label}
@@ -558,6 +565,7 @@ function EditEnvironment() {
       <ReusableModal
         show={confirmations}
         handleClose={handleCloseConfirmationsModal}
+        showCloseButton={false}
         title={backendError.status === 200 ? "¡Exito!" : "¡Error!"}
         footerButtons={saveButtonsConfirmationsModal}
       >

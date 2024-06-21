@@ -46,7 +46,7 @@ export default function DeleteEnvironment() {
 
   return (
     <div className="container">
-      <h1 className="text-center">Eliminar ambiente</h1>
+      <h1 className="text-center">Lista de Ambientes</h1>
       <SearchBar
         value={searchValue}
         onChange={(event) => {

@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
+import "./EditEnvironment.css";
 
 const ReusableModal = ({
   show,
@@ -8,16 +9,26 @@ const ReusableModal = ({
   children,
   footerButtons = [],
   size,
+  showCloseButton,
 }) => {
   return (
-    <Modal show={show} onHide={handleClose} size={size}>
-      <Modal.Header closeButton>
+    <Modal show={show} onHide={handleClose} size={size} centered>
+      <Modal.Header closeButton={showCloseButton}>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>{children}</Modal.Body>
       <Modal.Footer>
         {footerButtons.map((button, index) => (
-          <Button key={index} variant={button.variant} onClick={button.onClick}>
+          <Button
+            key={index}
+            variant={button.variant}
+            className={`me-3 ${
+              button.variant === "primary"
+                ? "btn-primary custom-btn-primary-outline"
+                : "btn-secondary custom-btn-gray-outline"
+            }`}
+            onClick={button.onClick}
+          >
             {button.label}
           </Button>
         ))}

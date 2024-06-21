@@ -33,6 +33,7 @@ const EnvironmentRegistration = () => {
     showAccept: true,
     onAccept: () => {},
     showCancel: true,
+    showCloseButton: true,
   });
 
   const url = import.meta.env.VITE_REACT_API_URL;
@@ -228,11 +229,12 @@ const EnvironmentRegistration = () => {
   const handleCancelClick = () => {
     setModalResponseData({
       show: true,
-      title: "Cancelar Registro",
-      message: "¿Estás seguro que quieres cancelar?",
+      title: "¡Advertencia!",
+      message: "¿Está seguro de cancelar el registro?",
       showAccept: true,
       onAccept: handleCancelConfirmation,
       showCancel: true,
+      showCloseButton: true,
     });
   };
 
@@ -268,6 +270,7 @@ const EnvironmentRegistration = () => {
         showAccept: true,
         onAccept: handleHideModal,
         showCancel: false,
+        showCloseButton: true,
       });
       return;
     }
@@ -300,6 +303,7 @@ const EnvironmentRegistration = () => {
         showAccept: true,
         onAccept: handleSubmit,
         showCancel: true,
+        showCloseButton: true,
       });
     }, 100);
   };
@@ -357,6 +361,7 @@ const EnvironmentRegistration = () => {
           showAccept: true,
           onAccept: handleHideModalSuccess,
           showCancel: false,
+          showCloseButton: false,
         });
       })
       .catch((error) => {
@@ -367,6 +372,7 @@ const EnvironmentRegistration = () => {
           showAccept: true,
           onAccept: handleHideModal,
           showCancel: false,
+          showCloseButton: false,
         });
       });
   };
@@ -423,7 +429,7 @@ const EnvironmentRegistration = () => {
               </Row>
 
               <Row className="mb-3">
-                <Col xs={12} md={2} >
+                <Col xs={12} md={2}>
                   <Form.Group controlId="formEnvironmentType">
                     <Form.Label className="fw-bold">
                       TIPO DE AMBIENTE
@@ -554,15 +560,14 @@ const EnvironmentRegistration = () => {
                 )}
                 <Button
                   type="submit"
-                  variant="primary"
-                  className="me-3"
+                  className="me-3 custom-btn-green custom-btn-green-outline btn btn-success"
                   disabled={spanLoading}
                 >
                   Registrar
                 </Button>
                 <Button
                   variant="secondary"
-                  className="me-3"
+                  className="me-3 btn btn-secondary custom-btn-gray-outline"
                   onClick={handleCancelClick}
                   disabled={spanLoading}
                 >
@@ -580,6 +585,7 @@ const EnvironmentRegistration = () => {
               onAccept={modalResponseData.onAccept}
               showCancel={modalResponseData.showCancel}
               onCancel={handleHideModal}
+              closeButton={modalResponseData.showCloseButton}
             />
           </Container>
         </>
@@ -597,6 +603,7 @@ const CModal = ({
   onAccept,
   showCancel,
   onCancel,
+  closeButton,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -608,7 +615,7 @@ const CModal = ({
 
   return (
     <Modal show={show} onHide={onHide} centered backdrop="static">
-      <Modal.Header>
+      <Modal.Header closeButton={closeButton}>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
 
@@ -619,6 +626,7 @@ const CModal = ({
         {showAccept && (
           <Button
             variant="primary"
+            className="me-3 btn btn-primary custom-btn-primary-outline"
             onClick={handleAcceptClick}
             disabled={isLoading}
           >
@@ -626,7 +634,12 @@ const CModal = ({
           </Button>
         )}
         {showCancel && (
-          <Button variant="secondary" onClick={onCancel} disabled={isLoading}>
+          <Button
+            variant="secondary"
+            className="me-3 btn btn-secondary custom-btn-gray-outline"
+            onClick={onCancel}
+            disabled={isLoading}
+          >
             Cancelar
           </Button>
         )}

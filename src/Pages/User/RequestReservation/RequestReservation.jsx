@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Form, Modal, Table } from "react-bootstrap";
+import { Alert, Button, Form, Modal } from "react-bootstrap";
 import { getSubjects } from "../../../services/subjects";
 import { getCurrentDate } from "../../../utils/getCurrentDate";
 import { getRequestsReasons, sendRequest } from "../../../services/requests";
@@ -7,15 +7,20 @@ import { getTimeSlots } from "../../../services/timeSlots";
 import { getBlocks } from "../../../services/blocks";
 import { getTeachersBySubject } from "../../../services/teachers";
 import {
-  getClassroomsByBlock,
+  getDisponibleClassrooms,
   getSuggestsClassrooms,
 } from "../../../services/classrooms";
-import ModalTable from "../../../Components/ModalTable/ModalTable";
 import { Spinner } from "react-bootstrap";
 import "./RequestReservation.css";
+import LoadingSpinner from "../../../Components/LoadingSpinner/LoadingSpinner";
+import Select from "react-select";
 
 export default function RequestReservation() {
   const user = JSON.parse(localStorage.getItem("userInformation"));
+  const [loadingPage, setLoadingPage] = useState(true);
+  // const [subjectsGroups, setSubjectsGroups] = useState([]);
+  const [groupSelected, setGroupSelected] = useState([]);
+  const [optionsGroups, setOptionsGroups] = useState([]);
   const [subjects, setSubjects] = useState(null);
   const [subjectSelected, setSubjectSelected] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -30,14 +35,12 @@ export default function RequestReservation() {
   const [endTimeSlots, setEndTimeSlots] = useState([]);
   const [blocks, setBlocks] = useState([]);
   const [blockSelected, setBlockSelected] = useState("");
-  const [teachersBySubject, setTeachersBySubject] = useState([]);
-  const [showTeachersModal, setShowTeachersModal] = useState(false);
-  const [teachersSelectedInModal, setTeachersSelectedInModal] = useState([]);
+  const [colaborators, setColaborators] = useState([]);
+  const [listColabs, setListColabs] = useState([]);
+  const [classByBlockList, setClassByBlockList] = useState([]);
   const [classroomsByBlock, setClassroomsByBlock] = useState([]);
-  const [showClassroomssModal, setShowClassroomsModal] = useState(false);
-  const [classroomsSelectedInModal, setClassroomsSelectedInModal] = useState(
-    []
-  );
+  const [classroomsOptions, setClassroomsOptions] = useState([]);
+  const [classroomsSelected, setClassroomsSelected] = useState([]);
   const [suggAvailable, setSuggAvailable] = useState(false);
   const [suggMessage, setSuggMessage] = useState({
     message: "",
@@ -82,6 +85,10 @@ export default function RequestReservation() {
       message: null,
       isInvalid: false,
     },
+    groups: {
+      message: null,
+      isInvalid: false,
+    },
   };
   const [errorsMessages, setErrorsMessages] = useState(errorsInitialState);
 
@@ -101,11 +108,13 @@ export default function RequestReservation() {
       fetchReasons(),
       fetchTimeSlots(),
       fetchBlocks(),
-    ]).catch((err) => console.error(err));
+    ])
+      .finally(() => setLoadingPage(false))
+      .catch((err) => console.error(err));
   }, []);
 
   useEffect(() => {
-    if (!!quantity.trim() && classroomsSelectedInModal.length > 0) {
+    if (!!quantity.trim() && classroomsSelected.length > 0) {
       if (isQuantityLessThan50PercentClassrooms()) {
         parseInt(quantity) > 24 &&
           setQuantityWarnings({
@@ -114,7 +123,7 @@ export default function RequestReservation() {
             show: true,
           });
       } else if (isQuantityMoreThan50PercentClassrooms()) {
-        parseInt(quantity) > 25 &&
+        parseInt(quantity) > 24 &&
           setQuantityWarnings({
             message:
               "ADVERTENCIA: La capacidad de las aulas es demasiado baja para la cantidad de estudiantes solicitada.",
@@ -132,7 +141,19 @@ export default function RequestReservation() {
         show: false,
       });
     }
-  }, [quantity, classroomsSelectedInModal]);
+  }, [quantity, classroomsSelected]);
+
+  useEffect(() => {
+    if (
+      !!quantity.trim() &&
+      quantity > 25 &&
+      !!blockSelected.trim() &&
+      startTime &&
+      !!(endTime + "").trim()
+    ) {
+      fetchClassroomsByBlock();
+    }
+  }, [blockSelected, startTime, endTime, dateValue]);
 
   const fetchSubjects = async () => {
     const sbjs = await getSubjects();
@@ -153,40 +174,112 @@ export default function RequestReservation() {
   };
 
   const fetchBlocks = async () => {
-    const blks = await getBlocks();
-    setBlocks(blks.data);
+    const { status, data } = await getBlocks();
+    let blocksWithClassrooms = data.filter(
+      ({ block_classrooms }) => block_classrooms.length > 0
+    );
+    if (status >= 200 && status < 300) {
+      setBlocks(blocksWithClassrooms);
+    } else if (
+      (status >= 300 && status < 400) ||
+      (status >= 400 && status < 500)
+    ) {
+      console.log(data.message);
+      setBlocks([]);
+    }
   };
 
   const fetchTeachersBySubject = async (subject_id) => {
     const tbs = await getTeachersBySubject(subject_id);
-    setTeachersSelectedInModal([]);
-    setTeachersBySubject(tbs);
+    let colabs = tbs.filter(({ person_id }) => person_id !== user.person_id);
+    let userGroups = tbs.filter(
+      ({ person_id }) => person_id === user.person_id
+    );
+    let listColaborators = colabs.map((person) => {
+      return {
+        value: person,
+        label:
+          person.teacher_name +
+          " " +
+          person.teacher_last_name +
+          "- GRUPO: " +
+          person.group_number,
+      };
+    });
+    let groupsOptions = userGroups.map(({ group_number }) => {
+      return { label: group_number, value: group_number };
+    });
+    setErrorsMessages({
+      ...errorsMessages,
+      groups: { isInvalid: false, message: "" },
+    });
+    setColaborators([]);
+    setOptionsGroups(groupsOptions);
+    setGroupSelected(groupsOptions[0]);
+    setSubjectsGroups(userGroups);
+    setListColabs(listColaborators);
+    setErrorsMessages({
+      ...errorsMessages,
+      subject: { isInvalid: false, message: "" },
+      groups: { isInvalid: false, message: "" },
+    });
   };
 
-  const fetchClassroomsByBlock = async (block_id) => {
-    const clsm = await getClassroomsByBlock(block_id);
-    setClassroomsSelectedInModal([]);
-    setClassroomsByBlock(clsm);
+  const fetchClassroomsByBlock = async () => {
+    let requestData = {
+      block_id: blockSelected,
+      time_slot_id: [startTime, endTime],
+      quantity: quantity,
+      date: dateValue,
+    };
+    const { status, data } = await getDisponibleClassrooms(requestData);
+    if (status >= 200 && status < 300) {
+      let classrooms = data.map((classroom) => {
+        return {
+          value: classroom,
+          label:
+            classroom.classroom_name + "- CAPACIDAD: " + classroom.capacity,
+        };
+      });
+      setClassroomsSelected([]);
+      setClassByBlockList(data);
+      setClassroomsOptions(classrooms);
+    } else if (
+      (status >= 300 && status < 400) ||
+      (status >= 400 && status < 500)
+    ) {
+      setClassroomsSelected([]);
+      setClassByBlockList([]);
+      setClassroomsOptions([]);
+    } else {
+      console.error(data.message);
+      setClassroomsSelected([]);
+      setClassByBlockList([]);
+      setClassroomsOptions([]);
+    }
   };
 
   const handleChangeSubjects = (value) => {
     setSubjectSelected(value);
     fetchTeachersBySubject(value);
+  };
 
-    let newErrorsMessages = { ...errorsMessages };
-    if (value === "") {
-      newErrorsMessages.subject = {
-        message: "Seleccione una materia.",
+  const handleChangeGroups = (event) => {
+    setGroupSelected(event);
+    let errorsMessage = { ...errorsMessages };
+
+    if (event.length === 0) {
+      errorsMessage.groups = {
         isInvalid: true,
+        message: "Seleccione una opción.",
       };
-      setErrorsMessages(newErrorsMessages);
     } else {
-      newErrorsMessages.subject = {
-        message: "",
+      errorsMessage.groups = {
         isInvalid: false,
+        message: "",
       };
-      setErrorsMessages(newErrorsMessages);
     }
+    setErrorsMessages(errorsMessage);
   };
 
   const handleChangeQuantity = (e) => {
@@ -227,7 +320,7 @@ export default function RequestReservation() {
     let totalClassroomsCapacity = 0;
     let totalCapacity = () => {
       let total = 0;
-      classroomsSelectedInModal.forEach((each) => (total += each.capacity));
+      classroomsByBlock.forEach((each) => (total += each.capacity));
       return total;
     };
     totalClassroomsCapacity = totalCapacity();
@@ -239,7 +332,7 @@ export default function RequestReservation() {
     let totalClassroomsCapacity = 0;
     let totalCapacity = () => {
       let total = 0;
-      classroomsSelectedInModal.forEach((each) => (total += each.capacity));
+      classroomsByBlock.forEach((each) => (total += each.capacity));
       return total;
     };
     totalClassroomsCapacity = totalCapacity();
@@ -275,8 +368,6 @@ export default function RequestReservation() {
 
   const handleChangeBlocks = ({ value }) => {
     setBlockSelected(value);
-    fetchClassroomsByBlock(value);
-
     let newErrorsMessages = { ...errorsMessages };
     if (value === "") {
       newErrorsMessages.block = {
@@ -292,67 +383,22 @@ export default function RequestReservation() {
     setErrorsMessages(newErrorsMessages);
   };
 
-  const handleClickTeacherRow = (teacher) => {
-    let tchrList = [...teachersSelectedInModal];
-
-    if (tchrList.includes(teacher)) {
-      tchrList = tchrList.filter((tchr) => tchr !== teacher);
-    } else {
-      tchrList = [...teachersSelectedInModal, teacher];
-    }
-
-    let newErrorsMessages = { ...errorsMessages };
-    let tchrInList = !!tchrList.find((teacher) => {
-      return teacher.person_id === user.person_id;
-    });
-
-    if (tchrList.length !== 0) {
-      if (tchrInList) {
-        newErrorsMessages.teachers = {
-          message: "",
-          isInvalid: false,
-        };
-      } else {
-        newErrorsMessages.teachers = {
-          message: "Seleccione uno de sus grupos.",
-          isInvalid: true,
-        };
-      }
-    } else {
-      newErrorsMessages.teachers = {
-        message: "Seleccione almenos uno de sus grupos.",
-        isInvalid: true,
-      };
-    }
-
-    setTeachersSelectedInModal(tchrList);
-    setErrorsMessages(newErrorsMessages);
+  const handleChangeColaborators = (event) => {
+    setColaborators(event);
   };
 
-  const handleClickClassroomRow = (classroom) => {
-    let clssList = [...classroomsSelectedInModal];
+  const handleChangeClassrooms = (event) => {
+    setClassroomsSelected(event);
+    setClassroomsByBlock(findClassroomsById(event));
+  };
 
-    if (clssList.includes(classroom)) {
-      clssList = clssList.filter((clr) => clr !== classroom);
-    } else {
-      clssList = [...classroomsSelectedInModal, classroom];
-    }
-
-    let newErrorsMessages = { ...errorsMessages };
-    if (clssList.length === 0) {
-      newErrorsMessages.classrooms = {
-        message: "Seleccione al menos un aula",
-        isInvalid: true,
-      };
-    } else {
-      newErrorsMessages.classrooms = {
-        message: "",
-        isInvalid: false,
-      };
-    }
-
-    setClassroomsSelectedInModal(clssList);
-    setErrorsMessages(newErrorsMessages);
+  const findClassroomsById = (classroomsList) => {
+    let result = classByBlockList.filter((classroom) => {
+      return classroomsList.find(
+        ({ value }) => value.classroom_id === classroom.classroom_id
+      );
+    });
+    return result ?? [];
   };
 
   const getSuggest = async () => {
@@ -368,7 +414,7 @@ export default function RequestReservation() {
         let array = [];
         try {
           suggests.data.map((each) => {
-            classroomsByBlock.forEach((cls) => {
+            classByBlockList.forEach((cls) => {
               if (cls.classroom_id === each.classroom_id) {
                 array = [...array, cls];
               }
@@ -380,13 +426,20 @@ export default function RequestReservation() {
             invalid: true,
           });
         }
-        return array;
+        let response = array.map((classroom) => {
+          return {
+            value: classroom,
+            label:
+              classroom.classroom_name + " - CAPACIDAD: " + classroom.capacity,
+          };
+        });
+        return response;
       };
       setErrorsMessages({
         ...errorsMessages,
         classrooms: { message: "", isInvalid: false },
       });
-      setClassroomsSelectedInModal(suggList);
+      handleChangeClassrooms(suggList());
       setSuggMessage({ message: "", invalid: false });
     } else if (suggests.status >= 400 && suggests.status < 500) {
       setSuggMessage({ message: suggests.data.message, invalid: true });
@@ -402,12 +455,13 @@ export default function RequestReservation() {
 
   const handleSendRequest = async () => {
     setLoadingSendRequest(true);
-    let groups = [...teachersSelectedInModal];
-    let groupNumbers = groups.map(
+    let colabs = colaborators.map((each) => each.value);
+    let groupNumbers = colabs.map(
       ({ teacher_subject_id }) => teacher_subject_id
     );
-    let classrooms = [...classroomsSelectedInModal];
-    let classroomIds = classrooms.map(({ classroom_id }) => classroom_id);
+    groupSelected.map((group) => groupNumbers.push(group.value));
+    let classrooms = [...classroomsSelected];
+    let classroomIds = classrooms.map(({ value }) => value.classroom_id);
     let request = {
       subject_id: subjectSelected,
       group_id: groupNumbers,
@@ -424,23 +478,36 @@ export default function RequestReservation() {
     );
 
     if (response.status >= 200 && response.status < 300) {
-      if (response.data.message === "La solicitud de reserva fue rechazada.") {
+      if (response.status === 201) {
         setModalSendRequest({
           content: {
-            title: "Solicitud rechazada",
+            title: "Solicitud de reserva rechazada",
             body: response.data.message,
           },
           show: true,
         });
-        setToInitalStateForm();
-      } else {
+      } else if (response.status === 202) {
         setModalSendRequest({
-          content: { title: "Solicitud aceptada", body: response.data.message },
+          content: {
+            title: "Solicitud de reserva aceptada",
+            body: response.data.message,
+          },
           show: true,
         });
-        setToInitalStateForm();
+      } else if (response.status === 200) {
+        setModalSendRequest({
+          content: {
+            title: "Solicitud de reserva pendiente",
+            body: response.data.message,
+          },
+          show: true,
+        });
       }
-    } else if (response.status >= 400 && response.status < 500) {
+      setToInitalStateForm();
+    } else if (
+      (response.status >= 300 && response.status < 400) ||
+      (response.status >= 400 && response.status < 500)
+    ) {
       setModalSendRequest({
         content: { title: "Error", body: response.data.message },
         show: true,
@@ -471,6 +538,14 @@ export default function RequestReservation() {
     if (!subjectSelected.trim()) {
       newErrorsMessages.subject = {
         message: "Seleccione una de las materias.",
+        isInvalid: true,
+      };
+      isValid = false;
+    }
+
+    if (groupSelected.length === 0) {
+      newErrorsMessages.groups = {
+        message: "Seleccione almenos un grupo de la materia a la solicitud.",
         isInvalid: true,
       };
       isValid = false;
@@ -508,25 +583,9 @@ export default function RequestReservation() {
       isValid = false;
     }
 
-    if (teachersSelectedInModal.length === 0) {
-      newErrorsMessages.teachers = {
-        message: "Seleccione al menos uno de sus grupos.",
-        isInvalid: true,
-      };
-      isValid = false;
-    }
-
     if (!blockSelected.trim()) {
       newErrorsMessages.block = {
         message: "Seleccione un bloque.",
-        isInvalid: true,
-      };
-      isValid = false;
-    }
-
-    if (classroomsSelectedInModal.length === 0) {
-      newErrorsMessages.classrooms = {
-        message: "Seleccione un aula para la solicitud.",
         isInvalid: true,
       };
       isValid = false;
@@ -553,8 +612,10 @@ export default function RequestReservation() {
     setEndTime("");
     setEndTimeSlots([]);
     setBlockSelected("");
-    setTeachersSelectedInModal([]);
-    setClassroomsSelectedInModal([]);
+    setClassroomsSelected([]);
+    setColaborators([]);
+    setClassroomsSelected([]);
+    setClassroomsOptions([]);
     setSuggAvailable(false);
     setErrorsMessages(errorsInitialState);
   };
@@ -584,470 +645,401 @@ export default function RequestReservation() {
   };
 
   return (
-    <div className="container">
-      <h1 className="text-center pb-2 mb-3">Reservar ambiente</h1>
-      <Form>
-        <div className="row">
-          <div className="col-sm-2">
-            <label htmlFor="subjects">
-              <b className="p-2">MATERIA</b>
-            </label>
-          </div>
-          <div className="col-sm-10">
-            <Form.Select
-              name="subjects"
-              id="subjects-select"
-              isInvalid={errorsMessages.subject.isInvalid}
-              value={subjectSelected}
-              onChange={(e) => handleChangeSubjects(e.currentTarget.value)}
-            >
-              <option value="" disabled={subjectSelected !== ""}>
-                Seleccione una opcion
-              </option>
-              {subjects?.map((each) => {
-                return (
-                  <option key={each.subject_id} value={each.subject_id}>
-                    {each.subject_name}
-                  </option>
-                );
-              })}
-            </Form.Select>
-            <Form.Control.Feedback type="invalid">
-              {errorsMessages.subject.isInvalid &&
-                errorsMessages.subject.message}
-            </Form.Control.Feedback>
-          </div>
-        </div>
-        <div className="row pt-3">
-          <div className="col-6">
-            <b className="p-2">CANTIDAD DE ESTUDIANTES</b>
-            <Form.Control
-              type="text"
-              className="form-control mb-3 mt-2"
-              value={quantity ?? ""}
-              onChange={handleChangeQuantity}
-              placeholder="Ingrese la cantidad de estudiantes para la solicitud..."
-              isInvalid={errorsMessages.quantity.isInvalid}
-              inputMode="numeric"
-            />
-
-            {quantityWarnings.show && (
-              <Alert variant={"warning"} className="text-center">
-                {quantityWarnings.message}
-              </Alert>
-            )}
-            <Form.Control.Feedback type="invalid">
-              {errorsMessages.quantity.message}
-            </Form.Control.Feedback>
-          </div>
-          <div className="col-6">
-            <b className="col-1 p-2">FECHA</b>
-            <Form.Control
-              type="date"
-              className="col-sm form-control mb-3 mt-2"
-              value={dateValue}
-              onChange={handleDateChange}
-              min={getCurrentDate()}
-              max="2024-07-06"
-            />
-          </div>
-          <Form.Control.Feedback type="invalid">
-            {errorsMessages.date.message}
-          </Form.Control.Feedback>
-        </div>
-        <div className="row pt-2">
-          <div className="col-sm-2">
-            <label htmlFor="reason" className="">
-              <b className="p-2">MOTIVO</b>
-            </label>
-          </div>
-          <div className="col-sm-10">
-            <Form.Select
-              name="reason"
-              id="reason-Form.Select"
-              className="col-sm-10 form-Form.Select"
-              value={reasonSelected}
-              onChange={(e) => handleChangeReason(e.target)}
-              isInvalid={errorsMessages.reason.isInvalid}
-            >
-              <option value="" disabled={reasonSelected !== ""}>
-                Seleccione una opcion
-              </option>
-              {reasons?.map((each) => {
-                return (
-                  <option key={each.reason_id} value={each.reason_id}>
-                    {each.reason_name}
-                  </option>
-                );
-              })}
-            </Form.Select>
-            <Form.Control.Feedback type="invalid">
-              {errorsMessages.reason.message}
-            </Form.Control.Feedback>
-          </div>
-        </div>
-
-        <div className="tag-container position-relative mb-3 mt-4 ps-1 pe-1">
-          <label className="tag-label">PERIODOS</label>
-          <div className="row p-3">
-            <div className="col-sm-2">
-              <b className="p-1">HORA INICIO</b>
-            </div>
-            <div className="col-sm-4">
-              <Form.Select
-                className="form-select"
-                value={startTime}
-                onChange={(e) => handleChangeStartTime(e.target)}
-                isInvalid={errorsMessages.periods.startTime.isInvalid}
-              >
-                <option value="" disabled={startTime !== ""}>
-                  Seleccione una opcion
-                </option>
-                {startTimeSlots.map((each) => {
-                  return (
-                    <option key={each.time_slot_id} value={each.time_slot_id}>
-                      {each.time}
-                    </option>
-                  );
-                })}
-              </Form.Select>
-              <Form.Control.Feedback type="invalid">
-                {errorsMessages.periods.startTime.message}
-              </Form.Control.Feedback>
-            </div>
-
-            <div className="col-sm-2">
-              <b className="p-1">HORA FIN</b>
-            </div>
-            <div className="col-sm-4">
-              <Form.Select
-                className="col-sm form-select"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                disabled={endTimeSlots.length === 0}
-              >
-                {endTimeSlots.map((each) => {
-                  return (
-                    <option key={each.time_slot_id} value={each.time_slot_id}>
-                      {each.time}
-                    </option>
-                  );
-                })}
-              </Form.Select>
-            </div>
-          </div>
-        </div>
-
-        <div className="tag-container position-relative mb-3 mt-4 ps-1 pe-1">
-          <label className="tag-label">DOCENTE</label>
-          <div className="row p-3">
-            {subjectSelected === "" ? (
-              <div className="text-center pb-4">
-                <b>Seleccione una materia</b>
-              </div>
-            ) : (
-              <>
-                <div className="col-sm-10">
-                  <Form.Group>
-                    {teachersSelectedInModal.length === 0 ? (
-                      <div className="text-center">
-                        <b>
-                          Presione el boton "
-                          <i className="bi bi-pencil-square"></i> Editar" para
-                          agregar o quitar docentes a la solicitud"
-                        </b>
-                      </div>
-                    ) : (
-                      <Table bordered>
-                        <thead>
-                          <tr>
-                            <th>Nombre</th>
-                            <th>Grupo</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {teachersSelectedInModal.map((each) => {
-                            return (
-                              <tr key={each.teacher_subject_id}>
-                                <td>
-                                  {each.teacher_name} {each.teacher_last_name}
-                                </td>
-                                <td>{each.group_number}</td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </Table>
-                    )}
-                  </Form.Group>
-                </div>
-                <div className="col-sm-2 text-center align-self-center">
-                  <div className="hover-edit w-100">
-                    <button
-                      type="button"
-                      className="btn w-100"
-                      onClick={() => setShowTeachersModal(true)}
+    <>
+      {loadingPage ? (
+        <LoadingSpinner />
+      ) : (
+        <div className="container p-3">
+          <h1 className="text-center py-2">Reservar ambiente</h1>
+          <Form>
+            <div className="row">
+              <div className="col-md-8 d-flex align-items-center">
+                <div className="d-flex flex-fill">
+                  <div className="py-2 pe-2">
+                    <label htmlFor="subjects">
+                      <b>MATERIA</b>
+                    </label>
+                  </div>
+                  <div className="py-2 flex-fill">
+                    <Form.Select
+                      id="subjects"
+                      isInvalid={errorsMessages.subject.isInvalid}
+                      value={subjectSelected}
+                      onChange={(e) =>
+                        handleChangeSubjects(e.currentTarget.value)
+                      }
                     >
-                      <i className="bi bi-pencil-square fs-2"></i> Editar
-                    </button>
+                      <option value="" disabled={subjectSelected !== ""}>
+                        Seleccione una opcion
+                      </option>
+                      {subjects?.map((each) => {
+                        return (
+                          <option key={each.subject_id} value={each.subject_id}>
+                            {each.subject_name}
+                          </option>
+                        );
+                      })}
+                    </Form.Select>
+                    <Form.Control.Feedback type="invalid">
+                      {errorsMessages.subject.isInvalid &&
+                        errorsMessages.subject.message}
+                    </Form.Control.Feedback>
                   </div>
                 </div>
+              </div>
+              {subjectSelected && (
+                <>
+                  <div className="col-md-4">
+                    <div className="d-flex ">
+                      <div className="p-3">
+                        <label htmlFor="group">
+                          <b>GRUPO</b>
+                        </label>
+                      </div>
+                      <div className="flex-fill py-2">
+                        <Select
+                          isMulti
+                          options={optionsGroups}
+                          onChange={handleChangeGroups}
+                          value={groupSelected}
+                          placeholder="Seleccione un grupo"
+                          noOptionsMessage={() =>
+                            "Todas las opciones fueron seleccionadas"
+                          }
+                          closeMenuOnSelect={false}
+                          className={`${
+                            errorsMessages.groups.isInvalid &&
+                            "border border-danger"
+                          }`}
+                        />
 
-                {errorsMessages.teachers.isInvalid && (
-                  <div className="d-block invalid-feedback">
-                    {errorsMessages.teachers.message}
+                        {errorsMessages.groups.isInvalid && (
+                          <div className="d-block invalid-feedback">
+                            {errorsMessages.groups.message}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                )}
+                </>
+              )}
+            </div>
+
+            {subjectSelected && listColabs.length > 0 && (
+              <>
+                <div className="d-flex flex-column">
+                  <b className="pe-3">COLABORADORES</b>
+                  <div className="flex-fill">
+                    <Select
+                      isMulti
+                      options={listColabs}
+                      onChange={handleChangeColaborators}
+                      value={colaborators}
+                      noOptionsMessage={() =>
+                        "Todas las opciones fueron seleccionadas"
+                      }
+                      placeholder="Agregar colaboradores a la solicitud"
+                      closeMenuOnSelect={false}
+                    />
+                    <div className="pt-1">
+                      <i className="text-success">*Campo opcional</i>
+                    </div>
+                  </div>
+                </div>
               </>
             )}
-          </div>
-        </div>
-        <div className="tag-container position-relative mb-3 mt-4 ps-1 pe-1 w-100">
-          <label className="tag-label">AMBIENTE</label>
-          <div className="row pt-3">
-            <div className="col-sm-2">
-              <b className="p-3">BLOQUE: </b>
-            </div>
-            <div className="col-sm-10">
-              <Form.Select
-                className="form-select"
-                value={blockSelected}
-                onChange={(e) => handleChangeBlocks(e.target)}
-                isInvalid={errorsMessages.block.isInvalid}
-              >
-                <option value="" disabled={blockSelected !== ""}>
-                  Seleccione una opcion
-                </option>
-                {blocks.map((each) => {
-                  return (
-                    <option key={each.block_id} value={each.block_id}>
-                      {each.block_name}
-                    </option>
-                  );
-                })}
-              </Form.Select>
-              <Form.Control.Feedback type="invalid">
-                {errorsMessages.block.message}
-              </Form.Control.Feedback>
-            </div>
-          </div>
-          <div className="row pt-3">
-            <div className="col-sm-2">
-              <b className="p-3">AULA(s)</b>
-            </div>
-            {blockSelected === "" ? (
-              <div className="text-center pb-4">
-                <b>Seleccione un bloque</b>
-              </div>
-            ) : (
-              <>
-                <div className="col-sm-8">
-                  {classroomsSelectedInModal.length === 0 ? (
-                    <div className="text-center">
-                      <b>
-                        Presione el boton "
-                        <i className="bi bi-pencil-square"></i> Editar" para
-                        agregar o quitar aulas de la solicitud"
-                      </b>
-                    </div>
-                  ) : (
-                    <Table bordered>
-                      <thead>
-                        <tr>
-                          <th>Nombre</th>
-                          <th>Capacidad</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {classroomsSelectedInModal.map((each) => {
-                          return (
-                            <tr key={each.classroom_id}>
-                              <td>{each.classroom_name}</td>
-                              <td>{each.capacity}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </Table>
-                  )}
+            <div className="row pt-2">
+              <div className="col-lg-5">
+                <div className="d-flex py-2">
+                  <div className="pe-3">
+                    <label className="d-flex align-self-center">
+                      <b>MOTIVO DE RESERVA</b>
+                    </label>
+                  </div>
+                  <div className="flex-fill">
+                    <Form.Select
+                      value={reasonSelected}
+                      onChange={(e) => handleChangeReason(e.target)}
+                      isInvalid={errorsMessages.reason.isInvalid}
+                    >
+                      <option value="" disabled={reasonSelected !== ""}>
+                        Seleccione una opcion
+                      </option>
+                      {reasons?.map((each) => {
+                        return (
+                          <option key={each.reason_id} value={each.reason_id}>
+                            {each.reason_name}
+                          </option>
+                        );
+                      })}
+                    </Form.Select>
+                    <Form.Control.Feedback type="invalid">
+                      {errorsMessages.reason.message}
+                    </Form.Control.Feedback>
+                  </div>
                 </div>
+              </div>
+
+              <div className="col-lg-4">
+                <div className="d-flex">
+                  <b>CANTIDAD DE ESTUDIANTES</b>
+                  <div className="flex-fill">
+                    <Form.Control
+                      type="text"
+                      className="form-control"
+                      value={quantity ?? ""}
+                      onChange={handleChangeQuantity}
+                      placeholder="Ingrese la cantidad de estudiantes para la solicitud..."
+                      isInvalid={errorsMessages.quantity.isInvalid}
+                      inputMode="numeric"
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errorsMessages.quantity.message}
+                    </Form.Control.Feedback>
+                  </div>
+                </div>
+
+                {quantityWarnings.show && (
+                  <Alert variant={"warning"} className="text-center">
+                    {quantityWarnings.message}
+                  </Alert>
+                )}
+              </div>
+              <div className="col-lg-3">
+                <div className="d-flex align-items-center">
+                  <b className=" pe-2">FECHA</b>
+                  <Form.Control
+                    type="date"
+                    className="form-control"
+                    value={dateValue}
+                    onChange={handleDateChange}
+                    min={getCurrentDate()}
+                    max="2024-07-06"
+                  />
+                </div>
+                <Form.Control.Feedback type="invalid">
+                  {errorsMessages.date.message}
+                </Form.Control.Feedback>
+              </div>
+            </div>
+
+            <div className="tag-container position-relative my-2 ps-1 pe-1">
+              <label className="tag-label">PERIODOS</label>
+              <div className="row p-3">
                 <div className="col-sm-2">
-                  <div className="w-100">
+                  <b className="p-1">HORA INICIO</b>
+                </div>
+                <div className="col-sm-4">
+                  <Form.Select
+                    className="form-select"
+                    value={startTime}
+                    onChange={(e) => handleChangeStartTime(e.target)}
+                    isInvalid={errorsMessages.periods.startTime.isInvalid}
+                  >
+                    <option value="" disabled={startTime !== ""}>
+                      Seleccione una opcion
+                    </option>
+                    {startTimeSlots.map((each) => {
+                      return (
+                        <option
+                          key={each.time_slot_id}
+                          value={each.time_slot_id}
+                        >
+                          {each.time}
+                        </option>
+                      );
+                    })}
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">
+                    {errorsMessages.periods.startTime.message}
+                  </Form.Control.Feedback>
+                </div>
+
+                <div className="col-sm-2">
+                  <b className="p-1">HORA FIN</b>
+                </div>
+                <div className="col-sm-4">
+                  <Form.Select
+                    className="col-sm form-select"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    disabled={endTimeSlots.length === 0}
+                  >
+                    {endTimeSlots.map((each) => {
+                      return (
+                        <option
+                          key={each.time_slot_id}
+                          value={each.time_slot_id}
+                        >
+                          {each.time}
+                        </option>
+                      );
+                    })}
+                  </Form.Select>
+                </div>
+              </div>
+            </div>
+
+            <div className="d-flex">
+              <div className="pe-2">
+                <b>BLOQUE: </b>
+              </div>
+              <div className="flex-fill">
+                <Form.Select
+                  className="form-select"
+                  value={blockSelected}
+                  onChange={(e) => handleChangeBlocks(e.target)}
+                  isInvalid={errorsMessages.block.isInvalid}
+                >
+                  <option value="" disabled={blockSelected !== ""}>
+                    Seleccione una opcion
+                  </option>
+                  {blocks.map((each) => {
+                    return (
+                      <option key={each.block_id} value={each.block_id}>
+                        {each.block_name}
+                      </option>
+                    );
+                  })}
+                </Form.Select>
+                <Form.Control.Feedback type="invalid">
+                  {errorsMessages.block.message}
+                </Form.Control.Feedback>
+              </div>
+            </div>
+
+            {blockSelected && classroomsOptions.length > 0 && (
+              <>
+                <div className="row">
+                  <div className="col-md-9">
+                    <div className="d-flex pt-3">
+                      <b className="pe-3">AULAS</b>
+                      <div className="w-100">
+                        <div>
+                          <Select
+                            isMulti
+                            options={classroomsOptions}
+                            onChange={handleChangeClassrooms}
+                            value={classroomsSelected}
+                            noOptionsMessage={() =>
+                              "Todas las opciones fueron seleccionadas"
+                            }
+                            placeholder="Seleccionar aulas para la solicitud."
+                            closeMenuOnSelect={false}
+                          />
+                        </div>
+                        <div className="">
+                          <i className="text-success">*Campo opcional</i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-3 align-self-center">
                     <Button
                       variant="secondary"
                       size="sm"
-                      className="custom-btn-gray custom-btn-gray-outline w-100 text-truncate"
+                      className="custom-btn-gray custom-btn-gray-outline w-100"
                       disabled={!suggAvailable}
                       onClick={getSuggest}
                     >
-                      Generar sugerencia
+                      Generar sugerencia de aulas
                     </Button>
-                    {suggMessage.invalid && (
-                      <Alert variant={"warning"}>{suggMessage.message}</Alert>
-                    )}
-                  </div>
-                  <div className="hover-edit w-100 mt-1">
-                    <button
-                      type="button"
-                      className="btn w-100"
-                      onClick={() => setShowClassroomsModal(true)}
-                    >
-                      <i className="bi bi-pencil-square fs-2"></i>
-                      Editar
-                    </button>
                   </div>
                 </div>
-                {errorsMessages.classrooms.isInvalid && (
-                  <div className="d-block invalid-feedback">
-                    {errorsMessages.classrooms.message}
-                  </div>
+                {suggMessage.invalid && (
+                  <Alert variant={"warning"}>{suggMessage.message}</Alert>
                 )}
               </>
             )}
-          </div>
-        </div>
-        <div className="d-flex justify-content-end m-5">
-          <Button
-            variant="success"
-            type="submit"
-            className="custom-btn-green mb-2 custom-btn-green-outline"
-            onClick={(e) => {
-              e.preventDefault();
-              validatedFields() &&
-                setModalSendRequest({
-                  show: true,
-                  content: {
-                    title: "¡Confirmación!",
-                    body: "¿Esta seguro de enviar su solicitud de reserva?",
-                  },
-                });
-            }}
+            <div className="d-flex justify-content-end pt-3">
+              <Button
+                variant="success"
+                type="submit"
+                className="custom-btn-green custom-btn-green-outline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  validatedFields() &&
+                    setModalSendRequest({
+                      show: true,
+                      content: {
+                        title: "¡Confirmación!",
+                        body: "¿Esta seguro de enviar su solicitud de reserva?",
+                      },
+                    });
+                }}
+              >
+                Reservar ambiente
+              </Button>
+            </div>
+          </Form>
+
+          <Modal
+            show={modalSendRequest.show}
+            onHide={() =>
+              loadingSendRequest
+                ? setModalSendRequest({ ...modalSendRequest, show: true })
+                : setModalSendRequest({ ...modalSendRequest, show: false })
+            }
+            centered
+            backdrop="static"
           >
-            Reservar
-          </Button>
-        </div>
-      </Form>
-
-      <Modal
-        show={modalSendRequest.show}
-        onHide={() =>
-          loadingSendRequest
-            ? setModalSendRequest({ ...modalSendRequest, show: true })
-            : setModalSendRequest({ ...modalSendRequest, show: false })
-        }
-        centered
-        backdrop="static"
-      >
-        <Modal.Header closeButton className="p-3">
-          <Modal.Title>{modalSendRequest.content.title}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div>{modalSendRequest.content.body}</div>
-          {quantityWarnings.show && (
-            <>
-              <div className="p-1">
-                <span>Tiene las siguientes advertencias:</span>
-              </div>
-              <Alert variant={"warning"} className="">
-                {quantityWarnings.message}
-              </Alert>
-              <div className="pb-2 pt-1">
-                <span>¿Está seguro de enviar la solicitud?</span>
-              </div>
-              <div className="pt-4">
-                <i>
-                  <b>Nota:</b> Las advertencias no impiden enviar la solicitud
-                  de reserva, pero estas deberan ser revisadas por un
-                  supervisor.
-                </i>
-              </div>
-            </>
-          )}
-        </Modal.Body>
-        {modalSendRequest.content.title === "¡Confirmación!" && (
-          <Modal.Footer>
-            {loadingSendRequest && (
-              <Spinner animation="border" variant="secondary" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
+            <Modal.Header closeButton className="p-3">
+              <Modal.Title>{modalSendRequest.content.title}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <div>{modalSendRequest.content.body}</div>
+              {quantityWarnings.show &&
+                modalSendRequest.content.title !== "Error" && (
+                  <>
+                    <div className="p-1">
+                      <span>Tiene las siguientes advertencias:</span>
+                    </div>
+                    <Alert variant={"warning"} className="">
+                      {quantityWarnings.message}
+                    </Alert>
+                    <div className="pb-2 pt-1">
+                      <span>¿Está seguro de enviar la solicitud?</span>
+                    </div>
+                    <div className="pt-4">
+                      <i>
+                        <b>Nota:</b> Las advertencias no impiden enviar la
+                        solicitud de reserva, pero estas deberan ser revisadas
+                        por un supervisor.
+                      </i>
+                    </div>
+                  </>
+                )}
+            </Modal.Body>
+            {modalSendRequest.content.title === "¡Confirmación!" && (
+              <Modal.Footer>
+                {loadingSendRequest && (
+                  <Spinner animation="border" variant="secondary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </Spinner>
+                )}
+                <Button
+                  variant="success"
+                  className="custom-btn-green custom-btn-green-outline"
+                  onClick={handleSendRequest}
+                  disabled={loadingSendRequest}
+                >
+                  Enviar
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="custom-btn-gray custom-btn-gray-outline"
+                  onClick={() =>
+                    setModalSendRequest({ ...modalSendRequest, show: false })
+                  }
+                  disabled={loadingSendRequest}
+                >
+                  Cancelar
+                </Button>
+              </Modal.Footer>
             )}
-            <Button
-              variant="success"
-              className="custom-btn-green custom-btn-green-outline"
-              onClick={handleSendRequest}
-              disabled={loadingSendRequest}
-            >
-              Enviar
-            </Button>
-            <Button
-              variant="secondary"
-              className="custom-btn-gray custom-btn-gray-outline"
-              onClick={() =>
-                setModalSendRequest({ ...modalSendRequest, show: false })
-              }
-              disabled={loadingSendRequest}
-            >
-              Cancelar
-            </Button>
-          </Modal.Footer>
-        )}
-      </Modal>
-
-      <ModalTable
-        title={"Lista de docentes"}
-        showState={{
-          show: showTeachersModal,
-          setShow: setShowTeachersModal,
-        }}
-        headers={
-          <>
-            <th>Nombre</th>
-            <th>Grupo</th>
-          </>
-        }
-        contentTable={teachersBySubject?.map((each) => {
-          const isSelected = teachersSelectedInModal?.includes(each);
-          return (
-            <tr
-              key={each.teacher_subject_id}
-              onClick={() => handleClickTeacherRow(each)}
-              className={`${isSelected ? "table-primary" : ""}`}
-            >
-              <td>
-                {each.teacher_name} {each.teacher_last_name}
-              </td>
-              <td>{each.group_number}</td>
-            </tr>
-          );
-        })}
-      />
-
-      <ModalTable
-        title={"Aulas disponibles"}
-        showState={{
-          show: showClassroomssModal,
-          setShow: setShowClassroomsModal,
-        }}
-        headers={
-          <>
-            <th>Nombre</th>
-            <th>Capacidad</th>
-          </>
-        }
-        contentTable={classroomsByBlock.map((each) => {
-          const isSelected = classroomsSelectedInModal.includes(each);
-          return (
-            <tr
-              key={each.classroom_id}
-              onClick={() => handleClickClassroomRow(each)}
-              className={`${isSelected ? "table-primary" : ""}`}
-            >
-              <td>{each.classroom_name}</td>
-              <td>{each.capacity}</td>
-            </tr>
-          );
-        })}
-      />
-    </div>
+          </Modal>
+        </div>
+      )}
+    </>
   );
 }

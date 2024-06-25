@@ -102,7 +102,7 @@ export default function SingleNotification() {
   };
 
   const goBackToList = () => {
-    navigate("/user/notifications-list");
+    navigate("../notifications-list");
   };
 
   const setContentModal = (request) => {
@@ -305,7 +305,7 @@ export default function SingleNotification() {
   };
 
   return (
-    <div className="container" style={{ height: "90vh" }}>
+    <div className="container pt-3" style={{ height: "90vh" }}>
       {loading ? (
         <div className="h-100 d-flex justify-content-center align-items-center">
           <div>

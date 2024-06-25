@@ -62,7 +62,7 @@ export default function SeeNotifications() {
   };
 
   return (
-    <div className="container" style={{ height: "90vh" }}>
+    <div className="container pt-3" style={{ height: "90vh" }}>
       <h1 className="text-center">Notificaciones</h1>
       {loading ? (
         <div className="h-100 d-flex justify-content-center align-items-center">

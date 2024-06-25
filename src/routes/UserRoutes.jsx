@@ -9,11 +9,18 @@ import RequestsHistory from "../Pages/RequestsHistory/RequestsHistory";
 import RequestReservation from "../Pages/User/RequestReservation/RequestReservation";
 import SeeNotifications from "../Pages/User/SeeNotifications/SeeNotifications";
 import SingleNotification from "../Pages/User/SeeNotifications/SingleNotification";
+import ProtectedRoute from "./ProtectedRoute";
 
 export default function UserRoutes() {
   return (
     <Routes>
-      <Route element={<Sidebar user="user" />}>
+      <Route
+        element={
+          <ProtectedRoute allowedRoles={["user"]}>
+            <Sidebar user="user" />
+          </ProtectedRoute>
+        }
+      >
         <Route path="home" element={<Homepage />}></Route>
         <Route
           path="enviroment-request"

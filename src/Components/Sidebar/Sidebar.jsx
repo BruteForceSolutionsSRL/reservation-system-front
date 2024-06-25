@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Collapse, Modal, OverlayTrigger, Popover } from "react-bootstrap";
 import "./Sidebar.css";
 import { getBlocks } from "../../services/classrooms";
+import { useAuth } from "../../contexts/AuthProvider";
 
 export default function Sidebar({ user }) {
   const [activeItem, setActiveItem] = useState("");
@@ -12,6 +13,7 @@ export default function Sidebar({ user }) {
   const [repitRequest, setRepitRequest] = useState(true);
   const navigate = useNavigate();
   const userInformation = JSON.parse(localStorage.getItem("userInformation"));
+  const { logout } = useAuth();
 
   useEffect(() => {
     if (repitRequest) {
@@ -27,7 +29,7 @@ export default function Sidebar({ user }) {
   const verifyTokenExpired = async () => {
     setInterval(() => {
       setRepitRequest(true);
-    }, 10000);
+    }, 360000);
     let response = await getBlocks();
     if (
       response.status === 402 ||
@@ -39,10 +41,11 @@ export default function Sidebar({ user }) {
         title: "Sesion expirada",
         body: "Sesion terminada, redireccionando a la pagina principal",
       };
-      localStorage.removeItem("token");
-      localStorage.removeItem("userInformation");
       setModalContent(content);
-      setTimeout(() => navigate("/"), 3000);
+      setTimeout(() => {
+        logout();
+        navigate("/");
+      }, 3000);
     } else {
       let content = {
         show: false,
@@ -69,11 +72,11 @@ export default function Sidebar({ user }) {
     }));
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userInformation");
-    navigate("/");
-  };
+  // const logout = () => {
+  //   localStorage.removeItem("token");
+  //   localStorage.removeItem("userInformation");
+  //   navigate("/");
+  // };
 
   const popover = (
     <Popover id="popover-basic">
@@ -357,62 +360,6 @@ export default function Sidebar({ user }) {
               </ul>
             )}
 
-            <ul className="list-unstyled">
-              <li className={activeItem === "notifications" ? "active" : ""}>
-                <Link
-                  to="#"
-                  className="text-decoration-none px-3 d-block"
-                  onClick={() => handleItemClick("notifications")}
-                >
-                  <i className="bi bi-bell fs-4"></i> Notificaciones
-                  <i className="bi bi-chevron-down "></i>
-                </Link>
-              </li>
-              <Collapse in={openItems["notifications"]}>
-                <div>
-                  {user === "superuser" && (
-                    <li
-                      className={
-                        activeItem === "send-notification"
-                          ? "active list-unstyled px-2"
-                          : "list-unstyled px-2"
-                      }
-                    >
-                      <Link
-                        to="send-notification"
-                        className="text-decoration-none px-4 py-2 d-block"
-                        onClick={() => handleItemClick("send-notification")}
-                      >
-                        <div className="align-items-center">
-                          <i className="bi bi-send fs-4"></i> Crear notificación
-                        </div>
-                      </Link>
-                    </li>
-                  )}
-                  {user === "user" && (
-                    <li
-                      className={
-                        activeItem === "notifications-list"
-                          ? "active list-unstyled px-2"
-                          : "list-unstyled px-2"
-                      }
-                    >
-                      <Link
-                        to="notifications-list"
-                        className="text-decoration-none px-4 py-2 d-block"
-                        onClick={() => handleItemClick("notifications-list")}
-                      >
-                        <div className="align-items-center">
-                          <i className="bi bi-inbox fs-4"></i> Ver
-                          notificationes
-                        </div>
-                      </Link>
-                    </li>
-                  )}
-                </div>
-              </Collapse>
-            </ul>
-
             {user === "superuser" && (
               <ul className="list-unstyled">
                 <li
@@ -525,6 +472,58 @@ export default function Sidebar({ user }) {
                 </Collapse>
               </ul>
             )}
+            <ul className="list-unstyled">
+              <li className={activeItem === "notifications" ? "active" : ""}>
+                <Link
+                  to="#"
+                  className="text-decoration-none px-3 d-block"
+                  onClick={() => handleItemClick("notifications")}
+                >
+                  <i className="bi bi-bell fs-4"></i> Notificaciones
+                  <i className="bi bi-chevron-down "></i>
+                </Link>
+              </li>
+              <Collapse in={openItems["notifications"]}>
+                <div>
+                  {user === "superuser" && (
+                    <li
+                      className={
+                        activeItem === "send-notification"
+                          ? "active list-unstyled px-2"
+                          : "list-unstyled px-2"
+                      }
+                    >
+                      <Link
+                        to="send-notification"
+                        className="text-decoration-none px-4 py-2 d-block"
+                        onClick={() => handleItemClick("send-notification")}
+                      >
+                        <div className="align-items-center">
+                          <i className="bi bi-send fs-4"></i> Crear notificación
+                        </div>
+                      </Link>
+                    </li>
+                  )}
+                  <li
+                    className={
+                      activeItem === "notifications-list"
+                        ? "active list-unstyled px-2"
+                        : "list-unstyled px-2"
+                    }
+                  >
+                    <Link
+                      to="notifications-list"
+                      className="text-decoration-none px-4 py-2 d-block"
+                      onClick={() => handleItemClick("notifications-list")}
+                    >
+                      <div className="align-items-center">
+                        <i className="bi bi-inbox fs-4"></i> Ver notificationes
+                      </div>
+                    </Link>
+                  </li>
+                </div>
+              </Collapse>
+            </ul>
           </div>
 
           <hr className="h-color mx-2" />

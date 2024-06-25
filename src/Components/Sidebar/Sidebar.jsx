@@ -72,12 +72,6 @@ export default function Sidebar({ user }) {
     }));
   };
 
-  // const logout = () => {
-  //   localStorage.removeItem("token");
-  //   localStorage.removeItem("userInformation");
-  //   navigate("/");
-  // };
-
   const popover = (
     <Popover id="popover-basic">
       <Popover.Body>
@@ -535,7 +529,7 @@ export default function Sidebar({ user }) {
               overlay={popover}
               style={{ maxWidth: "40vh" }}
             >
-              <div className="d-flex justify-content-around align-items-center">
+              <div className="d-flex justify-content-around align-items-center px-3">
                 <i className="bi bi-person-circle fs-1"></i>
                 <span className="text-truncate user-select-none w-40">
                   {userInformation.name + " " + userInformation.last_name}

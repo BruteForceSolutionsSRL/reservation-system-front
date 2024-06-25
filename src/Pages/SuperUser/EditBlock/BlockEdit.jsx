@@ -1,4 +1,5 @@
 import { Button } from "react-bootstrap";
+import "./EditBlock.css";
 
 const BlockEdit = ({ list, handleShowModal }) => {
   return (
@@ -40,7 +41,7 @@ const BlockEdit = ({ list, handleShowModal }) => {
             <div className="col-sm-2 align-self-center d-flex justify-content-end">
               <Button
                 variant="primary"
-                className="mt-1 custom-button"
+                className="custom-btn-primary-outline"
                 onClick={() => handleShowModal(block)}
               >
                 Editar

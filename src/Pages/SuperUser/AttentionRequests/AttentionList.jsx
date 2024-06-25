@@ -39,10 +39,11 @@ export default function AttentionList() {
   };
 
   return (
-    <>
+    <div className="container">
       <div>
-        <h1 className="text-center">Atender solicitudes pendientes</h1>
+        <h1 className="text-center mt-2">Atender solicitudes pendientes</h1>
       </div>
+      <hr />
       {loading === true ? (
         <div className="h-50 d-flex align-items-center justify-content-center">
           <div>
@@ -62,41 +63,19 @@ export default function AttentionList() {
           </b>
         </div>
       ) : (
-        <>
-          <div className="container overflow-x-auto text-center">
-            <div className="row" style={{ minWidth: "470px" }}>
-              <div className="col-1">
-                <i>ID</i>
+        <div className="container">
+          {reservations.map((element) => {
+            return (
+              <div key={element.reservation_id} className="">
+                <AttentionRequest
+                  {...element}
+                  reload={(change) => setReload(change)}
+                />
               </div>
-              <div className="col-2">
-                <i>Materia(s)</i>
-              </div>
-              <div className="col-2">
-                <i>Cantidad de estudiantes</i>
-              </div>
-              <div className="col-2">
-                <i>Fecha de reserva</i>
-              </div>
-              <div className="col-3">
-                <i>Periodos</i>
-              </div>
-              <div className="col-2"></div>
-            </div>
-            <div className="">
-              {reservations.map((element) => {
-                return (
-                  <div key={element.reservation_id} className="">
-                    <AttentionRequest
-                      {...element}
-                      reload={(change) => setReload(change)}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </>
+            );
+          })}
+        </div>
       )}
-    </>
+    </div>
   );
 }

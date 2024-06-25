@@ -45,7 +45,7 @@ function DeleteBlock() {
   };
 
   return (
-    <div className="container">
+    <div className="container py-2">
       <h1 className="text-center">Lista de Bloques</h1>
       <SearchBar
         value={searchValue}

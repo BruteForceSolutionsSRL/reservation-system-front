@@ -79,9 +79,6 @@
     margin-top: -10px;
 }
 
-.button-verify {
-    width: 130px;
-}
 
 /*------------------------------------*/
 /*Responsive */
@@ -102,5 +99,15 @@
         margin-top: 2rem;
     }
    
+}
+
+/*Buttons colors*/
+.button-verify {
+    width: 130px;
+}
+.custom-btn-primary-outline:hover {
+    background-color: transparent !important;
+    border: 1px solid #2478e6 !important;
+    color: #2478e6 !important;
 }
 

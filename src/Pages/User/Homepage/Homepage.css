@@ -1,96 +1,316 @@
-.header {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(10deg, #a156e2, #1c37b1);
-    padding: 20px;
+.navbar-custom .navbar-nav .nav-link {
+  color: white;
 }
 
-.logo-container {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
+.navbar-custom .navbar-nav .nav-link:visited {
+  color: white;
+}
+
+.navbar-custom .navbar-toggler-icon {
+  filter: invert(1);
+}
+
+.navbar-custom {
+  background-color: #041231;
+}
+
+/***********************************************/
+
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.color-home {
+  background: #041231;
+  padding: 20px 0;
+  box-shadow: 0 2px 4px rgba(241, 24, 24, 0.1);
+}
+
+.color-footer {
+  background: #041231;
+  font-size: 13px;
 }
 
 .logo-image {
-    max-width: 18%;
-    border-radius: 20px;
-    margin-right: 10px;
+  max-width: 16%;
+  border-radius: 10px;
+  margin-right: 10px;
 }
 
-.logo-text {
-    font-size: 24px;
-    font-weight: bold;
-    color: #8a86be;
-}
-
-.nav {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    
-}
-
-.nav li {
-    margin: 0 15px;
-    color: #fff;
-}
-
-.nav-link {
-    text-decoration: none;
-    color: #df2828;
-    font-weight: bold;
-}
-
-.main-content {
-    padding: 50px 0;
+.logo {
+  color: white;
+  font-size: 24px;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 .image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.btn-quote {
+  background: #2677c2;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  border: none;
+  transition: background 0.5s ease;
+}
+
+.color-body {
+  font-family: "Arial", sans-serif;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  padding: 50px 20px;
+}
+
+.color-body h1 {
+  font-size: 30px;
+  margin-bottom: 20px;
+}
+
+.color-body h4 {
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+.umss-Logo,
+.fcyt-Logo {
+  max-width: 40%;
+}
+
+.sura-Logo {
+  max-width: 80%;
+}
+
+.mecanica-Logo {
+  max-width: 70%;
+}
+
+.civil-Logo {
+  max-width: 60%;
+}
+
+.color-card {
+  font-family: "Arial", sans-serif;
+  background: linear-gradient(50deg, #00146b, #bb1111);
+  color: rgb(255, 255, 255);
+  padding: 100px 20px;
+  position: relative;
+}
+
+.hover-card {
+  max-width: calc(96% - 10%);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.hover-card:hover {
+  transform: translateY(-15px);
+}
+
+.footer {
+  background: #0a0a23;
+  color: white;
+  padding: 20px 0;
+}
+
+.footer h4 {
+  font-size: 18px;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 10px;
+  font-weight: bold;
+}
+
+.footer p {
+  font-size: 14px;
+  line-height: 5px;
+}
+
+.footer .social-icons a {
+  font-size: 18px;
+  display: inline-block;
+  background: #0a0a23;
+  color: white;
+  line-height: 1;
+  padding: 10px;
+  margin-right: 5px;
+  transition: 0.3s;
+}
+
+.footer .social-icons a:hover {
+  background: #f1f1f1;
+  color: #0a0a23;
+}
+
+.footer-bottom {
+  border-top: 1px solid #5f5f5f;
+  padding-top: 20px;
+}
+
+/*aqui*/
+
+.information {
+  background: #0a0a23;
+  color: white;
+  padding: 20px 0;
+}
+
+.information p {
+  font-size: 14px;
+}
+
+.information .social-iconss a {
+  font-size: 18px;
+  display: inline-block;
+  background: #0a0a23;
+  color: white;
+  line-height: 1;
+  padding: 10px;
+  margin-right: 5px;
+  transition: 0.3s;
+}
+
+/************************************************************/
+.custom-card {
+  background-color: #1c1c1c;
+  color: white;
+  border-radius: 20px;
+  overflow: hidden;
+  width: 350px;
+  height: 100%;
+  margin: auto;
+}
+
+.custom-card-img {
+  border-radius: 50%;
+  height: 100px;
+  /* Ajusta la altura según tus necesidades */
+  width: 100px;
+  /* Ajusta el ancho según tus necesidades */
+  object-fit: cover;
+}
+
+.custom-card-body {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+}
+
+.custom-card-title {
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.custom-card-subtitle {
+  font-size: 18px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.custom-card-text {
+  /* font-size: 14px; */
+}
+
+.card-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #343a40;
+  padding: 20px;
+  border-radius: 20px;
+}
+
+.text-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 20px;
+}
+/***************************************************************/
+
+/**************************************************************/
+/*responsive*/
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .color-body h1 {
+    font-size: 36px;
+  }
+
+  .color-body p {
+    font-size: 16px;
+  }
+
+  .color-card h1 {
+    font-size: 36px;
+  }
+
+  .footer-info {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .image {
     max-width: 100%;
     height: auto;
     border-radius: 10px;
-}
+  }
 
-.check-work-button {
-    padding: 10px 20px;
-    background: #1053e4;
-    border: none;
-    border-radius: 20px;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.3s;
-    
-}
+  .logo-image {
+    max-width: 60%;
+    height: auto;
+    border-radius: 10px;
+  }
 
-.check-work-button:hover {
-    background: #2a81f3;
-    transform: scale(1.05);
-}
+  .hover-card {
+    max-width: 85%;
+    margin: 0 auto;
+  }
 
+  .umss-Logo,
+  .fcyt-Logo {
+    max-width: 40%;
+  }
 
+  .civil-Logo {
+    max-width: 40%;
+  }
 
-.footer {
-    background: #1d1d1d;
-    color: #fff;
-    padding: 5px;
-    
-}
+  .sura-Logo {
+    max-width: 80%;
+  }
 
+  .footer h4 {
+    font-size: 16px;
+  }
 
+  .footer p {
+    font-size: 13px;
+    line-height: 8px;
+  }
 
-.social-media {
-    display: inline-block;
-    margin-left: 15px;
-}
+  .footer .social-icons a {
+    font-size: 16px;
+    padding: 28px;
+  }
 
-.social-media-icon {
-    width: 30px;
-    height: 30px;
-    transition: transform 0.3s;
-}
-
-.social-media-icon:hover {
-    transform: scale(1.3);
+  .footer-bottom {
+    padding-top: 15px;
+  }
 }

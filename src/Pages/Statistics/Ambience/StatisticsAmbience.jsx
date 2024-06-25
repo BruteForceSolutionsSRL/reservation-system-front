@@ -31,7 +31,6 @@ ChartJS.register(
 
 export default function StatisticsAmbience() {
   const [elementsList, setElementList] = useState([]);
-  const [show, setShow] = useState(true);
   const [searchValue, setSearchValue] = useState("");
   const [searchResultsList, setSearchResultsList] = useState([]);
   const [msgNoResults, setMsgNoResults] = useState("");
@@ -44,7 +43,6 @@ export default function StatisticsAmbience() {
     if (searchValue === "") {
       setSearchResultsList(elementsList);
       setMsgNoResults("");
-      setShow(true);
     } else {
       const results = searchByClassroomsForStatistics(
         elementsList,
@@ -63,6 +61,7 @@ export default function StatisticsAmbience() {
     try {
       let classrooms = await getClassrooms();
       setElementList(classrooms.data);
+      setSearchResultsList(classrooms.data);
     } catch (error) {
       console.error("Error", error);
       setElementList([]);
@@ -82,35 +81,28 @@ export default function StatisticsAmbience() {
             if (regex.test(event.target.value) || event.target.value === "") {
               setSearchValue(event.target.value.toUpperCase());
             }
-            setShow(false);
           }}
           onPaste={(e) => e.preventDefault()}
         />
       </div>
-      <div className="pt-3">
-        {show ? (
-          <div className="text-center">
-            <h2>Realice una busqueda para ver resultados de ambientes.</h2>
-          </div>
-        ) : (
-          <>
-            {searchResultsList.length === 0 ? (
-              <div className="text-center">
-                <h2>{msgNoResults}</h2>
-              </div>
-            ) : (
-              <>
-                {searchResultsList.map((each) => {
-                  return (
-                    <div key={each.classroom_id}>
-                      <StatisticsElement {...each} />
-                    </div>
-                  );
-                })}
-              </>
-            )}
-          </>
-        )}
+      <div className="pt-3" style={{ minWidth: "350px" }}>
+        <>
+          {searchResultsList.length === 0 ? (
+            <div className="text-center">
+              <h2>{msgNoResults}</h2>
+            </div>
+          ) : (
+            <>
+              {searchResultsList.map((each) => {
+                return (
+                  <div key={each.classroom_id}>
+                    <StatisticsElement {...each} />
+                  </div>
+                );
+              })}
+            </>
+          )}
+        </>
       </div>
     </div>
   );

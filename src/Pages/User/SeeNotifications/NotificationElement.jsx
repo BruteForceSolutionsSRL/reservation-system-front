@@ -28,7 +28,7 @@ export function NotificationElement(props) {
   };
 
   const singleNotification = () => {
-    navigate(`/user/notifications/${id}`);
+    navigate(`../notifications/${id}`);
   };
 
   const isTodayDate = () => {

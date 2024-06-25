@@ -13,11 +13,20 @@ import SendNotification from "../Pages/SuperUser/SendNotification/SendNotificati
 import BlockRegister from "../Pages/SuperUser/BlockRegister/BlockRegister";
 import EditBlock from "../Pages/SuperUser/EditBlock/EditBlock";
 import DeleteBlock from "../Pages/SuperUser/DeleteBlock/DeleteBlock";
+import ProtectedRoute from "./ProtectedRoute";
+import SeeNotifications from "../Pages/User/SeeNotifications/SeeNotifications";
+import SingleNotification from "../Pages/User/SeeNotifications/SingleNotification";
 
 export default function SuperUserRoutes() {
   return (
     <Routes>
-      <Route element={<Sidebar user="superuser" />}>
+      <Route
+        element={
+          <ProtectedRoute allowedRoles={["superuser"]}>
+            <Sidebar user="superuser" />
+          </ProtectedRoute>
+        }
+      >
         <Route path="home" element={<Homepage />}></Route>
         <Route path="environments-disponibility" element={<Disponibility />} />
         <Route
@@ -34,6 +43,11 @@ export default function SuperUserRoutes() {
         <Route path="statistics-ambience" element={<StatisticsAmbience />} />
         <Route path="send-notification" element={<SendNotification />} />
         <Route path="generate-report" element={<GenerateReport />} />
+        <Route path="notifications-list" element={<SeeNotifications />} />
+        <Route
+          path="notifications/:notificationId"
+          element={<SingleNotification />}
+        />
       </Route>
     </Routes>
   );

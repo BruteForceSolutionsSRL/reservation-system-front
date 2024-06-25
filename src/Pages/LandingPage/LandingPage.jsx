@@ -11,7 +11,7 @@ import {
   Alert,
 } from "react-bootstrap";
 import "./LandingPage.css";
-import login from "../../services/login";
+import { loginUser } from "../../services/login";
 
 const LandingPage = () => {
   const [email, setEmail] = useState("");
@@ -42,7 +42,7 @@ const LandingPage = () => {
     }
 
     try {
-      loginUser();
+      loginUserr();
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       if (error.response) {
@@ -56,8 +56,8 @@ const LandingPage = () => {
     }
   };
 
-  const loginUser = async () => {
-    let response = await login(email, password);
+  const loginUserr = async () => {
+    let response = await loginUser(email, password);
     if (response.status >= 200 && response.status < 300) {
       let { token, user } = response.data;
       localStorage.setItem("token", token);

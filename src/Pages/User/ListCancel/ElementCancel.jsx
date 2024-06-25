@@ -1,10 +1,9 @@
 import { useState } from "react";
-import Collapse from "react-bootstrap/Collapse";
+import { Button } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 
 export default function ElementCancel(props) {
   const URL = import.meta.env.VITE_REACT_API_URL;
-  const [open, setOpen] = useState(false);
   const [show, setShow] = useState(false);
   const {
     reservation_id,
@@ -37,68 +36,69 @@ export default function ElementCancel(props) {
   };
   return (
     <>
-      <div className="container-sm border rounded border-dark mb-3">
-        <div className="row" style={{ minWidth: "470px" }}>
-          <div className="col-6">
-            <b className="text-success">MATERIA</b>
-            <div>{subject_name}</div>
+      <div
+        className="row border border-black rounded p-2 mb-2"
+        style={{ minWidth: "400px" }}
+      >
+        <div className="col-sm-5">
+          <div className="">
+            <b className="text-primary ">ID: </b>
+            <b>{reservation_id}</b>
           </div>
-          <div className="col-2">
-            <b className="text-success">FECHA</b>
-            <div>{reservation_date}</div>
+          <div>
+            <b className="text-primary">MATERIAS(S): </b>
+            <b>{subject_name}</b>
           </div>
-          <div className="col-2">
-            <b className="text-success">PERIODOS</b>
-            <div>
-              {time_slot[0]}-{time_slot[1]}
-            </div>
+          <div>
+            <b className="text-primary">GRUPOS: </b>
+            {groups.map((teacher, index) => {
+              return (
+                <b key={index + teacher.teacher_name}>
+                  {teacher.teacher_name + ", "}
+                </b>
+              );
+            })}
           </div>
-          <div className="col-2">
-            <button
-              className="btn btn-outline-primary text-center"
-              onClick={() => setOpen(!open)}
-              aria-controls="example-collapse-text"
-              aria-expanded={open}
-            >
-              +
-            </button>
+          <div>
+            <b className="text-primary">AMBIENTES</b>{" "}
+            {classrooms.map((classroom, index) => {
+              return (
+                <b key={index + classroom.classroom_name}>
+                  {classroom.classroom_name + ", "}
+                </b>
+              );
+            })}
           </div>
         </div>
-        <div>
-          <Collapse in={open}>
-            <div id="example-collapse-text" className="">
-              <div>
-                <b className="text-success">Docente(s)</b>{" "}
-                {groups.map((teacher) => {
-                  return teacher.teacher_name + ", ";
-                })}
-              </div>
-              <div className="row">
-                <div className="col">
-                  <b className="text-success">Cantidad de estudiantes: </b>{" "}
-                  {quantity}
-                </div>
-                <div className="col">
-                  <b className="text-success">Motivo de reserva: </b>{" "}
-                  {reason_name}
-                </div>
-              </div>
-              <div>
-                <b className="text-success">Ambiente(s)</b>{" "}
-                {classrooms.map((classroom) => {
-                  return classroom.classroom_name + ", ";
-                })}
-              </div>
-              <div className="d-flex justify-content-end mb-3">
-                <button
-                  className="btn btn-outline-danger"
-                  onClick={() => setShow(true)}
-                >
-                  Cancelar solicitud
-                </button>
-              </div>
-            </div>
-          </Collapse>
+        <div className="col-sm-3">
+          <div>
+            <b className="text-primary">CAPACIDAD DE ESTUDIANTES: </b>
+            <b>{quantity}</b>
+          </div>
+          <div>
+            <b className="text-primary">FECHA DE RESERVA: </b>
+            <b>{reservation_date}</b>
+          </div>
+          <div className="col">
+            <b className="text-primary">MOTIVO DE RESERVA: </b>{" "}
+            <b>{reason_name}</b>
+          </div>
+        </div>
+        <div className="col-sm-2">
+          <div>
+            <b className="text-primary">PERIODOS: </b>
+            <b>{`${time_slot[0]} - ${time_slot[1]}`}</b>
+          </div>
+        </div>
+
+        <div className="col-sm-2 align-self-center d-flex justify-content-end">
+          <Button
+            variant="danger"
+            className="custom-btn-primary-outline text-truncate"
+            onClick={() => setShow(true)}
+          >
+            Cancelar solicitud
+          </Button>
         </div>
       </div>
 

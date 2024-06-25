@@ -184,11 +184,13 @@ function EditBlock() {
       label: "Guardar",
       variant: "primary",
       onClick: handleSaveModal,
+      className: "custom-btn-primary-outline",
     },
     {
       label: "Cancelar",
       variant: "secondary",
       onClick: handleCancelModal,
+      className: "custom-btn-gray-outline",
     },
   ];
 
@@ -197,11 +199,13 @@ function EditBlock() {
       label: "Aceptar",
       variant: "primary",
       onClick: handleCancelAceptedModal,
+      className: "custom-btn-primary-outline",
     },
     {
       label: "Atrás",
       variant: "secondary",
       onClick: handleCancelBackModal,
+      className: "custom-btn-gray-outline",
     },
   ];
 
@@ -210,11 +214,13 @@ function EditBlock() {
       label: "Aceptar",
       variant: "primary",
       onClick: handleSaveConfirmationsModal,
+      className: "custom-btn-primary-outline",
     },
     {
       label: "Cancelar",
       variant: "secondary",
       onClick: handleSaveCancelModal,
+      className: "custom-btn-gray-outline",
     },
   ];
 
@@ -223,6 +229,7 @@ function EditBlock() {
       label: "Aceptar",
       variant: "primary",
       onClick: handleCloseConfirmationsModal,
+      className: "custom-btn-primary-outline",
     },
   ];
 
@@ -278,7 +285,7 @@ function EditBlock() {
   };
 
   return (
-    <div className="container">
+    <div className="container mt-2">
       <h1 className="text-center">Lista de Bloques</h1>
       <SearchBar
         value={searchValue}
@@ -353,7 +360,7 @@ function EditBlock() {
                   CAPACIDAD DE AULAS
                 </Form.Label>
               </Col>
-              <Col md={4}>
+              <Col md={3}>
                 <Form.Control
                   onKeyDown={handleKeyDown}
                   type="number"
@@ -367,8 +374,8 @@ function EditBlock() {
                 </Form.Control.Feedback>
               </Col>
 
-              <Col md={1} className="d-flex align-items-center">
-                <Form.Label className="fw-bold col-form-label mb-0">
+              <Col md={2} className="d-flex align-items-center">
+                <Form.Label className="fw-bold col-form-label">
                   ESTADO
                 </Form.Label>
               </Col>
@@ -420,11 +427,17 @@ function EditBlock() {
         handleClose={handleCancelAceptedModal}
         title="¡Alerta!"
         footerButtons={cancelButtonsModal}
+        backdrop="static"
       >
         Se descartarán los cambios realizados.
       </ReusableModal>
 
-      <Modal show={saveModal} onHide={handleSaveCancelModal}>
+      <Modal
+        show={saveModal}
+        onHide={handleSaveCancelModal}
+        centered
+        backdrop="static"
+      >
         <Modal.Header closeButton>
           <Modal.Title>¡Confirmación!</Modal.Title>
         </Modal.Header>
@@ -481,6 +494,7 @@ function EditBlock() {
           )}
           {saveButtonsModal.map((button, index) => (
             <Button
+              className={button.className}
               key={index}
               variant={button.variant}
               onClick={button.onClick}
@@ -496,8 +510,9 @@ function EditBlock() {
         handleClose={handleCloseConfirmationsModal}
         title={backendError.status === 200 ? "¡Confirmación!" : "¡Error!"}
         footerButtons={saveButtonsConfirmationsModal}
+        backdrop="static"
       >
-        <p>{backendError.data}</p>
+        <div>{backendError.data}</div>
       </ReusableModal>
     </div>
   );

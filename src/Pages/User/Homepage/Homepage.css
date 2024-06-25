@@ -183,6 +183,7 @@
   border-radius: 20px;
   overflow: hidden;
   width: 350px;
+  height: 100%;
   margin: auto;
 }
 
@@ -210,6 +211,7 @@
 
 .custom-card-subtitle {
   font-size: 18px;
+  margin-top: 20px;
   margin-bottom: 10px;
 }
 

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Collapse, Modal, OverlayTrigger, Popover } from "react-bootstrap";
 import "./Sidebar.css";
 import { getBlocks } from "../../services/classrooms";
+import { useAuth } from "../../contexts/AuthProvider";
 
 export default function Sidebar({ user }) {
   const [activeItem, setActiveItem] = useState("");
@@ -12,6 +13,7 @@ export default function Sidebar({ user }) {
   const [repitRequest, setRepitRequest] = useState(true);
   const navigate = useNavigate();
   const userInformation = JSON.parse(localStorage.getItem("userInformation"));
+  const { logout } = useAuth();
 
   useEffect(() => {
     if (repitRequest) {
@@ -69,11 +71,11 @@ export default function Sidebar({ user }) {
     }));
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userInformation");
-    navigate("/");
-  };
+  // const logout = () => {
+  //   localStorage.removeItem("token");
+  //   localStorage.removeItem("userInformation");
+  //   navigate("/");
+  // };
 
   const popover = (
     <Popover id="popover-basic">

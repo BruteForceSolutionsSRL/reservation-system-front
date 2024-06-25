@@ -13,11 +13,18 @@ import SendNotification from "../Pages/SuperUser/SendNotification/SendNotificati
 import BlockRegister from "../Pages/SuperUser/BlockRegister/BlockRegister";
 import EditBlock from "../Pages/SuperUser/EditBlock/EditBlock";
 import DeleteBlock from "../Pages/SuperUser/DeleteBlock/DeleteBlock";
+import ProtectedRoute from "./ProtectedRoute";
 
 export default function SuperUserRoutes() {
   return (
     <Routes>
-      <Route element={<Sidebar user="superuser" />}>
+      <Route
+        element={
+          <ProtectedRoute allowedRoles={["superuser"]}>
+            <Sidebar user="superuser" />
+          </ProtectedRoute>
+        }
+      >
         <Route path="home" element={<Homepage />}></Route>
         <Route path="environments-disponibility" element={<Disponibility />} />
         <Route

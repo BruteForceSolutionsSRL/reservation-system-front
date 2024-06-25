@@ -100,18 +100,18 @@ function BlockDelete(props) {
         </div>
 
         <div className="col-sm-2 align-self-center d-flex justify-content-end">
-          <button
-            className="btn btn-sm btn-outline-danger"
-            type="button"
+          <Button
+            variant="danger"
+            className="custom-btn-red-outline"
             onClick={getEnvironmentBlock}
           >
-            <b>Eliminar</b>
-          </button>
+            Eliminar
+          </Button>
         </div>
       </div>
       <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Header closeButton>
-          <h3>¿Esta seguro de eliminar el bloque?</h3>
+          <h3>¿Está seguro de eliminar el bloque?</h3>
         </Modal.Header>
         <Modal.Body>
           <h4>BLOQUE: {block_name}</h4>
@@ -168,7 +168,7 @@ function BlockDelete(props) {
           <div className="m-4">
             <div>
               <b className="">
-                Eliminar el BLOQUE tendrá las siguientes concecuencias:
+                Eliminar el BLOQUE tendrá las siguientes consecuencias:
               </b>
             </div>
             <div className="ps-3">
@@ -180,7 +180,7 @@ function BlockDelete(props) {
             <div className="ps-3">
               <b className="text-danger">
                 * Al eliminar el BLOQUE todos los ambientes pertenecientes
-                tambien seran eliminados.
+                también seran eliminados.
               </b>
             </div>
             <div className="ps-3">
@@ -222,33 +222,30 @@ function BlockDelete(props) {
           <h3>¡Advertencia!</h3>
         </Modal.Header>
         <Modal.Body>
-          {/* <div className="d-flex justify-content-center"> */}
-          <p>¿Está seguro de eliminar el Bloque?</p>
-          {/* </div> */}
-          <Modal.Footer>
-            {/* <div className="d-flex justify-content-end"> */}
-            {loadingDelete && (
-              <Spinner animation="border" variant="secondary" role="status">
-                <span className="visually-hidden">Cargando...</span>
-              </Spinner>
-            )}
-            <Button
-              variant="danger"
-              className="custom-btn-red-outline"
-              onClick={sendDeleteBlock}
-            >
-              Confirmar
-            </Button>
-            <Button
-              variant="secondary"
-              className="custom-btn-gray-outline"
-              onClick={() => setShowConfirm(false)}
-            >
-              Cancelar
-            </Button>
-            {/* </div> */}
-          </Modal.Footer>
+          <div>¿Está seguro de eliminar el Bloque?</div>
         </Modal.Body>
+        <Modal.Footer>
+          {loadingDelete && (
+            <Spinner animation="border" variant="secondary" role="status">
+              <span className="visually-hidden">Cargando...</span>
+            </Spinner>
+          )}
+          <Button
+            variant="danger"
+            className="custom-btn-red-outline"
+            onClick={sendDeleteBlock}
+          >
+            Confirmar
+          </Button>
+          <Button
+            variant="secondary"
+            className="custom-btn-gray-outline"
+            onClick={() => setShowConfirm(false)}
+          >
+            Cancelar
+          </Button>
+          {/* </div> */}
+        </Modal.Footer>
       </Modal>
 
       <Modal

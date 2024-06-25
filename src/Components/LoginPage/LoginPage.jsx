@@ -9,9 +9,15 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [loadingLogin, setLoadingLogin] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
   const { login } = useAuth();
+
   const navigate = useNavigate();
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
   const loginRequest = async () => {
     setLoadingLogin(true);
     try {
@@ -51,8 +57,8 @@ const LoginPage = () => {
       }}
     >
       <div className="p-3 shadow p-3 mb-5 bg-light-subtle rounded">
-        <h2 className="text-center pb-5 pt-2">Inicio de sesión</h2>
-
+        <h1 className="text-center">Inicio de sesión</h1>
+        <hr />
         {errorMessage && (
           <Alert variant={"danger"} className="">
             {errorMessage}
@@ -68,17 +74,32 @@ const LoginPage = () => {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Correo electrónico"
           />
+          <div className="input-group-text">
+            <i className="bi bi-envelope"></i>
+          </div>
         </div>
         <div className="d-flex p-3 align-items-center">
           <b className="pe-3">Contraseña</b>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             className="form-control flex-fill"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Contraseña"
           />
+          <div
+            className="input-group-text"
+            onClick={togglePasswordVisibility}
+            style={{ cursor: "pointer" }}
+          >
+            {showPassword ? (
+              <i className="bi bi-eye-slash"></i>
+            ) : (
+              <i className="bi bi-eye"></i>
+            )}
+          </div>
         </div>
+        <hr />
         {loadingLogin ? (
           <div className="d-flex justify-content-center p-3">
             <button
@@ -90,7 +111,9 @@ const LoginPage = () => {
                 className="spinner-border spinner-border-sm"
                 aria-hidden="true"
               ></span>
-              <span role="status">Iniciando sesión, por favor, espere.</span>
+              <span className="p-2" role="status">
+                Iniciando sesión, por favor, espere.
+              </span>
             </button>
           </div>
         ) : (

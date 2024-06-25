@@ -1,7 +1,7 @@
 .custom-btn-red-outline:hover {
   background-color: transparent !important;
-  border: 1px solid #dc3545 !important; /* Color del borde danger */
-  color: #dc3545 !important; /* Color del texto danger */
+  border: 1px solid #dc3545 !important;
+  color: #dc3545 !important;
 }
 
 .custom-btn-gray-outline:hover {

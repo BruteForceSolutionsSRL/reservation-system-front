@@ -14,14 +14,32 @@ export default function Sidebar({ user }) {
   const navigate = useNavigate();
   const userInformation = JSON.parse(localStorage.getItem("userInformation"));
   const { logout } = useAuth();
-
+  const [popoverPlacement, setPopoverPlacement] = useState("right");
   const sidebarRef = useRef(null);
+
   useEffect(() => {
     if (repitRequest) {
       isLogged();
       setRepitRequest(false);
     }
   }, [repitRequest]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setPopoverPlacement("top");
+      } else {
+        setPopoverPlacement("right");
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -548,7 +566,7 @@ export default function Sidebar({ user }) {
             <OverlayTrigger
               className="p-3 mb-5 rounded "
               trigger="click"
-              placement="right"
+              placement={popoverPlacement}
               overlay={popover}
               style={{ maxWidth: "40vh" }}
               rootClose

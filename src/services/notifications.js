@@ -52,7 +52,7 @@ export function getSingleNotification(notification_id) {
 export function sendNotification(content) {
   let token = localStorage.getItem("token");
   let responseFetch = {};
-  return fetch(url + `notifications/send/`, {
+  return fetch(url + `notifications/sendNotification`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,

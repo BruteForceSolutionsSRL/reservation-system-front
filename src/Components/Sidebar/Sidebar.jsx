@@ -27,7 +27,7 @@ export default function Sidebar({ user }) {
   const verifyTokenExpired = async () => {
     setInterval(() => {
       setRepitRequest(true);
-    }, 10000);
+    }, 360000);
     let response = await getBlocks();
     if (
       response.status === 402 ||

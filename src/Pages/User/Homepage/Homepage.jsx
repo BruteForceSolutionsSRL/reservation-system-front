@@ -1,6 +1,5 @@
+import { Carousel, Col, Row } from "react-bootstrap";
 import React from "react";
-import { Row, Col } from "react-bootstrap";
-import { Carousel } from "react-bootstrap";
 import decanatoFcyt from "./icons/decanatoFcyt.jpg";
 import edificioFcyt from "./icons/edificioFcyt.jpg";
 import laboratorioFcyt from "./icons/laboratoriosFcyt.jpg";
@@ -8,7 +7,11 @@ import laboratorioFcyt from "./icons/laboratoriosFcyt.jpg";
 import image from "./logo.png";
 import "./Homepage.css";
 
+import { useAuth } from "../../../contexts/AuthProvider";
+
 function Homepage() {
+  const { user } = useAuth();
+
   return (
     <div className="color-body">
       <div className="text-center">

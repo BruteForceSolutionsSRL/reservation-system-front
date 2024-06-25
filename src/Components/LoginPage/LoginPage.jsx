@@ -14,23 +14,29 @@ const LoginPage = () => {
 
   const loginRequest = async () => {
     setLoadingLogin(true);
-    let { data, status } = await loginUser(email, password).finally(() =>
-      setLoadingLogin(false)
-    );
-    if (status >= 200 && status < 300) {
-      let { token, user } = data;
-      if (user.roles[0] === "DOCENTE") {
-        login({ role: "user" });
-        navigate("/user/home");
-      } else if (user.roles[0] === "ENCARGADO") {
-        login({ role: "superuser" });
-        navigate("/superuser/home");
+    try {
+      let { data, status } = await loginUser(email, password);
+      if (status >= 200 && status < 300) {
+        let { token, user } = data;
+        if (user.roles[0] === "DOCENTE") {
+          login({ role: "user" });
+          navigate("/user/home");
+        } else if (user.roles[0] === "ENCARGADO") {
+          login({ role: "superuser" });
+          navigate("/superuser/home");
+        }
+        localStorage.setItem("token", token);
+        localStorage.setItem("userInformation", JSON.stringify(user));
+        setErrorMessage("");
+      } else {
+        setErrorMessage(data.message);
       }
-      localStorage.setItem("token", token);
-      localStorage.setItem("userInformation", JSON.stringify(user));
-      setErrorMessage("");
-    } else {
-      setErrorMessage(data.message);
+    } catch (error) {
+      setErrorMessage(
+        "Error al iniciar sesión. Por favor, inténtalo de nuevo."
+      );
+    } finally {
+      setLoadingLogin(false);
     }
   };
 
@@ -45,7 +51,7 @@ const LoginPage = () => {
       }}
     >
       <div className="p-3 shadow p-3 mb-5 bg-light-subtle rounded">
-        <h2 className="text-center pb-5 pt-2">Inicio de sesion</h2>
+        <h2 className="text-center pb-5 pt-2">Inicio de sesión</h2>
 
         {errorMessage && (
           <Alert variant={"danger"} className="">
@@ -54,13 +60,13 @@ const LoginPage = () => {
         )}
 
         <div className="d-flex p-3 align-items-center">
-          <b className="pe-2">Correo electronico</b>
+          <b className="pe-2">Correo electrónico</b>
           <input
             type="email"
             className="form-control flex-fill"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Correo electronico"
+            placeholder="Correo electrónico"
           />
         </div>
         <div className="d-flex p-3 align-items-center">
@@ -84,7 +90,7 @@ const LoginPage = () => {
                 className="spinner-border spinner-border-sm"
                 aria-hidden="true"
               ></span>
-              <span role="status">Iniciando sesion, por favor, espere.</span>
+              <span role="status">Iniciando sesión, por favor, espere.</span>
             </button>
           </div>
         ) : (
@@ -93,7 +99,7 @@ const LoginPage = () => {
               onClick={loginRequest}
               className="btn btn-primary flex-fill"
             >
-              Iniciar sesion
+              Iniciar sesión
             </button>
           </div>
         )}

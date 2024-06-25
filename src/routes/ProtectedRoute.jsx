@@ -6,12 +6,10 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user } = useAuth();
 
   if (!user) {
-    // alert("Usuario no encontrado, redireccionando a la pagina de inicio.");
     return <Navigate to="/" />;
   }
 
   if (!allowedRoles.includes(user.role)) {
-    // alert("Usuario no permitido, redireccionando a la pagina de inicio.");
     return <Navigate to="/" />;
   }
 

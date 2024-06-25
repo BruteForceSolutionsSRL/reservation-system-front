@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Table } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 import ModalRequestInformation from "./ModalRequestInformation";
 import { getConflicts } from "../../services/conflicts";
+import "./RequestInformations.css";
 
 export default function RequestInformation({
   content,
@@ -74,7 +75,10 @@ export default function RequestInformation({
 
           <div className="tag-container mb-3">
             <label className="tag-label">GRUPO</label>
-            <div>
+            <div
+              className="scrol-teacher-modal h-100 overflow-y-auto"
+              style={{ maxHeight: "200px" }}
+            >
               <Table bordered className="w-100">
                 <thead>
                   <tr>
@@ -135,7 +139,10 @@ export default function RequestInformation({
               <div className="col-sm-2">
                 <b>AULA(s)</b>
               </div>
-              <div className="col-sm-10">
+              <div
+                className="scrol-teacher-modal col-sm-10 h-100 overflow-y-auto"
+                style={{ maxHeight: "200px" }}
+              >
                 <Table bordered className="w-100">
                   <thead>
                     <tr>
@@ -169,26 +176,43 @@ export default function RequestInformation({
   return (
     <>
       <div
-        className="border border-dark rounded row mb-2 p-2"
-        style={{ minWidth: "300px" }}
+        className="row border border-black rounded p-2 mb-2"
+        style={{ minWidth: "400px" }}
       >
-        <div className="col-1 align-self-center">
-          <b>{`${index}.`}</b>
+        <div className="col-sm-5">
+          <div className="">
+            <b className="text-primary ">ID: </b>
+            <b>{id}</b>
+          </div>
+          <div>
+            <b className="text-primary">MATERIAS(S): </b>
+            <b>{subject}</b>
+          </div>
         </div>
-        <div className="col-1 align-self-center">
-          <b>{id}</b>
+        <div className="col-sm-3">
+          <div>
+            <b className="text-primary">CAPACIDAD DE ESTUDIANTES: </b>
+            <b>{quantity_studets}</b>
+          </div>
+          <div>
+            <b className="text-primary">FECHA DE RESERVA: </b>
+            <b>{reservation_date}</b>
+          </div>
         </div>
-        <div className="col-2 align-self-center">{subject}</div>
-        <div className="col-2 align-self-center">{quantity_studets}</div>
-        <div className="col-2 align-self-center">{reservation_date}</div>
-        <div className="col-2 align-self-center">{`${periods[0]} - ${periods[1]}`}</div>
-        <div className="col-sm-2 align-self-center">
-          <button
-            className="btn btn-outline-primary btn-block w-100 text-truncate"
+        <div className="col-sm-2">
+          <div>
+            <b className="text-primary">PERIODOS: </b>
+            <b>{`${periods[0]} - ${periods[1]}`}</b>
+          </div>
+        </div>
+        <div className="col-sm-2 align-self-center d-flex justify-content-end">
+          <Button
+            variant="primary"
+            className="custom-btn-primary-outline text-truncate"
             onClick={handleClickModal}
           >
-            <b>Detalles</b>
-          </button>
+            Detalles
+          </Button>
         </div>
       </div>
       <ModalRequestInformation

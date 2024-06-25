@@ -45,7 +45,7 @@ export default function RequestsHistory() {
   };
 
   return (
-    <div className="container">
+    <div className="container mt-2">
       <h1 className="text-center">Historial de solicitudes</h1>
 
       <div className="pb-3">
@@ -68,27 +68,6 @@ export default function RequestsHistory() {
           </div>
         ) : (
           <div>
-            <div className="row" style={{ minWidth: "350px" }}>
-              <div className="col-1 mt-1 mb-1">
-                <i>#</i>
-              </div>
-              <div className="col-1 mt-1 mb-1">
-                <i>ID</i>
-              </div>
-              <div className="col-2 mt-1 mb-1">
-                <i>Materia(s)</i>
-              </div>
-              <div className="col-2 mt-1 mb-1">
-                <i>Cantidad de estudiantes</i>
-              </div>
-              <div className="col-2 mt-1 mb-1">
-                <i>Fecha de reserva</i>
-              </div>
-              <div className="col-2 mt-1 mb-1">
-                <i>Periodos</i>
-              </div>
-              <div className="col-2 mt-1 mb-1"></div>
-            </div>
             <hr />
             {list.length > 0 ? (
               list.map((each, index) => {

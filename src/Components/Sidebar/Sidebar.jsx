@@ -1,5 +1,5 @@
 import { Link, useNavigate, Outlet } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Collapse, Modal, OverlayTrigger, Popover } from "react-bootstrap";
 import "./Sidebar.css";
 import { getBlocks } from "../../services/classrooms";
@@ -15,12 +15,31 @@ export default function Sidebar({ user }) {
   const userInformation = JSON.parse(localStorage.getItem("userInformation"));
   const { logout } = useAuth();
 
+  const sidebarRef = useRef(null);
   useEffect(() => {
     if (repitRequest) {
       isLogged();
       setRepitRequest(false);
     }
   }, [repitRequest]);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        handleMenuClose();
+      }
+    }
+
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
 
   const isLogged = () => {
     verifyTokenExpired();
@@ -118,7 +137,11 @@ export default function Sidebar({ user }) {
   return (
     <>
       <div className="main-container d-flex">
-        <div className={`sidebar ${menuOpen ? "active" : ""}`} id="side_nav">
+        <div
+          ref={sidebarRef}
+          className={`sidebar ${menuOpen ? "active" : ""}`}
+          id="side_nav"
+        >
           <div className="header-box py-2 text-center d-flex justify-content-center">
             <button
               className="btn d-md-none d-block close-btn px-1 py-0 text-black"
@@ -528,6 +551,7 @@ export default function Sidebar({ user }) {
               placement="right"
               overlay={popover}
               style={{ maxWidth: "40vh" }}
+              rootClose
             >
               <div className="d-flex justify-content-around align-items-center px-3">
                 <i className="bi bi-person-circle fs-1"></i>

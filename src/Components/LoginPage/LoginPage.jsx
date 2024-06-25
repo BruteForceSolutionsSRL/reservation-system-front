@@ -38,6 +38,11 @@ const LoginPage = () => {
     <div
       className="d-flex justify-content-center align-items-center bg bg-success-subtle"
       style={{ width: "100%", height: "100vh" }}
+      onKeyDown={(event) => {
+        if (event.key === "Enter") {
+          loginRequest();
+        }
+      }}
     >
       <div className="p-3 shadow p-3 mb-5 bg-light-subtle rounded">
         <h2 className="text-center pb-5 pt-2">Inicio de sesion</h2>

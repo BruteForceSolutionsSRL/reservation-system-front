@@ -392,26 +392,23 @@ export default function Sidebar({ user }) {
                       </Link>
                     </li>
                   )}
-                  {user === "user" && (
-                    <li
-                      className={
-                        activeItem === "notifications-list"
-                          ? "active list-unstyled px-2"
-                          : "list-unstyled px-2"
-                      }
+                  <li
+                    className={
+                      activeItem === "notifications-list"
+                        ? "active list-unstyled px-2"
+                        : "list-unstyled px-2"
+                    }
+                  >
+                    <Link
+                      to="notifications-list"
+                      className="text-decoration-none px-4 py-2 d-block"
+                      onClick={() => handleItemClick("notifications-list")}
                     >
-                      <Link
-                        to="notifications-list"
-                        className="text-decoration-none px-4 py-2 d-block"
-                        onClick={() => handleItemClick("notifications-list")}
-                      >
-                        <div className="align-items-center">
-                          <i className="bi bi-inbox fs-4"></i> Ver
-                          notificationes
-                        </div>
-                      </Link>
-                    </li>
-                  )}
+                      <div className="align-items-center">
+                        <i className="bi bi-inbox fs-4"></i> Ver notificationes
+                      </div>
+                    </Link>
+                  </li>
                 </div>
               </Collapse>
             </ul>

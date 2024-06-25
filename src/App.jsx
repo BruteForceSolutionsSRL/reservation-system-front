@@ -10,7 +10,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route index path="/" element={<Home />} />
-        <Route index path="/" element={<LandingPage />} />
+        <Route index path="/login" element={<LandingPage />} />
         <Route path="/user/*" element={<UserRoutes />} />
         <Route path="/superuser/*" element={<SuperUserRoutes />} />
         <Route path="*" element={<ErrorPage />} />

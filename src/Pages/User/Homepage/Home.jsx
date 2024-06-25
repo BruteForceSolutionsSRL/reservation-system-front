@@ -233,7 +233,7 @@ function Home() {
                 </Link>
                 <Nav.Link href="#contactos">Contactos</Nav.Link>
               </Nav>
-              <Button href="/" className="btn-quote ms-auto">
+              <Button href="/login" className="btn-quote ms-auto">
                 Iniciar sesión
               </Button>
             </Navbar.Collapse>

@@ -2,7 +2,8 @@ import { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
 import Spinner from "react-bootstrap/Spinner";
-import { Alert } from "react-bootstrap";
+import { Alert, Button } from "react-bootstrap";
+import "./AttentionRequest.css";
 
 export default function AttentionRequest(props) {
   const URL = import.meta.env.VITE_REACT_API_URL;
@@ -147,33 +148,48 @@ export default function AttentionRequest(props) {
 
   return (
     <>
-      <div className="container p-1">
-        <div
-          className={`row rounded align-self-center p-2 border ${
-            priority === 1 ? "border-danger" : ""
-          }`}
-          style={{ minWidth: "470px" }}
-        >
-          <div className="col-1">
+      <div
+        className="row border border-black rounded p-2 mb-2"
+        style={{ minWidth: "400px" }}
+      >
+        <div className="col-sm-5">
+          <div className="">
+            <b className="text-primary ">ID: </b>
             <b>{reservation_id}</b>
           </div>
-          <div className="col-2">{subject_name}</div>
-          <div className="col-2">{quantity}</div>
-          <div className="col-2">{reservation_date}</div>
-          <div className="col-3">
-            {time_slot[0]} - {time_slot[1]}
-          </div>
-          <div className="col-2">
-            <button
-              className="btn btn-outline-primary w-100 text-truncate"
-              onClick={handleShowModal}
-            >
-              Atender
-            </button>
+          <div>
+            <b className="text-primary">MATERIAS(S): </b>
+            <b>{subject_name}</b>
           </div>
         </div>
+        <div className="col-sm-3">
+          <div>
+            <b className="text-primary">CAPACIDAD DE ESTUDIANTES: </b>
+            <b>{quantity}</b>
+          </div>
+          <div>
+            <b className="text-primary">FECHA DE RESERVA: </b>
+            <b>{reservation_date}</b>
+          </div>
+        </div>
+        <div className="col-sm-2">
+          <div>
+            <b className="text-primary">PERIODOS: </b>
+            <b>
+              {time_slot[0]} - {time_slot[1]}
+            </b>
+          </div>
+        </div>
+        <div className="col-sm-2 align-self-center d-flex justify-content-end">
+          <Button
+            variant="primary"
+            className="custom-btn-primary-outline text-truncate"
+            onClick={handleShowModal}
+          >
+            Atender
+          </Button>
+        </div>
       </div>
-
       <Modal
         show={showModal}
         onHide={() => setShowModal(false)}
@@ -195,7 +211,10 @@ export default function AttentionRequest(props) {
 
             <div className="tag-container mb-3">
               <label className="tag-label">GRUPO</label>
-              <div>
+              <div
+                className="scrol-teacher-modal h-100 overflow-y-auto"
+                style={{ maxHeight: "200px" }}
+              >
                 <Table bordered>
                   <thead>
                     <tr>
@@ -257,7 +276,10 @@ export default function AttentionRequest(props) {
                 <div className="col-sm-2">
                   <b>AULA(s)</b>
                 </div>
-                <div className="col-sm-10">
+                <div
+                  className="scrol-teacher-modal col-sm-10 h-100 overflow-y-auto"
+                  style={{ maxHeight: "200px" }}
+                >
                   <Table bordered>
                     <thead>
                       <tr>
@@ -285,21 +307,23 @@ export default function AttentionRequest(props) {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <button
-            className="btn btn-outline-success"
+          <Button
+            variant="success"
+            className="custom-btn-green-outline"
             onClick={() => {
               setShowAcceptModal(true);
               setShowModal(false);
             }}
           >
             Aceptar
-          </button>
-          <button
-            className="btn btn-outline-danger"
+          </Button>
+          <Button
+            variant="danger"
+            className="custom-btn-red-outline"
             onClick={handleShowRefuseModal}
           >
             Rechazar
-          </button>
+          </Button>
         </Modal.Footer>
       </Modal>
 
@@ -310,6 +334,7 @@ export default function AttentionRequest(props) {
         size="lg"
         centered={true}
         aria-labelledby="acceptModal"
+        backdrop="static"
       >
         <Modal.Header closeButton>
           <Modal.Title id="acceptModal">¡Confirmacion!</Modal.Title>
@@ -343,23 +368,25 @@ export default function AttentionRequest(props) {
               <span className="visually-hidden">Loading...</span>
             </Spinner>
           )}
-          <button
-            className="btn btn-outline-success"
+          <Button
+            variant="success"
+            className="custom-btn-green-outline"
             onClick={() => {
               acceptRequest();
             }}
           >
             Aceptar
-          </button>
-          <button
-            className="btn btn-outline-secondary"
+          </Button>
+          <Button
+            variant="secondary"
+            className="custom-btn-gray-outline"
             onClick={() => {
               setShowAcceptModal(false);
               setShowModal(true);
             }}
           >
             Cancelar
-          </button>
+          </Button>
         </Modal.Footer>
       </Modal>
 
@@ -370,9 +397,10 @@ export default function AttentionRequest(props) {
         size="lg"
         centered={true}
         aria-labelledby="refuseModal"
+        backdrop="static"
       >
         <Modal.Header closeButton>
-          <Modal.Title id="refuseModal">¡Confirmacion de rechazo!</Modal.Title>
+          <Modal.Title id="refuseModal">¡Confirmación de rechazo!</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="pb-2">
@@ -400,18 +428,23 @@ export default function AttentionRequest(props) {
             ""
           )}
 
-          <button className="btn btn-outline-danger" onClick={refuseRequest}>
+          <Button
+            variant="danger"
+            className="custom-btn-red-outline"
+            onClick={refuseRequest}
+          >
             Aceptar
-          </button>
-          <button
-            className="btn btn-outline-secondary"
+          </Button>
+          <Button
+            variant="secondary"
+            className="custom-btn-gray-outline"
             onClick={() => {
               setShowModal(true);
               setShowRefuseModal(false);
             }}
           >
             Cancelar
-          </button>
+          </Button>
         </Modal.Footer>
       </Modal>
 

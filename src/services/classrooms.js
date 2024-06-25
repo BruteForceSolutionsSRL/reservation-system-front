@@ -202,3 +202,18 @@ export function storeBlock(block) {
     })
     .catch((err) => console.error(err));
 }
+
+export async function getDisponibleClassrooms(requestData) {
+  requestData = { ...requestData, quantity: 0 };
+  let token = localStorage.getItem("token");
+  let response = await fetch(url + "classrooms/disponible", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
+    },
+    body: JSON.stringify(requestData),
+  });
+  let data = await response.json();
+  return { status: response.status, data: data };
+}

@@ -86,7 +86,7 @@ const LoginPage = () => {
           <div className="d-flex justify-content-center p-3">
             <button
               onClick={loginRequest}
-              className="btn btn-success flex-fill"
+              className="btn btn-primary flex-fill"
             >
               Iniciar sesion
             </button>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Container from "react-bootstrap/Container";
 import { Spinner, Form, Button, Row, Col, Modal } from "react-bootstrap";
 import { storeBlock } from "../../../services/classrooms";
+import "./BlockRegister.css";
 
 function BlockRegister() {
   const URL = import.meta.env.VITE_REACT_API_URL;
@@ -84,22 +85,42 @@ function BlockRegister() {
 
       setRegisterModal(false);
     });
-    if (response.status >= 200 && response.status < 300) {
-      setBackendError({ status: response.status, data: response.data.message });
-      clearDataForm();
-    } else if (response.status >= 300 && response.status < 400) {
-      setBackendError({ status: response.status, data: response.data.message });
-    } else if (response.status >= 400 && response.status < 500) {
-      setBackendError({ status: response.status, data: response.data.message });
-    } else if (response.status >= 500) {
-      if (response.data.message) {
+
+    if (response) {
+      if (response.status >= 200 && response.status < 300) {
         setBackendError({
           status: response.status,
           data: response.data.message,
         });
-      } else {
-        setBackendError("Ocurrio un error inesperado, intente nuevamente.");
+        clearDataForm();
+      } else if (response.status >= 300 && response.status < 400) {
+        setBackendError({
+          status: response.status,
+          data: response.data.message,
+        });
+      } else if (response.status >= 400 && response.status < 500) {
+        setBackendError({
+          status: response.status,
+          data: response.data.message,
+        });
+      } else if (response.status >= 500) {
+        if (response.data.message) {
+          setBackendError({
+            status: response.status,
+            data: response.data.message,
+          });
+        } else {
+          setBackendError({
+            ...backendError,
+            data: "Ocurrio un error inesperado, intente nuevamente.",
+          });
+        }
       }
+    } else {
+      setBackendError({
+        ...backendError,
+        data: "Ocurrio un error inesperado, intente nuevamente.",
+      });
     }
     setConfimationModal(true);
   };
@@ -326,22 +347,38 @@ function BlockRegister() {
           </Row>
 
           <div className="d-flex justify-content-end mt-4">
-            <Button className="me-3" variant="primary" type="submit">
+            <Button
+              className="custom-btn-primary-outline me-3"
+              variant="primary"
+              type="submit"
+            >
               Registrar
             </Button>
-            <Button variant="secondary" type="button" onClick={cancelRegister}>
+            <Button
+              className="custom-btn-gray-outline"
+              variant="secondary"
+              type="button"
+              onClick={cancelRegister}
+            >
               Cancelar
             </Button>
           </div>
         </Form>
       </Container>
 
-      <Modal show={registerModal} onHide={handleSaveCancelModal}>
+      <Modal
+        show={registerModal}
+        onHide={handleSaveCancelModal}
+        backdrop="static"
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>¡Confirmación!</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div>¿Está seguro de registrar el BLOQUE?</div>
+          <div>
+            ¿Está seguro de registrar el bloque "{formData.block_name}"?
+          </div>
         </Modal.Body>
         <Modal.Footer>
           {confirmationLoading && (
@@ -349,51 +386,88 @@ function BlockRegister() {
               <Spinner animation="border" role="status" />
             </div>
           )}
-          <Button onClick={saveBlock}>Aceptar</Button>
-          <Button variant="secondary" onClick={handleSaveCancelModal}>
+          <Button className="custom-btn-primary-outline" onClick={saveBlock}>
+            Aceptar
+          </Button>
+          <Button
+            className="custom-btn-gray-outline"
+            variant="secondary"
+            onClick={handleSaveCancelModal}
+          >
             Cancelar
           </Button>
         </Modal.Footer>
       </Modal>
 
-      <Modal show={cancelRegisterModal} onHide={backRegisterClear}>
+      <Modal
+        show={cancelRegisterModal}
+        onHide={backRegisterClear}
+        backdrop="static"
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Cancelar Registro</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p style={{ color: "red" }}>¿Estás seguro que quieres cancelar?</p>
+          <div>¿Estás seguro que quieres cancelar?</div>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={clearFormRegister}>Aceptar</Button>
-          <Button variant="secondary" onClick={backRegisterClear}>
+          <Button
+            className="custom-btn-primary-outline"
+            onClick={clearFormRegister}
+          >
+            Aceptar
+          </Button>
+          <Button
+            className="custom-btn-gray-outline"
+            variant="secondary"
+            onClick={backRegisterClear}
+          >
             Atras
           </Button>
         </Modal.Footer>
       </Modal>
 
-      <Modal show={existBlockModal} onHide={blockExist}>
+      <Modal
+        show={existBlockModal}
+        onHide={blockExist}
+        backdrop="static"
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>¡Advertencia!</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>El ambiente {formData.block_name} ya existe.</p>
+          <div>El ambiente "{formData.block_name}" ya existe.</div>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={blockExist}>Aceptar</Button>
+          <Button className="custom-btn-primary-outline" onClick={blockExist}>
+            Aceptar
+          </Button>
         </Modal.Footer>
       </Modal>
 
-      <Modal show={confimationModal} onHide={saveBlockClose}>
+      <Modal
+        show={confimationModal}
+        onHide={saveBlockClose}
+        backdrop="static"
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>
-            {backendError.status === 200 ? "¡Confirmación!" : "¡Error!"}
+            {backendError.status === 200 ? "¡Exito!" : "¡Error!"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>{backendError.data}</p>
+          <div>{backendError.data}</div>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={saveBlockClose}>Aceptar</Button>
+          <Button
+            className="custom-btn-primary-outline"
+            onClick={saveBlockClose}
+          >
+            Aceptar
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>

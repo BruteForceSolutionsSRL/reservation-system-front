@@ -206,9 +206,11 @@ export default function RequestReservation() {
           person.group_number,
       };
     });
-    let groupsOptions = userGroups.map(({ group_number }) => {
-      return { label: group_number, value: group_number };
-    });
+    let groupsOptions = userGroups.map(
+      ({ group_number, teacher_subject_id }) => {
+        return { label: group_number, value: teacher_subject_id };
+      }
+    );
     setErrorsMessages({
       ...errorsMessages,
       groups: { isInvalid: false, message: "" },

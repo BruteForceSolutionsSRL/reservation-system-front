@@ -7,7 +7,12 @@ import laboratorioFcyt from "./icons/laboratoriosFcyt.jpg";
 import imageLogo from "./logoPequenio.png";
 import umssLogo from "./icons/umssLogo.png";
 import fcytLogo from "./icons/fcytLogo.png";
-import perfil from "./perfil.png";
+import img_alex from "./members/member-alex.png";
+import img_sergio from "./members/member-sergio.png";
+import img_daniel from "./members/member-daniel.png";
+import img_william from "./members/member-william.png";
+import img_emerson from "./members/member-emerson.png";
+import img_erwin from "./members/member-erwin.png";
 import alimentosLogo from "./LogosCarrers/alimentosLogo.png";
 import biologiaLogo from "./LogosCarrers/biologiaLogo.png";
 import civilLogo from "./LogosCarrers/civilLogo.png";
@@ -22,7 +27,6 @@ import mecanicaLogo from "./LogosCarrers/mecanicaLogo.png";
 import petroquimicaLogo from "./LogosCarrers/petroquimicaLogo.png";
 import quimicaLogo from "./LogosCarrers/quimicaLogo.png";
 import sistemasLogo from "./LogosCarrers/sistemasLogo.png";
-import { Link } from "react-router-dom";
 
 import image from "./logo.png";
 import "./Homepage.css";
@@ -38,57 +42,57 @@ function Home() {
   const perfiles = [
     {
       nombre: "Sergio Victor Garcia Cuchallo",
-      titulo: "CEO Brute Force Solutions",
+      titulo: "CEO y Miembro de Brute Force Solutions",
       fundator: "Fundador Brute Force Solutions",
       descripcion:
-        "Analista de Negocios con más de 14 años de experiencia en el sector energético, especializada en gestión de riesgos, optimización de la cadena de valor, estrategias comerciales y previsión de la demanda. Tiene experiencia en la aportación de conocimientos basados en datos para mejorar la toma de decisiones en el sector de empresa a empresa, tanto en Latinoamérica como en el resto del mundo. Es experta en alinear el análisis de datos con los objetivos estratégicos para impulsar la rentabilidad y la eficiencia operativa.",
-      imagen: perfil,
+        "Estudiante de la carrera Ingeniería Informática, apasionado por la programación y resolución de problemas, conocimientos solidos en programacion y Desarrollo Web en busca de desafios que impulsen mi carrera.",
+      imagen: img_sergio,
     },
     {
       nombre: "Erwin Fernandez Calle",
-      titulo: "Software Engineer",
+      titulo: "Fundador y Miembro de  Brute Force Solutions",
       fundator: "Fundador Brute Force Solutions",
       descripcion:
-        "Ingeniero de Sistemas por la Universidad Católica Boliviana de Cochabamba. Formó parte de Jalasoft del 2001 al 2021 como Software Developer, Senior Developer y Junior Architect. Fue trainer de C++ y Java en la Fundación Jala y en Tekhne SRL. En Native Instruments, trabaja en varias características del backend de Kontakt. Tiene sus proyectos musicales.",
-      imagen: perfil,
+        "Estudiante de Ingeniería de Sistemas, con enfoque en programación web, redes de computadoras, bases de datos. Apasionado por el aprendizaje continuo y la resolución de problemas, en busca de oportunidades para aplicar mis conocimientos y seguir creciendo en el campo de la tecnología.",
+      imagen: img_erwin,
     },
     {
       nombre: "Emerson Denis Vera Viscarra",
-      titulo: "Software Engineer",
+      titulo: "Fundador y Miembro Brute Force Solutions",
       fundator: "Fundador Brute Force Solutions",
       descripcion:
-        "Ingeniero de Sistemas por la Universidad Católica Boliviana de Cochabamba. Formó parte de Jalasoft del 2001 al 2021 como Software Developer, Senior Developer y Junior Architect. Fue trainer de C++ y Java en la Fundación Jala y en Tekhne SRL. En Native Instruments, trabaja en varias características del backend de Kontakt. Tiene sus proyectos musicales.",
-      imagen: perfil,
+        "Estudiante de Informática con una sólida base en programación y desarrollo web. Apasionado en el área de Redes, con certificaciones CCNA.",
+      imagen: img_emerson,
     },
     {
       nombre: "Alexander James Alvarez Rojas",
-      titulo: "Senior Software Engineer",
+      titulo: "Fundador y Miembro Brute Force Solutions",
       fundator: "Fundador Brute Force Solutions",
       descripcion:
-        "Ingeniero de Sistemas por la Universidad Católica Boliviana de Cochabamba. Formó parte de Jalasoft del 2001 al 2021 como Software Developer, Senior Developer y Junior Architect. Fue trainer de C++ y Java en la Fundación Jala y en Tekhne SRL. En Native Instruments, trabaja en varias características del backend de Kontakt. Tiene sus proyectos musicales.",
-      imagen: perfil,
+        "Estudiante de Informática con una sólida base en programación y desarrollo web. Apasionado por la resolución de problemas y con experiencia en competiciones de programación (ICPC, Cocha Somos Innovación, entre otros).",
+      imagen: img_alex,
     },
     {
       nombre: "Daniel Garcia Cuchallo",
-      titulo: "Senior Software Engineer",
+      titulo: "Fundador y Miembro Brute Force Solutions",
       fundator: "Fundador Brute Force Solutions",
       descripcion:
-        "Ingeniero de Sistemas por la Universidad Católica Boliviana de Cochabamba. Formó parte de Jalasoft del 2001 al 2021 como Software Developer, Senior Developer y Junior Architect. Fue trainer de C++ y Java en la Fundación Jala y en Tekhne SRL. En Native Instruments, trabaja en varias características del backend de Kontakt. Tiene sus proyectos musicales.",
-      imagen: perfil,
+        "Estudiante de Ingeniería Informática, apasionado por la programación y el diseño web en busca de un ambiente laboral donde pueda crecer junto con mis compañeros.",
+      imagen: img_daniel,
     },
     {
       nombre: "William Calle Pinto",
-      titulo: "Senior Software Engineer",
+      titulo: "Fundador y Miembro Brute Force Solutions",
       fundator: "Fundador Brute Force Solutions",
       descripcion:
-        "Ingeniero de Sistemas por la Universidad Católica Boliviana de Cochabamba. Formó parte de Jalasoft del 2001 al 2021 como Software Developer, Senior Developer y Junior Architect. Fue trainer de C++ y Java en la Fundación Jala y en Tekhne SRL. En Native Instruments, trabaja en varias características del backend de Kontakt. Tiene sus proyectos musicales.",
-      imagen: perfil,
+        "Estudiante de séptimo semestre buscando oportunidades para aplicar y desarrollar mis habilidades en programación, desarrollo de software y resolución de problemas en un entorno laboral.",
+      imagen: img_william,
     },
   ];
 
   const Perfil = ({ nombre, titulo, fundator, descripcion, imagen }) => {
     return (
-      <div className="card-container">
+      <div className="card-container h-100">
         <div className="custom-card">
           <div className="custom-card-body">
             <div className="text-container">
@@ -228,9 +232,10 @@ function Home() {
                 >
                   Inicio
                 </Nav.Link>
-                <Link to="/nosotros" className="nav-link">
+                {/* <Link to="/nosotros" className="nav-link">
                   Nosotros
-                </Link>
+                </Link> */}
+                <Nav.Link href="#nosotros">Nosotros</Nav.Link>
                 <Nav.Link href="#contactos">Contactos</Nav.Link>
               </Nav>
               <Button href="/login" className="btn-quote ms-auto">
@@ -299,7 +304,7 @@ function Home() {
         <Container>
           <Row className="text-center">
             <div>
-              <h2>BRUTE FROCE SOLUTIONS</h2>
+              <h2>BRUTE FORCE SOLUTIONS</h2>
               <div>
                 Brute Force Solutions es una empresa de desarrollo de software,
                 reconocida por su excelencia en la creación de soluciones
@@ -316,7 +321,7 @@ function Home() {
                 cada cliente, brindando un valor tangible y contribuyendo al
                 éxito de sus proyectos.
               </div>
-              <h4 className="mt-3">Mission</h4>
+              <h4 className="mt-3">Mision</h4>
               <div>
                 Nuestra misión es impulsar la transformación digital de las
                 empresas a través de soluciones innovadoras y de calidad
@@ -326,7 +331,8 @@ function Home() {
                 ideas en realidad en el mundo digital.
               </div>
             </div>
-            <h3 className="mt-5">Fundadores de Brute Force Solutions</h3>
+            <div className="py-4" id="nosotros"></div>
+            <h2 className="mt-5">Fundadores de Brute Force Solutions</h2>
             <Container>
               <Row>
                 {perfiles.map((perfil, index) => (
@@ -336,34 +342,6 @@ function Home() {
                 ))}
               </Row>
             </Container>
-            <Col md={6}>
-              <h4>Brute Force Solutions</h4>
-              <p>Redes sociales</p>
-              <div className="social-iconss">
-                <a href="#">
-                  <i className="fa fa-twitter"></i>
-                </a>
-                <a href="#">
-                  <i className="fa fa-facebook"></i>
-                </a>
-                <a href="#">
-                  <i className="fa fa-instagram"></i>
-                </a>
-                <a href="#">
-                  <i className="fa fa-linkedin"></i>
-                </a>
-              </div>
-            </Col>
-            <Col md={6}>
-              <h4>Brute Force Solutions</h4>
-              <p>Cochabamba - Bolvia</p>
-              <p>
-                <strong>Celular:</strong> +591 72279531
-              </p>
-              <p>
-                <strong>Correo:</strong> bruteforcesolutionsbfs@gmail.com
-              </p>
-            </Col>
           </Row>
         </Container>
       </div>
@@ -396,7 +374,7 @@ function Home() {
           ))}
         </Row>
       </div>
-      <div className="footer">
+      <div className="footer" id="contactos">
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"

@@ -12,16 +12,17 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     let { status, data } = await logoutUser();
-    if (status >= 200 && status < 300) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("userInformation");
-      setUser(null);
-    } else if (
-      (status >= 300 && status < 400) ||
-      (status >= 400 && status < 500)
-    ) {
-      console.log(status, data);
-    }
+    // if (status >= 200 && status < 300) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userInformation");
+    setUser(null);
+    // } else if (
+    //   (status >= 300 && status < 400) ||
+    //   (status >= 400 && status < 500)
+    // ) {
+    //   console.log(status, data);
+
+    // }
   };
 
   return (

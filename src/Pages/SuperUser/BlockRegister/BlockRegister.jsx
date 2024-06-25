@@ -348,8 +348,7 @@ function BlockRegister() {
 
           <div className="d-flex justify-content-end mt-4">
             <Button
-              className="custom-btn-primary-outline me-3"
-              variant="primary"
+              className="me-3 custom-btn-green custom-btn-green-outline btn btn-success"
               type="submit"
             >
               Registrar

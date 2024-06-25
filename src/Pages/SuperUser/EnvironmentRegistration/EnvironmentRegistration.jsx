@@ -393,7 +393,7 @@ const EnvironmentRegistration = () => {
 
   return (
     <div>
-      <h1 className="mt-3  mb-3">Registrar Ambiente</h1>
+      <h1 className="text-center mt-3 mb-3">Registrar Ambiente</h1>
       {loading === true ? (
         <div className="text-center">
           <Spinner animation="border" variant="secondary" role="status">
@@ -418,6 +418,7 @@ const EnvironmentRegistration = () => {
                     value={environmentName}
                     onChange={handleEnvironmentNameChange}
                     isInvalid={nameError}
+                    placeholder="Ingrese el nombre del Ambiente"
                     required
                   />
                   {nameError && (
@@ -478,6 +479,7 @@ const EnvironmentRegistration = () => {
                     onPaste={(e) => {
                       e.preventDefault();
                     }}
+                    placeholder="Ingrese la capacidad de estudiantes"
                     required
                   />
                   {capacityError && (
@@ -533,6 +535,7 @@ const EnvironmentRegistration = () => {
                           onPaste={(e) => {
                             e.preventDefault();
                           }}
+                          placeholder="Ingrese el piso"
                         />
                         {floorError && environmentFloor === "" && (
                           <Form.Text className="text-danger">
@@ -626,7 +629,7 @@ const CModal = ({
         {showAccept && (
           <Button
             variant="primary"
-            className="me-3 btn btn-primary custom-btn-primary-outline"
+            className="btn btn-primary custom-btn-primary-outline"
             onClick={handleAcceptClick}
             disabled={isLoading}
           >
@@ -636,7 +639,7 @@ const CModal = ({
         {showCancel && (
           <Button
             variant="secondary"
-            className="me-3 btn btn-secondary custom-btn-gray-outline"
+            className="btn btn-secondary custom-btn-gray-outline"
             onClick={onCancel}
             disabled={isLoading}
           >

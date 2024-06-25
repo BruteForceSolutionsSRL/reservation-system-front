@@ -52,7 +52,7 @@ const ListEnvironment = ({ list, handleShowModal }) => {
             <div className="col-sm-2 align-self-center d-flex justify-content-end">
               <Button
                 variant="primary"
-                className="mt-1 custom-button"
+                className="mt-1 custom-button btn btn-primary custom-btn-primary-outline"
                 onClick={() => handleShowModal(reservation)}
               >
                 Editar

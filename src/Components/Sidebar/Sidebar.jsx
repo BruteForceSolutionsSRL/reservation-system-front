@@ -41,10 +41,11 @@ export default function Sidebar({ user }) {
         title: "Sesion expirada",
         body: "Sesion terminada, redireccionando a la pagina principal",
       };
-      localStorage.removeItem("token");
-      localStorage.removeItem("userInformation");
       setModalContent(content);
-      setTimeout(() => navigate("/"), 3000);
+      setTimeout(() => {
+        logout();
+        navigate("/");
+      }, 3000);
     } else {
       let content = {
         show: false,

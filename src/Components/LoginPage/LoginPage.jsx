@@ -36,11 +36,11 @@ const LoginPage = () => {
 
   return (
     <div
-      className="d-flex justify-content-center align-items-center"
+      className="d-flex justify-content-center align-items-center bg bg-success-subtle"
       style={{ width: "100%", height: "100vh" }}
     >
-      <div className="p-3 border">
-        <h2 className="text-center pb-3">Inicio de sesion</h2>
+      <div className="p-3 shadow p-3 mb-5 bg-light-subtle rounded">
+        <h2 className="text-center pb-5 pt-2">Inicio de sesion</h2>
 
         {errorMessage && (
           <Alert variant={"danger"} className="">
@@ -48,45 +48,50 @@ const LoginPage = () => {
           </Alert>
         )}
 
-        <div>
-          <label>Correo electronico</label>
+        <div className="d-flex p-3 align-items-center">
+          <b className="pe-2">Correo electronico</b>
           <input
             type="email"
+            className="form-control flex-fill"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Correo electronico"
           />
         </div>
-        <div>
-          <label>Contraseña</label>
+        <div className="d-flex p-3 align-items-center">
+          <b className="pe-3">Contraseña</b>
           <input
             type="password"
+            className="form-control flex-fill"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Contraseña"
           />
         </div>
         {loadingLogin ? (
-          <button className="btn btn-primary" type="button" disabled>
-            <span
-              className="spinner-border spinner-border-sm"
-              aria-hidden="true"
-            ></span>
-            <span role="status">Iniciando sesion, por favor, espere.</span>
-          </button>
+          <div className="d-flex justify-content-center p-3">
+            <button
+              className="btn btn-secondary flex-fill"
+              type="button"
+              disabled
+            >
+              <span
+                className="spinner-border spinner-border-sm"
+                aria-hidden="true"
+              ></span>
+              <span role="status">Iniciando sesion, por favor, espere.</span>
+            </button>
+          </div>
         ) : (
-          <button onClick={loginRequest}>Iniciar sesion</button>
+          <div className="d-flex justify-content-center p-3">
+            <button
+              onClick={loginRequest}
+              className="btn btn-success flex-fill"
+            >
+              Iniciar sesion
+            </button>
+          </div>
         )}
-        {/* <button onClick={handleLogin}>Iniciar sesion</button>
-        <button class="btn btn-primary" type="button" disabled>
-          <span
-            class="spinner-border spinner-border-sm"
-            aria-hidden="true"
-          ></span>
-          <span class="visually-hidden" role="status">
-            Loading...
-          </span>
-        </button> */}
       </div>
     </div>
   );

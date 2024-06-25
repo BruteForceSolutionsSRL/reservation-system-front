@@ -153,7 +153,7 @@ export default function RequestReservation() {
     ) {
       fetchClassroomsByBlock();
     }
-  }, [blockSelected, startTime, endTime, dateValue, quantity]);
+  }, [blockSelected, startTime, endTime, dateValue]);
 
   const fetchSubjects = async () => {
     const sbjs = await getSubjects();
@@ -1006,35 +1006,40 @@ export default function RequestReservation() {
             </Modal.Header>
             <Modal.Body>
               <div>{modalSendRequest.content.body}</div>
-              {quantityWarnings.show &&
-                modalSendRequest.content.title !== "Error" && (
-                  <>
-                    <div className="p-1">
-                      <span>Tiene las siguientes advertencias:</span>
-                    </div>
-                    <Alert variant={"warning"} className="">
-                      {quantityWarnings.message}
-                    </Alert>
-                    {classroomsWarnings.show &&
-                      classroomsSelected.length > 0 && (
-                        <Alert
-                          variant={"warning"}
-                        >{`Las siguientes aulas seleccionadas se encuentran solicitadas ${classroomsWarnings.classrooms.map(
-                          (classroom) => " " + classroom.classroom_name
-                        )}, si se envia la solicitud con estos ambientes, la solicitud podria podria ser rechazada automaticamente al enviarse o luego de atenderse alguna solicitud que solicite alguno de los ambientes seleccionados.`}</Alert>
+              {modalSendRequest.content.title === "¡Confirmación!" && (
+                <>
+                  {(quantityWarnings.show || classroomsWarnings.show) && (
+                    <>
+                      <div className="p-1">
+                        <span>Tiene las siguientes advertencias:</span>
+                      </div>
+                      {quantityWarnings.show && (
+                        <Alert variant={"warning"} className="">
+                          {quantityWarnings.message}
+                        </Alert>
                       )}
-                    <div className="pb-2 pt-1">
-                      <span>¿Está seguro de enviar la solicitud?</span>
-                    </div>
-                    <div className="pt-4">
-                      <i>
-                        <b>Nota:</b> Las advertencias no impiden enviar la
-                        solicitud de reserva, pero estas deberan ser revisadas
-                        por un supervisor.
-                      </i>
-                    </div>
-                  </>
-                )}
+                      {classroomsWarnings.show &&
+                        classroomsSelected.length > 0 && (
+                          <Alert
+                            variant={"warning"}
+                          >{`Las siguientes aulas seleccionadas se encuentran solicitadas ${classroomsWarnings.classrooms.map(
+                            (classroom) => " " + classroom.classroom_name
+                          )}, si se envia la solicitud con estos ambientes, la solicitud podria podria ser rechazada automaticamente al enviarse o luego de atenderse alguna solicitud que solicite alguno de los ambientes seleccionados.`}</Alert>
+                        )}
+                      <div className="pb-2 pt-1">
+                        <span>¿Está seguro de enviar la solicitud?</span>
+                      </div>
+                      <div className="pt-4">
+                        <i>
+                          <b>Nota:</b> Las advertencias no impiden enviar la
+                          solicitud de reserva, pero estas deberan ser revisadas
+                          por un supervisor.
+                        </i>
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
             </Modal.Body>
             {modalSendRequest.content.title === "¡Confirmación!" && (
               <Modal.Footer>

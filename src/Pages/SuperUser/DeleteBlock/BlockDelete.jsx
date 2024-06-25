@@ -187,28 +187,26 @@ function BlockDelete(props) {
               <b className="text-danger">* El BLOQUE ya no será editable.</b>
             </div>
           </div>
-          <Modal.Footer>
-            {/* <div className="d-flex justify-content-end"> */}
-            <Button
-              variant="danger"
-              className="custom-btn-red-outline"
-              onClick={() => {
-                setShow(false);
-                setShowConfirm(true);
-              }}
-            >
-              Eliminar
-            </Button>
-            <Button
-              variant="secondary"
-              className="custom-btn-gray-outline"
-              onClick={() => setShow(false)}
-            >
-              Cancelar
-            </Button>
-            {/* </div> */}
-          </Modal.Footer>
         </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="danger"
+            className="custom-btn-red-outline"
+            onClick={() => {
+              setShow(false);
+              setShowConfirm(true);
+            }}
+          >
+            Eliminar
+          </Button>
+          <Button
+            variant="secondary"
+            className="custom-btn-gray-outline"
+            onClick={() => setShow(false)}
+          >
+            Cancelar
+          </Button>
+        </Modal.Footer>
       </Modal>
 
       <Modal
@@ -244,7 +242,6 @@ function BlockDelete(props) {
           >
             Cancelar
           </Button>
-          {/* </div> */}
         </Modal.Footer>
       </Modal>
 

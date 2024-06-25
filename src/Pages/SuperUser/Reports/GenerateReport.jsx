@@ -9,50 +9,36 @@ import { getTeachersBySubject } from "../../../services/teachers";
 import { generateReport } from "../../../services/reports";
 import { getReservationStatuses } from "../../../services/statuses";
 import "./GenerateReport.css";
+import LoadingSpinner from "../../../Components/LoadingSpinner/LoadingSpinner";
 
 export default function GenerateReport() {
-  // for Date
   const [startDateValue, setStartDateValue] = useState("2024-02-02");
   const [endDateValue, setEndDateValue] = useState("2024-07-06");
-  // for blocks
   const [blocks, setBlocks] = useState([]);
   const [selectedBlock, setSelectedBlock] = useState("");
-  // for classrooms
   const [classroomsByBlock, setClassroomsByBlock] = useState([]);
   const [selectedClassroom, setSelectedClassroom] = useState("");
-  // for request's type (reservation statuses)
   const [reservationStatuses, setReservationStatuses] = useState([]);
-  /*const reservationStatuses = [ 
-    { reservation_status_id: 1, reservation_status_name: "ACEPTADO" },
-    { reservation_status_id: 2, reservation_status_name: "RECHAZADO" },
-    { reservation_status_id: 4, reservation_status_name: "CANCELADO" },
-  ];*/
   const [selectedReservationStatus, setSelectedReservationStatus] =
     useState("");
-  // for subject
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState("");
-  // for teacher
   const [teachersBySubject, setTeachersBySubject] = useState([]);
   const [selectedTeacher, setSelectedTeacher] = useState("");
-  // for report
   const [reportData, setReportData] = useState(undefined);
-  // for show report
   const [showReport, setShowReport] = useState(false);
-  // modal
   const [showModalClearReport, setShowModalClearReport] = useState(false);
-  // error
   const [errorDate, setErrorDate] = useState({
     message: null,
     isInvalid: false,
   });
+  const [loadingPage, setLoadingPage] = useState(true);
+  const [errosMessageNotFound, setErrorsMessageNotFound] = useState("");
 
   useEffect(() => {
-    Promise.all([
-      fetchBlocks(),
-      fetchReservationStatuses(),
-      fetchSubjects(),
-    ]).catch((error) => console.error(error));
+    Promise.all([fetchBlocks(), fetchReservationStatuses(), fetchSubjects()])
+      .finally(() => setLoadingPage(false))
+      .catch((error) => console.error(error));
   }, []);
 
   useEffect(() => {
@@ -161,6 +147,9 @@ export default function GenerateReport() {
     } catch (error) {
       setReportData(undefined);
       setShowReport(false);
+      setErrorsMessageNotFound(
+        "No se encontraron datos a reportar segun los valores ingresados"
+      );
     }
   };
 
@@ -236,6 +225,7 @@ export default function GenerateReport() {
     setReportData(undefined);
     setShowReport(false);
     setShowModalClearReport(false);
+    setErrorsMessageNotFound("");
   };
 
   const handlePrint = async () => {
@@ -263,253 +253,283 @@ export default function GenerateReport() {
   };
 
   return (
-    <div className="container">
-      <h1 className="text-center pb-2">Reportes</h1>
-      <Form className="mt-4">
-        <div className="row d-flex align-items-center fw-bold">
-          <div className="col-sm">
-            <label htmlFor="startDate">Fecha inicio</label>
-            <Form.Control
-              type="date"
-              name="startDate"
-              className="form-control mt-2"
-              value={startDateValue}
-              onChange={handleStartDateChange}
-            />
-          </div>
-          <div className="col-sm mt-2">
-            <label htmlFor="endDate">Fecha fin</label>
-            <Form.Control
-              type="date"
-              name="endDate"
-              className="form-control mt-2"
-              value={endDateValue}
-              onChange={handleEndDateChange}
-              isInvalid={errorDate.isInvalid}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errorDate.message}
-            </Form.Control.Feedback>
-          </div>
-          <div className="col-md mt-2">
-            <label htmlFor="block">Bloque</label>
-            <Form.Select
-              name="block"
-              className="mt-2"
-              value={selectedBlock}
-              onChange={handleChangeBlocks}
-            >
-              <option value=""></option>
-              {blocks.map((block) => {
-                return (
-                  <option key={block.block_id} value={block.block_id}>
-                    {block.block_name}
-                  </option>
-                );
-              })}
-            </Form.Select>
-          </div>
-          <div className="col-md mt-2">
-            <label htmlFor="classroom">Aula</label>
-            <Form.Select
-              name="classroom"
-              className="mt-2"
-              value={selectedClassroom}
-              disabled={selectedBlock === ""}
-              onChange={handleChangeClassroom}
-            >
-              <option value=""></option>
-              {classroomsByBlock?.map((classroom) => {
-                return (
-                  <option
-                    key={classroom.classroom_id}
-                    value={classroom.classroom_id}
-                  >
-                    {classroom.classroom_name}
-                  </option>
-                );
-              })}
-            </Form.Select>
-          </div>
-        </div>
-        <div className="row mt-3 fw-bold">
-          <div className="col-md-3">
-            <label htmlFor="request-type">Tipo de solicitud</label>
-            <Form.Select
-              name="request-type"
-              className="mt-2"
-              value={selectedReservationStatus}
-              onChange={handleChangeReservationStatus}
-            >
-              <option value=""></option>
-              {reservationStatuses.map((reservationStatus) => {
-                return (
-                  <option
-                    key={reservationStatus.reservation_status_id}
-                    value={reservationStatus.reservation_status_id}
-                  >
-                    {reservationStatus.reservation_status_name}
-                  </option>
-                );
-              })}
-            </Form.Select>
-          </div>
-          <div className="col-md-4 mt-2">
-            <label htmlFor="subject">Materia</label>
-            <Form.Select
-              name="subject"
-              className="mt-2"
-              value={selectedSubject}
-              onChange={handleChangeSubjects}
-            >
-              <option value=""></option>
-              {subjects.map((subject) => {
-                return (
-                  <option
-                    key={subject.university_subject_id}
-                    value={subject.university_subject_id}
-                  >
-                    {subject.university_subject_name}
-                  </option>
-                );
-              })}
-            </Form.Select>
-          </div>
-          <div className="col-md-4 mt-2">
-            <label htmlFor="teacher">Docente</label>
-            <Form.Select
-              name="teacher"
-              className="mt-2"
-              value={selectedTeacher}
-              disabled={selectedSubject === ""}
-              onChange={handleChangeTeacher}
-            >
-              <option value=""></option>
-              {teachersBySubject?.map((teacher) => {
-                return (
-                  <option key={teacher.person_id} value={teacher.person_id}>
-                    {teacher.teacher_name + " " + teacher.teacher_last_name}
-                  </option>
-                );
-              })}
-            </Form.Select>
-          </div>
-        </div>
-        <div className="row pt-3 justify-content-between align-items-center">
-          <div className="col-sm">
-            <button
-              type="submit"
-              className="btn btn-primary custom-btn-primary-outline"
-              onClick={(e) => {
-                e.preventDefault();
-
-                if (!errorDate.isInvalid) {
-                  handleGenerateReport();
-                }
-              }}
-            >
-              Generar Reporte
-            </button>
-          </div>
-          <div className="col-sm d-flex justify-content-end">
-            <div>
-              <button
-                type="button"
-                className="btn"
-                onClick={(e) => {
-                  e.preventDefault();
-
-                  if (showReport) {
-                    setShowModalClearReport(true);
-                  }
-                }}
-              >
-                <i className="bi bi-trash fs-3 custom-icon" title="Vaciar"></i>
-              </button>
-            </div>
-
-            <button type="button" className="btn btn-md" onClick={handlePrint}>
-              <i
-                className="bi bi-printer fs-3 custom-icon"
-                title="Imprimir"
-              ></i>
-            </button>
-            {showReport ? (
-              <PDFDownloadLink
-                document={
-                  <ReportPage
-                    startDate={startDateValue}
-                    endDate={endDateValue}
-                    reportData={reportData}
+    <>
+      {loadingPage ? (
+        <LoadingSpinner />
+      ) : (
+        <>
+          <div className="container">
+            <h1 className="text-center pb-2">Reportes</h1>
+            <Form className="mt-4">
+              <div className="row d-flex align-items-center fw-bold">
+                <div className="col-sm">
+                  <label htmlFor="startDate">Fecha inicio</label>
+                  <Form.Control
+                    type="date"
+                    name="startDate"
+                    className="form-control mt-2"
+                    value={startDateValue}
+                    onChange={handleStartDateChange}
                   />
-                }
-                fileName="reporte.pdf"
-              >
-                <button type="button" className="btn btn-md">
-                  <i className="bi bi-download fs-3"></i>
-                </button>
-              </PDFDownloadLink>
+                </div>
+                <div className="col-sm mt-2">
+                  <label htmlFor="endDate">Fecha fin</label>
+                  <Form.Control
+                    type="date"
+                    name="endDate"
+                    className="form-control mt-2"
+                    value={endDateValue}
+                    onChange={handleEndDateChange}
+                    isInvalid={errorDate.isInvalid}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errorDate.message}
+                  </Form.Control.Feedback>
+                </div>
+                <div className="col-md mt-2">
+                  <label htmlFor="block">Bloque</label>
+                  <Form.Select
+                    name="block"
+                    className="mt-2"
+                    value={selectedBlock}
+                    onChange={handleChangeBlocks}
+                  >
+                    <option value="">Seleccione una opcion</option>
+                    {blocks.map((block) => {
+                      return (
+                        <option key={block.block_id} value={block.block_id}>
+                          {block.block_name}
+                        </option>
+                      );
+                    })}
+                  </Form.Select>
+                </div>
+                {selectedBlock !== "" && (
+                  <div className="col-md mt-2">
+                    <label htmlFor="classroom">Aula</label>
+                    <Form.Select
+                      name="classroom"
+                      className="mt-2"
+                      value={selectedClassroom}
+                      onChange={handleChangeClassroom}
+                    >
+                      <option value="">Seleccione una opcion</option>
+                      {classroomsByBlock?.map((classroom) => {
+                        return (
+                          <option
+                            key={classroom.classroom_id}
+                            value={classroom.classroom_id}
+                          >
+                            {classroom.classroom_name}
+                          </option>
+                        );
+                      })}
+                    </Form.Select>
+                  </div>
+                )}
+              </div>
+              <div className="row mt-3 fw-bold">
+                <div className="col-md-3">
+                  <label htmlFor="request-type">Tipo de solicitud</label>
+                  <Form.Select
+                    name="request-type"
+                    className="mt-2"
+                    value={selectedReservationStatus}
+                    onChange={handleChangeReservationStatus}
+                  >
+                    <option value="">Seleccione una opcion</option>
+                    {reservationStatuses.map((reservationStatus) => {
+                      return (
+                        <option
+                          key={reservationStatus.reservation_status_id}
+                          value={reservationStatus.reservation_status_id}
+                        >
+                          {reservationStatus.reservation_status_name}
+                        </option>
+                      );
+                    })}
+                  </Form.Select>
+                </div>
+                <div className="col-md-4 mt-2">
+                  <label htmlFor="subject">Materia</label>
+                  <Form.Select
+                    name="subject"
+                    className="mt-2"
+                    value={selectedSubject}
+                    onChange={handleChangeSubjects}
+                  >
+                    <option value="">Seleccione una opcion</option>
+                    {subjects.map((subject) => {
+                      return (
+                        <option
+                          key={subject.university_subject_id}
+                          value={subject.university_subject_id}
+                        >
+                          {subject.university_subject_name}
+                        </option>
+                      );
+                    })}
+                  </Form.Select>
+                </div>
+                {selectedSubject !== "" && (
+                  <div className="col-md-4 mt-2">
+                    <label htmlFor="teacher">Docente</label>
+                    <Form.Select
+                      name="teacher"
+                      className="mt-2"
+                      value={selectedTeacher}
+                      disabled={selectedSubject === ""}
+                      onChange={handleChangeTeacher}
+                    >
+                      <option value="">Seleccione una opcion</option>
+                      {teachersBySubject?.map((teacher) => {
+                        return (
+                          <option
+                            key={teacher.person_id}
+                            value={teacher.person_id}
+                          >
+                            {teacher.teacher_name +
+                              " " +
+                              teacher.teacher_last_name}
+                          </option>
+                        );
+                      })}
+                    </Form.Select>
+                  </div>
+                )}
+              </div>
+              <div className="row pt-3 justify-content-between align-items-center">
+                <div className="col-sm">
+                  <button
+                    type="submit"
+                    className="btn btn-primary custom-btn-primary-outline"
+                    onClick={(e) => {
+                      e.preventDefault();
+
+                      if (!errorDate.isInvalid) {
+                        handleGenerateReport();
+                      }
+                    }}
+                  >
+                    Generar Reporte
+                  </button>
+                </div>
+                <div className="col-sm d-flex justify-content-end">
+                  <div>
+                    <button
+                      type="button"
+                      className="btn"
+                      onClick={(e) => {
+                        e.preventDefault();
+
+                        if (showReport) {
+                          setShowModalClearReport(true);
+                        }
+                      }}
+                    >
+                      <i
+                        className="bi bi-trash fs-3 custom-icon"
+                        title="Vaciar"
+                      ></i>
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="btn btn-md"
+                    onClick={handlePrint}
+                  >
+                    <i
+                      className="bi bi-printer fs-3 custom-icon"
+                      title="Imprimir"
+                    ></i>
+                  </button>
+                  {showReport ? (
+                    <PDFDownloadLink
+                      document={
+                        <ReportPage
+                          startDate={startDateValue}
+                          endDate={endDateValue}
+                          reportData={reportData}
+                        />
+                      }
+                      fileName="reporte.pdf"
+                    >
+                      <button type="button" className="btn btn-md">
+                        <i className="bi bi-download fs-3"></i>
+                      </button>
+                    </PDFDownloadLink>
+                  ) : (
+                    <button type="button" className="btn btn-md">
+                      <i
+                        className="bi bi-download fs-3 custom-icon"
+                        title="Descargar"
+                      ></i>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </Form>
+
+            <div style={{ borderTop: "1px solid black" }}></div>
+
+            {showReport ? (
+              <div className="pt-2 row">
+                <div className="col-12">
+                  <PDFViewer
+                    style={{ width: "100%", height: "90vh" }}
+                    showToolbar={false}
+                  >
+                    <ReportPage
+                      startDate={startDateValue}
+                      endDate={endDateValue}
+                      reportData={reportData}
+                    />
+                  </PDFViewer>
+                </div>
+              </div>
             ) : (
-              <button type="button" className="btn btn-md">
-                <i
-                  className="bi bi-download fs-3 custom-icon"
-                  title="Descargar"
-                ></i>
-              </button>
+              <div
+                className="d-flex justify-content-center align-items-center"
+                style={{ height: "30vh" }}
+              >
+                <h3>{errosMessageNotFound}</h3>
+              </div>
             )}
-          </div>
-        </div>
-      </Form>
 
-      <div style={{ borderTop: "1px solid black" }}></div>
-
-      {showReport && (
-        <div className="pt-2 row">
-          <div className="col-12">
-            <PDFViewer
-              style={{ width: "100%", height: "90vh" }}
-              showToolbar={false}
+            <Modal
+              show={showModalClearReport}
+              onHide={() => setShowModalClearReport(false)}
+              centered
             >
-              <ReportPage
-                startDate={startDateValue}
-                endDate={endDateValue}
-                reportData={reportData}
-              />
-            </PDFViewer>
+              <Modal.Header closeButton>
+                <Modal.Title>¡Alerta!</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="p-1">
+                  <span>¿Está seguro de eliminar el reporte generado?</span>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                <div className="d-flex justify-content-end ">
+                  <button
+                    className="m-1 btn btn btn-primary custom-btn-primary-outline"
+                    onClick={handleCleanButton}
+                  >
+                    Aceptar
+                  </button>
+                  <button
+                    className="m-1 btn btn-secondary custom-btn-gray-outline"
+                    onClick={() => setShowModalClearReport(false)}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </Modal.Footer>
+            </Modal>
           </div>
-        </div>
+        </>
       )}
-
-      <Modal
-        show={showModalClearReport}
-        onHide={() => setShowModalClearReport(false)}
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>¡Alerta!</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="p-1">
-            <span>¿Está seguro de eliminar el reporte generado?</span>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <div className="d-flex justify-content-end ">
-            <button
-              className="m-1 btn btn btn-primary custom-btn-primary-outline"
-              onClick={handleCleanButton}
-            >
-              Aceptar
-            </button>
-            <button
-              className="m-1 btn btn-secondary custom-btn-gray-outline"
-              onClick={() => setShowModalClearReport(false)}
-            >
-              Cancelar
-            </button>
-          </div>
-        </Modal.Footer>
-      </Modal>
-    </div>
+    </>
   );
 }

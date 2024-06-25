@@ -119,10 +119,11 @@ export default function Sidebar({ user }) {
             </span>
           </header>
           <div className="text-center">
-            <i
-              className="bi bi-person-circle"
-              style={{ fontSize: "100px" }}
-            ></i>
+            <img
+              style={{ borderRadius: "50%" }}
+              src={`https://picsum.photos/id/${userInformation.person_id}/241/300`}
+              alt="Foto de Perfil"
+            />
           </div>
           <span className="d-block text-center text-truncate user-select-none fs-5 fw-semibold">
             {userInformation.name + " " + userInformation.last_name}
@@ -572,7 +573,15 @@ export default function Sidebar({ user }) {
               rootClose
             >
               <div className="d-flex justify-content-around align-items-center px-3">
-                <i className="bi bi-person-circle fs-1"></i>
+                <img
+                  style={{
+                    borderRadius: "50%",
+                    maxHeight: "50px",
+                    maxWidth: "50px",
+                  }}
+                  src={`https://picsum.photos/id/${userInformation.person_id}/241/300`}
+                  alt="icon"
+                />
                 <span className="text-truncate user-select-none w-40">
                   {userInformation.name + " " + userInformation.last_name}
                 </span>

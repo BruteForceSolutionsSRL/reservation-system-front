@@ -18,13 +18,13 @@ import Select from "react-select";
 export default function RequestReservation() {
   const user = JSON.parse(localStorage.getItem("userInformation"));
   const [loadingPage, setLoadingPage] = useState(true);
-  // const [subjectsGroups, setSubjectsGroups] = useState([]);
   const [groupSelected, setGroupSelected] = useState([]);
   const [optionsGroups, setOptionsGroups] = useState([]);
   const [subjects, setSubjects] = useState(null);
   const [subjectSelected, setSubjectSelected] = useState("");
   const [quantity, setQuantity] = useState("");
   const [quantityWarnings, setQuantityWarnings] = useState({});
+  const [classroomsWarnings, setClassroomsWarnings] = useState({});
   const [dateValue, setDateValue] = useState("");
   const [reasons, setReasons] = useState([]);
   const [reasonSelected, setReasonSelected] = useState("");
@@ -153,7 +153,7 @@ export default function RequestReservation() {
     ) {
       fetchClassroomsByBlock();
     }
-  }, [blockSelected, startTime, endTime, dateValue]);
+  }, [blockSelected, startTime, endTime, dateValue, quantity]);
 
   const fetchSubjects = async () => {
     const sbjs = await getSubjects();
@@ -215,8 +215,8 @@ export default function RequestReservation() {
     });
     setColaborators([]);
     setOptionsGroups(groupsOptions);
-    setGroupSelected(groupsOptions[0]);
-    setSubjectsGroups(userGroups);
+    setGroupSelected([groupsOptions[0]]);
+    // setSubjectsGroups(userGroups);
     setListColabs(listColaborators);
     setErrorsMessages({
       ...errorsMessages,
@@ -389,7 +389,19 @@ export default function RequestReservation() {
 
   const handleChangeClassrooms = (event) => {
     setClassroomsSelected(event);
-    setClassroomsByBlock(findClassroomsById(event));
+    let classroomsById = findClassroomsById(event);
+    setClassroomsByBlock(classroomsById);
+    let classroomsRequested = classroomsById.filter(
+      (classroom) => classroom.requested === 1
+    );
+    if (classroomsRequested.length > 0) {
+      setClassroomsWarnings({
+        show: true,
+        classrooms: classroomsRequested.map((classroom) => classroom),
+      });
+    } else {
+      setClassroomsWarnings({ show: false, classrooms: [] });
+    }
   };
 
   const findClassroomsById = (classroomsList) => {
@@ -476,7 +488,6 @@ export default function RequestReservation() {
     let response = await sendRequest(request).finally(() =>
       setLoadingSendRequest(false)
     );
-
     if (response.status >= 200 && response.status < 300) {
       if (response.status === 201) {
         setModalSendRequest({
@@ -949,6 +960,13 @@ export default function RequestReservation() {
                 {suggMessage.invalid && (
                   <Alert variant={"warning"}>{suggMessage.message}</Alert>
                 )}
+                {classroomsWarnings.show && classroomsSelected.length > 0 && (
+                  <Alert
+                    variant={"warning"}
+                  >{`Las siguientes aulas seleccionadas se encuentran solicitadas ${classroomsWarnings.classrooms.map(
+                    (classroom) => " " + classroom.classroom_name
+                  )}, si se envia la solicitud con estos ambientes, la solicitud podria podria ser rechazada automaticamente al enviarse o luego de atenderse alguna solicitud que solicite alguno de los ambientes seleccionados.`}</Alert>
+                )}
               </>
             )}
             <div className="d-flex justify-content-end pt-3">
@@ -997,6 +1015,14 @@ export default function RequestReservation() {
                     <Alert variant={"warning"} className="">
                       {quantityWarnings.message}
                     </Alert>
+                    {classroomsWarnings.show &&
+                      classroomsSelected.length > 0 && (
+                        <Alert
+                          variant={"warning"}
+                        >{`Las siguientes aulas seleccionadas se encuentran solicitadas ${classroomsWarnings.classrooms.map(
+                          (classroom) => " " + classroom.classroom_name
+                        )}, si se envia la solicitud con estos ambientes, la solicitud podria podria ser rechazada automaticamente al enviarse o luego de atenderse alguna solicitud que solicite alguno de los ambientes seleccionados.`}</Alert>
+                      )}
                     <div className="pb-2 pt-1">
                       <span>¿Está seguro de enviar la solicitud?</span>
                     </div>

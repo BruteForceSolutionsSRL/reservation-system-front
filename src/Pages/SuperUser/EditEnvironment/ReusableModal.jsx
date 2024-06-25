@@ -9,24 +9,26 @@ const ReusableModal = ({
   children,
   footerButtons = [],
   size,
-  showCloseButton,
+  backdrop,
 }) => {
   return (
-    <Modal show={show} onHide={handleClose} size={size} centered>
-      <Modal.Header closeButton={showCloseButton}>
+    <Modal
+      show={show}
+      onHide={handleClose}
+      size={size}
+      centered
+      backdrop={backdrop}
+    >
+      <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>{children}</Modal.Body>
       <Modal.Footer>
         {footerButtons.map((button, index) => (
           <Button
+            className={button.className}
             key={index}
             variant={button.variant}
-            className={`me-3 ${
-              button.variant === "primary"
-                ? "btn-primary custom-btn-primary-outline"
-                : "btn-secondary custom-btn-gray-outline"
-            }`}
             onClick={button.onClick}
           >
             {button.label}

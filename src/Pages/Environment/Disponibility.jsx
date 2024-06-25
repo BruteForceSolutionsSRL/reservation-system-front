@@ -160,7 +160,7 @@ function Disponibility() {
   };
 
   function clear() {
-    setShowTable(false)
+    setShowTable(false);
     setClassrom([]);
     setSelectedClassrooms([]);
     setFormData((prevData) => ({
@@ -206,9 +206,9 @@ function Disponibility() {
     <div>
       <h1 className="text-center">Disponibilidad de ambientes</h1>
 
-      <div className="mt-3 ms-5">
+      <div className="mt-3 ms-3 me-3">
         <Form noValidate onSubmit={handleSubmit} className="row">
-          <div className="col-6 p-4 environmente-container position-relative mb-1">
+          <div className="col-6 p-4 environmente-container position-relative ">
             <label className="tag-label">AMBIENTE</label>
             <div>
               <label className="fw-bold">BLOQUE</label>
@@ -234,12 +234,17 @@ function Disponibility() {
 
             {formData.block_id !== "" ? (
               <>
-                <label className="fw-bold mt-3">AULAS</label>
+                <label className="fw-bold mt-4">AULAS</label>
                 <div
-                  className="scrol-teacher-modal h-100 overflow-y-auto"
-                  style={{ maxHeight: "200px" }}
+                  className="scrol-teacher-modal h-100 overflow-y-auto mt-2"
+                  style={{ maxHeight: "200px", overflowY: "auto" }}
                 >
-                  <Table bordered hover className="table-tag text-center mt-2">
+                  <Table
+                    striped
+                    bordered
+                    hover
+                    className="table-tag text-center "
+                  >
                     <thead>
                       <tr>
                         <th
@@ -248,6 +253,8 @@ function Disponibility() {
                             backgroundColor: "rgb(4, 94, 140)",
                             color: "white",
                             userSelect: "none",
+                            position: "sticky",
+                            top: 0,
                           }}
                         >
                           Nombre
@@ -258,6 +265,8 @@ function Disponibility() {
                             backgroundColor: "rgb(4, 94, 140)",
                             color: "white",
                             userSelect: "none",
+                            position: "sticky",
+                            top: 0,
                           }}
                         >
                           Capacidad
@@ -294,15 +303,10 @@ function Disponibility() {
                 </div>
               </>
             ) : (
-              <div className="h-50 d-flex align-items-center justify-content-center">
-                <div>
-                  <div>
-                    <b className="fs-4">Lista de aulas no disponible.</b>
-                  </div>
-                  <div>
-                    <b className="fs-4">Seleccione un bloque.</b>
-                  </div>
-                </div>
+              <div className="d-flex align-items-center justify-content-center mt-5">
+                <p className="fs-5 text-center fw-bold">
+                  Lista de aulas no disponible, seleccione un bloque.
+                </p>
               </div>
             )}
           </div>
@@ -359,7 +363,10 @@ function Disponibility() {
               </Form.Control.Feedback>
             </div>
             <div className="mt-3 d-flex justify-content-center">
-              <Button className="button-verify " type="submit">
+              <Button
+                className="button-verify btn btn-primary custom-btn-primary-outline"
+                type="submit"
+              >
                 Verificar
               </Button>
             </div>

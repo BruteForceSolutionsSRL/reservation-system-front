@@ -8,6 +8,7 @@ import ReportPage from "../../../Components/PDF/ReportPage";
 import { getTeachersBySubject } from "../../../services/teachers";
 import { generateReport } from "../../../services/reports";
 import { getReservationStatuses } from "../../../services/statuses";
+import "./GenerateReport.css";
 
 export default function GenerateReport() {
   // for Date
@@ -264,24 +265,24 @@ export default function GenerateReport() {
   return (
     <div className="container">
       <h1 className="text-center pb-2">Reportes</h1>
-      <Form>
-        <div className="row d-flex align-items-center">
+      <Form className="mt-4">
+        <div className="row d-flex align-items-center fw-bold">
           <div className="col-sm">
             <label htmlFor="startDate">Fecha inicio</label>
             <Form.Control
               type="date"
               name="startDate"
-              className="form-control"
+              className="form-control mt-2"
               value={startDateValue}
               onChange={handleStartDateChange}
             />
           </div>
-          <div className="col-sm">
+          <div className="col-sm mt-2">
             <label htmlFor="endDate">Fecha fin</label>
             <Form.Control
               type="date"
               name="endDate"
-              className="form-control"
+              className="form-control mt-2"
               value={endDateValue}
               onChange={handleEndDateChange}
               isInvalid={errorDate.isInvalid}
@@ -290,10 +291,11 @@ export default function GenerateReport() {
               {errorDate.message}
             </Form.Control.Feedback>
           </div>
-          <div className="col-md">
+          <div className="col-md mt-2">
             <label htmlFor="block">Bloque</label>
             <Form.Select
               name="block"
+              className="mt-2"
               value={selectedBlock}
               onChange={handleChangeBlocks}
             >
@@ -307,10 +309,11 @@ export default function GenerateReport() {
               })}
             </Form.Select>
           </div>
-          <div className="col-md">
+          <div className="col-md mt-2">
             <label htmlFor="classroom">Aula</label>
             <Form.Select
               name="classroom"
+              className="mt-2"
               value={selectedClassroom}
               disabled={selectedBlock === ""}
               onChange={handleChangeClassroom}
@@ -328,28 +331,13 @@ export default function GenerateReport() {
               })}
             </Form.Select>
           </div>
-          <div className="col-sm-2 d-flex justify-content-end align-items-end">
-            <button
-              type="button"
-              className="btn"
-              onClick={(e) => {
-                e.preventDefault();
-
-                if (showReport) {
-                  setShowModalClearReport(true);
-                }
-              }}
-            >
-              <span>Vaciar </span>
-              <i className="bi bi-trash"></i>
-            </button>
-          </div>
         </div>
-        <div className="row pt-3">
+        <div className="row mt-3 fw-bold">
           <div className="col-md-3">
             <label htmlFor="request-type">Tipo de solicitud</label>
             <Form.Select
               name="request-type"
+              className="mt-2"
               value={selectedReservationStatus}
               onChange={handleChangeReservationStatus}
             >
@@ -366,10 +354,11 @@ export default function GenerateReport() {
               })}
             </Form.Select>
           </div>
-          <div className="col-md-4">
+          <div className="col-md-4 mt-2">
             <label htmlFor="subject">Materia</label>
             <Form.Select
               name="subject"
+              className="mt-2"
               value={selectedSubject}
               onChange={handleChangeSubjects}
             >
@@ -386,10 +375,11 @@ export default function GenerateReport() {
               })}
             </Form.Select>
           </div>
-          <div className="col-md-4">
+          <div className="col-md-4 mt-2">
             <label htmlFor="teacher">Docente</label>
             <Form.Select
               name="teacher"
+              className="mt-2"
               value={selectedTeacher}
               disabled={selectedSubject === ""}
               onChange={handleChangeTeacher}
@@ -409,7 +399,7 @@ export default function GenerateReport() {
           <div className="col-sm">
             <button
               type="submit"
-              className="btn btn-primary"
+              className="btn btn-primary custom-btn-primary-outline"
               onClick={(e) => {
                 e.preventDefault();
 
@@ -422,8 +412,27 @@ export default function GenerateReport() {
             </button>
           </div>
           <div className="col-sm d-flex justify-content-end">
+            <div>
+              <button
+                type="button"
+                className="btn"
+                onClick={(e) => {
+                  e.preventDefault();
+
+                  if (showReport) {
+                    setShowModalClearReport(true);
+                  }
+                }}
+              >
+                <i className="bi bi-trash fs-3 custom-icon" title="Vaciar"></i>
+              </button>
+            </div>
+
             <button type="button" className="btn btn-md" onClick={handlePrint}>
-              <i className="bi bi-printer fs-3"></i>
+              <i
+                className="bi bi-printer fs-3 custom-icon"
+                title="Imprimir"
+              ></i>
             </button>
             {showReport ? (
               <PDFDownloadLink
@@ -442,7 +451,10 @@ export default function GenerateReport() {
               </PDFDownloadLink>
             ) : (
               <button type="button" className="btn btn-md">
-                <i className="bi bi-download fs-3"></i>
+                <i
+                  className="bi bi-download fs-3 custom-icon"
+                  title="Descargar"
+                ></i>
               </button>
             )}
           </div>
@@ -473,27 +485,30 @@ export default function GenerateReport() {
         onHide={() => setShowModalClearReport(false)}
         centered
       >
-        <Modal.Title className="p-3">¡Alerta!</Modal.Title>
+        <Modal.Header closeButton>
+          <Modal.Title>¡Alerta!</Modal.Title>
+        </Modal.Header>
         <Modal.Body>
           <div className="p-1">
-            <span>Se eliminará el reporte generado</span>
+            <span>¿Está seguro de eliminar el reporte generado?</span>
           </div>
-
-          <div className="d-flex justify-content-end p-3">
+        </Modal.Body>
+        <Modal.Footer>
+          <div className="d-flex justify-content-end ">
             <button
-              className="m-1 btn btn-outline-danger"
+              className="m-1 btn btn btn-primary custom-btn-primary-outline"
               onClick={handleCleanButton}
             >
               Aceptar
             </button>
             <button
-              className="m-1 btn btn-outline-secondary"
+              className="m-1 btn btn-secondary custom-btn-gray-outline"
               onClick={() => setShowModalClearReport(false)}
             >
               Cancelar
             </button>
           </div>
-        </Modal.Body>
+        </Modal.Footer>
       </Modal>
     </div>
   );

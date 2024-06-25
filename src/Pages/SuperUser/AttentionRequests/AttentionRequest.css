@@ -1,0 +1,23 @@
+.custom-btn-primary-outline:hover {
+  background-color: transparent !important;
+  border: 1px solid #2478e6 !important;
+  color: #2478e6 !important;
+}
+
+.custom-btn-green-outline:hover {
+  background-color: transparent !important;
+  border: 1px solid #28a745 !important;
+  color: #28a745 !important;
+}
+
+.custom-btn-red-outline:hover {
+  background-color: transparent !important;
+  border: 1px solid #dc3545 !important;
+  color: #dc3545 !important;
+}
+
+.custom-btn-gray-outline:hover {
+  background-color: transparent !important;
+  border: 1px solid #6c757d !important;
+  color: #6c757d !important;
+}

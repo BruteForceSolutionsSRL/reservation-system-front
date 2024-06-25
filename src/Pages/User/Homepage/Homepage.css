@@ -1,9 +1,20 @@
-body {
-
-    font-family: 'Arial', sans-serif;
-    background-color: #02070f;
+.navbar-custom .navbar-nav .nav-link{
     color: white;
 }
+
+.navbar-custom .navbar-nav .nav-link:visited {
+    color: white;
+}
+
+.navbar-custom .navbar-toggler-icon {
+    filter: invert(1);
+}
+
+.navbar-custom {
+    background-color:  #041231;
+}
+
+/***********************************************/
 
 .container {
     max-width: 100%;
@@ -84,7 +95,7 @@ body {
 }
 
 .civil-Logo {
-    max-width: 84%;
+    max-width: 60%;
 }
 
 .color-card {
@@ -97,6 +108,7 @@ body {
 
 
 .hover-card {
+    max-width: calc(96% - 10%);
     transition: transform 0.3s, box-shadow 0.3s;
 
 }
@@ -141,14 +153,98 @@ body {
 }
 
 .footer-bottom {
-    border-top: 1px solid #444;
+    border-top: 1px solid #5f5f5f;
     padding-top: 20px;
+}
+
+/*aqui*/
+
+.information {
+    background: #0a0a23;
+    color: white;
+    padding: 20px 0;
 }
 
 
 
+.information p {
+    font-size: 14px;
+}
+
+.information .social-iconss a {
+    font-size: 18px;
+    display: inline-block;
+    background: #0a0a23;
+    color: white;
+    line-height: 1;
+    padding: 10px;
+    margin-right: 5px;
+    transition: 0.3s;
+}
+
+
+/************************************************************/
+.custom-card {
+    background-color: #1c1c1c;
+    color: white;
+    border-radius: 20px;
+    overflow: hidden;
+    width: 350px;
+    margin: auto;
+}
+
+.custom-card-img {
+    border-radius: 50%;
+    height: 100px;
+    /* Ajusta la altura según tus necesidades */
+    width: 100px;
+    /* Ajusta el ancho según tus necesidades */
+    object-fit: cover;
+}
+
+.custom-card-body {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+}
+
+.custom-card-title {
+    font-size: 24px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+.custom-card-subtitle {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.custom-card-text {
+    font-size: 14px;
+}
+
+.card-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #343a40;
+    padding: 20px;
+    border-radius: 20px;
+}
+
+.text-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 20px;
+}
+/***************************************************************/
+
+/**************************************************************/
 /*responsive*/
 @media (max-width: 768px) {
+    
     .navbar {
         flex-direction: column;
         align-items: flex-start;
@@ -183,17 +279,23 @@ body {
     }
 
     .logo-image {
-        max-width: 50%;
+        max-width: 60%;
         height: auto;
         border-radius: 10px;
     }
 
     .hover-card {
-        max-width: 90%;
+        max-width: 85%;
+        margin: 0 auto;
+        
     }
 
     .umss-Logo,
     .fcyt-Logo {
+        max-width: 40%;
+    }
+
+     .civil-Logo {
         max-width: 40%;
     }
 
@@ -207,13 +309,13 @@ body {
     }
 
     .footer p {
-        font-size: 10px;
+        font-size: 13px;
         line-height: 8px;
     }
 
     .footer .social-icons a {
         font-size: 16px;
-        padding: 8px;
+        padding: 28px;
     }
 
     .footer-bottom {

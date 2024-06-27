@@ -279,7 +279,7 @@ export default function Sidebar({ user }) {
                   className="text-decoration-none px-3 d-block"
                   onClick={() => handleItemClick("environments")}
                 >
-                  <i className="bi bi-house fs-4"></i> Ambientes
+                  <i className="bi bi-clipboard-data fs-4"></i> Uso de ambientes
                   <i className="bi bi-chevron-down"></i>
                 </Link>
               </li>

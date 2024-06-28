@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getSingleNotification } from "../../../services/notifications";
+// import { getSingleNotification } from "../../../services/notifications";
 import { Modal, Spinner, Table } from "react-bootstrap";
 import { getSingleRequest } from "../../../services/requests";
 import ModalRequestInformation from "../../../Components/RequestInformation/ModalRequestInformation";
 import { getBlocks, getClassrooms } from "../../../services/classrooms";
+import { useNotificationsService } from "../../../Hooks/useNotificationsService";
 
 export default function SingleNotification() {
   const { notificationId } = useParams();
@@ -22,15 +23,31 @@ export default function SingleNotification() {
   const [modalClassAndBlock, setModalClassAndBlock] = useState(false);
   const [time, setTime] = useState({});
   const navigate = useNavigate();
+  const { getSingleNotification } = useNotificationsService();
+  const [abortController, setAbortController] = useState([]);
 
   useEffect(() => {
     getNotificationInfo();
+    return () => {
+      abortController.forEach((controller) => controller.abort());
+    };
   }, []);
 
+  const createAbortController = () => {
+    const abortController = new AbortController();
+    setAbortController((prevControllers) => [
+      ...prevControllers,
+      abortController,
+    ]);
+    return abortController;
+  };
+
   const getNotificationInfo = async () => {
-    let response = await getSingleNotification(notificationId).finally(() =>
-      setLoading(false)
-    );
+    let newAbortController = createAbortController();
+    let response = await getSingleNotification(
+      notificationId,
+      newAbortController
+    ).finally(() => setLoading(false));
     if (response.status >= 200 && response.status < 300) {
       if (typeof response.data === "object" && response.data.length === 0) {
         setNotification({});

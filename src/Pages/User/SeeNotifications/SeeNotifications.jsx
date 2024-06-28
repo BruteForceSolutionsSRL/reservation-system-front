@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { getUserNotifications } from "../../../services/notifications";
 import { NotificationElement } from "./NotificationElement";
 import { Spinner } from "react-bootstrap";
+import { useNotificationsService } from "../../../Hooks/useNotificationsService";
 
 export default function SeeNotifications() {
   const [notificationsList, setNotificationsList] = useState([]);
@@ -10,14 +10,30 @@ export default function SeeNotifications() {
   const [pagination, setPagination] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
 
+  const [abortController, setAbortController] = useState([]);
+  const { getUserNotifications } = useNotificationsService();
+
   useEffect(() => {
     getNotifications().finally(() => {
       setLoading(false);
     });
+    return () => {
+      abortController.forEach((controller) => controller.abort());
+    };
   }, []);
 
+  const createAbortController = () => {
+    const abortController = new AbortController();
+    setAbortController((prevControllers) => [
+      ...prevControllers,
+      abortController,
+    ]);
+    return abortController;
+  };
+
   const getNotifications = async () => {
-    let response = await getUserNotifications().finally(() =>
+    let newAbortController = createAbortController();
+    let response = await getUserNotifications(newAbortController).finally(() =>
       setLoading(false)
     );
     if (response.status >= 200 && response.status < 300) {

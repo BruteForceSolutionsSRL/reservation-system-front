@@ -1,28 +1,33 @@
-import { Link, useNavigate, Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
 import { Collapse, Modal, OverlayTrigger, Popover } from "react-bootstrap";
 import "./Sidebar.css";
-import { getBlocks } from "../../services/classrooms";
 import { useAuth } from "../../contexts/AuthProvider";
+import { useSessionUserService } from "../../Hooks/useSessionUserService";
 
 export default function Sidebar({ user }) {
   const [activeItem, setActiveItem] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [openItems, setOpenItems] = useState({});
   const [modalContent, setModalContent] = useState({});
-  const [repitRequest, setRepitRequest] = useState(true);
-  const navigate = useNavigate();
   const userInformation = JSON.parse(localStorage.getItem("userInformation"));
-  const { logout } = useAuth();
   const [popoverPlacement, setPopoverPlacement] = useState("right");
   const sidebarRef = useRef(null);
+  const { logout } = useAuth();
+  const { tokenStatusUser } = useSessionUserService();
+  const [abortController, setAbortController] = useState(null);
 
   useEffect(() => {
-    if (repitRequest) {
-      isLogged();
-      setRepitRequest(false);
-    }
-  }, [repitRequest]);
+    let idInterval = setInterval(() => {
+      tokenStatus();
+    }, 60000);
+    return () => {
+      clearInterval(idInterval);
+      if (abortController) {
+        abortController.abort();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -59,17 +64,13 @@ export default function Sidebar({ user }) {
     };
   }, [menuOpen]);
 
-  const isLogged = () => {
-    verifyTokenExpired();
-  };
-
-  const verifyTokenExpired = async () => {
-    setInterval(() => {
-      setRepitRequest(true);
-    }, 360000);
-    let response = await getBlocks();
+  const tokenStatus = async () => {
+    let newAbortController = new AbortController();
+    setAbortController(newAbortController);
+    let response = await tokenStatusUser(newAbortController);
     if (
-      response.status === 402 ||
+      response.status === 401 ||
+      response.status === 403 ||
       response.data.status === "Token expirado" ||
       response.data.status === "Token invalido"
     ) {
@@ -81,7 +82,7 @@ export default function Sidebar({ user }) {
       setModalContent(content);
       setTimeout(() => {
         logout();
-        navigate("/");
+        abortController.abort();
       }, 3000);
     } else {
       let content = {

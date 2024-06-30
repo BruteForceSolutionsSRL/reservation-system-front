@@ -1,14 +1,20 @@
 body {
-  background: #eee;
+  background: #000000;
   min-width: 300px;
 }
 
+
 #side_nav {
-  background: white;
+  background: #041231;
+
   min-width: 200px;
   max-width: 240px;
   transition: all 0.3s;
   font-size: 14px;
+
+  /* margin-top: 10px;
+  margin-left: 10px;
+  margin-bottom: 10px; */
 }
 
 .content {
@@ -20,23 +26,27 @@ hr.h-color {
   background: #eee;
 }
 
-.sidebar li.active {
-  background: #eee;
+.sidebar li.active, .user-name {
+  background: #8d7458;
   border-radius: 50px;
 }
 .sidebar li:hover {
-  background-color: #eee;
+  background-color: #bb9988; 
   border-radius: 50px;
 }
 
 .hover:hover {
-  background-color: #eee;
+  background-color: #2196f3;
   cursor: pointer;
   border-radius: 50px;
 }
 
 .sidebar li a {
   color: black;
+}
+
+.menu-navbar{
+background: #041231;
 }
 
 @media (max-width: 767px) {
@@ -60,4 +70,8 @@ hr.h-color {
   overflow-x: auto;
   overflow-y: auto;
   width: 100%;
+}
+
+.custom-scrollbars__content::-webkit-scrollbar {
+  display: none;
 }

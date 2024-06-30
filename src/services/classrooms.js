@@ -22,7 +22,7 @@ export function getClassrooms() {
 
 export function getClassroomsByBlock(id) {
   let token = localStorage.getItem("token");
-  return fetch(url + `classrooms/block/${id}`, {
+  return fetch(url + `classrooms/block/${id}?status=ALL`, {
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "aplication/json",

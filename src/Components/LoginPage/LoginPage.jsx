@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthProvider";
-import { loginUser } from "../../services/login";
 import { Alert } from "react-bootstrap";
+import { useSessionUserService } from "../../Hooks/useSessionUserService";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -12,16 +12,40 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const { login } = useAuth();
-
+  const { loginUser } = useSessionUserService();
   const navigate = useNavigate();
+  const [abortController, setAbortController] = useState(null);
+
+  useEffect(() => {
+    const savedUser = JSON.parse(localStorage.getItem("user"));
+    if (savedUser) {
+      if (savedUser.role === "user") {
+        navigate("/user/home");
+      } else if (savedUser.role === "superuser") {
+        navigate("/superuser/home");
+      }
+    }
+    return () => {
+      if (abortController) {
+        abortController.abort();
+      }
+    };
+  }, []);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
   const loginRequest = async () => {
+    let newAbortController = new AbortController();
+    setAbortController(newAbortController);
     setLoadingLogin(true);
     try {
-      let { data, status } = await loginUser(email, password);
+      let { data, status } = await loginUser(
+        email,
+        password,
+        newAbortController
+      );
       if (status >= 200 && status < 300) {
         let { token, user } = data;
         if (user.roles[0] === "DOCENTE") {

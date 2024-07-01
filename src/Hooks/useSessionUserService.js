@@ -13,7 +13,7 @@ export function useSessionUserService() {
           "Content-Type": "aplication/json",
         },
         signal: abortController.signal,
-        body: JSON.stringify({login: email, password: password}),
+        body: JSON.stringify({ login: email, password: password }),
       });
       if (response.status === 401 || response.status === 403) {
         abortController.abort();

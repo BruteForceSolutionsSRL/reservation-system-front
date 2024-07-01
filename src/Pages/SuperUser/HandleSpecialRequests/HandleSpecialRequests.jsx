@@ -74,7 +74,7 @@ function HandleSpecialRequests(props) {
       <div
         className={`row border border-${
           priority ? "danger" : "black"
-        } rounded p-2 mb-2 m-2`}
+        } rounded p-2 mb-2 m-0`}
         style={{ minWidth: "400px" }}
       >
         <div className="col-sm-4">

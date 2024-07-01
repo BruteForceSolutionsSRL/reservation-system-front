@@ -3,7 +3,7 @@ import { Form, Modal } from "react-bootstrap";
 import Select from "react-select";
 import { getTeachers } from "../../../services/teachers";
 import { Spinner } from "react-bootstrap";
-import { sendNotification } from "../../../services/notifications";
+import { useNotificationsService } from "../../../Hooks/useNotificationsService";
 
 export default function SendNotification() {
   const [notificateTo, setNotificateTo] = useState([]);
@@ -20,16 +20,32 @@ export default function SendNotification() {
   const [modalContent, setModalContent] = useState({});
   const [loadingRequest, setLoadingSendRequest] = useState(false);
 
+  const { sendNotification } = useNotificationsService();
+  const [abortController, setAbortController] = useState([]);
+
   useEffect(() => {
     getTeachersList();
+    return () => {
+      abortController.forEach((controller) => controller.abort());
+    };
   }, []);
 
   useEffect(() => {
     isFormCompleted();
   }, [title, notificationType, body, notificateTo]);
 
+  const createAbortController = () => {
+    const abortController = new AbortController();
+    setAbortController((prevControllers) => [
+      ...prevControllers,
+      abortController,
+    ]);
+    return abortController;
+  };
+
   const getTeachersList = async () => {
-    let response = await getTeachers();
+    let newAbortController = createAbortController();
+    let response = await getTeachers(newAbortController);
     if (response.status >= 200 && response.status < 300) {
       let teachers = response.data.map((person) => {
         return {
@@ -174,6 +190,7 @@ export default function SendNotification() {
   };
 
   const handleSubmit = async () => {
+    let newAbortController = createAbortController();
     setLoadingSendRequest(true);
     let to = notificateTo.map(({ value }) => value);
     let data = {
@@ -183,8 +200,8 @@ export default function SendNotification() {
       to: to,
     };
 
-    let response = await sendNotification(data).finally(() =>
-      setLoadingSendRequest(false)
+    let response = await sendNotification(data, newAbortController).finally(
+      () => setLoadingSendRequest(false)
     );
 
     let content = {};

@@ -13,7 +13,10 @@ function Homepage() {
   const { user } = useAuth();
 
   return (
-    <div className="color-body">
+    <div
+      className="color-body d-flex align-items-center justify-content-center"
+      style={{ height: "100%", width: "100%" }}
+    >
       <div className="text-center">
         <Row>
           <Col lg={6}>
@@ -36,7 +39,10 @@ function Homepage() {
             </h4>
           </Col>
 
-          <Col lg={6} className="image-container mt-5">
+          <Col
+            lg={6}
+            className="image-container mt-2 d-flex align-items-center"
+          >
             <Carousel>
               <Carousel.Item>
                 <img src={image} alt="Sistema de reserva" className="image" />

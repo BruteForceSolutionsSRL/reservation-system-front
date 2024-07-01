@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Button } from "react-bootstrap";
+import { Button, Spinner } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 
 export default function ElementCancel(props) {
   const URL = import.meta.env.VITE_REACT_API_URL;
   const [show, setShow] = useState(false);
+  const [loadingSpinner, setLoadingSpinner] = useState(false);
+
   const {
     reservation_id,
     subject_name,
@@ -17,6 +19,11 @@ export default function ElementCancel(props) {
   } = props;
 
   const cancelRequest = async () => {
+    setLoadingSpinner(true);
+    setTimeout(() => {
+      setLoadingSpinner(false);
+    }, 2000);
+
     let token = localStorage.getItem("token");
     await fetch(URL + `reservations/${reservation_id}/cancel`, {
       method: "PATCH",
@@ -34,6 +41,7 @@ export default function ElementCancel(props) {
         if (err) throw console.error(err);
       });
   };
+
   return (
     <>
       <div
@@ -94,7 +102,7 @@ export default function ElementCancel(props) {
         <div className="col-sm-2 align-self-center d-flex justify-content-end">
           <Button
             variant="danger"
-            className="custom-btn-primary-outline text-truncate"
+            className="custom-btn-red-outline text-truncate"
             onClick={() => setShow(true)}
           >
             Cancelar solicitud
@@ -106,8 +114,7 @@ export default function ElementCancel(props) {
         show={show}
         onHide={() => setShow(false)}
         centered
-        dialogClassName="modal-90w modal-dialog-scrollable modal-sm"
-        aria-labelledby="request-modal"
+        backdrop="static"
       >
         <Modal.Header closeButton>
           <Modal.Title id="request-modal">Solicitud de reserva</Modal.Title>
@@ -116,14 +123,22 @@ export default function ElementCancel(props) {
           <div>¿Esta seguro de cancelar la solicitud?</div>
         </Modal.Body>
         <Modal.Footer>
+          {loadingSpinner && (
+            <Spinner animation="border" variant="secondary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          )}
           <button
-            className="btn btn-outline-secondary"
+            className="btn btn-danger custom-btn-danger-outline"
+            onClick={cancelRequest}
+          >
+            Aceptar
+          </button>
+          <button
+            className="btn btn-secondary custom-btn-gray-outline"
             onClick={() => setShow(false)}
           >
             Cancelar
-          </button>
-          <button className="btn btn-outline-danger" onClick={cancelRequest}>
-            Aceptar
           </button>
         </Modal.Footer>
       </Modal>

@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { logoutUser } from "../services/login";
 import LoadingSpinner from "../Components/LoadingSpinner/LoadingSpinner";
 
 const AuthContext = createContext();
@@ -22,11 +21,25 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    await logoutUser();
-    localStorage.removeItem("token");
-    localStorage.removeItem("userInformation");
-    localStorage.removeItem("user");
+    logoutUserFetch();
+    localStorage.clear();
     setUser(null);
+  };
+
+  const logoutUserFetch = async () => {
+    const url = import.meta.env.VITE_REACT_API_URL;
+    let token = localStorage.getItem("token");
+    try {
+      await fetch(url + "logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "aplication/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   if (loading) {

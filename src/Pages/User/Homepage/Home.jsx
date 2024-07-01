@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Container, Row, Col, Navbar, Button, Card } from "react-bootstrap";
 import { Nav, Carousel } from "react-bootstrap";
 import decanatoFcyt from "./icons/decanatoFcyt.jpg";
@@ -27,11 +27,24 @@ import mecanicaLogo from "./LogosCarrers/mecanicaLogo.png";
 import petroquimicaLogo from "./LogosCarrers/petroquimicaLogo.png";
 import quimicaLogo from "./LogosCarrers/quimicaLogo.png";
 import sistemasLogo from "./LogosCarrers/sistemasLogo.png";
-
 import image from "./logo.png";
 import "./Homepage.css";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedUser = JSON.parse(localStorage.getItem("user"));
+    if (savedUser) {
+      if (savedUser.role === "user") {
+        navigate("/user/home");
+      } else if (savedUser.role === "superuser") {
+        navigate("/superuser/home");
+      }
+    }
+  }, []);
+
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -226,10 +239,7 @@ function Home() {
             <img src={imageLogo} alt="Sura Logo" className="logo-image" />
             <Navbar.Collapse id="basic-navbar-nav ">
               <Nav className="me-auto">
-                <Nav.Link
-                  onClick={scrollToTop}
-                  className="nav-link btn-quote ms-auto"
-                >
+                <Nav.Link onClick={scrollToTop} className="nav-link btn-quote">
                   Inicio
                 </Nav.Link>
                 {/* <Link to="/nosotros" className="nav-link">

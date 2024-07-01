@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getSingleNotification } from "../../../services/notifications";
+// import { getSingleNotification } from "../../../services/notifications";
 import { Modal, Spinner, Table } from "react-bootstrap";
 import { getSingleRequest } from "../../../services/requests";
 import ModalRequestInformation from "../../../Components/RequestInformation/ModalRequestInformation";
 import { getBlocks, getClassrooms } from "../../../services/classrooms";
+import { useNotificationsService } from "../../../Hooks/useNotificationsService";
 
 export default function SingleNotification() {
   const { notificationId } = useParams();
@@ -22,15 +23,31 @@ export default function SingleNotification() {
   const [modalClassAndBlock, setModalClassAndBlock] = useState(false);
   const [time, setTime] = useState({});
   const navigate = useNavigate();
+  const { getSingleNotification } = useNotificationsService();
+  const [abortController, setAbortController] = useState([]);
 
   useEffect(() => {
     getNotificationInfo();
+    return () => {
+      abortController.forEach((controller) => controller.abort());
+    };
   }, []);
 
+  const createAbortController = () => {
+    const abortController = new AbortController();
+    setAbortController((prevControllers) => [
+      ...prevControllers,
+      abortController,
+    ]);
+    return abortController;
+  };
+
   const getNotificationInfo = async () => {
-    let response = await getSingleNotification(notificationId).finally(() =>
-      setLoading(false)
-    );
+    let newAbortController = createAbortController();
+    let response = await getSingleNotification(
+      notificationId,
+      newAbortController
+    ).finally(() => setLoading(false));
     if (response.status >= 200 && response.status < 300) {
       if (typeof response.data === "object" && response.data.length === 0) {
         setNotification({});
@@ -117,6 +134,7 @@ export default function SingleNotification() {
       classrooms: request.classrooms,
       reason: request.reason_name,
       state: request.reservation_status,
+      special: request.special,
     };
 
     const {
@@ -130,6 +148,7 @@ export default function SingleNotification() {
       classrooms,
       reason,
       state,
+      special,
     } = content;
 
     setModalContent({
@@ -168,18 +187,28 @@ export default function SingleNotification() {
                   <thead>
                     <tr>
                       <th>Nombre</th>
-                      <th>Grupo</th>
+                      {special === 0 && <th>Grupo</th>}
                     </tr>
                   </thead>
                   <tbody>
-                    {groups.map((each) => {
-                      return (
-                        <tr key={each.group_number}>
-                          <td>{each.teacher_name}</td>
-                          <td>{each.group_number}</td>
+                    {special === 1 ? (
+                      <>
+                        <tr key={groups.teacher_name}>
+                          <td>{groups.teacher_name}</td>
                         </tr>
-                      );
-                    })}
+                      </>
+                    ) : (
+                      <>
+                        {groups.map((each) => {
+                          return (
+                            <tr key={each.group_number}>
+                              <td>{each.teacher_name}</td>
+                              <td>{each.group_number}</td>
+                            </tr>
+                          );
+                        })}
+                      </>
+                    )}
                   </tbody>
                 </Table>
               </div>
@@ -206,8 +235,11 @@ export default function SingleNotification() {
                 <div className="col-sm-2">
                   <b>AULA(s)</b>
                 </div>
-                <div className="col-sm-10">
-                  <Table bordered className="w-100">
+                <div
+                  className="col-sm-10  overflow-y-auto"
+                  style={{ maxHeight: "250px" }}
+                >
+                  <Table bordered className="">
                     <thead>
                       <tr>
                         <th>Nombre</th>
@@ -403,7 +435,7 @@ export default function SingleNotification() {
                     {request ? (
                       <div className="text-center pt-3 pb-4">
                         <button
-                          className="btn btn-outline-primary"
+                          className="mt-1 custom-button btn btn-primary custom-btn-primary-outline"
                           onClick={() => setShowRequest(true)}
                         >
                           Ver solicitud

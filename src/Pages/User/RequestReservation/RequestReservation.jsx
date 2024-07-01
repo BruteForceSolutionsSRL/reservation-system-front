@@ -315,6 +315,7 @@ export default function RequestReservation() {
       };
       setSuggAvailable(false);
       setErrorsMessages(newErrorsMessages);
+      setBlockSelected("");
     }
   };
   const isQuantityLessThan50PercentClassrooms = () => {
@@ -371,6 +372,10 @@ export default function RequestReservation() {
   const handleChangeBlocks = ({ value }) => {
     setBlockSelected(value);
     let newErrorsMessages = { ...errorsMessages };
+    setSuggMessage({
+      message: "",
+      invalid: false,
+    });
     if (value === "") {
       newErrorsMessages.block = {
         message: "Seleccione un bloque",
@@ -903,6 +908,11 @@ export default function RequestReservation() {
                   value={blockSelected}
                   onChange={(e) => handleChangeBlocks(e.target)}
                   isInvalid={errorsMessages.block.isInvalid}
+                  disabled={
+                    !quantity.trim() ||
+                    !startTime.trim() ||
+                    !subjectSelected.trim()
+                  }
                 >
                   <option value="" disabled={blockSelected !== ""}>
                     Seleccione una opcion
@@ -1003,7 +1013,7 @@ export default function RequestReservation() {
             centered
             backdrop="static"
           >
-            <Modal.Header closeButton className="p-3">
+            <Modal.Header className="p-3">
               <Modal.Title>{modalSendRequest.content.title}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -1067,6 +1077,31 @@ export default function RequestReservation() {
                   disabled={loadingSendRequest}
                 >
                   Cancelar
+                </Button>
+              </Modal.Footer>
+            )}
+
+            {(modalSendRequest.content.title ===
+              "Solicitud de reserva pendiente" ||
+              modalSendRequest.content.title ===
+                "Solicitud de reserva aceptada") && (
+              <Modal.Footer>
+                {loadingSendRequest && (
+                  <Spinner animation="border" variant="secondary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </Spinner>
+                )}
+                <Button
+                  variant="primary"
+                  className="custom-btn-primary custom-btn-primary-outline"
+                  onClick={() => {
+                    setModalSendRequest({
+                      ...modalSendRequest,
+                      show: false,
+                    });
+                  }}
+                >
+                  Aceptar
                 </Button>
               </Modal.Footer>
             )}

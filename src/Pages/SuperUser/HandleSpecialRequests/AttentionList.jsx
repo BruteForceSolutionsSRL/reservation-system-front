@@ -1,33 +1,34 @@
 import { useEffect, useState } from "react";
 import Spinner from "react-bootstrap/Spinner";
-import AttentionRequest from "./AttentionRequest";
+import HandleSpecialRequests from "./HandleSpecialRequests";
 
 export default function AttentionList() {
   const URL = import.meta.env.VITE_REACT_API_URL;
 
-  const [reservations, setReservations] = useState([]);
+  const [specialRequest, setSpecialRequest] = useState([]);
   const [loading, setLoading] = useState(false);
   const [reload, setReload] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    reloadListt();
+    listRequest();
   }, [reload]);
 
-  const reloadListt = async () => {
+  const listRequest = async () => {
     let token = localStorage.getItem("token");
-    const fetchData = await fetch(URL + "reservations/pending", {
+    const fetchData = await fetch(URL + "reservations/special", {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "aplication/json",
       },
+      mode: "cors",
     })
       .then((res) => {
         if (!res.ok) throw new Error("Network response was not ok.");
         return res.json();
       })
       .then((data) => {
-        setReservations(data);
+        setSpecialRequest(data);
         setLoading(false);
         setReload(false);
       })
@@ -40,7 +41,7 @@ export default function AttentionList() {
   return (
     <div className="container">
       <div>
-        <h1 className="text-center mt-2">Atender solicitudes pendientes</h1>
+        <h1 className="text-center mt-2">Reservas</h1>
       </div>
       <hr />
       {loading === true ? (
@@ -54,19 +55,17 @@ export default function AttentionList() {
             <b className="fs-4">Cargando</b>
           </div>
         </div>
-      ) : reservations.length === 0 ? (
+      ) : specialRequest.length === 0 ? (
         <div className="h-100 d-flex align-items-center justify-content-center">
           <i className="bi bi-check-circle fs-1"></i>
-          <b className="text-center fs-2 ps-3">
-            No tienes mas solicitudes pendientes por atender
-          </b>
+          <b className="text-center fs-2 ps-3">No hay solicitudes</b>
         </div>
       ) : (
         <div className="container">
-          {reservations.map((element) => {
+          {specialRequest.map((element) => {
             return (
               <div key={element.reservation_id} className="">
-                <AttentionRequest
+                <HandleSpecialRequests
                   {...element}
                   reload={(change) => setReload(change)}
                 />

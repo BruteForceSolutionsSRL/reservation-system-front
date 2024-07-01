@@ -54,7 +54,7 @@ export default function ListCancel() {
       {loadingPage ? (
         <LoadingSpinner />
       ) : (
-        <div className="container">
+        <div className="container mt-2">
           <h1 className="text-center">Lista de solicitudes</h1>
           {loading ? (
             <div

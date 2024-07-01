@@ -69,11 +69,11 @@ export default function StatisticsAmbience() {
   };
 
   return (
-    <div>
+    <div className="container mt-2">
       <div>
         <h1 className="text-center mb-4">Estadísticas de ambiente</h1>
       </div>
-      <div className="search-cotainer mb-4">
+      <div className="pb-3">
         <SearchBar
           value={searchValue}
           onChange={(event) => {
@@ -85,7 +85,7 @@ export default function StatisticsAmbience() {
           onPaste={(e) => e.preventDefault()}
         />
       </div>
-      <div className="pt-3" style={{ minWidth: "350px" }}>
+      <div className="pb-3" style={{ minWidth: "350px" }}>
         <>
           {searchResultsList.length === 0 ? (
             <div className="text-center">
@@ -93,6 +93,7 @@ export default function StatisticsAmbience() {
             </div>
           ) : (
             <>
+              <hr />
               {searchResultsList.map((each) => {
                 return (
                   <div key={each.classroom_id}>

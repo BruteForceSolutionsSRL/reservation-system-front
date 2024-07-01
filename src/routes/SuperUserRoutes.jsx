@@ -16,6 +16,7 @@ import DeleteBlock from "../Pages/SuperUser/DeleteBlock/DeleteBlock";
 import ProtectedRoute from "./ProtectedRoute";
 import SeeNotifications from "../Pages/User/SeeNotifications/SeeNotifications";
 import SingleNotification from "../Pages/User/SeeNotifications/SingleNotification";
+import SpecialRequest from "../Pages/SuperUser/SpecialRequest/SpecialRequest";
 
 export default function SuperUserRoutes() {
   return (
@@ -48,6 +49,7 @@ export default function SuperUserRoutes() {
           path="notifications/:notificationId"
           element={<SingleNotification />}
         />
+        <Route path="request" element={<SpecialRequest />} />
       </Route>
     </Routes>
   );

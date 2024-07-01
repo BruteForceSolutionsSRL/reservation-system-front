@@ -228,6 +228,24 @@ export default function Sidebar({ user }) {
                   {user === "superuser" && (
                     <li
                       className={
+                        activeItem === "request"
+                          ? "active list-unstyled px-2"
+                          : "list-unstyled px-2"
+                      }
+                    >
+                      <Link
+                        to="request"
+                        className="text-decoration-none px-4 py-2 d-block"
+                        onClick={() => handleItemClick("request")}
+                      >
+                        <i className="bi bi-bookmark-plus fs-4"></i>
+                        <span>Nueva solicitud</span>
+                      </Link>
+                    </li>
+                  )}
+                  {user === "superuser" && (
+                    <li
+                      className={
                         activeItem === "request-attention"
                           ? "active list-unstyled px-2"
                           : "list-unstyled px-2"

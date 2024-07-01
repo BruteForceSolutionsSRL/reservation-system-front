@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Form, Modal } from "react-bootstrap";
+import { Form, Modal,Button } from "react-bootstrap";
 import Select from "react-select";
 import { getTeachers } from "../../../services/teachers";
 import { Spinner } from "react-bootstrap";
@@ -234,7 +234,7 @@ export default function SendNotification() {
 
   return (
     <div className="container">
-      <div className="text-center pb-3">
+      <div className="text-center pb-3 m-3">
         <h1>Crear notificación</h1>
       </div>
       <div>
@@ -320,14 +320,15 @@ export default function SendNotification() {
             </Form.Control.Feedback>
           </div>
           <div className="d-flex justify-content-end pt-3">
-            <button
-              className="btn btn-outline-success"
+            <Button
+              variant="success"
+              className="custom-btn-green custom-btn-green-outline"
               disabled={enableButton}
               type="button"
               onClick={handleClickSend}
             >
               Enviar
-            </button>
+            </Button>
           </div>
         </Form>
       </div>

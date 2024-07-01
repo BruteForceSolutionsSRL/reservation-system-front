@@ -29,8 +29,8 @@ hr.h-color {
   bottom: 0;
   width: 100%;
   padding: 10px;
-  background-color: #f8f9fa; /* Ajusta el color de fondo si es necesario */
-  border-top: 1px solid #ddd; /* Añade una línea superior si es necesario */
+  background-color: #f8f9fa;
+  border-top: 1px solid #ddd;
 }
 
 .sidebar li.active {

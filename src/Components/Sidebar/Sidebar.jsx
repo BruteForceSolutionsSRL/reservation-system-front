@@ -173,7 +173,7 @@ export default function Sidebar({ user }) {
               <span className="text-black title">SURA</span>
             </h1>
           </div>
-          <div className="overflow-y-auto" style={{ maxHeight: "60vh" }}>
+          <div className="overflow-y-auto" style={{ maxHeight: "85vh" }}>
             <ul className="list-unstyled">
               <li className={activeItem === "home" ? "active" : ""}>
                 <Link

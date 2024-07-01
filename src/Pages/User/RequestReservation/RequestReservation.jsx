@@ -1084,7 +1084,9 @@ export default function RequestReservation() {
             {(modalSendRequest.content.title ===
               "Solicitud de reserva pendiente" ||
               modalSendRequest.content.title ===
-                "Solicitud de reserva aceptada") && (
+                "Solicitud de reserva aceptada" ||
+              modalSendRequest.content.title ===
+                "Error") && (
               <Modal.Footer>
                 {loadingSendRequest && (
                   <Spinner animation="border" variant="secondary" role="status">

@@ -195,14 +195,13 @@ export default function AttentionRequest(props) {
       <Modal
         show={showModal}
         onHide={() => setShowModal(false)}
-        dialogClassName="modal-90w"
         size="lg"
-        centered={true}
+        centered
         aria-labelledby="reservation-info-modal"
       >
         <Modal.Header closeButton>
           <Modal.Title id="reservation-info-modal">
-            <h3>ATENCION DE LA SOLICITUD</h3>
+            <h3>ATENCIÓN DE LA SOLICITUD</h3>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -332,17 +331,16 @@ export default function AttentionRequest(props) {
       <Modal
         show={showAcceptModal}
         onHide={() => setShowAcceptModal(false)}
-        dialogClassName="modal-90w"
-        size="lg"
-        centered={true}
-        aria-labelledby="acceptModal"
+        centered
         backdrop="static"
       >
         <Modal.Header closeButton>
-          <Modal.Title id="acceptModal">¡Confirmacion!</Modal.Title>
+          <Modal.Title>¡Confirmacion!</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h3>¿Está seguro de aceptar la solicitud de reserva?</h3>
+          <div className="mb-2">
+            <b>¿Está seguro de aceptar la solicitud de reserva?</b>
+          </div>
           {conflicts.quantity === "" ? (
             ""
           ) : conflicts.classroom.message ? (
@@ -395,14 +393,11 @@ export default function AttentionRequest(props) {
       <Modal
         show={showRefuseModal}
         onHide={() => setShowRefuseModal(false)}
-        dialogClassName="modal-90w"
-        size="lg"
-        centered={true}
-        aria-labelledby="refuseModal"
+        centered
         backdrop="static"
       >
         <Modal.Header closeButton>
-          <Modal.Title id="refuseModal">¡Confirmación de rechazo!</Modal.Title>
+          <Modal.Title>¡Confirmación de rechazo!</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="pb-2">
@@ -453,20 +448,18 @@ export default function AttentionRequest(props) {
       <Modal
         show={showErrorModal}
         onHide={() => setShowErrorModal(false)}
-        dialogClassName="modal-90w"
-        size="sm"
-        centered={true}
-        aria-labelledby="errorModal"
+        centered
+        backdrop="static"
       >
         <Modal.Header closeButton>
-          <Modal.Title id="errorModal">Mensaje</Modal.Title>
+          <Modal.Title>Mensaje</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="pb-2">{errorTextModal}</div>
         </Modal.Body>
         <Modal.Footer>
           <button
-            className="btn btn-outline-secondary"
+            className="btn custom-btn-gray-outline btn-secondary"
             onClick={() => {
               setShowErrorModal(false);
               props.reload(true);

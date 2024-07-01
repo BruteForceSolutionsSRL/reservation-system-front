@@ -134,6 +134,7 @@ export default function SingleNotification() {
       classrooms: request.classrooms,
       reason: request.reason_name,
       state: request.reservation_status,
+      special: request.special,
     };
 
     const {
@@ -147,6 +148,7 @@ export default function SingleNotification() {
       classrooms,
       reason,
       state,
+      special,
     } = content;
 
     setModalContent({
@@ -185,18 +187,28 @@ export default function SingleNotification() {
                   <thead>
                     <tr>
                       <th>Nombre</th>
-                      <th>Grupo</th>
+                      {special === 0 && <th>Grupo</th>}
                     </tr>
                   </thead>
                   <tbody>
-                    {groups.map((each) => {
-                      return (
-                        <tr key={each.group_number}>
-                          <td>{each.teacher_name}</td>
-                          <td>{each.group_number}</td>
+                    {special === 1 ? (
+                      <>
+                        <tr key={groups.teacher_name}>
+                          <td>{groups.teacher_name}</td>
                         </tr>
-                      );
-                    })}
+                      </>
+                    ) : (
+                      <>
+                        {groups.map((each) => {
+                          return (
+                            <tr key={each.group_number}>
+                              <td>{each.teacher_name}</td>
+                              <td>{each.group_number}</td>
+                            </tr>
+                          );
+                        })}
+                      </>
+                    )}
                   </tbody>
                 </Table>
               </div>
@@ -223,8 +235,11 @@ export default function SingleNotification() {
                 <div className="col-sm-2">
                   <b>AULA(s)</b>
                 </div>
-                <div className="col-sm-10">
-                  <Table bordered className="w-100">
+                <div
+                  className="col-sm-10  overflow-y-auto"
+                  style={{ maxHeight: "250px" }}
+                >
+                  <Table bordered className="">
                     <thead>
                       <tr>
                         <th>Nombre</th>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthProvider";
 import { Alert } from "react-bootstrap";
 import { useSessionUserService } from "../../Hooks/useSessionUserService";
+import "./LoginPage.css";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -72,7 +73,7 @@ const LoginPage = () => {
 
   return (
     <div
-      className="d-flex justify-content-center align-items-center bg bg-success-subtle"
+      className="d-flex justify-content-center align-items-center bg bg-success-subtle all-color"
       style={{ width: "100%", height: "100vh" }}
       onKeyDown={(event) => {
         if (event.key === "Enter") {
@@ -80,7 +81,10 @@ const LoginPage = () => {
         }
       }}
     >
-      <div className="p-3 shadow p-3 mb-5 bg-light-subtle rounded">
+      <div
+        className="p-3 shadow p-3 mb-5 bg-light-subtle rounded"
+        style={{ width: "40%", minWidth: "280px" }}
+      >
         <h1 className="text-center">Inicio de sesión</h1>
         <hr />
         {errorMessage && (
@@ -89,38 +93,43 @@ const LoginPage = () => {
           </Alert>
         )}
 
-        <div className="d-flex p-3 align-items-center">
-          <b className="pe-2">Correo electrónico</b>
-          <input
-            type="email"
-            className="form-control flex-fill"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Correo electrónico"
-          />
-          <div className="input-group-text">
-            <i className="bi bi-envelope"></i>
+        <div className=" align-items-center mt-1">
+          <b className="">Usuario / Correo electrónico</b>
+          <div className=" d-flex mt-2">
+            <input
+              type="email"
+              className="form-control flex-fill"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Correo electrónico"
+            />
+
+            <div className="input-group-text">
+              <i className="bi bi-envelope"></i>
+            </div>
           </div>
         </div>
-        <div className="d-flex p-3 align-items-center">
-          <b className="pe-3">Contraseña</b>
-          <input
-            type={showPassword ? "text" : "password"}
-            className="form-control flex-fill"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Contraseña"
-          />
-          <div
-            className="input-group-text"
-            onClick={togglePasswordVisibility}
-            style={{ cursor: "pointer" }}
-          >
-            {showPassword ? (
-              <i className="bi bi-eye-slash"></i>
-            ) : (
-              <i className="bi bi-eye"></i>
-            )}
+        <div className="mt-2 ">
+          <b className="">Contraseña</b>
+          <div className="d-flex mt-2">
+            <input
+              type={showPassword ? "text" : "password"}
+              className="form-control flex-fill"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Contraseña"
+            />
+            <div
+              className="input-group-text"
+              onClick={togglePasswordVisibility}
+              style={{ cursor: "pointer" }}
+            >
+              {showPassword ? (
+                <i className="bi bi-eye-slash"></i>
+              ) : (
+                <i className="bi bi-eye"></i>
+              )}
+            </div>
           </div>
         </div>
         <hr />

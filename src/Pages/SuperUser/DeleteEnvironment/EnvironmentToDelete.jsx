@@ -38,14 +38,14 @@ export default function EnvironmentToDelete(props) {
 
   const sendDeleteEnvironment = async () => {
     setLoadingDelete(true);
-    let response = await deleteEnvironment(id).finally(() => {
+    let {status, data} = await deleteEnvironment(id).finally(() => {
       setLoadingDelete(false);
       setShowConfirm(false);
     });
-    if (response.message === "Ambiente eliminado exitosamente.") {
-      setMsgModal({ status: "Exito", message: response.message });
+    if (status >= 200 && status < 300) {
+      setMsgModal({ status: "Exito", message: data.message });
     } else {
-      setMsgModal({ status: "Error", message: response.message });
+      setMsgModal({ status: "Error", message: data.message });
     }
     setShowMsg(true);
   };

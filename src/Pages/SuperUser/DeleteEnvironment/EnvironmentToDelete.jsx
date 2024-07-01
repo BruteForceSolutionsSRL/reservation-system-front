@@ -105,7 +105,7 @@ export default function EnvironmentToDelete(props) {
             type="button"
             onClick={getRequestsList}
           >
-            <b>Eliminar</b>
+            Eliminar
           </button>
         </div>
       </div>
@@ -125,7 +125,7 @@ export default function EnvironmentToDelete(props) {
                 className="h-100 overflow-y-auto"
                 style={{ maxHeight: "300px" }}
               >
-                <Table borderless>
+                <Table bordered>
                   <thead>
                     <tr>
                       <th>MATERIA</th>
@@ -211,7 +211,7 @@ export default function EnvironmentToDelete(props) {
         <Modal.Footer>
           <div className="d-flex justify-content-end">
             <button
-              className="btn btn-primary custom-btn-primary-outline  m-1"
+              className="btn btn-danger custom-btn-red-outline  m-1"
               onClick={() => {
                 setShow(false);
                 setShowConfirm(true);
@@ -229,14 +229,18 @@ export default function EnvironmentToDelete(props) {
         </Modal.Footer>
       </Modal>
 
-      <Modal show={showConfirm} onHide={handleCloseConfirm} size="md" centered>
+      <Modal
+        show={showConfirm}
+        onHide={handleCloseConfirm}
+        size="md"
+        centered
+        backdrop="static"
+      >
         <Modal.Header closeButton>
           <h3>¡Advertencia!</h3>
         </Modal.Header>
         <Modal.Body>
-          <div>
-            <p>¿Está seguro de elimnar el ambiente?</p>
-          </div>
+          <div>¿Está seguro de eliminar el ambiente?</div>
         </Modal.Body>
         <Modal.Footer>
           <div className="d-flex justify-content-end">
@@ -246,7 +250,7 @@ export default function EnvironmentToDelete(props) {
               </Spinner>
             )}
             <button
-              className="btn btn-primary custom-btn-primary-outline  m-1"
+              className="btn btn-danger custom-btn-red-outline m-1"
               onClick={sendDeleteEnvironment}
             >
               Confirmar

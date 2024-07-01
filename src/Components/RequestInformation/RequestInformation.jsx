@@ -208,7 +208,7 @@ export default function RequestInformation({
         <div className="col-sm-2 align-self-center d-flex justify-content-end">
           <Button
             variant="primary"
-            className="custom-btn-primary-outline text-truncate"
+            className="mt-1 custom-button btn btn-primary custom-btn-primary-outline text-truncate"
             onClick={handleClickModal}
           >
             Detalles

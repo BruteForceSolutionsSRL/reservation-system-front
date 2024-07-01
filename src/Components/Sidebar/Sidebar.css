@@ -3,7 +3,6 @@ body {
   min-width: 300px;
 }
 
-
 #side_nav {
   background: #041231;
 
@@ -26,17 +25,31 @@ hr.h-color {
   background: #eee;
 }
 
-.sidebar li.active, .user-name {
+.sidebar {
+  position: relative;
+}
+
+.sidebar-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  background-color: #041231;
+  border-top: 1px solid #ddd;
+}
+
+.sidebar li.active,
+.user-name {
   background: #8d7458;
   border-radius: 50px;
 }
 .sidebar li:hover {
-  background-color: #bb9988; 
+  background-color: #bb9988;
   border-radius: 50px;
 }
 
-.hover:hover {
-  background-color: #2196f3;
+.user-hover:hover {
+  background-color: #bb9988;
   cursor: pointer;
   border-radius: 50px;
 }
@@ -45,8 +58,8 @@ hr.h-color {
   color: black;
 }
 
-.menu-navbar{
-background: #041231;
+.menu-navbar {
+  background: #041231;
 }
 
 @media (max-width: 767px) {

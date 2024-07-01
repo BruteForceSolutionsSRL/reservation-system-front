@@ -177,7 +177,7 @@ export default function Sidebar({ user }) {
           </div>
           <div
             className="overflow-y-auto custom-scrollbars__content"
-            style={{ maxHeight: "60vh" }}
+            style={{ maxHeight: "85vh" }}
           >
             <ul className="list-unstyled">
               <li className={activeItem === "home" ? "active" : ""}>
@@ -578,31 +578,32 @@ export default function Sidebar({ user }) {
             </ul>
           </div>
 
-          <div className="border border-ligth my-2"></div>
-          <div className="hover ">
-            <OverlayTrigger
-              className="p-3 mb-5 rounded "
-              trigger="click"
-              placement={popoverPlacement}
-              overlay={popover}
-              style={{ maxWidth: "40vh" }}
-              rootClose
-            >
-              <div className="d-flex justify-content-around align-items-center px-3 ">
-                <img
-                  style={{
-                    borderRadius: "50%",
-                    maxHeight: "50px",
-                    maxWidth: "50px",
-                  }}
-                  src={`https://picsum.photos/id/${userInformation.person_id}/241/300`}
-                  alt="icon"
-                />
-                <span className="text-truncate user-select-none w-40 text-white ">
-                  {userInformation.name + " " + userInformation.last_name}
-                </span>
-              </div>
-            </OverlayTrigger>
+          <div className="sidebar-footer">
+            <div className="user-hover ">
+              <OverlayTrigger
+                className="p-3 mb-5 rounded"
+                trigger="click"
+                placement={popoverPlacement}
+                overlay={popover}
+                style={{ maxWidth: "40vh" }}
+                rootClose
+              >
+                <div className="d-flex justify-content-around align-items-center px-3">
+                  <img
+                    style={{
+                      borderRadius: "50%",
+                      maxHeight: "50px",
+                      maxWidth: "50px",
+                    }}
+                    src={`https://picsum.photos/id/${userInformation.person_id}/241/300`}
+                    alt="icon"
+                  />
+                  <span className="text-truncate user-select-none w-40 text-white">
+                    {userInformation.name + " " + userInformation.last_name}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            </div>
           </div>
         </div>
         <div className="content">

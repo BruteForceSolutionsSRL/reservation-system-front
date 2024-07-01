@@ -420,7 +420,7 @@ export default function SingleNotification() {
                     {request ? (
                       <div className="text-center pt-3 pb-4">
                         <button
-                          className="btn btn-outline-primary"
+                          className="mt-1 custom-button btn btn-primary custom-btn-primary-outline"
                           onClick={() => setShowRequest(true)}
                         >
                           Ver solicitud

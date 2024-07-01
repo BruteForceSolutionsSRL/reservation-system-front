@@ -198,12 +198,12 @@ export default function StatisticsElement(props) {
           </div>
         </Card.Header>
         <Card.Body>
-          <Row className="align-items-center mb-3">
+          <Row className="d-flex align-items-center mb-3">
             <Col xs md="auto">
-              <Form.Label className="font-weight-bold">
+              <Form.Label className="font-weight-bold mt-1">
                 Estado:
                 <div
-                  className={`bg bg-${
+                  className={`mt-2 bg bg-${
                     classroom_status_name === "HABILITADO"
                       ? "success"
                       : classroom_status_name === "DESHABILITADO" && "danger"
@@ -220,7 +220,7 @@ export default function StatisticsElement(props) {
                   type="date"
                   value={startDate ?? ""}
                   min="2024-03-01"
-                  max="2024-07-01"
+                  max="2024-12-31"
                   onChange={(e) => setStartDate(e.target.value)}
                 />
               </Form.Group>
@@ -232,12 +232,12 @@ export default function StatisticsElement(props) {
                   type="date"
                   value={endDate ?? ""}
                   min="2024-03-01"
-                  max="2024-07-01"
+                  max="2024-12-31"
                   onChange={(e) => setEndDate(e.target.value)}
                 />
               </Form.Group>
             </Col>
-            <Col xs="auto" md="auto">
+            <Col md="auto" className="mt-4 fs-2">
               <Button variant="primary " onClick={handleSearchByRange}>
                 Buscar por rango
               </Button>
@@ -253,7 +253,7 @@ export default function StatisticsElement(props) {
       </Card>
       {showContent ? (
         <Row className="justify-content-center mb-4">
-          <Col md={3} className="mb-4">
+          <Col xs={12} md={3} className="mb-4">
             <Card>
               <Card.Body>
                 <Doughnut options={optionsDoughnut} data={dataDoughnut} />
@@ -261,7 +261,7 @@ export default function StatisticsElement(props) {
               </Card.Body>
             </Card>
           </Col>
-          <Col md={4}>
+          <Col xs={12} md={4} className="mb-4">
             <Table bordered>
               <thead>
                 <tr>
@@ -290,7 +290,7 @@ export default function StatisticsElement(props) {
               </b>
             </div>
           </Col>
-          <Col md={5} className="mb-4">
+          <Col xs={12} md={5} className="mb-4">
             <Card style={{ height: "325px" }}>
               <Card.Body>
                 <Line data={dataLine} options={optionsLine} />

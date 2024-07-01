@@ -1,0 +1,5 @@
+.custom-btn-red-outline:hover {
+  background-color: transparent !important;
+  border: 1px solid #e62424 !important;
+  color: #e62424 !important;
+}

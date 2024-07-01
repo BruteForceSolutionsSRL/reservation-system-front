@@ -20,6 +20,19 @@ hr.h-color {
   background: #eee;
 }
 
+.sidebar {
+  position: relative;
+}
+
+.sidebar-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  background-color: #f8f9fa; /* Ajusta el color de fondo si es necesario */
+  border-top: 1px solid #ddd; /* Añade una línea superior si es necesario */
+}
+
 .sidebar li.active {
   background: #eee;
   border-radius: 50px;

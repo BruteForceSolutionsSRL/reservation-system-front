@@ -564,30 +564,32 @@ export default function Sidebar({ user }) {
           </div>
 
           <hr className="h-color mx-2" />
-          <div className="hover">
-            <OverlayTrigger
-              className="p-3 mb-5 rounded "
-              trigger="click"
-              placement={popoverPlacement}
-              overlay={popover}
-              style={{ maxWidth: "40vh" }}
-              rootClose
-            >
-              <div className="d-flex justify-content-around align-items-center px-3">
-                <img
-                  style={{
-                    borderRadius: "50%",
-                    maxHeight: "50px",
-                    maxWidth: "50px",
-                  }}
-                  src={`https://picsum.photos/id/${userInformation.person_id}/241/300`}
-                  alt="icon"
-                />
-                <span className="text-truncate user-select-none w-40">
-                  {userInformation.name + " " + userInformation.last_name}
-                </span>
-              </div>
-            </OverlayTrigger>
+          <div className="sidebar-footer">
+            <div className="hover">
+              <OverlayTrigger
+                className="p-3 mb-5 rounded "
+                trigger="click"
+                placement={popoverPlacement}
+                overlay={popover}
+                style={{ maxWidth: "40vh" }}
+                rootClose
+              >
+                <div className="d-flex justify-content-around align-items-center px-3">
+                  <img
+                    style={{
+                      borderRadius: "50%",
+                      maxHeight: "50px",
+                      maxWidth: "50px",
+                    }}
+                    src={`https://picsum.photos/id/${userInformation.person_id}/241/300`}
+                    alt="icon"
+                  />
+                  <span className="text-truncate user-select-none w-40">
+                    {userInformation.name + " " + userInformation.last_name}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            </div>
           </div>
         </div>
         <div className="content">

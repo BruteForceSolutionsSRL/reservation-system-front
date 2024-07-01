@@ -179,11 +179,13 @@ function EditEnvironment() {
       label: "Guardar",
       variant: "primary",
       onClick: handleSaveModal,
+      className: "custom-btn-primary-outline",
     },
     {
       label: "Cancelar",
       variant: "secondary",
       onClick: handleCancelModal,
+      className: "custom-btn-gray-outline",
     },
   ];
 
@@ -192,11 +194,13 @@ function EditEnvironment() {
       label: "Aceptar",
       variant: "primary",
       onClick: handleCancelAceptedModal,
+      className: "custom-btn-primary-outline",
     },
     {
-      label: "Atras",
+      label: "Atrás",
       variant: "secondary",
       onClick: handleCancelBackModal,
+      className: "custom-btn-gray-outline",
     },
   ];
 
@@ -218,6 +222,7 @@ function EditEnvironment() {
       label: "Aceptar",
       variant: "primary",
       onClick: handleCloseConfirmationsModal,
+      className: "custom-btn-primary-outline",
     },
   ];
 
@@ -405,13 +410,14 @@ function EditEnvironment() {
                 </Form.Control.Feedback>
               </Col>
 
-              <Col md={1} className="d-flex ">
+              <Col md={2} className="d-flex ">
                 <Form.Label className="fw-bold col-form-label mb-0">
                   ESTADO
                 </Form.Label>
               </Col>
-              <Col md={4}>
+              <Col md={3}>
                 <Form.Select
+                  className="text-truncate"
                   name="classroom_status_id"
                   value={currentReservation.classroom_status_id}
                   onChange={handleInputChange}
@@ -436,6 +442,7 @@ function EditEnvironment() {
                     <Form.Group controlId="formBlock">
                       <Form.Label className="fw-bold">BLOQUE</Form.Label>
                       <Form.Select
+                        className="text-truncate"
                         name="block_id"
                         value={currentReservation.block_id}
                         onChange={handleInputChange}
@@ -482,11 +489,17 @@ function EditEnvironment() {
         showCloseButton={true}
         title="¡Advertencia!"
         footerButtons={cancelButtonsModal}
+        backdrop="static"
       >
         ¿Está seguro de descartar los cambios realizados?
       </ReusableModal>
 
-      <Modal show={saveModal} onHide={handleSaveCancelModal} centered>
+      <Modal
+        show={saveModal}
+        onHide={handleSaveCancelModal}
+        centered
+        backdrop="static"
+      >
         <Modal.Header closeButton>
           <Modal.Title>¡Confirmación!</Modal.Title>
         </Modal.Header>
@@ -549,7 +562,7 @@ function EditEnvironment() {
             <Button
               key={index}
               variant={button.variant}
-              className={`me-3 ${
+              className={`${
                 button.variant === "primary"
                   ? "btn-primary custom-btn-primary-outline"
                   : "btn-secondary custom-btn-gray-outline"
@@ -568,6 +581,7 @@ function EditEnvironment() {
         showCloseButton={false}
         title={backendError.status === 200 ? "¡Exito!" : "¡Error!"}
         footerButtons={saveButtonsConfirmationsModal}
+        backdrop="static"
       >
         {backendError && <p>{backendError.data.message}</p>}
       </ReusableModal>

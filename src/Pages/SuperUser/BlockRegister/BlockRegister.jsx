@@ -422,7 +422,7 @@ function BlockRegister() {
             variant="secondary"
             onClick={backRegisterClear}
           >
-            Atras
+            Atrás
           </Button>
         </Modal.Footer>
       </Modal>

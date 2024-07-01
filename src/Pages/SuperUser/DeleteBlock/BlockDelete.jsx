@@ -102,14 +102,14 @@ function BlockDelete(props) {
         <div className="col-sm-2 align-self-center d-flex justify-content-end">
           <Button
             variant="danger"
-            className="custom-btn-red-outline"
+            className="mt-1 custom-button btn btn-danger custom-btn-red -outline"
             onClick={getEnvironmentBlock}
           >
             Eliminar
           </Button>
         </div>
       </div>
-      <Modal show={show} onHide={handleClose} size="lg">
+      <Modal show={show} onHide={handleClose} size="lg" centered>
         <Modal.Header closeButton>
           <h3>¿Está seguro de eliminar el bloque?</h3>
         </Modal.Header>

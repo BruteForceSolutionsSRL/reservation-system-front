@@ -36,7 +36,7 @@ function Homepage() {
             </h4>
           </Col>
 
-          <Col lg={6} className="image-container mt-5">
+          <Col lg={6} className="image-container mt-2">
             <Carousel>
               <Carousel.Item>
                 <img src={image} alt="Sistema de reserva" className="image" />

@@ -332,7 +332,7 @@ export default function SendNotification() {
           </div>
         </Form>
       </div>
-      <Modal show={showModal} centered backdrop="static">
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered backdrop="static">
         <Modal.Header closeButton>
           <h3>{modalContent.title}</h3>
         </Modal.Header>

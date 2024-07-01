@@ -238,7 +238,7 @@ export default function Sidebar({ user }) {
                         onClick={() => handleItemClick("request")}
                       >
                         <i className="bi bi-bookmark-plus fs-4 text-white"></i>
-                        <span className="text-white">Nueva solicitud</span>
+                        <span className="text-white ps-3">Nueva solicitud</span>
                       </Link>
                     </li>
                   )}
@@ -277,7 +277,7 @@ export default function Sidebar({ user }) {
                           handleItemClick("special-request-attention")
                         }
                       >
-                        <i className="bi bi-person-workspace fs-4 text-white"></i>{" "}
+                        <i className="bi bi-clipboard-check fs-4 text-white"></i>{" "}
                         <span className="text-white ps-2">
                           Lista de reservas
                         </span>
@@ -535,7 +535,7 @@ export default function Sidebar({ user }) {
                     onClick={() => handleItemClick("report")}
                   >
                     <div className="d-flex justify-content-start align-items-center ">
-                      <i className="i bi-clipboard-data fs-4  text-white"></i>
+                      <i className=" bi-file-earmark-bar-graph fs-4  text-white"></i>
                       <span className="text-white ps-2">Reportes</span>
                     </div>
                   </Link>

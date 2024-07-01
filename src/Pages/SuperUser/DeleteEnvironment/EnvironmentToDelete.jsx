@@ -125,7 +125,7 @@ export default function EnvironmentToDelete(props) {
                 className="h-100 overflow-y-auto"
                 style={{ maxHeight: "300px" }}
               >
-                <Table striped bordered>
+                <Table bordered>
                   <thead>
                     <tr>
                       <th>MATERIA</th>

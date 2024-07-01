@@ -62,7 +62,7 @@ export default function AttentionList() {
         <div className="h-100 d-flex align-items-center justify-content-center">
           <i className="bi bi-check-circle fs-1"></i>
           <b className="text-center fs-2 ps-3">
-            No hay solicitudes por atender
+            No hay solicitudes
           </b>
         </div>
       ) : (

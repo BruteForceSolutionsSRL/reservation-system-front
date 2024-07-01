@@ -10,8 +10,9 @@ function HandleSpecialRequests(props) {
   const [showModal, setShowModal] = useState(false);
   const [showRefuseModal, setShowRefuseModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorTextModal, setErrorTextModal] = useState("");
   const [spinnerInModal, setSpinnerInModal] = useState(false);
+
+  const [error, setError] = useState({});
 
   const {
     reservation_id,
@@ -25,9 +26,8 @@ function HandleSpecialRequests(props) {
     date_end,
     date_start,
   } = props;
- 
+
   const handleShowModal = () => {
-   
     setShowModal(true);
   };
 
@@ -35,7 +35,6 @@ function HandleSpecialRequests(props) {
     setShowRefuseModal(true);
     setShowModal(false);
   };
-
 
   const cancelRequest = async () => {
     setSpinnerInModal(true);
@@ -47,28 +46,23 @@ function HandleSpecialRequests(props) {
           Authorization: `Bearer ${token}`,
           "Content-Type": "aplication/json",
         },
-       
       })
         .then((res) => res.json())
         .then((data) => {
-          if (data.error === "Esta solicitud ya fue atendida") {
-            setShowErrorModal(true);
-            setErrorTextModal("La reservacion ya fue anteriormente rechazada.");
-          } else {
-            props.reload(true);
-          }
+          setError(data);
+
+          props.reload(true);
         })
         .catch((err) => {
           if (err) throw console.error(err);
         })
         .finally(() => setSpinnerInModal(false));
+      console.log(error);
     } catch (error) {
       setSpinnerInModal(false);
       setShowErrorModal(true);
-      setErrorTextModal(error);
     }
   };
-
   return (
     <>
       <div
@@ -229,7 +223,6 @@ function HandleSpecialRequests(props) {
         </Modal.Footer>
       </Modal>
 
-      
       <Modal
         show={showRefuseModal}
         onHide={() => setShowRefuseModal(false)}
@@ -285,7 +278,7 @@ function HandleSpecialRequests(props) {
           <Modal.Title id="errorModal">Mensaje</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="pb-2">{errorTextModal}</div>
+          <div className="pb-2">{error.message}</div>
         </Modal.Body>
         <Modal.Footer>
           <button

@@ -21,7 +21,6 @@ export default function AttentionList() {
         Authorization: `Bearer ${token}`,
         "Content-Type": "aplication/json",
       },
-      mode: "cors",
     })
       .then((res) => {
         if (!res.ok) throw new Error("Network response was not ok.");

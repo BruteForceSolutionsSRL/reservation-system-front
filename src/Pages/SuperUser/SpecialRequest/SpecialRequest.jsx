@@ -436,21 +436,23 @@ export default function SpecialRequest() {
               <div>
                 <b>MOTIVO DE RESERVA</b>
               </div>
-              <select
-                className="form-select h-25"
-                value={selectedReason}
-                onChange={(e) => {
-                  setSelectedReason(e.target.value);
-                }}
-              >
-                {reasons.map((reason) => {
-                  return (
-                    <option key={reason.reason_id} value={reason.reason_id}>
-                      {reason.reason_name}
-                    </option>
-                  );
-                })}
-              </select>
+              <div>
+                <select
+                  className="form-select"
+                  value={selectedReason}
+                  onChange={(e) => {
+                    setSelectedReason(e.target.value);
+                  }}
+                >
+                  {reasons.map((reason) => {
+                    return (
+                      <option key={reason.reason_id} value={reason.reason_id}>
+                        {reason.reason_name}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
             </div>
           </div>
           <div className="py-2">

@@ -253,7 +253,7 @@ export default function StatisticsElement(props) {
       </Card>
       {showContent ? (
         <Row className="justify-content-center mb-4">
-          <Col xs={12} md={3} className="mb-4">
+          <Col lg={3} className="mb-4">
             <Card>
               <Card.Body>
                 <Doughnut options={optionsDoughnut} data={dataDoughnut} />
@@ -261,7 +261,7 @@ export default function StatisticsElement(props) {
               </Card.Body>
             </Card>
           </Col>
-          <Col xs={12} md={4} className="mb-4">
+          <Col lg={4} className="mb-4">
             <Table bordered>
               <thead>
                 <tr>
@@ -290,7 +290,7 @@ export default function StatisticsElement(props) {
               </b>
             </div>
           </Col>
-          <Col xs={12} md={5} className="mb-4">
+          <Col xs={12} lg={5} className="mb-4">
             <Card style={{ height: "325px" }}>
               <Card.Body>
                 <Line data={dataLine} options={optionsLine} />

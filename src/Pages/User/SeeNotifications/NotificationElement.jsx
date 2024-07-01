@@ -32,13 +32,12 @@ export function NotificationElement(props) {
   };
 
   const isTodayDate = () => {
-    const givenDate = new Date(date);
-    const today = new Date();
-    const isSameDay =
-      givenDate.getDate() === today.getDate() &&
-      givenDate.getMonth() === today.getMonth() &&
-      givenDate.getFullYear() === today.getFullYear();
-    setShowDate(isSameDay);
+    const today = new Date().toISOString().slice(0, 10);
+    if (today === date) {
+      setShowDate(false);
+    } else {
+      setShowDate(true);
+    }
   };
 
   const formatMonth = () => {
@@ -47,6 +46,7 @@ export function NotificationElement(props) {
     let newFormat = givenDate.toLocaleDateString("es-ES", options);
     setFormatedDate(newFormat);
   };
+
 
   return (
     <div

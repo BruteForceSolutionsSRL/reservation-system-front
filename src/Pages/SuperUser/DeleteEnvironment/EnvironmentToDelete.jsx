@@ -60,7 +60,7 @@ export default function EnvironmentToDelete(props) {
   return (
     <>
       <div
-        className="row border border-black rounded p-2 mb-2"
+        className="row border border-black rounded p-2 m-2"
         style={{ minWidth: "400px" }}
       >
         <div className="col-sm-4">

@@ -122,7 +122,7 @@ export default function Sidebar({ user }) {
           <div className="text-center">
             <img
               style={{ borderRadius: "50%" }}
-              src={`https://picsum.photos/id/${userInformation.person_id}/241/300`}
+              src={`https://picsum.photos/id/${userInformation.person_id}/100/100`}
               alt="Foto de Perfil"
             />
           </div>
@@ -177,7 +177,7 @@ export default function Sidebar({ user }) {
           </div>
           <div
             className="overflow-y-auto custom-scrollbars__content"
-            style={{ maxHeight: "85vh" }}
+            style={{ maxHeight: "78vh" }}
           >
             <ul className="list-unstyled">
               <li className={activeItem === "home" ? "active" : ""}>
@@ -200,7 +200,6 @@ export default function Sidebar({ user }) {
                 >
                   <i className="bi bi-journal-bookmark fs-4 text-white"></i>
                   <span className="text-white ps-2">Reservas</span>
-                  <i className="bi bi-chevron-down"></i>
                 </Link>
               </li>
               <Collapse in={openItems["reservations"]}>
@@ -238,8 +237,8 @@ export default function Sidebar({ user }) {
                         className="text-decoration-none px-4 py-2 d-block"
                         onClick={() => handleItemClick("request")}
                       >
-                        <i className="bi bi-bookmark-plus fs-4"></i>
-                        <span>Nueva solicitud</span>
+                        <i className="bi bi-bookmark-plus fs-4 text-white"></i>
+                        <span className="text-white">Nueva solicitud</span>
                       </Link>
                     </li>
                   )}
@@ -280,7 +279,7 @@ export default function Sidebar({ user }) {
                       >
                         <i className="bi bi-person-workspace fs-4 text-white"></i>{" "}
                         <span className="text-white ps-2">
-                          Solicitudes en curso
+                          Lista de reservas
                         </span>
                       </Link>
                     </li>
@@ -636,7 +635,7 @@ export default function Sidebar({ user }) {
                       maxHeight: "50px",
                       maxWidth: "50px",
                     }}
-                    src={`https://picsum.photos/id/${userInformation.person_id}/241/300`}
+                    src={`https://picsum.photos/id/${userInformation.person_id}/100/100`}
                     alt="icon"
                   />
                   <span className="text-truncate user-select-none w-40 text-white">

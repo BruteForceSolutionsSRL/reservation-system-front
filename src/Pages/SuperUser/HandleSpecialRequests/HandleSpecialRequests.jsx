@@ -20,9 +20,9 @@ function HandleSpecialRequests(props) {
     time_slot,
     block_name,
     classrooms,
-    priority,
     observation,
     reservation_status,
+    reason_name,
     date_end,
     date_start,
   } = props;
@@ -49,15 +49,14 @@ function HandleSpecialRequests(props) {
       })
         .then((res) => res.json())
         .then((data) => {
-          setError(data);
-
-          props.reload(true);
+          setError(data.message);
+          setShowRefuseModal(false);
+          setShowErrorModal(true);
         })
         .catch((err) => {
           if (err) throw console.error(err);
         })
         .finally(() => setSpinnerInModal(false));
-      console.log(error);
     } catch (error) {
       setSpinnerInModal(false);
       setShowErrorModal(true);
@@ -66,9 +65,7 @@ function HandleSpecialRequests(props) {
   return (
     <>
       <div
-        className={`row border border-${
-          priority ? "danger" : "black"
-        } rounded p-2 mb-2 m-0`}
+        className="row border border-black rounded p-2 mb-2 m-0"
         style={{ minWidth: "400px" }}
       >
         <div className="col-sm-4">
@@ -88,13 +85,19 @@ function HandleSpecialRequests(props) {
           </div>
           <div>
             <b className="text-primary">MOTIVO DE RESERVA: </b>
-            <b>{observation}</b>
+            <b>{reason_name}</b>
           </div>
         </div>
         <div className="col-sm-4">
           <div>
             <b className="text-primary">BLOQUE: </b>
-            <b>{block_name}</b>
+            {block_name.map((name, index) => {
+              if (block_name.length === 1) {
+                return <b key={name + index}>{name}</b>;
+              } else {
+                return <b key={name + index}>{name + ", "}</b>;
+              }
+            })}
           </div>
           <div>
             <b className="text-primary">FECHA DE RESERVA(S): </b>
@@ -111,10 +114,10 @@ function HandleSpecialRequests(props) {
             </div>
           </div>
         </div>
-        <div className="col-sm-2 align-self-center d-flex justify-content-end">
+        <div className="col-lg-2 align-self-center d-flex justify-content-end">
           <Button
             variant="danger"
-            className="custom-btn-red-outline"
+            className="custom-btn-red-outline text-truncate"
             onClick={handleShowModal}
           >
             Cancelar reserva
@@ -138,7 +141,13 @@ function HandleSpecialRequests(props) {
         <Modal.Body>
           <div className="container-fluid">
             <div className="pb-3">
-              <b>MOTIVO DE RESERVA: </b> {observation}
+              <b className="">DESCRIPCIÓN: </b>
+              <textarea
+                value={observation}
+                disabled
+                className="form-control mt-2"
+                rows={3}
+              />
             </div>
             <div className="pb-3">
               <b className="">ESTADO: </b>
@@ -154,7 +163,14 @@ function HandleSpecialRequests(props) {
               <label className="tag-label">AMBIENTE</label>
 
               <div className="pt-2 pb-2">
-                <b>BLOQUE: </b> {block_name}
+                <b>BLOQUE: </b>
+                {block_name.map((name, index) => {
+                  if (block_name.length === 1) {
+                    return <span key={name + index}>{name}</span>;
+                  } else {
+                    return <span key={name + index}>{name + ", "}</span>;
+                  }
+                })}
               </div>
 
               <div className="row">
@@ -218,7 +234,7 @@ function HandleSpecialRequests(props) {
               setShowModal(false);
             }}
           >
-            Atras
+            Atrás
           </Button>
         </Modal.Footer>
       </Modal>
@@ -268,21 +284,22 @@ function HandleSpecialRequests(props) {
 
       <Modal
         show={showErrorModal}
-        onHide={() => setShowErrorModal(false)}
-        dialogClassName="modal-90w"
-        size="sm"
-        centered={true}
-        aria-labelledby="errorModal"
+        onHide={() => {
+          setShowErrorModal(false);
+          props.reload(true);
+        }}
+        centered
+        backdrop="static"
       >
         <Modal.Header closeButton>
-          <Modal.Title id="errorModal">Mensaje</Modal.Title>
+          <Modal.Title>Mensaje</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="pb-2">{error.message}</div>
+          <div className="pb-2">{error}</div>
         </Modal.Body>
         <Modal.Footer>
           <button
-            className="btn btn-outline-secondary"
+            className="btn custom-btn-gray-outline btn-secondary"
             onClick={() => {
               setShowErrorModal(false);
               props.reload(true);

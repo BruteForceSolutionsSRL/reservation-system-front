@@ -95,6 +95,7 @@ export default function SpecialRequest() {
     let { status, data } = await getReasons(newAbortController);
     if (status >= 200 && status < 300) {
       setReasons(data);
+      setSelectedReason(data[0].reason_id);
     } else {
       setReasons([]);
     }
@@ -175,9 +176,15 @@ export default function SpecialRequest() {
   };
 
   const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
+    let year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    let day = date.getDate();
+    if (month < 10) {
+      month = "0" + month;
+    }
+    if (day < 10) {
+      day = "0" + day;
+    }
     return `${year}-${month}-${day}`;
   };
 
@@ -208,9 +215,12 @@ export default function SpecialRequest() {
       reason_id: selectedReason,
       observation: description,
       classroom_id: selectedClassrooms.map(({ value }) => value),
-      time_slot_id: [startTimeSlot, endTimeSlot],
-      block_id: selectedBlocks.map(({ value }) => value),
+      time_slot_id: [selectedStartSlot, selectedEndSlot],
+      block_id: selectedBlocks.map((block) => {
+        return block.value.block_id;
+      }),
     };
+
     let { status, data } = await postFetch(
       "reservations/special",
       request,
@@ -220,7 +230,7 @@ export default function SpecialRequest() {
   };
 
   return (
-    <div className="">
+    <div className="container mt-2">
       {loadingPage ? (
         <div
           className="d-flex justify-content-center align-items-center"

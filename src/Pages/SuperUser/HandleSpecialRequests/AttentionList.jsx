@@ -38,13 +38,10 @@ export default function AttentionList() {
     return fetchData;
   };
 
-
-  console.log("reservas speciales", specialRequest);
-
   return (
     <div className="container">
       <div>
-        <h1 className="text-center mt-2">Solicitudes en curso</h1>
+        <h1 className="text-center mt-2">Reservas</h1>
       </div>
       <hr />
       {loading === true ? (
@@ -61,9 +58,7 @@ export default function AttentionList() {
       ) : specialRequest.length === 0 ? (
         <div className="h-100 d-flex align-items-center justify-content-center">
           <i className="bi bi-check-circle fs-1"></i>
-          <b className="text-center fs-2 ps-3">
-            No hay solicitudes
-          </b>
+          <b className="text-center fs-2 ps-3">No hay solicitudes</b>
         </div>
       ) : (
         <div className="container">

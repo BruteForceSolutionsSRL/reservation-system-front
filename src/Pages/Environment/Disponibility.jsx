@@ -203,7 +203,7 @@ function Disponibility() {
   };
 
   return (
-    <div>
+    <div className="m-3">
       <h1 className="text-center">Disponibilidad de ambientes</h1>
 
       <div className="mt-3 ms-3 me-3">

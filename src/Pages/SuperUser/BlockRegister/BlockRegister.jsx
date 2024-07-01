@@ -266,10 +266,10 @@ function BlockRegister() {
   };
 
   return (
-    <div>
+    <div className="color-font">
       <Container>
-        <h1 className="text-center my-4">Registrar Bloque</h1>
-        <Form noValidate onSubmit={handleSubmit}>
+        <h1 className="text-center py-4">Registrar Bloque</h1>
+        <Form noValidate onSubmit={handleSubmit} className="formulario">
           <div>
             <Row className="mb-3 align-items-center">
               <Col md={3} className="d-flex align-items-center">

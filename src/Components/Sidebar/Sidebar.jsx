@@ -156,24 +156,29 @@ export default function Sidebar({ user }) {
 
   return (
     <>
-      <div className="main-container d-flex">
+      <div className="main-container bg-dark d-flex ">
         <div
           ref={sidebarRef}
-          className={`sidebar ${menuOpen ? "active" : ""}`}
+          className={` rounded border rounded border-dark sidebar ${
+            menuOpen ? "active" : ""
+          }`}
           id="side_nav"
         >
-          <div className="header-box py-2 text-center d-flex justify-content-center">
+          <div className="header-box py-2 text-center d-flex justify-content-center ">
             <button
               className="btn d-md-none d-block close-btn px-1 py-0 text-black"
               onClick={handleMenuClose}
             >
-              <i className="bi bi-list-nested"></i>
+              <i className="bi bi-list-nested text-white"></i>
             </button>
             <h1 className="fs-2 title">
-              <span className="text-black title">SURA</span>
+              <span className="text-light title">SURA</span>
             </h1>
           </div>
-          <div className="overflow-y-auto" style={{ maxHeight: "85vh" }}>
+          <div
+            className="overflow-y-auto custom-scrollbars__content"
+            style={{ maxHeight: "85vh" }}
+          >
             <ul className="list-unstyled">
               <li className={activeItem === "home" ? "active" : ""}>
                 <Link
@@ -181,18 +186,20 @@ export default function Sidebar({ user }) {
                   className="text-decoration-none px-3 d-block"
                   onClick={() => handleItemClick("home")}
                 >
-                  <i className="bi bi-house fs-4"></i> Página principal
+                  <i className="bi bi-house fs-4 text-white pe-2"></i>
+                  <span className="text-white">Página principal</span>
                 </Link>
               </li>
             </ul>
-            <ul className="list-unstyled">
+            <ul className="list-unstyled ">
               <li className={activeItem === "reservations" ? "active" : ""}>
                 <Link
                   to="#"
                   className="text-decoration-none px-3  d-block"
                   onClick={() => handleItemClick("reservations")}
                 >
-                  <i className="bi bi-journal-bookmark fs-4"></i> Reservas
+                  <i className="bi bi-journal-bookmark fs-4 text-white"></i>
+                  <span className="text-white ps-2">Reservas</span>
                   <i className="bi bi-chevron-down"></i>
                 </Link>
               </li>
@@ -211,8 +218,10 @@ export default function Sidebar({ user }) {
                         className="text-decoration-none px-4 py-2 d-block"
                         onClick={() => handleItemClick("enviroment-request")}
                       >
-                        <i className="bi bi-bookmark-plus fs-4"></i> Nueva
-                        solicitud de reserva
+                        <i className="bi bi-bookmark-plus fs-4 text-white"></i>
+                        <span className="text-white ps-2">
+                          Nueva solicitud de reserva
+                        </span>
                       </Link>
                     </li>
                   )}
@@ -229,8 +238,10 @@ export default function Sidebar({ user }) {
                         className="text-decoration-none px-4 py-2 d-block"
                         onClick={() => handleItemClick("request-attention")}
                       >
-                        <i className="bi bi-person-workspace fs-4"></i> Atender
-                        solicitudes pendientes
+                        <i className="bi bi-person-workspace fs-4 text-white"></i>{" "}
+                        <span className="text-white ps-2">
+                          Atender solicitudes pendientes
+                        </span>
                       </Link>
                     </li>
                   )}
@@ -244,7 +255,7 @@ export default function Sidebar({ user }) {
                     >
                       <Link
                         to="list-cancel"
-                        className="text-decoration-none px-4 py-2 d-block"
+                        className="text-decoration-none px-4 py-2 d-block text-white"
                         onClick={() => handleItemClick("list-requests")}
                       >
                         <i className="bi bi-bookmark-x fs-4"></i> Cancelar
@@ -262,7 +273,7 @@ export default function Sidebar({ user }) {
                     >
                       <Link
                         to="request-history"
-                        className="text-decoration-none px-4 py-2 d-block"
+                        className="text-decoration-none px-4 py-2 d-block text-white"
                         onClick={() => handleItemClick("request-history")}
                       >
                         <i className="bi bi-book fs-4"></i> Historial de
@@ -277,11 +288,11 @@ export default function Sidebar({ user }) {
               <li className={activeItem === "environments" ? "active" : ""}>
                 <Link
                   to="#"
-                  className="text-decoration-none px-3 d-block"
+                  className="text-decoration-none px-3 d-block "
                   onClick={() => handleItemClick("environments")}
                 >
-                  <i className="bi bi-clipboard-data fs-4"></i> Uso de ambientes
-                  <i className="bi bi-chevron-down"></i>
+                  <i className="bi bi-clipboard-data fs-4  text-white"></i>{" "}
+                  <span className="text-white ps-2">Uso de ambientes</span>
                 </Link>
               </li>
               <Collapse in={openItems["environments"]}>
@@ -297,10 +308,12 @@ export default function Sidebar({ user }) {
                       onClick={() => handleItemClick("disponibility")}
                     >
                       <i
-                        className="bi bi-clock-history fs-4"
+                        className="bi bi-clock-history fs-4 text-white"
                         aria-hidden="true"
                       ></i>
-                      <span className="ps-1">Disponibilidad de ambientes</span>
+                      <span className="ps-1 text-white">
+                        Disponibilidad de ambientes
+                      </span>
                     </Link>
                   </li>
 
@@ -316,8 +329,8 @@ export default function Sidebar({ user }) {
                       className="text-decoration-none px-3 py-2 d-block"
                       onClick={() => handleItemClick("statistics")}
                     >
-                      <i className="bi bi-graph-up fs-4"></i>
-                      <span className="ps-1">
+                      <i className="bi bi-graph-up fs-4 text-white"></i>
+                      <span className="ps-1 text-white">
                         Estadistica de uso de ambiente
                       </span>
                     </Link>
@@ -335,9 +348,10 @@ export default function Sidebar({ user }) {
                     onClick={() => handleItemClick("management")}
                   >
                     <div className="d-flex justify-content-start align-items-center">
-                      <i className="bi bi-houses fs-4"></i>
-                      <span className="ps-1">Gestión de Ambiente</span>
-                      <i className="bi bi-chevron-down"></i>
+                      <i className="bi bi-houses fs-4  text-white"></i>
+                      <span className="text-white ps-2">
+                        Gestión de Ambiente
+                      </span>
                     </div>
                   </Link>
                 </li>
@@ -355,7 +369,7 @@ export default function Sidebar({ user }) {
                         className="text-decoration-none px-4 py-2 d-block"
                         onClick={() => handleItemClick("enviroment-register")}
                       >
-                        <div className="align-items-center">
+                        <div className="align-items-center text-white">
                           <i className="bi bi-house-add fs-4"></i> Registrar
                           Ambiente
                         </div>
@@ -370,7 +384,7 @@ export default function Sidebar({ user }) {
                     >
                       <Link
                         to="edit-environment"
-                        className="text-decoration-none px-4 py-2 d-block"
+                        className="text-decoration-none px-4 py-2 d-block text-white"
                         onClick={() => handleItemClick("edit-environment")}
                       >
                         <i className="bi bi-house-gear fs-4"></i> Editar
@@ -386,7 +400,7 @@ export default function Sidebar({ user }) {
                     >
                       <Link
                         to="delete-environment"
-                        className="text-decoration-none px-4 py-2 d-block"
+                        className="text-decoration-none px-4 py-2 d-block text-white"
                         onClick={() => handleItemClick("delete-environment")}
                       >
                         <i className="bi bi-house-x fs-4"></i> Eliminar ambiente
@@ -407,10 +421,11 @@ export default function Sidebar({ user }) {
                     className="text-decoration-none px-3 d-block"
                     onClick={() => handleItemClick("management-block")}
                   >
-                    <div className="d-flex justify-content-start align-items-center">
-                      <i className="bi bi-building fs-4"></i>
-                      <span className="ps-1">Gestión de Bloques</span>
-                      <i className="bi bi-chevron-down"></i>
+                    <div className="d-flex justify-content-start align-items-center ">
+                      <i className="bi bi-building fs-4 text-white"></i>
+                      <span className="ps-1 text-white">
+                        Gestión de Bloques
+                      </span>
                     </div>
                   </Link>
                 </li>
@@ -428,7 +443,7 @@ export default function Sidebar({ user }) {
                         className="text-decoration-none px-4 py-2 d-block"
                         onClick={() => handleItemClick("block-register")}
                       >
-                        <div className="align-items-center">
+                        <div className="align-items-center text-white">
                           <i className="bi bi-building-add fs-4"></i> Registrar
                           bloque
                         </div>
@@ -443,7 +458,7 @@ export default function Sidebar({ user }) {
                     >
                       <Link
                         to="edit-block"
-                        className="text-decoration-none px-4 py-2 d-block"
+                        className="text-decoration-none px-4 py-2 d-block text-white"
                         onClick={() => handleItemClick("edit-block")}
                       >
                         <i className="bi bi-building-gear fs-4"></i> Editar
@@ -459,7 +474,7 @@ export default function Sidebar({ user }) {
                     >
                       <Link
                         to="delete-block"
-                        className="text-decoration-none px-4 py-2 d-block"
+                        className="text-decoration-none px-4 py-2 d-block text-white"
                         onClick={() => handleItemClick("delete-block")}
                       >
                         <i className="bi bi-building-x fs-4"></i> Eliminar
@@ -479,9 +494,9 @@ export default function Sidebar({ user }) {
                     className="text-decoration-none px-3 d-block"
                     onClick={() => handleItemClick("report")}
                   >
-                    <div className="d-flex justify-content-start align-items-center">
-                      <i className="bi bi-clipboard-data fs-4"></i> Reportes
-                      <i className="bi bi-chevron-down"></i>
+                    <div className="d-flex justify-content-start align-items-center ">
+                      <i className="i bi-clipboard-data fs-4  text-white"></i>
+                      <span className="text-white ps-2">Reportes</span>
                     </div>
                   </Link>
                 </li>
@@ -496,7 +511,7 @@ export default function Sidebar({ user }) {
                     >
                       <Link
                         to="generate-report"
-                        className="text-decoration-none px-4 py-2 d-block"
+                        className="text-decoration-none px-4 py-2 d-block text-white"
                         onClick={() => handleItemClick("generate-report")}
                       >
                         <div className="align-items-center">
@@ -516,8 +531,8 @@ export default function Sidebar({ user }) {
                   className="text-decoration-none px-3 d-block"
                   onClick={() => handleItemClick("notifications")}
                 >
-                  <i className="bi bi-bell fs-4"></i> Notificaciones
-                  <i className="bi bi-chevron-down "></i>
+                  <i className="bi bi-bell fs-4  text-white"></i>
+                  <span className="text-white ps-2">Notificaciones</span>
                 </Link>
               </li>
               <Collapse in={openItems["notifications"]}>
@@ -532,7 +547,7 @@ export default function Sidebar({ user }) {
                     >
                       <Link
                         to="send-notification"
-                        className="text-decoration-none px-4 py-2 d-block"
+                        className="text-decoration-none px-4 py-2 d-block text-white"
                         onClick={() => handleItemClick("send-notification")}
                       >
                         <div className="align-items-center">
@@ -550,7 +565,7 @@ export default function Sidebar({ user }) {
                   >
                     <Link
                       to="notifications-list"
-                      className="text-decoration-none px-4 py-2 d-block"
+                      className="text-decoration-none px-4 py-2 d-block text-white"
                       onClick={() => handleItemClick("notifications-list")}
                     >
                       <div className="align-items-center">
@@ -563,11 +578,10 @@ export default function Sidebar({ user }) {
             </ul>
           </div>
 
-          <hr className="h-color mx-2" />
           <div className="sidebar-footer">
-            <div className="hover">
+            <div className="user-hover ">
               <OverlayTrigger
-                className="p-3 mb-5 rounded "
+                className="p-3 mb-5 rounded"
                 trigger="click"
                 placement={popoverPlacement}
                 overlay={popover}
@@ -584,7 +598,7 @@ export default function Sidebar({ user }) {
                     src={`https://picsum.photos/id/${userInformation.person_id}/241/300`}
                     alt="icon"
                   />
-                  <span className="text-truncate user-select-none w-40">
+                  <span className="text-truncate user-select-none w-40 text-white">
                     {userInformation.name + " " + userInformation.last_name}
                   </span>
                 </div>
@@ -593,13 +607,13 @@ export default function Sidebar({ user }) {
           </div>
         </div>
         <div className="content">
-          <div className="bg-light p-3 d-md-none">
+          <div className="menu-navbar p-3 d-md-none">
             <div className="d-flex justify-content-between d-md-none d-block">
               <button
                 className="btn px-1 py-0 open-btn me-2"
                 onClick={handleMenuOpen}
               >
-                <i className="bi bi-list-nested"></i>
+                <i className="bi bi-list-nested text-white"></i>
               </button>
               <Link
                 className="navbar-brand fs-4"
@@ -608,11 +622,14 @@ export default function Sidebar({ user }) {
                   handleItemClick("home");
                 }}
               >
-                <span className="px-2 py-0 text-black">SURA</span>
+                <span className="px-2 py-0 text-white">SURA</span>
               </Link>
             </div>
           </div>
-          <div className="bg-white dashboard-content px-3 scroll">
+          <div
+            className="dashboard-content  scroll"
+            style={{ background: "#eff0ff" }}
+          >
             <Outlet />
           </div>
         </div>

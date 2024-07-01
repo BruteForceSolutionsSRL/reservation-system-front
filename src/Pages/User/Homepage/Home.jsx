@@ -239,10 +239,7 @@ function Home() {
             <img src={imageLogo} alt="Sura Logo" className="logo-image" />
             <Navbar.Collapse id="basic-navbar-nav ">
               <Nav className="me-auto">
-                <Nav.Link
-                  onClick={scrollToTop}
-                  className="nav-link btn-quote ms-auto"
-                >
+                <Nav.Link onClick={scrollToTop} className="nav-link btn-quote">
                   Inicio
                 </Nav.Link>
                 {/* <Link to="/nosotros" className="nav-link">

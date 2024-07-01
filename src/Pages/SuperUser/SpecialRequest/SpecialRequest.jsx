@@ -6,7 +6,7 @@ import { useBlockService } from "../../../Components/Hooks/useBlocksService";
 import { Calendar } from "primereact/calendar";
 import { Checkbox } from "primereact/checkbox";
 import Select from "react-select";
-import { Alert, Collapse } from "react-bootstrap";
+import { Alert, Collapse, Modal } from "react-bootstrap";
 import { useFetchService } from "../../../Components/Hooks/useFetchService";
 
 export default function SpecialRequest() {
@@ -43,6 +43,8 @@ export default function SpecialRequest() {
   const [description, setDescription] = useState("");
 
   const [completed, setCompleted] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalContent, setModalContent] = useState({});
 
   useEffect(() => {
     Promise.all([fetchTimeSlots(), fetchReasons(), fetchBlocks()]).finally(() =>
@@ -144,18 +146,23 @@ export default function SpecialRequest() {
 
   const handleChangeBlocks = (event) => {
     setSelectedBlocks(event);
+    setSelectedClassrooms([]);
     if (event.length === 0) {
       setSelectedClassrooms([]);
+      setClassroomsOptions([]);
     }
-
     if (allowClassroomsSelect) {
-      let classroomsByBlocks = [];
-      event.map(async (block) => {
-        let response = await fetchClassroomsByBlock(block.value.block_id);
-        classroomsByBlocks = [...classroomsByBlocks, response];
-        formatOptions(classroomsByBlocks, "classrooms");
-      });
+      classByBlock(event);
     }
+  };
+
+  const classByBlock = (list) => {
+    let classroomsByBlocks = [];
+    list.map(async (block) => {
+      let response = await fetchClassroomsByBlock(block.value.block_id);
+      classroomsByBlocks = [...classroomsByBlocks, response];
+      formatOptions(classroomsByBlocks, "classrooms");
+    });
   };
 
   const fetchClassroomsByBlock = async (block_id) => {
@@ -197,6 +204,8 @@ export default function SpecialRequest() {
       !selectedReason ||
       !description.trim() ||
       !quantity.trim() ||
+      quantity < 25 ||
+      quantity > 5000 ||
       dates.length === 0 ||
       !dates[0] ||
       !dates[1]
@@ -226,7 +235,30 @@ export default function SpecialRequest() {
       request,
       newAbortController
     );
-    console.log(status, data);
+    if (status == 200) {
+      if (
+        data.message ===
+        "Se realizo la reserva de tipo especial de manera correcta, para ver mas detalles revisar en el historial de solicitudes."
+      ) {
+        setModalContent({ title: "Reservado", body: data.message });
+        setShowModal(true);
+      } else if (
+        data.message ===
+        "No se puede realizar la reserva de tipo especial, dado que existen ambientes ya ocupados con otra actividad de reserva especial, por favor intente con otra fecha/periodos."
+      ) {
+        setModalContent({
+          title: "¡Error!",
+          body: data.message,
+        });
+        setShowModal(true);
+      }
+    } else {
+      setModalContent({
+        title: "¡Error!",
+        body: "Ocurrio un error inesperado, intentelo nuevamente.",
+      });
+      setShowModal(true);
+    }
   };
 
   return (
@@ -262,11 +294,16 @@ export default function SpecialRequest() {
               onClick={() => setAllowClassroomsSelect(!allowClassroomsSelect)}
             >
               <Checkbox
-                onChange={(e) => setAllowClassroomsSelect(e.checked)}
+                onChange={(e) => {
+                  setAllowClassroomsSelect(e.checked);
+                  classByBlock(selectedBlocks);
+                }}
                 checked={allowClassroomsSelect}
               ></Checkbox>
               <i className="ps-2 text-secondary">
-                ¿Agregar ambientes a la solicitud? (Opcional)
+                (Opcional) ¿Agregar ambientes a la solicitud?, al no seleccionar
+                ningun aula, se seleccionará automaticamente todas las aulas
+                dentro de los bloques seleccionados
               </i>
             </div>
 
@@ -360,9 +397,11 @@ export default function SpecialRequest() {
             </div>
           </div>
           <div className="row py-2">
-            <div className="col-sm-6 d-flex align-items-center">
-              <b className="pe-2">CANTIDAD DE ESTUDIANTES</b>
+            <div className="col-sm-6 d-flex">
               <div>
+                <b className="pe-2">CANTIDAD DE ESTUDIANTES</b>
+              </div>
+              <div className="">
                 <input
                   type="number"
                   className="form-control flex-fill"
@@ -376,21 +415,29 @@ export default function SpecialRequest() {
                       setErrorMessageQuantity(
                         "La cantidad de estudiantes debe ser mayor a 25."
                       );
+                    } else if (value >= 5000) {
+                      setErrorMessageQuantity(
+                        "La cantidad de estudiantes debe ser menor a 5000"
+                      );
                     } else {
                       setErrorMessageQuantity("");
                     }
                   }}
                 />
 
-                {quantity < 25 && errorMessageQuantity.trim() && (
-                  <Alert variant="danger">{errorMessageQuantity}</Alert>
+                {errorMessageQuantity.trim() && (
+                  <Alert variant="danger" className="mt-2">
+                    {errorMessageQuantity}
+                  </Alert>
                 )}
               </div>
             </div>
-            <div className="col-sm-6 d-flex align-items-center">
-              <b>MOTIVO DE RESERVA</b>
+            <div className="col-sm-6 d-flex">
+              <div>
+                <b>MOTIVO DE RESERVA</b>
+              </div>
               <select
-                className="form-select"
+                className="form-select h-25"
                 value={selectedReason}
                 onChange={(e) => {
                   setSelectedReason(e.target.value);
@@ -408,7 +455,6 @@ export default function SpecialRequest() {
           </div>
           <div className="py-2">
             <b className="">DESCRIPCION DE LA RESERVA</b>
-            {/* <i className="text-secondary"> (Opcional) </i> */}
             <textarea
               type="area"
               className="form-control mt-2"
@@ -421,9 +467,9 @@ export default function SpecialRequest() {
 
           <div className="d-flex justify-content-end">
             <div>
-              <div className="d-flex justify-content-end">
+              <div className="d-flex justify-content-center">
                 <button
-                  className="btn btn-success w-100"
+                  className="btn btn-success custom-btn-green-outline w-50 my-3"
                   disabled={!completed}
                   onClick={handleSendRequest}
                 >
@@ -434,13 +480,33 @@ export default function SpecialRequest() {
                 <i className="text-secondary">
                   NOTA: El boton "Reservar" se mantiene deshabilitado hasta que
                   todos <br /> los campos esten completados, excepto los campos
-                  obligatorios.
+                  opcionales.
                 </i>
               </div>
             </div>
           </div>
         </div>
       )}
+
+      <Modal
+        show={showModal}
+        centered
+        onHide={() => setShowModal(false)}
+        backdrop="static"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>{modalContent.title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{modalContent.body}</Modal.Body>
+        <Modal.Footer>
+          <button
+            className="btn btn-secondary custom-btn-gray-outline"
+            onClick={() => setShowModal(false)}
+          >
+            Aceptar
+          </button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

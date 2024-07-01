@@ -345,7 +345,7 @@ export default function SpecialRequest() {
 
                       let endSlots = timeSlots.slice(index + 1);
                       setEndTimeSlot(endSlots);
-                      setSelectedEndSlot(endSlots[0]);
+                      setSelectedEndSlot(endSlots[0].time_slot_id);
                     }}
                   >
                     {startTimeSlot.map((slot) => {

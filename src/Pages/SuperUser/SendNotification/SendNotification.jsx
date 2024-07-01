@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Form, Modal,Button } from "react-bootstrap";
+import { Form, Modal, Button } from "react-bootstrap";
 import Select from "react-select";
 import { getTeachers } from "../../../services/teachers";
 import { Spinner } from "react-bootstrap";
@@ -158,7 +158,7 @@ export default function SendNotification() {
 
   const handleClickSend = () => {
     const content = {
-      title: "Confirmacion",
+      title: "Confirmación",
       body: "¿Está seguro de realizar el envío de la notificación?",
     };
     setModalContent(content);
@@ -207,7 +207,7 @@ export default function SendNotification() {
     let content = {};
     if (response.status >= 200 && response.status < 300) {
       content = {
-        title: "Exito",
+        title: "Exíto",
         body: "La notificacion fue enviada.",
       };
       setModalContent(content);
@@ -332,53 +332,51 @@ export default function SendNotification() {
           </div>
         </Form>
       </div>
-      <Modal show={showModal} centered backdrop>
-        <Modal.Title className="p-3">{modalContent.title}</Modal.Title>
+      <Modal show={showModal} centered backdrop="static">
+        <Modal.Header closeButton>
+          <h3>{modalContent.title}</h3>
+        </Modal.Header>
         <Modal.Body>
           <div>
             <label>{modalContent.body}</label>
           </div>
-          <div className="d-flex justify-content-end pt-3">
-            {modalContent.title !== "Confirmacion" ? (
-              <>
-                <button
-                  className="btn btn-outline-secondary"
-                  onClick={handleClickAcceptCloseModal}
-                >
-                  Aceptar
-                </button>
-              </>
-            ) : (
-              <>
-                {loadingRequest && (
-                  <div className="p-2">
-                    <Spinner
-                      animation="border"
-                      variant="secondary"
-                      role="status"
-                    >
-                      <span className="visually-hidden">Loading...</span>
-                    </Spinner>
-                  </div>
-                )}
-                <button
-                  className="btn btn-outline-success m-2"
-                  onClick={handleSubmit}
-                  disabled={loadingRequest}
-                >
-                  Aceptar
-                </button>
-                <button
-                  className="btn btn-outline-secondary m-2"
-                  onClick={() => setShowModal(false)}
-                  disabled={loadingRequest}
-                >
-                  Cancelar
-                </button>
-              </>
-            )}
-          </div>
         </Modal.Body>
+        <Modal.Footer>
+          {modalContent.title !== "Confirmación" ? (
+            <>
+              <button
+                className="btn btn-secondary custom-btn-gray-outline"
+                onClick={handleClickAcceptCloseModal}
+              >
+                Aceptar
+              </button>
+            </>
+          ) : (
+            <>
+              {loadingRequest && (
+                <div className="p-2">
+                  <Spinner animation="border" variant="secondary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </Spinner>
+                </div>
+              )}
+              <button
+                className="btn btn-primary custom-btn-primary-outline m-2"
+                onClick={handleSubmit}
+                disabled={loadingRequest}
+              >
+                Aceptar
+              </button>
+              <button
+                className="btn btn-secondary custom-btn-gray-outline m-2"
+                onClick={() => setShowModal(false)}
+                disabled={loadingRequest}
+              >
+                Cancelar
+              </button>
+            </>
+          )}
+        </Modal.Footer>
       </Modal>
     </div>
   );

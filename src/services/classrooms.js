@@ -71,6 +71,7 @@ export function getClassroomsForDeleteList() {
 }
 
 export function deleteEnvironment(environment) {
+  let responseFetch = {};
   let token = localStorage.getItem("token");
   return fetch(url + `classrooms/delete/${environment}`, {
     method: "DELETE",
@@ -79,9 +80,13 @@ export function deleteEnvironment(environment) {
       "Content-Type": "aplication/json",
     },
   })
-    .then((response) => response.json())
+    .then((response) => {
+      responseFetch.status = response.status;
+      return response.json();
+    })
     .then((data) => {
-      return data;
+      responseFetch.data = data;
+      return responseFetch;
     });
 }
 

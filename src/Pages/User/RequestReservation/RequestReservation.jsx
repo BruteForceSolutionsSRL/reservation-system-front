@@ -746,7 +746,7 @@ export default function RequestReservation() {
             {subjectSelected && listColabs.length > 0 && (
               <>
                 <div className="d-flex flex-column">
-                  <b className="pe-3">COLABORADORES</b>
+                  <b className="pe-3">COMPARTIR CON: </b>
                   <div className="flex-fill">
                     <Select
                       isMulti
@@ -756,7 +756,7 @@ export default function RequestReservation() {
                       noOptionsMessage={() =>
                         "Todas las opciones fueron seleccionadas"
                       }
-                      placeholder="Agregar colaboradores a la solicitud"
+                      placeholder="Agregar con quien compartir"
                       closeMenuOnSelect={false}
                     />
                     <div className="pt-1">
@@ -1084,7 +1084,9 @@ export default function RequestReservation() {
             {(modalSendRequest.content.title ===
               "Solicitud de reserva pendiente" ||
               modalSendRequest.content.title ===
-                "Solicitud de reserva aceptada") && (
+                "Solicitud de reserva aceptada" ||
+              modalSendRequest.content.title ===
+                "Error") && (
               <Modal.Footer>
                 {loadingSendRequest && (
                   <Spinner animation="border" variant="secondary" role="status">

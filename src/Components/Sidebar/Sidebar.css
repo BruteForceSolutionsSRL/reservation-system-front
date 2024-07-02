@@ -5,15 +5,10 @@ body {
 
 #side_nav {
   background: #041231;
-
   min-width: 200px;
   max-width: 240px;
   transition: all 0.3s;
   font-size: 14px;
-
-  /* margin-top: 10px;
-  margin-left: 10px;
-  margin-bottom: 10px; */
 }
 
 .content {

@@ -7,17 +7,13 @@ import laboratorioFcyt from "./icons/laboratoriosFcyt.jpg";
 import image from "./logo.png";
 import "./Homepage.css";
 
-import { useAuth } from "../../../contexts/AuthProvider";
-
 function Homepage() {
-  const { user } = useAuth();
-
   return (
     <div
-      className="color-body d-flex align-items-center justify-content-center"
+      className="color-body d-flex justify-content-center"
       style={{ height: "100%", width: "100%" }}
     >
-      <div className="text-center">
+      <div className="text-center mt-3">
         <Row>
           <Col lg={6}>
             <h1 className="fw-bold">

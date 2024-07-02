@@ -667,7 +667,7 @@ export default function Sidebar({ user }) {
             </div>
           </div>
           <div
-            className="dashboard-content  scroll"
+            className="dashboard-content scroll"
             style={{ background: "#ffffff" }}
           >
             <Outlet />

@@ -1,4 +1,4 @@
-import { Carousel, Col, Row } from "react-bootstrap";
+import { Carousel } from "react-bootstrap";
 import React from "react";
 import decanatoFcyt from "./icons/decanatoFcyt.jpg";
 import edificioFcyt from "./icons/edificioFcyt.jpg";
@@ -9,13 +9,13 @@ import "./Homepage.css";
 
 function Homepage() {
   return (
-    <div
-      className="color-body d-flex justify-content-center p-3"
-      style={{ height: "100%", width: "100%" }}
-    >
-      <div className="text-center mt-3">
-        <Row>
-          <Col lg={6}>
+    <div className="color-body d-flex justify-content-center align-items-center p-3">
+      <div
+        className="row d-flex align-items-center justify-content-center"
+        style={{ height: "80vh" }}
+      >
+        <div className="col-lg-6">
+          <div className="text-center">
             <h1 className="fw-bold">
               Sistema universitario de reserva de ambientes (SURA)
             </h1>
@@ -33,12 +33,10 @@ function Homepage() {
               manera efectiva y equitativa, promoviendo así un entorno académico
               más dinámico y productivo.
             </h4>
-          </Col>
-
-          <Col
-            lg={6}
-            className="image-container mt-2 d-flex align-items-center"
-          >
+          </div>
+        </div>
+        <div className="col-lg-6">
+          <div className="d-flex align-items-center">
             <Carousel>
               <Carousel.Item>
                 <img src={image} alt="Sistema de reserva" className="image" />
@@ -57,8 +55,8 @@ function Homepage() {
                 />
               </Carousel.Item>
             </Carousel>
-          </Col>
-        </Row>
+          </div>
+        </div>
       </div>
     </div>
   );

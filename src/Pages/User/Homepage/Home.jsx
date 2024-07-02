@@ -242,9 +242,6 @@ function Home() {
                 <Nav.Link onClick={scrollToTop} className="nav-link btn-quote">
                   Inicio
                 </Nav.Link>
-                {/* <Link to="/nosotros" className="nav-link">
-                  Nosotros
-                </Link> */}
                 <Nav.Link href="#nosotros">Nosotros</Nav.Link>
                 <Nav.Link href="#contactos">Contactos</Nav.Link>
               </Nav>
@@ -255,10 +252,10 @@ function Home() {
           </Container>
         </Navbar>
       </div>
-      <div className="color-body mt-5">
+      <div className="color-body py-5 d-flex justify-content-center align-items-center">
         <Container className="text-center">
           <Row>
-            <Col md={6}>
+            <Col lg={6}>
               <h1 className="fw-bold">
                 Sistema universitario de reserva de ambientes (SURA)
               </h1>
@@ -278,7 +275,7 @@ function Home() {
               </h4>
             </Col>
 
-            <Col md={6} className="image-container mt-5">
+            <Col lg={6} className="image-container mt-5">
               <Carousel>
                 <Carousel.Item>
                   <img src={image} alt="Sistema de reserva" className="image" />

@@ -15,7 +15,7 @@ export default function SpecialRequest() {
   const { getReasons } = useReasonsRequestService();
   const { getBlocks } = useBlockService();
   const { getFetch, postFetch } = useFetchService();
-  const [dates, setDates] = useState(null);
+  const [dates, setDates] = useState([]);
   const [abortController, setAbortController] = useState([]);
 
   const [allBlocksList, setAllBlocksList] = useState([]);
@@ -204,7 +204,7 @@ export default function SpecialRequest() {
       !selectedReason ||
       !description.trim() ||
       !quantity.trim() ||
-      quantity < 25 ||
+      quantity < 100 ||
       quantity > 5000 ||
       dates.length === 0 ||
       !dates[0] ||
@@ -411,9 +411,9 @@ export default function SpecialRequest() {
                     if (/^\d*$/.test(value)) {
                       setQuantity(value);
                     }
-                    if (value < 25) {
+                    if (value < 100) {
                       setErrorMessageQuantity(
-                        "La cantidad de estudiantes debe ser mayor a 25."
+                        "La cantidad de estudiantes debe ser mayor a 100."
                       );
                     } else if (value >= 5000) {
                       setErrorMessageQuantity(

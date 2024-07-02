@@ -232,7 +232,7 @@ function Home() {
   return (
     <div className="color-home">
       <div>
-        <Navbar expand="lg" className="navbar-custom fixed-top">
+        <Navbar expand="lg" className="navbar-custom">
           <Container>
             <Navbar.Brand href="#"></Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />

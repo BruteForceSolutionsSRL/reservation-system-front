@@ -10,7 +10,7 @@ import "./Homepage.css";
 function Homepage() {
   return (
     <div
-      className="color-body d-flex justify-content-center"
+      className="color-body d-flex justify-content-center p-3"
       style={{ height: "100%", width: "100%" }}
     >
       <div className="text-center mt-3">

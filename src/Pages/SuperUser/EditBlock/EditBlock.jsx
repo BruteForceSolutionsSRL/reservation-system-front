@@ -118,7 +118,7 @@ function EditBlock() {
       };
       await editBlock(editedBlock);
     } else {
-      console.log("Formulario inválido, llene todos los campos");
+      // console.log("Formulario inválido, llene todos los campos");
     }
   };
 

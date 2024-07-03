@@ -138,7 +138,7 @@ function EditEnvironment() {
       };
       await editEnvironment(editedEnvironment);
     } else {
-      console.log("Formulario inválido, llene todos los campos");
+      // console.log("Formulario inválido, llene todos los campos");
     }
   };
 

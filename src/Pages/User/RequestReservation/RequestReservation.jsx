@@ -184,7 +184,6 @@ export default function RequestReservation() {
       (status >= 300 && status < 400) ||
       (status >= 400 && status < 500)
     ) {
-      console.log(data.message);
       setBlocks([]);
     }
   };
@@ -1085,8 +1084,7 @@ export default function RequestReservation() {
               "Solicitud de reserva pendiente" ||
               modalSendRequest.content.title ===
                 "Solicitud de reserva aceptada" ||
-              modalSendRequest.content.title ===
-                "Error") && (
+              modalSendRequest.content.title === "Error") && (
               <Modal.Footer>
                 {loadingSendRequest && (
                   <Spinner animation="border" variant="secondary" role="status">

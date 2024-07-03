@@ -17,7 +17,6 @@ export function useSpecialRequestService() {
         signal: abortController.signal,
         body: JSON.stringify(bodySpecialRequest),
       });
-      console.log(response);
 
       if (response.status === 401 || response.status === 403) {
         abortController.abort();

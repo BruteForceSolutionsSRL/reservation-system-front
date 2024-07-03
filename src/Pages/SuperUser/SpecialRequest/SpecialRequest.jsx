@@ -46,6 +46,8 @@ export default function SpecialRequest() {
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState({});
 
+  const [loadingRequest, setLoadingRequest] = useState(false);
+
   useEffect(() => {
     Promise.all([fetchTimeSlots(), fetchReasons(), fetchBlocks()]).finally(() =>
       setLoadingPage(false)
@@ -216,6 +218,7 @@ export default function SpecialRequest() {
   };
 
   const handleSendRequest = async () => {
+    setLoadingRequest(true);
     let newAbortController = createAbortController();
     let request = {
       quantity: quantity,
@@ -223,7 +226,9 @@ export default function SpecialRequest() {
       date_end: formatDate(dates[1]),
       reason_id: selectedReason,
       observation: description,
-      classroom_id: selectedClassrooms.map(({ value }) => value),
+      classroom_id: allowClassroomsSelect
+        ? selectedClassrooms.map(({ value }) => value)
+        : [],
       time_slot_id: [selectedStartSlot, selectedEndSlot],
       block_id: selectedBlocks.map((block) => {
         return block.value.block_id;
@@ -234,7 +239,7 @@ export default function SpecialRequest() {
       "reservations/special",
       request,
       newAbortController
-    );
+    ).finally(() => setLoadingRequest(false));
     if (status == 200) {
       if (
         data.message ===
@@ -399,9 +404,9 @@ export default function SpecialRequest() {
           <div className="row py-2">
             <div className="col-sm-6 d-flex">
               <div>
-                <b className="pe-2">CANTIDAD DE ESTUDIANTES</b>
+                <b className="pe-2 pt-1">CANTIDAD DE ESTUDIANTES</b>
               </div>
-              <div className="">
+              <div className="flex-fill">
                 <input
                   type="number"
                   className="form-control flex-fill"
@@ -423,6 +428,13 @@ export default function SpecialRequest() {
                       setErrorMessageQuantity("");
                     }
                   }}
+                  onKeyDown={(e) => {
+                    const invalidChars = ["-", "+", "e", "E", ".", ","];
+                    if (invalidChars.includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onPaste={(e) => e.preventDefault()}
                 />
 
                 {errorMessageQuantity.trim() && (
@@ -433,10 +445,10 @@ export default function SpecialRequest() {
               </div>
             </div>
             <div className="col-sm-6 d-flex">
-              <div>
-                <b>MOTIVO DE RESERVA</b>
+              <div className="pe-2 pt-1">
+                <b>MOTIVO DE RESERVA:</b>
               </div>
-              <div>
+              <div className="flex-fill">
                 <select
                   className="form-select"
                   value={selectedReason}
@@ -470,13 +482,31 @@ export default function SpecialRequest() {
           <div className="d-flex justify-content-end">
             <div>
               <div className="d-flex justify-content-center">
-                <button
-                  className="btn btn-success custom-btn-green-outline w-50 my-3"
-                  disabled={!completed}
-                  onClick={handleSendRequest}
-                >
-                  Reservar
-                </button>
+                {loadingRequest ? (
+                  <>
+                    <button
+                      className="btn btn-secondary w-50 my-3"
+                      type="button"
+                      disabled
+                    >
+                      <span
+                        className="spinner-border spinner-border-sm"
+                        aria-hidden="true"
+                      ></span>
+                      <span role="status" className="ps-2">
+                        Reservando...
+                      </span>
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    className="btn btn-success custom-btn-green-outline w-50 my-3"
+                    disabled={!completed}
+                    onClick={handleSendRequest}
+                  >
+                    Reservar
+                  </button>
+                )}
               </div>
               <div className="">
                 <i className="text-secondary">

@@ -281,7 +281,7 @@ export default function SpecialRequest() {
             <h1 className="text-center">Nueva solicitud de reserva</h1>
           </div>
           <div className="d-flex align-items-center">
-            <b className="pe-2">BLOQUES</b>
+            <b className="pe-2">BLOQUES:</b>
             <Select
               className="flex-fill"
               isMulti
@@ -404,7 +404,7 @@ export default function SpecialRequest() {
           <div className="row py-2">
             <div className="col-sm-6 d-flex">
               <div>
-                <b className="pe-2 pt-1">CANTIDAD DE ESTUDIANTES</b>
+                <b className="pe-2 pt-1">CANTIDAD DE ESTUDIANTES:</b>
               </div>
               <div className="flex-fill">
                 <input

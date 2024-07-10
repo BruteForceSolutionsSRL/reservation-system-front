@@ -9,7 +9,7 @@ function Disponibility() {
   const URL = import.meta.env.VITE_REACT_API_URL;
   const [block, setBlock] = useState([]);
   const [periods, setPeriods] = useState([]);
-  const [classrom, setClassrom] = useState([]);
+  const [classrooms, setClassrooms] = useState([]);
   const [selectedClassrooms, setSelectedClassrooms] = useState([]);
   const [environments, setEnvironments] = useState([]);
   const [showTable, setShowTable] = useState(false);
@@ -29,8 +29,8 @@ function Disponibility() {
   });
 
   useEffect(() => {
-    fetchData(`blocks`, setBlock);
-    fetchData(`timeslots`, setPeriods);
+    fetchData("blocks", setBlock);
+    fetchData("timeslots", setPeriods);
   }, []);
 
   useEffect(() => {
@@ -38,14 +38,14 @@ function Disponibility() {
       clear();
     } else {
       clear();
-      fetchData(`classrooms/block/${formData.block_id}`, setClassrom);
+      fetchData(`classrooms/block/${formData.block_id}`, setClassrooms);
     }
   }, [formData.block_id]);
 
   const fetchData = async (endpoint, setterFunction) => {
     let token = localStorage.getItem("token");
     try {
-      const response = await fetch(URL + endpoint, {
+      const response = await fetch(`${URL}${endpoint}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
@@ -59,16 +59,15 @@ function Disponibility() {
   };
 
   const sendDataAndGetResponse = async (data, dataDisponibility) => {
-    const requestData = data;
     let token = localStorage.getItem("token");
     try {
-      const response = await fetch(URL + "classrooms/disponibility", {
+      const response = await fetch(`${URL}classrooms/disponibility`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "aplication/json",
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestData),
+        body: JSON.stringify(data),
       });
       if (!response.ok) {
         throw new Error("La respuesta de la red no fue exitosa");
@@ -81,33 +80,13 @@ function Disponibility() {
     }
   };
 
-  const validateDate = (value) => {
-    if (!value.trim()) {
-      return "Seleccione una fecha.";
-    }
-    return null;
-  };
-
-  const validateBlock = (value) => {
-    if (!value.trim()) {
-      return "Seleccione un bloque.";
-    }
-    return null;
-  };
-
-  const validateClassroom = (value) => {
-    if (!value || value.length === 0) {
-      return "Seleccione un aula.";
-    }
-    return null;
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    let newErrors = {};
-    newErrors.date = validateDate(formData.date);
-    newErrors.block_id = validateBlock(formData.block_id);
-    newErrors.classroom_id = validateClassroom(formData.classroom_id);
+    const newErrors = {
+      date: validateDate(formData.date),
+      block_id: validateBlock(formData.block_id),
+      classroom_id: validateClassroom(formData.classroom_id),
+    };
     setErrors(newErrors);
 
     if (!newErrors.date && !newErrors.block_id && !newErrors.classroom_id) {
@@ -117,57 +96,32 @@ function Disponibility() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData({
-      ...formData,
+    setFormData((prevData) => ({
+      ...prevData,
       [name]: value,
-    });
-    const error = validators[name](value);
-    setErrors({
-      ...errors,
-      [name]: error,
-    });
-  };
-
-  const validators = {
-    date: validateDate,
-    block_id: validateBlock,
-    classroom_id: validateClassroom,
+    }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validators[name](value),
+    }));
   };
 
   const handleSelectClassroom = (id) => {
-    setSelectedClassrooms((prevSelected) =>
-      prevSelected.includes(id)
-        ? prevSelected.filter((classroomId) => classroomId !== id)
-        : [...prevSelected, id]
-    );
-    setFormData((prevData) => {
-      const newClassroomIds = selectedClassrooms.includes(id)
-        ? prevData.classroom_id.filter((classroomId) => classroomId !== id)
-        : [...prevData.classroom_id, id];
-      return {
-        ...prevData,
-        classroom_id: newClassroomIds,
-      };
-    });
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      classroom_id: validateClassroom(
-        selectedClassrooms.includes(id)
-          ? formData.classroom_id.filter((classroomId) => classroomId !== id)
-          : [...formData.classroom_id, id]
-      ),
-    }));
-  };
+    const isSelected = selectedClassrooms.includes(id);
+    const newSelectedClassrooms = isSelected
+      ? selectedClassrooms.filter((classroomId) => classroomId !== id)
+      : [...selectedClassrooms, id];
 
-  function clear() {
-    setShowTable(false);
-    setClassrom([]);
-    setSelectedClassrooms([]);
+    setSelectedClassrooms(newSelectedClassrooms);
     setFormData((prevData) => ({
       ...prevData,
-      classroom_id: [],
+      classroom_id: newSelectedClassrooms,
     }));
-  }
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      classroom_id: validateClassroom(newSelectedClassrooms),
+    }));
+  };
 
   const handleTimeSlotChange = (index, value) => {
     setFormData((prevData) => {
@@ -185,6 +139,29 @@ function Disponibility() {
         time_slot_id: newTimeSlots,
       };
     });
+  };
+
+  const clear = () => {
+    setShowTable(false);
+    setClassrooms([]);
+    setSelectedClassrooms([]);
+    setFormData((prevData) => ({
+      ...prevData,
+      classroom_id: [],
+    }));
+  };
+
+  const validateDate = (value) =>
+    !value.trim() ? "Seleccione una fecha." : null;
+  const validateBlock = (value) =>
+    !value.trim() ? "Seleccione un bloque." : null;
+  const validateClassroom = (value) =>
+    !value || value.length === 0 ? "Seleccione un aula." : null;
+
+  const validators = {
+    date: validateDate,
+    block_id: validateBlock,
+    classroom_id: validateClassroom,
   };
 
   const filteredEndPeriods = periods.filter(
@@ -208,7 +185,7 @@ function Disponibility() {
 
       <div className="mt-3 ms-3 me-3">
         <Form noValidate onSubmit={handleSubmit} className="row">
-          <div className="col-6 p-4 environmente-container position-relative ">
+          <div className="col-6 p-4 environmente-container position-relative">
             <label className="tag-label">AMBIENTE</label>
             <div>
               <label className="fw-bold">BLOQUE</label>
@@ -243,7 +220,7 @@ function Disponibility() {
                     striped
                     bordered
                     hover
-                    className="table-tag text-center "
+                    className="table-tag text-center"
                   >
                     <thead>
                       <tr>
@@ -274,7 +251,7 @@ function Disponibility() {
                       </tr>
                     </thead>
                     <tbody>
-                      {classrom.map((item) => (
+                      {classrooms.map((item) => (
                         <tr
                           key={item.classroom_id}
                           onClick={() =>
@@ -311,7 +288,7 @@ function Disponibility() {
             )}
           </div>
 
-          <div className="col-6 position-relative ">
+          <div className="col-6 position-relative">
             <div className="environmente-container position-relative mb-3">
               <label className="tag-label">PERIODO</label>
               <div>
@@ -443,4 +420,5 @@ function Disponibility() {
     </div>
   );
 }
+
 export default Disponibility;

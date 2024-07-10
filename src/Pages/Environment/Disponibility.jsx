@@ -180,7 +180,7 @@ function Disponibility() {
   };
 
   return (
-    <div className="m-3">
+    <div className="m-4">
       <h1 className="text-center">Disponibilidad de ambientes</h1>
 
       <div className="mt-3 ms-3 me-3">

@@ -172,7 +172,7 @@ function Disponibility() {
 
   const getColor = (valor) => {
     const colorMap = {
-      0: "#B2F2BB",
+      0: "#0AE98A",
       1: "#FF9E9E",
       default: "#FFDFA3",
     };
@@ -359,8 +359,8 @@ function Disponibility() {
                 <th
                   className="static-header-cell"
                   style={{
-                    backgroundColor: "#E7E7E7",
-                    color: "black",
+                    backgroundColor: "#041231",
+                    color: "WHITE",
                   }}
                 >
                   Ambiente
@@ -370,8 +370,8 @@ function Disponibility() {
                     className="environment-data"
                     key={index}
                     style={{
-                      backgroundColor: "#6DC2F5",
-                      color: "black",
+                      backgroundColor: "#045e8c",
+                      color: "WHITE",
                     }}
                   >
                     {env.classroom_name}
@@ -393,7 +393,7 @@ function Disponibility() {
                       <td
                         className="time-cell"
                         style={{
-                          backgroundColor: "#E7E7E7",
+                          backgroundColor: "#E1DAF9",
                           color: "black",
                         }}
                       >

@@ -18,6 +18,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import SeeNotifications from "../Pages/User/SeeNotifications/SeeNotifications";
 import SingleNotification from "../Pages/User/SeeNotifications/SingleNotification";
 import SpecialRequest from "../Pages/SuperUser/SpecialRequest/SpecialRequest";
+import ManagmentGroups from "../Pages/SuperUser/Groups/Managment/ManagmentGroups";
+import HistoryGroups from "../Pages/SuperUser/Groups/History/HistoryGroups";
 
 export default function SuperUserRoutes() {
   return (
@@ -52,6 +54,8 @@ export default function SuperUserRoutes() {
           element={<SingleNotification />}
         />
         <Route path="request" element={<SpecialRequest />} />
+        <Route path="groups" element={<ManagmentGroups />} />
+        <Route path="groups/history" element={<HistoryGroups />} />
       </Route>
     </Routes>
   );

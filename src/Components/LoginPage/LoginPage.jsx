@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthProvider";
-import { Alert } from "react-bootstrap";
+import { Alert, Modal } from "react-bootstrap";
 import { useSessionUserService } from "../../Hooks/useSessionUserService";
 import "./LoginPage.css";
 
@@ -16,6 +16,8 @@ const LoginPage = () => {
   const { loginUser } = useSessionUserService();
   const navigate = useNavigate();
   const [abortController, setAbortController] = useState(null);
+  const [showModalRecoverP, setShowModalRecoverP] = useState(false);
+  const [recoverPEmail, setRecoverPEmail] = useState("");
 
   useEffect(() => {
     const savedUser = JSON.parse(localStorage.getItem("user"));
@@ -76,7 +78,7 @@ const LoginPage = () => {
       className="d-flex justify-content-center align-items-center bg bg-success-subtle all-color"
       style={{ width: "100%", height: "100vh" }}
       onKeyDown={(event) => {
-        if (event.key === "Enter") {
+        if (event.key === "Enter" && !showModalRecoverP) {
           loginRequest();
         }
       }}
@@ -132,7 +134,12 @@ const LoginPage = () => {
             </div>
           </div>
         </div>
-        <hr />
+        <div
+          className="btn btn-link"
+          onClick={() => setShowModalRecoverP(true)}
+        >
+          <span>Recuperar contraseña</span>
+        </div>
         {loadingLogin ? (
           <div className="d-flex justify-content-center p-3">
             <button
@@ -160,6 +167,46 @@ const LoginPage = () => {
           </div>
         )}
       </div>
+
+      <Modal
+        show={showModalRecoverP}
+        onHide={() => {
+          setShowModalRecoverP(false);
+          setRecoverPEmail("");
+        }}
+        centered
+        backdrop="static"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Recuperar contraseña</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Ingrese el correo para recuperar su contraseña.</p>
+          <input
+            type="email"
+            className="form-control"
+            value={recoverPEmail}
+            placeholder="ejemplo@gmail.com"
+            onChange={({ target }) => setRecoverPEmail(target.value)}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              console.log("Email sended");
+            }}
+          >
+            Enviar
+          </button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowModalRecoverP(false)}
+          >
+            Cancelar
+          </button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

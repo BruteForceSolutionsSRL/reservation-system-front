@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthProvider";
 import { Alert, Modal } from "react-bootstrap";
 import { useSessionUserService } from "../../Hooks/useSessionUserService";
+import {useFetchService} from "../Hooks/useFetchService";
 import "./LoginPage.css";
 
 const LoginPage = () => {
@@ -11,13 +12,16 @@ const LoginPage = () => {
   const [loadingLogin, setLoadingLogin] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
   const { login } = useAuth();
   const { loginUser } = useSessionUserService();
+  const { postFetch } = useFetchService();
   const navigate = useNavigate();
   const [abortController, setAbortController] = useState(null);
   const [showModalRecoverP, setShowModalRecoverP] = useState(false);
   const [recoverPEmail, setRecoverPEmail] = useState("");
+  const [errMessageRecoverPassword, setErrMessageRecoverPassword] = useState("");
+  const [sendedEmailRecover,setSendedEmailRecover] = useState(false)
+  const [responseMessage, setResponseMessage] = useState("")
 
   useEffect(() => {
     const savedUser = JSON.parse(localStorage.getItem("user"));
@@ -72,6 +76,24 @@ const LoginPage = () => {
       setLoadingLogin(false);
     }
   };
+
+  const sendRecoverPassword = async () => {
+    const abortC = new AbortController();
+    const {status, data} = await postFetch("auth/recover/password",{email: recoverPEmail}, abortC);
+    if (status >= 200 && status < 300) {
+      setSendedEmailRecover(true);
+      setResponseMessage(data.message)
+      setErrMessageRecoverPassword("")
+    } else {
+      setErrMessageRecoverPassword(data.message)
+    }
+  }
+
+  const handleCloseModalRP = () => {
+    setShowModalRecoverP(false);
+    setSendedEmailRecover(false);
+    setRecoverPEmail("");
+  }
 
   return (
     <div
@@ -170,41 +192,60 @@ const LoginPage = () => {
 
       <Modal
         show={showModalRecoverP}
-        onHide={() => {
-          setShowModalRecoverP(false);
-          setRecoverPEmail("");
-        }}
+        onHide={handleCloseModalRP}
         centered
         backdrop="static"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Recuperar contraseña</Modal.Title>
+          <Modal.Title>{!sendedEmailRecover ? "Recuperar contraseña" : "Enviado"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Ingrese el correo para recuperar su contraseña.</p>
-          <input
-            type="email"
-            className="form-control"
-            value={recoverPEmail}
-            placeholder="ejemplo@gmail.com"
-            onChange={({ target }) => setRecoverPEmail(target.value)}
-          />
+          {!sendedEmailRecover ? 
+            <>
+              <p>Ingrese el correo para recuperar su contraseña.</p>
+              <div>
+                {errMessageRecoverPassword && (
+                  <Alert variant={"danger"}>
+                    {errMessageRecoverPassword}
+                  </Alert>
+                )}
+              </div>
+              <input
+                type="email"
+                className="form-control"
+                value={recoverPEmail}
+                placeholder="ejemplo@gmail.com"
+                onChange={(e) => setRecoverPEmail(e.target.value)}
+              />
+            </> :
+              <p>{responseMessage}</p>
+          }
         </Modal.Body>
         <Modal.Footer>
-          <button
-            className="btn btn-primary"
-            onClick={() => {
-              console.log("Email sended");
-            }}
-          >
-            Enviar
-          </button>
-          <button
-            className="btn btn-secondary"
-            onClick={() => setShowModalRecoverP(false)}
-          >
-            Cancelar
-          </button>
+          {sendedEmailRecover ? 
+          <>
+            <button
+              className="btn btn-secondary"
+              onClick={handleCloseModalRP}
+            >
+              Cerrar
+            </button>
+          </> : 
+          <>
+            <button
+              className="btn btn-primary"
+              onClick={sendRecoverPassword}
+              disabled={!recoverPEmail.trim()}
+            >
+              Enviar
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={handleCloseModalRP}
+            >
+              Cancelar
+            </button>
+          </>}
         </Modal.Footer>
       </Modal>
     </div>

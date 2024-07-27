@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-// import { getSingleNotification } from "../../../services/notifications";
 import { Modal, Spinner, Table } from "react-bootstrap";
 import { getSingleRequest } from "../../../services/requests";
 import ModalRequestInformation from "../../../Components/RequestInformation/ModalRequestInformation";

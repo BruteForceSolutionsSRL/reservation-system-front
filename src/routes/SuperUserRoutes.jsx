@@ -18,6 +18,9 @@ import ProtectedRoute from "./ProtectedRoute";
 import SeeNotifications from "../Pages/User/SeeNotifications/SeeNotifications";
 import SingleNotification from "../Pages/User/SeeNotifications/SingleNotification";
 import SpecialRequest from "../Pages/SuperUser/SpecialRequest/SpecialRequest";
+import EnterManagement from "../Pages/SuperUser/AcademicManagement/EnterManagement/EnterManagement";
+import RegisterManagement from "../Pages/SuperUser/AcademicManagement/RegisterManagement/RegisterManagement";
+import EditManagement from "../Pages/SuperUser/AcademicManagement/EditManagement/EditMamagement";
 
 export default function SuperUserRoutes() {
   return (
@@ -42,6 +45,11 @@ export default function SuperUserRoutes() {
         <Route path="block-register" element={<BlockRegister />} />
         <Route path="edit-block" element={<EditBlock />} />
         <Route path="delete-block" element={<DeleteBlock />} />
+
+        <Route path="enter-management" element={<EnterManagement />} />
+        <Route path="register-management" element={<RegisterManagement />} />
+        <Route path="edit-management" element={<EditManagement />} />
+
         <Route path="*" element={<ErrorPage />} />
         <Route path="statistics-ambience" element={<StatisticsAmbience />} />
         <Route path="send-notification" element={<SendNotification />} />

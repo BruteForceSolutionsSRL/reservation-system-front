@@ -23,7 +23,7 @@ const EnvironmentRegistration = () => {
   const [typeOptions, setTypeOptions] = useState([]);
   const [classroomOptions, setClassroomOptions] = useState([]);
   const [maxFloor, setMaxFloor] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); 
   const [spanLoading, setSpanLoading] = useState(false);
   const [reload, setReload] = useState(false);
   const [modalResponseData, setModalResponseData] = useState({

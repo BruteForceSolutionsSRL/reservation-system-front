@@ -1,0 +1,34 @@
+.custom-btn-primary-outline:hover {
+    background-color: transparent !important;
+    border: 1px solid #2478e6 !important;
+    color: #2478e6 !important;
+}
+
+.custom-btn-gray-outline:hover {
+    background-color: transparent !important;
+    border: 1px solid #6c757d !important;
+    color: #6c757d !important;
+}
+
+.custom-btn-green-outline:hover {
+    background-color: transparent !important;
+    border: 1px solid #28a745 !important;
+    color: #28a745 !important;
+}
+
+.calendar-container {
+    position: relative;
+}
+
+.calendar-container .p-calendar {
+    width: 100%;
+}
+
+.calendar-container .text-danger {
+    margin-top: 0.5rem;
+    /* Ajusta el espaciado según sea necesario */
+    display: block;
+}
+.calendar-input {
+        height: calc(1.5em + 0.75rem + 4px);
+}

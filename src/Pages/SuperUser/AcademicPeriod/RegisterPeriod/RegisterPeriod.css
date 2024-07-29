@@ -28,6 +28,7 @@
     margin-top: 0.5rem;
     display: block;
 }
+
 .calendar-input {
-        height: calc(1.5em + 0.75rem + 4px);
+    height: calc(1.5em + 0.75rem + 4px);
 }

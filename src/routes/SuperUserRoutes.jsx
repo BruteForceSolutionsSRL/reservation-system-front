@@ -20,7 +20,9 @@ import SingleNotification from "../Pages/User/SeeNotifications/SingleNotificatio
 import SpecialRequest from "../Pages/SuperUser/SpecialRequest/SpecialRequest";
 import EnterManagement from "../Pages/SuperUser/AcademicManagement/EnterManagement/EnterManagement";
 import RegisterManagement from "../Pages/SuperUser/AcademicManagement/RegisterManagement/RegisterManagement";
-import EditManagement from "../Pages/SuperUser/AcademicManagement/EditManagement/EditMamagement";
+import EditManagement from "../Pages/SuperUser/AcademicManagement/EditManagement/EditManagement";
+import RegisterPeriod from "../Pages/SuperUser/AcademicPeriod/RegisterPeriod/RegisterPeriod";
+import EditPeriod from "../Pages/SuperUser/AcademicPeriod/EditPeriod/EditPeriod";
 
 export default function SuperUserRoutes() {
   return (
@@ -45,10 +47,12 @@ export default function SuperUserRoutes() {
         <Route path="block-register" element={<BlockRegister />} />
         <Route path="edit-block" element={<EditBlock />} />
         <Route path="delete-block" element={<DeleteBlock />} />
-
         <Route path="enter-management" element={<EnterManagement />} />
         <Route path="register-management" element={<RegisterManagement />} />
         <Route path="edit-management" element={<EditManagement />} />
+
+        <Route path="register-period" element={<RegisterPeriod />} />
+        <Route path="edit-period" element={<EditPeriod/>} />
 
         <Route path="*" element={<ErrorPage />} />
         <Route path="statistics-ambience" element={<StatisticsAmbience />} />

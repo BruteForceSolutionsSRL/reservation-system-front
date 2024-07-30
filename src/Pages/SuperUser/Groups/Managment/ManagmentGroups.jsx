@@ -29,9 +29,9 @@ export default function ManagmentGroups() {
               <i className="bi bi-plus-circle fs-3 d-block"></i>
               <span>Nuevo</span>
             </button>
-            <div className="align-self-center">
+            {/* <div className="align-self-center">
               <GroupFilterModal />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

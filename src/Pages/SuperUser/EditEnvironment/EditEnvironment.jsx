@@ -303,16 +303,17 @@ function EditEnvironment() {
 
   return (
     <div className="container">
-      <h1 className="text-center">Lista de Ambientes</h1>
-      <SearchBar
-        value={searchValue}
-        onChange={(event) => {
-          const regex = /^[a-zA-Z0-9\s]*$/;
-          if (regex.test(event.target.value) || event.target.value === "") {
-            setSearchValue(event.target.value);
-          }
-        }}
-      />
+      <h1 className="text-center mt-3">Lista de Ambientes</h1>
+        <SearchBar
+          value={searchValue}
+          onChange={(event) => {
+            const regex = /^[a-zA-Z0-9\s]*$/;
+            if (regex.test(event.target.value) || event.target.value === "") {
+              setSearchValue(event.target.value);
+            }
+          }}
+        />
+     
       <div className="container">
         {loading ? (
           <div className="text-center">

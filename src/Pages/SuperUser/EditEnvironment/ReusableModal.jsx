@@ -21,7 +21,7 @@ const ReusableModal = ({
     >
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
-      </Modal.Header>
+      </Modal.Header> 
       <Modal.Body>{children}</Modal.Body>
       <Modal.Footer>
         {footerButtons.map((button, index) => (

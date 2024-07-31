@@ -6,18 +6,19 @@ import { Calendar } from "primereact/calendar";
 
 function RegisterManagement() {
   const yearDefault = new Date().getFullYear();
-  const [dates, setDates] = useState([]);
+  const [dates, setDates] = useState(null);
   const [cancelRegisterModal, setCancelRegisterModal] = useState(false);
   const [registerModal, setRegisterModal] = useState(false);
   const [confirmationLoading, setConfirmationLoading] = useState(false);
   const [confimationModal, setConfimationModal] = useState(false);
   const [backendError, setBackendError] = useState({});
   const [formData, setFormData] = useState({
-    gestion_name: "GESTIÓN " + yearDefault,
+    gestion_name: "",
     period_duration: "",
   });
 
   const [errors, setErrors] = useState({
+    gestion_name: "",
     period_duration: "",
   });
 
@@ -30,6 +31,13 @@ function RegisterManagement() {
     return `${year}-${month}-${day}`;
   };
 
+  const validateNameGestion = (value) => {
+    if (!value) {
+      return "Ingrese el nombre para la gestión.";
+    }
+    return null;
+  };
+
   const validatePeriodDuration = (value) => {
     if (!value.trim()) {
       return "Seleccione un periodo de duración.";
@@ -40,16 +48,35 @@ function RegisterManagement() {
   const handleSubmit = (e) => {
     e.preventDefault();
     let newErrors = {};
+    newErrors.gestion_name = validateNameGestion(formData.gestion_name);
     newErrors.period_duration = validatePeriodDuration(
       formData.period_duration
     );
     setErrors(newErrors);
 
-    if (!newErrors.period_duration) {
+    if (!newErrors.period_duration && !newErrors.gestion_name) {
       // Enviar al backend
       handleSaveModal();
       // console.log("datos del form", formData);
     }
+  };
+  const handleEnvironmentNameChange = (event) => {
+    const { value } = event.target;
+    const transformedValue = value
+      .toUpperCase()
+      .split("")
+      .filter((char) => /[A-Z0-9\s\-]/.test(char))
+      .join("");
+    setFormData({
+      ...formData,
+      gestion_name: transformedValue,
+    });
+
+    const error = validators.gestion_name(transformedValue);
+    setErrors({
+      ...errors,
+      gestion_name: error,
+    });
   };
 
   const handleChangeDate = (value) => {
@@ -72,13 +99,18 @@ function RegisterManagement() {
     }
   };
 
+  const validators = {
+    gestion_name: validateNameGestion,
+  };
+
   function clearDataForm() {
     setDates([]);
     setFormData({
-      gestion_name: "GESTIÓN " + yearDefault,
-      period_duration: "", 
+      gestion_name: "",
+      period_duration: "",
     });
     setErrors({
+      gestion_name: "",
       period_duration: "",
     });
   }
@@ -152,10 +184,16 @@ function RegisterManagement() {
               <Form.Control
                 type="input"
                 aria-label="Select environment type"
+                placeholder="Ingrese un nombre de gestión."
                 name="gestion_name"
                 value={formData.gestion_name}
-                disabled
-              ></Form.Control>
+                onChange={handleEnvironmentNameChange}
+                isInvalid={!!errors.gestion_name}
+                autoComplete="off"
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.gestion_name}
+              </Form.Control.Feedback>
             </Col>
           </Row>
 

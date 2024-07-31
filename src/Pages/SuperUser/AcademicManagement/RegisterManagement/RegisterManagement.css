@@ -31,3 +31,7 @@
 .calendar-input {
         height: calc(1.5em + 0.75rem + 4px);
 }
+.calendar-input .p-inputtext::placeholder {
+    font-family: 'Arial', sans-serif;
+    font-size: 15px;
+}

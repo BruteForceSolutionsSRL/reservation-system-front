@@ -25,7 +25,9 @@ const ListManagement = ({ list, handleShowModal }) => {
               </div>
               <div>
                 <b className="text-primary">PERIODO DE DURACIÓN: </b>
-                <b>{management.period_duration}</b>
+                <b>
+                  {`${management.period_duration[0]} - ${management.period_duration[1]}`}
+                </b>
               </div>
             </div>
             <div className="col-sm-4">

@@ -5,20 +5,21 @@ import "./RegisterManagement.css";
 import { Calendar } from "primereact/calendar";
 
 function RegisterManagement() {
-  const yearDefault = new Date().getFullYear();
   const [dates, setDates] = useState(null);
   const [cancelRegisterModal, setCancelRegisterModal] = useState(false);
   const [registerModal, setRegisterModal] = useState(false);
   const [confirmationLoading, setConfirmationLoading] = useState(false);
   const [confimationModal, setConfimationModal] = useState(false);
   const [backendError, setBackendError] = useState({});
+
+  console.log("dartes",dates);
   const [formData, setFormData] = useState({
     gestion_name: "",
     period_duration: "",
   });
 
   const [errors, setErrors] = useState({
-    gestion_name: "",
+    gestion_name: "", 
     period_duration: "",
   });
 
@@ -168,6 +169,7 @@ function RegisterManagement() {
     clearDataForm();
     setCancelRegisterModal(false);
   }
+  
 
   return (
     <div>

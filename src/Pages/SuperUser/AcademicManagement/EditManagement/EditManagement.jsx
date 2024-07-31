@@ -10,6 +10,7 @@ function EditManagement() {
   const [listManagement, setlistManagement] = useState([]);
   const [allManagement, setallManagement] = useState([]);
   const [currentManagement, setcurrentManagement] = useState(null);
+  const [dates, setDates] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [msgNoResults, setMsgNoResults] = useState("");
@@ -23,9 +24,7 @@ function EditManagement() {
 
   useEffect(() => {
     setLoading(true);
-    Promise.all([getAllManagement()]).finally(() =>
-      setLoading(false)
-    );
+    Promise.all([getAllManagement()]).finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
@@ -42,7 +41,6 @@ function EditManagement() {
       setlistManagement(results);
     }
   }, [searchValue, allManagement]);
-
 
   const getAllManagement = async () => {
     // let bl = await getManagements();
@@ -116,11 +114,12 @@ function EditManagement() {
 
   const editBlock = async (editManage) => {
     try {
-      let response = await setBlock(currentManagement.block_id, editManage).catch(
-        (error) => {
-          setBackendError("Error al enviar los datos: " + error.message);
-        }
-      );
+      let response = await setBlock(
+        currentManagement.block_id,
+        editManage
+      ).catch((error) => {
+        setBackendError("Error al enviar los datos: " + error.message);
+      });
       if (response.status >= 200 && response.status < 300) {
         let content = {};
         content.status = response.status;
@@ -155,41 +154,41 @@ function EditManagement() {
     }
   };
 
-   const formatDate = (date) => {
-     if (!date) return "";
-     const year = date.getFullYear();
-     const month = String(date.getMonth() + 1).padStart(2, "0");
-     const day = String(date.getDate()).padStart(2, "0");
+  const formatDate = (date) => {
+    if (!date) return "";
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
-     return `${year}-${month}-${day}`;
-   };
-
-   const validatePeriodDuration = (value) => {
-     if (!value.trim()) {
-       return "Seleccione un periodo de duración.";
-     }
-     return null;
+    return `${year}-${month}-${day}`;
   };
-  
-  const handleChangeDate = (value) => {
-    setDates(value || []);
-    const formattedDates =
-      value && value.length === 2 && value[0] && value[1]
-        ? `${formatDate(value[0])} - ${formatDate(value[1])}`
-        : "";
 
-    setFormData({
-      ...formData,
-      period_duration: formattedDates,
-    });
-
-    if (errors.period_duration) {
-      setErrors({
-        ...errors,
-        period_duration: "",
-      });
+  const validatePeriodDuration = (value) => {
+    if (!value.trim()) {
+      return "Seleccione un periodo de duración.";
     }
+    return null;
   };
+
+  // const handleChangeDate = (value) => {
+  //   setDates(value || []);
+  //   const formattedDates =
+  //     value && value.length === 2 && value[0] && value[1]
+  //       ? `${formatDate(value[0])} - ${formatDate(value[1])}`
+  //       : "";
+
+  //   setFormData({
+  //     ...formData,
+  //     period_duration: formattedDates,
+  //   });
+
+  //   if (errors.period_duration) {
+  //     setErrors({
+  //       ...errors,
+  //       period_duration: "",
+  //     });
+  //   }
+  // };
 
   // const handleInputChange = (event) => {
   //   const { name, value } = event.target;
@@ -261,8 +260,6 @@ function EditManagement() {
     },
   ];
 
-
-
   const fieldLabels = {
     period_duration: "PERIODO DE DURACIÓN",
   };
@@ -272,21 +269,37 @@ function EditManagement() {
       status_id: 1,
       status_name: "ACTIVO",
       gestion_name: "GESTION 2025",
-      period_duration: "10-02-2024 - 10-02-2025",
+      period_duration: ["2024-07-10", "2024-07-30"],
     },
     {
       status_id: 1,
       status_name: "ACTIVO",
       gestion_name: "GESTION 2024",
-      period_duration: "10-02-2024 - 10-02-2025",
+      period_duration: ["2024-07-10", "2024-07-26"],
     },
     {
       status_id: 2,
       status_name: "CERRADO",
       gestion_name: "GESTION 2024",
-      period_duration: "10-02-2024 - 10-02-2025",
+      period_duration: ["2024-07-10", "2024-07-26"],
     },
   ];
+
+  const convertToDateArray = (dateStrings) =>
+    dateStrings.map((dateStr) => new Date(dateStr));
+
+  useEffect(() => {
+    if (currentManagement) {
+      setDates(convertToDateArray(currentManagement.period_duration));
+    }
+  }, [currentManagement]);
+
+  const handleChangeDate = (e) => {
+    setDates(e.value);
+  };
+
+
+  // console.log(dates);
 
   return (
     <div className="container mt-2">
@@ -368,12 +381,13 @@ function EditManagement() {
               <Col md={9}>
                 <Calendar
                   placeholder="Seleccione un periodo de duración."
-                  value={currentManagement?.period_duration || []}
+                  value={dates}
                   onChange={(e) => handleChangeDate(e.value)}
                   className="calendar-input"
                   selectionMode="range"
                   readOnlyInput
                   hideOnRangeSelection
+                  
                 />
                 {/* {errors.period_duration && (
                   <Form.Text className="text-danger">

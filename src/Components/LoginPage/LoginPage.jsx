@@ -51,7 +51,7 @@ const LoginPage = () => {
         let { access_token, person } = data;
         if (person.roles[0] === "DOCENTE") {
           login({ role: "user" });
-          navigate("/user/home");
+          navigate("/user/select-faculty");
         } else if (person.roles[0] === "ENCARGADO") {
           login({ role: "superuser" });
           navigate("/superuser/home");

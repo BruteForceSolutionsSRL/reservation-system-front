@@ -176,7 +176,7 @@ export default function RequestReservation() {
   const fetchBlocks = async () => {
     const { status, data } = await getBlocks();
     let blocksWithClassrooms = data.filter(
-      ({ block_classrooms }) => block_classrooms.length > 0
+      ({ classrooms }) => classrooms.length > 0
     );
     if (status >= 200 && status < 300) {
       setBlocks(blocksWithClassrooms);
@@ -229,7 +229,7 @@ export default function RequestReservation() {
   const fetchClassroomsByBlock = async () => {
     let requestData = {
       block_id: blockSelected,
-      time_slot_id: [startTime, endTime],
+      time_slot_ids: [startTime, endTime],
       quantity: quantity,
       date: dateValue,
     };
@@ -482,13 +482,14 @@ export default function RequestReservation() {
     let classroomIds = classrooms.map(({ value }) => value.classroom_id);
     let request = {
       subject_id: subjectSelected,
-      group_id: groupNumbers,
+      teacher_subject_ids: groupNumbers,
       block_id: blockSelected,
-      classroom_id: classroomIds,
-      time_slot_id: [parseInt(startTime), parseInt(endTime)],
+      classroom_ids: classroomIds,
+      time_slot_ids: [parseInt(startTime), parseInt(endTime)],
       quantity: quantity,
       date: dateValue,
-      reason_id: reasonSelected,
+      reservation_reason_id: reasonSelected,
+      faculty_id: 1,
     };
 
     let response = await sendRequest(request).finally(() =>
@@ -784,8 +785,11 @@ export default function RequestReservation() {
                       </option>
                       {reasons?.map((each) => {
                         return (
-                          <option key={each.reason_id} value={each.reason_id}>
-                            {each.reason_name}
+                          <option
+                            key={each.reservation_reason_id}
+                            value={each.reservation_reason_id}
+                          >
+                            {each.name}
                           </option>
                         );
                       })}
@@ -831,7 +835,7 @@ export default function RequestReservation() {
                     value={dateValue}
                     onChange={handleDateChange}
                     min={getCurrentDate()}
-                    max="2024-07-06"
+                    max="2024-12-31"
                   />
                 </div>
                 <Form.Control.Feedback type="invalid">
@@ -919,7 +923,7 @@ export default function RequestReservation() {
                   {blocks.map((each) => {
                     return (
                       <option key={each.block_id} value={each.block_id}>
-                        {each.block_name}
+                        {each.name}
                       </option>
                     );
                   })}

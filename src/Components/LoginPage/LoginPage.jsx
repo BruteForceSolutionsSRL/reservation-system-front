@@ -48,16 +48,16 @@ const LoginPage = () => {
         newAbortController
       );
       if (status >= 200 && status < 300) {
-        let { token, user } = data;
-        if (user.roles[0] === "DOCENTE") {
+        let { access_token, person } = data;
+        if (person.roles[0] === "DOCENTE") {
           login({ role: "user" });
           navigate("/user/home");
-        } else if (user.roles[0] === "ENCARGADO") {
+        } else if (person.roles[0] === "ENCARGADO") {
           login({ role: "superuser" });
           navigate("/superuser/home");
         }
-        localStorage.setItem("token", token);
-        localStorage.setItem("userInformation", JSON.stringify(user));
+        localStorage.setItem("token", access_token);
+        localStorage.setItem("userInformation", JSON.stringify(person));
         setErrorMessage("");
       } else {
         setErrorMessage(data.message);

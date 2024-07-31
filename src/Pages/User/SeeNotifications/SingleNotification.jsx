@@ -89,8 +89,18 @@ export default function SingleNotification() {
 
   const getRequest = async (reservation_id) => {
     let response = await getSingleRequest(reservation_id);
-    setRequest(response);
-    setContentModal(response.data);
+    const requestData = {
+      subject: response.data.subject_name,
+      groups: response.data.groups,
+      reservation_date: response.data.reservation_date,
+      periods: response.data.time_slot,
+      quantity_studets: response.data.quantity,
+      block: response.data.block_name,
+      classrooms: response.data.classrooms,
+      reason: response.data.reason_name,
+      state: response.data.reservation_status,
+    };
+    setRequest(requestData);
   };
 
   const getBlock = async (block_id) => {
@@ -119,153 +129,6 @@ export default function SingleNotification() {
 
   const goBackToList = () => {
     navigate("../notifications-list");
-  };
-
-  const setContentModal = (request) => {
-    let content = {
-      id: request.reservation_id,
-      subject: request.subject_name,
-      groups: request.groups,
-      reservation_date: request.reservation_date,
-      periods: request.time_slot,
-      quantity_studets: request.quantity,
-      block: request.block_name,
-      classrooms: request.classrooms,
-      reason: request.reason_name,
-      state: request.reservation_status,
-      special: request.special,
-    };
-
-    const {
-      id,
-      subject,
-      groups,
-      reservation_date,
-      periods,
-      quantity_studets,
-      block,
-      classrooms,
-      reason,
-      state,
-      special,
-    } = content;
-
-    setModalContent({
-      id: id,
-      title: <h3>VER ESTADO</h3>,
-      body: (
-        <>
-          <div className="container-fluid">
-            <div className="pb-3">
-              <b>MATERIA: </b> {subject}
-            </div>
-
-            <div className="pb-3">
-              <b>ESTADO: </b>{" "}
-              <label
-                className={`rounded p-1  bg-${
-                  state === "ACEPTADO"
-                    ? "success text-light"
-                    : state === "CANCELADO"
-                    ? "secondary text-light"
-                    : state === "RECHAZADO"
-                    ? "danger text-light"
-                    : state === "PENDIENTE"
-                    ? "warning text-white"
-                    : "dark text-white"
-                }`}
-              >
-                {state}
-              </label>
-            </div>
-
-            <div className="tag-container mb-3">
-              <label className="tag-label">GRUPO</label>
-              <div>
-                <Table bordered className="w-100">
-                  <thead>
-                    <tr>
-                      <th>Nombre</th>
-                      {special === 0 && <th>Grupo</th>}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {special === 1 ? (
-                      <>
-                        <tr key={groups.teacher_name}>
-                          <td>{groups.teacher_name}</td>
-                        </tr>
-                      </>
-                    ) : (
-                      <>
-                        {groups.map((each) => {
-                          return (
-                            <tr key={each.group_number}>
-                              <td>{each.teacher_name}</td>
-                              <td>{each.group_number}</td>
-                            </tr>
-                          );
-                        })}
-                      </>
-                    )}
-                  </tbody>
-                </Table>
-              </div>
-            </div>
-
-            <div className="pb-3">
-              <b>FECHA DE RESERVA: </b> {reservation_date}
-            </div>
-            <div className="pb-3">
-              <b>PERIODOS: </b> {periods[0]}-{periods[1]}
-            </div>
-            <div className="pb-3">
-              <b>CANTIDAD DE ESTUDIANTES: </b>
-              {quantity_studets}
-            </div>
-
-            <div className="tag-container mb-3">
-              <label className="tag-label">AMBIENTE</label>
-
-              <div className="pt-2 pb-2">
-                <b>BLOQUE: </b> {block}
-              </div>
-              <div className="row">
-                <div className="col-sm-2">
-                  <b>AULA(s)</b>
-                </div>
-                <div
-                  className="col-sm-10  overflow-y-auto"
-                  style={{ maxHeight: "250px" }}
-                >
-                  <Table bordered className="">
-                    <thead>
-                      <tr>
-                        <th>Nombre</th>
-                        <th>Capacidad</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {classrooms.map((each) => {
-                        return (
-                          <tr key={each.classroom_name}>
-                            <td>{each.classroom_name}</td>
-                            <td>{each.capacity}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </Table>
-                </div>
-              </div>
-            </div>
-            <div className="pt-3">
-              <b>MOTIVO: </b> {reason}
-            </div>
-          </div>
-        </>
-      ),
-    });
   };
 
   const setContentClassroom = (classroom) => {
@@ -482,11 +345,15 @@ export default function SingleNotification() {
         </>
       )}
 
-      <ModalRequestInformation
-        show={showRequest}
-        setShow={(change) => setShowRequest(change)}
-        content={modalContent}
-      />
+      {/* Quitar todos los modales y colocarlos directamente en el contenido de la notificacion. */}
+      {request && (
+        <ModalRequestInformation
+          show={showRequest}
+          setShow={(change) => setShowRequest(change)}
+          request={request}
+          title="Informacion adicional"
+        />
+      )}
 
       <Modal
         show={modalClassAndBlock}

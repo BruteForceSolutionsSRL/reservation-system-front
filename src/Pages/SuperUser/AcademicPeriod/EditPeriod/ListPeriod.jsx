@@ -1,7 +1,7 @@
 import { Button } from "react-bootstrap";
-import "./EditManagement.css";
+import "./EditPeriod.css";
 
-const ListManagement = ({ list, handleShowModal }) => {
+const ListPeriod = ({ list, handleShowModal }) => {
   return (
     <div>
       {list.map((management, index) => (
@@ -15,7 +15,7 @@ const ListManagement = ({ list, handleShowModal }) => {
                 <b className="col text-primary">ESTADO: </b>
                 <b
                   className={`text-light rounded p-1 ${
-                    parseInt(management.status_management) === 1
+                    parseInt(management.status_period) === 1
                       ? "bg-success"
                       : "bg-danger"
                   }`}
@@ -31,6 +31,10 @@ const ListManagement = ({ list, handleShowModal }) => {
               </div>
             </div>
             <div className="col-sm-4">
+              <div>
+                <b className="text-primary">PERIODO ACADÉMICO: </b>
+                <b>{management.period_name}</b>
+              </div>
               <div>
                 <b className="text-primary">GESTIÓN: </b>
                 <b>{management.gestion_name}</b>
@@ -52,4 +56,4 @@ const ListManagement = ({ list, handleShowModal }) => {
   );
 };
 
-export default ListManagement;
+export default ListPeriod;

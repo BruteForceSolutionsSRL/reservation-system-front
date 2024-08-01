@@ -48,8 +48,8 @@ function EditManagement() {
     setlistManagement(listA); //Aqui se obtiene del back
   };
 
-  const handleShowModal = (block) => {
-    setcurrentManagement({ ...block, errors: {} });
+  const handleShowModal = (management) => {
+    setcurrentManagement({ ...management, errors: {} });
     setShowModal(true);
     setChangedFields({});
   };
@@ -102,20 +102,22 @@ function EditManagement() {
       (key) => currentManagement.errors[key]
     );
     if (!formHasErrors) {
-      let editManage = {
+      let editManagement = {
         gestion_name: currentManagement.gestion_name,
         period_duration: currentManagement.period_duration,
       };
-      await editBlock(editManage);
+
+      console.log("editado una gestion", editManagement);
+      await editManagement(editManagement);
     } else {
       // console.log("Formulario inválido, llene todos los campos");
     }
   };
 
-  const editBlock = async (editManage) => {
+  const editManagement = async (editManage) => {
     try {
-      let response = await setBlock(
-        currentManagement.block_id,
+      let response = await setManagement(
+        currentManagement.management_id,
         editManage
       ).catch((error) => {
         setBackendError("Error al enviar los datos: " + error.message);
@@ -266,21 +268,24 @@ function EditManagement() {
 
   const listA = [
     {
-      status_id: 1,
+      management_id: 1,
       status_name: "ACTIVO",
       gestion_name: "GESTION 2025",
+      status_management: 1,
       period_duration: ["2024-07-10", "2024-07-30"],
     },
     {
-      status_id: 1,
+      management_id: 2,
       status_name: "ACTIVO",
+      status_management: 1,
       gestion_name: "GESTION 2024",
       period_duration: ["2024-07-10", "2024-07-26"],
     },
     {
-      status_id: 2,
+      management_id: 3,
       status_name: "CERRADO",
       gestion_name: "GESTION 2024",
+      status_management: 2,
       period_duration: ["2024-07-10", "2024-07-26"],
     },
   ];
@@ -298,12 +303,11 @@ function EditManagement() {
     setDates(e.value);
   };
 
-
   // console.log(dates);
 
   return (
     <div className="container mt-2">
-      <h1 className="text-center">Gestiones Acedémicas</h1>
+      <h1 className="text-center">Gestiones Académicas</h1>
       <SearchBar
         value={searchValue}
         onChange={(event) => {
@@ -387,7 +391,6 @@ function EditManagement() {
                   selectionMode="range"
                   readOnlyInput
                   hideOnRangeSelection
-                  
                 />
                 {/* {errors.period_duration && (
                   <Form.Text className="text-danger">
@@ -421,7 +424,7 @@ function EditManagement() {
         </Modal.Header>
         <Modal.Body>
           <div>
-            ¿Está seguro de actualizar el BLOQUE? Se modificarán los siguientes
+            ¿Está seguro de actulizar la gestión? Se modificarán los siguientes
             campos:
             <ul>
               {Object.keys(changedFields).map((fieldName) => {

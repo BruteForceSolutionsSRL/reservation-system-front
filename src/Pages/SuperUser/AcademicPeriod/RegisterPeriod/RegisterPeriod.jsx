@@ -45,19 +45,10 @@ function RegisterPeriod() {
       gestion_id: 3,
       gestion: "GESTION 2022",
       period_duration: ["2022-01-10", "2023-01-06"],
-    },
-    {
-      gestion_id: 4,
-      gestion: "GESTION 2021",
-      period_duration: ["2021-01-04", "2022-01-06"],
-    },
-    {
-      gestion_id: 5,
-      gestion: "GESTION 2020",
-      period_duration: ["2020-01-15", "2021-01-06"],
-    },
+    }
   ];
   const [gestion, setGestion] = useState(year);
+  
   const periodsA = [
     { period_id: 1, period: "SEMESTRE I-2020" },
     { period_id: 2, period: "SEMESTRE II-2020" },

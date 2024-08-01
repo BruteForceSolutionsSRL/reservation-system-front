@@ -13,7 +13,7 @@ export default function ElementCancel(props) {
     quantity,
     reservation_date,
     time_slot,
-    groups,
+    persons,
     classrooms,
     reason_name,
   } = props;
@@ -59,11 +59,9 @@ export default function ElementCancel(props) {
           </div>
           <div>
             <b className="text-primary">GRUPOS: </b>
-            {groups.map((teacher, index) => {
+            {persons.map((p, index) => {
               return (
-                <b key={index + teacher.teacher_name}>
-                  {teacher.teacher_name + ", "}
-                </b>
+                <b key={index + p.person_id}>{p.name + p.last_name + ", "}</b>
               );
             })}
           </div>
@@ -71,8 +69,8 @@ export default function ElementCancel(props) {
             <b className="text-primary">AMBIENTES</b>{" "}
             {classrooms.map((classroom, index) => {
               return (
-                <b key={index + classroom.classroom_name}>
-                  {classroom.classroom_name + ", "}
+                <b key={index + classroom.classroom_id}>
+                  {classroom.name + ", "}
                 </b>
               );
             })}

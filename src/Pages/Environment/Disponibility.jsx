@@ -17,15 +17,15 @@ function Disponibility() {
   const [formData, setFormData] = useState({
     date: getCurrentDate(),
     block_id: "",
-    classroom_id: [],
-    time_slot_id: [1, 21],
+    classroom_ids: [],
+    time_slot_ids: [1, 21],
   });
 
   const [errors, setErrors] = useState({
     date: "",
     block_id: "",
-    classroom_id: [],
-    time_slot_id: [],
+    classroom_ids: [],
+    time_slot_ids: [],
   });
 
   useEffect(() => {
@@ -107,10 +107,10 @@ function Disponibility() {
     let newErrors = {};
     newErrors.date = validateDate(formData.date);
     newErrors.block_id = validateBlock(formData.block_id);
-    newErrors.classroom_id = validateClassroom(formData.classroom_id);
+    newErrors.classroom_ids = validateClassroom(formData.classroom_ids);
     setErrors(newErrors);
 
-    if (!newErrors.date && !newErrors.block_id && !newErrors.classroom_id) {
+    if (!newErrors.date && !newErrors.block_id && !newErrors.classroom_ids) {
       sendDataAndGetResponse(formData, setEnvironments);
     }
   };
@@ -131,7 +131,7 @@ function Disponibility() {
   const validators = {
     date: validateDate,
     block_id: validateBlock,
-    classroom_id: validateClassroom,
+    classroom_ids: validateClassroom,
   };
 
   const handleSelectClassroom = (id) => {
@@ -142,19 +142,19 @@ function Disponibility() {
     );
     setFormData((prevData) => {
       const newClassroomIds = selectedClassrooms.includes(id)
-        ? prevData.classroom_id.filter((classroomId) => classroomId !== id)
-        : [...prevData.classroom_id, id];
+        ? prevData.classroom_ids.filter((classroomId) => classroomId !== id)
+        : [...prevData.classroom_ids, id];
       return {
         ...prevData,
-        classroom_id: newClassroomIds,
+        classroom_ids: newClassroomIds,
       };
     });
     setErrors((prevErrors) => ({
       ...prevErrors,
-      classroom_id: validateClassroom(
+      classroom_ids: validateClassroom(
         selectedClassrooms.includes(id)
-          ? formData.classroom_id.filter((classroomId) => classroomId !== id)
-          : [...formData.classroom_id, id]
+          ? formData.classroom_ids.filter((classroomId) => classroomId !== id)
+          : [...formData.classroom_ids, id]
       ),
     }));
   };
@@ -165,32 +165,32 @@ function Disponibility() {
     setSelectedClassrooms([]);
     setFormData((prevData) => ({
       ...prevData,
-      classroom_id: [],
+      classroom_ids: [],
     }));
   }
 
   const handleTimeSlotChange = (index, value) => {
     setFormData((prevData) => {
-      const newTimeSlots = [...prevData.time_slot_id];
+      const newTimeSlots = [...prevData.time_slot_ids];
       newTimeSlots[index] = parseInt(value, 10);
       if (index === 0 && newTimeSlots[1] <= newTimeSlots[0]) {
         const newEndPeriods = periods.filter(
-          (period) => period.time_slot_id > parseInt(value, 10)
+          (period) => period.time_slot_ids > parseInt(value, 10)
         );
         newTimeSlots[1] =
-          newEndPeriods.length > 0 ? newEndPeriods[0].time_slot_id : value;
+          newEndPeriods.length > 0 ? newEndPeriods[0].time_slot_ids : value;
       }
       return {
         ...prevData,
-        time_slot_id: newTimeSlots,
+        time_slot_ids: newTimeSlots,
       };
     });
   };
 
   const filteredEndPeriods = periods.filter(
     (period) =>
-      !formData.time_slot_id[0] ||
-      period.time_slot_id > formData.time_slot_id[0]
+      !formData.time_slot_ids[0] ||
+      period.time_slot_id > formData.time_slot_ids[0]
   );
 
   const getColor = (valor) => {
@@ -223,7 +223,7 @@ function Disponibility() {
                 <option value="">Seleccione un bloque</option>
                 {block.map((option) => (
                   <option key={option.block_id} value={option.block_id}>
-                    {option.block_name}
+                    {option.name}
                   </option>
                 ))}
               </Form.Select>
@@ -287,9 +287,7 @@ function Disponibility() {
                           }
                           style={{ cursor: "pointer" }}
                         >
-                          <td style={{ userSelect: "none" }}>
-                            {item.classroom_name}
-                          </td>
+                          <td style={{ userSelect: "none" }}>{item.name}</td>
                           <td style={{ userSelect: "none" }}>
                             {item.capacity}
                           </td>
@@ -299,7 +297,7 @@ function Disponibility() {
                   </Table>
                 </div>
                 <div className="invalid-feedback d-block">
-                  {errors.classroom_id}
+                  {errors.classroom_ids}
                 </div>
               </>
             ) : (
@@ -318,7 +316,7 @@ function Disponibility() {
                 <label className="fw-bold">PERIODO INICIAL</label>
                 <Form.Select
                   className="mt-2"
-                  value={formData.time_slot_id[0]}
+                  value={formData.time_slot_ids[0]}
                   onChange={(e) => handleTimeSlotChange(0, e.target.value)}
                 >
                   {periods.map((period) => (
@@ -333,7 +331,7 @@ function Disponibility() {
                 <label className="fw-bold mt-2">PERIODO FINAL</label>
                 <Form.Select
                   className="mt-2"
-                  value={formData.time_slot_id[1]}
+                  value={formData.time_slot_ids[1]}
                   onChange={(e) => handleTimeSlotChange(1, e.target.value)}
                 >
                   {filteredEndPeriods.map((period) => (

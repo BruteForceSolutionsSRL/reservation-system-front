@@ -3,7 +3,17 @@ import "./NotificationElement.css";
 import { useNavigate } from "react-router-dom";
 
 export function NotificationElement(props) {
-  const { body, id, sendBy, title, to, type, hour, minutes, date } = props;
+  const {
+    body,
+    notification_id,
+    sendBy,
+    title,
+    to,
+    type,
+    hour,
+    minutes,
+    date,
+  } = props;
   const [notificationReaded, setNotificationReaded] = useState(false);
   const user = JSON.parse(localStorage.getItem("userInformation"));
   const [showDate, setShowDate] = useState(false);
@@ -28,7 +38,7 @@ export function NotificationElement(props) {
   };
 
   const singleNotification = () => {
-    navigate(`../notifications/${id}`);
+    navigate(`../notifications/${notification_id}`);
   };
 
   const isTodayDate = () => {
@@ -46,7 +56,6 @@ export function NotificationElement(props) {
     let newFormat = givenDate.toLocaleDateString("es-ES", options);
     setFormatedDate(newFormat);
   };
-
 
   return (
     <div

@@ -91,11 +91,11 @@ export default function SingleNotification() {
     let response = await getSingleRequest(reservation_id);
     const requestData = {
       subject: response.data.subject_name,
-      groups: response.data.groups,
+      persons: response.data.persons,
       reservation_date: response.data.reservation_date,
       periods: response.data.time_slot,
       quantity_studets: response.data.quantity,
-      block: response.data.block_name,
+      blocks: response.data.block_names,
       classrooms: response.data.classrooms,
       reason: response.data.reason_name,
       state: response.data.reservation_status,

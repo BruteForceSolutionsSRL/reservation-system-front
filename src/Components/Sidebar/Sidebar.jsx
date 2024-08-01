@@ -127,7 +127,7 @@ export default function Sidebar({ user }) {
             />
           </div>
           <span className="d-block text-center text-truncate user-select-none fs-5 fw-semibold">
-            {userInformation.name + " " + userInformation.last_name}
+            {userInformation.fullname}
           </span>
           <span className="d-block text-center text-truncate user-select-none fs-6 fst-italic">
             {userInformation.email}
@@ -639,7 +639,7 @@ export default function Sidebar({ user }) {
                     alt="icon"
                   />
                   <span className="text-truncate user-select-none w-40 text-white">
-                    {userInformation.name + " " + userInformation.last_name}
+                    {userInformation.fullname}
                   </span>
                 </div>
               </OverlayTrigger>

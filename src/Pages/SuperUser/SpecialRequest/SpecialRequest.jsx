@@ -150,7 +150,7 @@ export default function SpecialRequest() {
               ...totalClassrooms,
               {
                 value: classroom.classroom_id,
-                label: classroom.classroom_name,
+                label: classroom.name,
               },
             ]);
           });

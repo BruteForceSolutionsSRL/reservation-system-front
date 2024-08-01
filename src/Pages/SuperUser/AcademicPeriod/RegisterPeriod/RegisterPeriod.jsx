@@ -250,6 +250,8 @@ function RegisterPeriod() {
     setCancelRegisterModal(false);
   }
 
+  
+
   return (
     <div>
       <h1 className="text-center mt-3 mb-3">Registrar Periodo Académico</h1>

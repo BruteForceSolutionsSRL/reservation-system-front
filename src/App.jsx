@@ -7,6 +7,7 @@ import Home from "./Pages/User/Homepage/Home";
 import LoginPage from "./Components/LoginPage/LoginPage";
 import { AuthProvider } from "./contexts/AuthProvider";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import RecoverPassword from "./Components/RecoverPassword/RecoverPassword"
 import "./App.css";
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/recover-password/:code" element={<RecoverPassword />} />
           <Route path="/" element={<Home />} />
           <Route
             path="/user/*"

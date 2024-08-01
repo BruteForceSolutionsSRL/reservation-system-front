@@ -18,6 +18,9 @@ import ProtectedRoute from "./ProtectedRoute";
 import SeeNotifications from "../Pages/User/SeeNotifications/SeeNotifications";
 import SingleNotification from "../Pages/User/SeeNotifications/SingleNotification";
 import SpecialRequest from "../Pages/SuperUser/SpecialRequest/SpecialRequest";
+import RegisterUser from "../Pages/SuperUser/RegisterUser/RegisterUser";
+import InformationUser from "../Pages/User/InformationUser/InformationUser";
+import EditRolList from "../Pages/SuperUser/EditRol/EditRolList";
 
 export default function SuperUserRoutes() {
   return (
@@ -52,6 +55,9 @@ export default function SuperUserRoutes() {
           element={<SingleNotification />}
         />
         <Route path="request" element={<SpecialRequest />} />
+        <Route path="register-user" element={<RegisterUser />} />
+        <Route path="information-user" element={<InformationUser />} />
+        <Route path="edit-rol" element={<EditRolList />} />
       </Route>
     </Routes>
   );

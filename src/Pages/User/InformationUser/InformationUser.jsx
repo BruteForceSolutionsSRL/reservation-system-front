@@ -38,26 +38,12 @@ export default function InformationUser() {
   const URL = import.meta.env.VITE_REACT_API_URL;
   const token = localStorage.getItem("token");
 
-  // const originalData = {
-  //   Nombre: "",
-  //   "Segundo Nombre": "",
-  //   "Apellido Paterno": "",
-  //   "Apellido Materno": "",
-  //   nombreUsuario: "",
-  //   contraseña: "",
-  //   "Correo Principal": "",
-  //   "Correo Secundario": "",
-  //   celular: "",
-  //   Rol: "",
-  // };
-
   const [formData, setFormData] = useState({
     Nombre: "",
     "Segundo Nombre": "",
     "Apellido Paterno": "",
     "Apellido Materno": "",
     nombreUsuario: "",
-    contraseña: "",
     "Correo Principal": "",
     Rol: "",
   });
@@ -74,10 +60,7 @@ export default function InformationUser() {
           "Apellido Paterno": originalData1.lastname.split(" ")[0],
           "Apellido Materno": originalData1.lastname.split(" ")[1] || "",
           nombreUsuario: originalData1.user_name,
-          contraseña: originalData1.password,
           "Correo Principal": originalData1.email,
-          "Correo Secundario": "", // Ajusta si tienes un valor para esto
-          celular: "", // Ajusta si tienes un valor para esto
           Rol: originalData1.roles[0],
         };
 
@@ -105,8 +88,6 @@ export default function InformationUser() {
 
         setNotificationSettings({
           "Correo Principal": updatedData["Correo Principal"],
-          "Correo Secundario": updatedData["Correo Secundario"],
-          celular: updatedData.celular,
         });
       } else {
         console.log("No data found in localStorage.");
@@ -116,76 +97,6 @@ export default function InformationUser() {
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   const originalData1String = localStorage.getItem("userInformation");
-
-  //   if (originalData1String) {
-  //     const originalData1 = JSON.parse(originalData1String);
-
-  //     // email: "qtimpo1@gmail.com";
-  //     // fullname: "DANIEL GARCIA CUCHALLO";
-  //     // lastname: "GARCIA CUCHALLO";
-  //     // name: "DANIEL";
-  //     // person_id: 54;
-  //     // roles: ["ENCARGADO"];
-  //     // user_name: "DANIEL_GARCIA";
-
-  //     originalData.Nombre = originalData1.name.split(" ")[0];
-  //     originalData["Segundo Nombre"] = originalData1.name.split(" ")[1];
-  //     originalData["Apellido Paterno"] = originalData1.lastname.split(" ")[0];
-  //     originalData["Apellido Materno"] = originalData1.lastname.split(" ")[1];
-  //     originalData["Correo Principal"] = originalData1.email;
-  //     originalData.nombreUsuario = originalData1.user_name;
-  //     originalData.contraseña = originalData1.password;
-
-  //     originalData.Rol = originalData1.roles[0];
-
-  //     const fetchData = async (originalData) => {
-  //       if (originalData.Rol === "DOCENTE") {
-  //         const endpoint = `${URL}/teacher-subjects/teacher/${originalData1.person_id}`;
-
-  //         try {
-  //           const response = await fetch(endpoint, {
-  //             headers: {
-  //               Authorization: `Bearer ${token}`,
-  //               "Content-Type": "aplication/json",
-  //             },
-  //           });
-  //           if (!response.ok) {
-  //             throw new Error(`Error en la solicitud: ${response.statusText}`);
-  //           }
-  //           const data = await response.json();
-  //           setSubject(data);
-  //         } catch (error) {
-  //           console.error("Error al realizar la solicitud:", error);
-  //         }
-  //       } else {
-  //         console.log("El rol no es ENCARGADO, no se realiza la solicitud.");
-  //       }
-  //     };
-  //     fetchData(originalData);
-
-  //     console.log("materias", subject);
-  //     setInitialFormData({ ...originalData });
-  //     // console.log(
-  //     //   "original",
-  //     //   originalData,
-  //     //   "init",
-  //     //   initialFormData,
-  //     //   "orig1",
-  //     //   originalData1
-  //     // );
-  //     setFormData({ ...originalData });
-  //     setNotificationSettings({
-  //       "Correo Principal": originalData["Correo Principal"],
-  //       "Correo Secundario": originalData["Correo Secundario"],
-  //       celular: originalData.celular,
-  //     });
-  //   } else {
-  //     console.log("No data found in localStorage.");
-  //   }
-  // }, []);
-
   const [notificationSettings, setNotificationSettings] = useState({
     "Correo Principal": formData["Correo Principal"],
   });
@@ -193,8 +104,6 @@ export default function InformationUser() {
   const handleCambiar = () => {
     setShowCambiar(true);
   };
-
-  // const [formData, setFormData] = useState({ ...originalData });
 
   const togglePasswordVisibilityActual = () => {
     setShowPasswordActual(!showPasswordActual);
@@ -206,11 +115,10 @@ export default function InformationUser() {
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
-    window.location.reload(); // Recarga la página
+    window.location.reload();
   };
 
   const handleCloseCambiar = () => {
-    // Restablece los estados de las contraseñas y la alerta
     setContrasenaActual("");
     setContrasenaNueva("");
     setShowPasswordActual(false);
@@ -244,8 +152,8 @@ export default function InformationUser() {
         setShowAlert(true);
       } else {
         setSuccessMessage(result.message || "Contraseña cambiada con éxito.");
-        setShowSuccessModal(true); // Muestra el modal de éxito
-        handleCloseCambiar(); // Cierra el modal
+        setShowSuccessModal(true);
+        handleCloseCambiar();
       }
     } catch (error) {
       setAlertMessage("Error de conexión con el servidor.");
@@ -281,19 +189,6 @@ export default function InformationUser() {
     setShow(false);
   };
 
-  // const handleCheckboxChange = (e) => {
-  //   const { id, checked } = e.target;
-  //   setNotificationSettings((prev) => ({
-  //     ...prev,
-  //     [id]: checked,
-  //   }));
-  //   setChanges(true);
-  //   setModifiedFields((prevModifiedFields) => ({
-  //     ...prevModifiedFields,
-  //     [id]: checked !== (originalData[id] || false),
-  //   }));
-  // };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
@@ -307,103 +202,20 @@ export default function InformationUser() {
   };
 
   const handleSaveChanges = () => {
-    // if (!Object.values(notificationSettings).some((value) => value)) {
-    //   alert("Debe seleccionar al menos una opción de notificación.");
-    //   return;
-    // }
-
     setIsLoading(true);
 
     const detectedChanges = getChanges();
 
     setChangesState(detectedChanges);
-    // console.log("Datos cambiados:", detectedChanges);
-
     setTimeout(() => {
       setIsLoading(false);
     }, 1000);
     setShow(true);
   };
 
-  // const getChanges = () => {
-  //   const changes = {};
-
-  //   // Concatenar Nombre y Segundo Nombre en un solo campo name
-  //   const fullName = [formData.Nombre, formData["Segundo Nombre"]]
-  //     .filter(Boolean)
-  //     .join(" ");
-  //   const originalFullName = [
-  //     originalData.Nombre,
-  //     originalData["Segundo Nombre"],
-  //   ]
-  //     .filter(Boolean)
-  //     .join(" ");
-  //   if (fullName !== originalFullName) {
-  //     changes.name = fullName;
-  //   }
-
-  //   if (formData["Apellido Paterno"] !== originalData["Apellido Paterno"]) {
-  //     changes.last_name = formData["Apellido Paterno"];
-  //   }
-  //   if (formData["Apellido Materno"] !== originalData["Apellido Materno"]) {
-  //     changes.last_name = changes.last_name
-  //       ? `${changes.last_name} ${formData["Apellido Materno"]}`
-  //       : formData["Apellido Materno"];
-  //   }
-  //   if (formData.nombreUsuario !== originalData.nombreUsuario) {
-  //     changes.user_name = formData.nombreUsuario;
-  //   }
-  //   if (formData["Correo Principal"] !== originalData["Correo Principal"]) {
-  //     changes.email = formData["Correo Principal"];
-  //   }
-
-  //   return changes;
-  // };
-  // const getChanges = () => {
-  //   const changes = {};
-
-  //   // Concatenar Nombre y Segundo Nombre en un solo campo name
-  //   const fullName = [formData.Nombre, formData["Segundo Nombre"]]
-  //     .filter(Boolean)
-  //     .join(" ");
-  //   const originalFullName = [formData.Nombre, formData["Segundo Nombre"]]
-  //     .filter(Boolean)
-  //     .join(" ");
-
-  //   // Compara fullName con originalFullName y agrega a changes si son diferentes
-  //   if (fullName !== originalFullName) {
-  //     changes.name = fullName;
-  //   }
-
-  //   // Comparar y agregar Apellido Paterno si ha cambiado
-  //   if (formData["Apellido Paterno"] !== formData["Apellido Paterno"]) {
-  //     changes.last_name = formData["Apellido Paterno"];
-  //   }
-
-  //   // Comparar y agregar Apellido Materno si ha cambiado
-  //   if (formData["Apellido Materno"] !== formData["Apellido Materno"]) {
-  //     // Verifica si last_name ya está en changes y concatena si es necesario
-  //     changes.last_name = changes.last_name
-  //       ? `${changes.last_name} ${formData["Apellido Materno"]}`
-  //       : formData["Apellido Materno"];
-  //   }
-
-  //   // Comparar y agregar nombreUsuario si ha cambiado
-  //   if (formData.nombreUsuario !== formData.nombreUsuario) {
-  //     changes.user_name = formData.nombreUsuario;
-  //   }
-
-  //   // Comparar y agregar Correo Principal si ha cambiado
-  //   if (formData["Correo Principal"] !== formData["Correo Principal"]) {
-  //     changes.email = formData["Correo Principal"];
-  //   }
-
-  //   return changes;
-  // };
   const getChanges = () => {
     const changes = {};
 
-    // Concatenar Nombre y Segundo Nombre en un solo campo name
     const fullName = [formData.Nombre, formData["Segundo Nombre"]]
       .filter(Boolean)
       .join(" ");
@@ -414,41 +226,30 @@ export default function InformationUser() {
       .filter(Boolean)
       .join(" ");
 
-    // Compara fullName con originalFullName y agrega a changes si son diferentes
     if (fullName !== originalFullName) {
       changes.name = fullName;
     }
 
-    // Comparar y agregar Apellido Paterno si ha cambiado
     if (formData["Apellido Paterno"] !== initialFormData["Apellido Paterno"]) {
       changes.last_name = formData["Apellido Paterno"];
     }
 
-    // Comparar y agregar Apellido Materno si ha cambiado
     if (formData["Apellido Materno"] !== initialFormData["Apellido Materno"]) {
-      // Verifica si last_name ya está en changes y concatena si es necesario
       changes.last_name = changes.last_name
         ? `${changes.last_name} ${formData["Apellido Materno"]}`
         : formData["Apellido Materno"];
     }
 
-    // Comparar y agregar nombreUsuario si ha cambiado
     if (formData.nombreUsuario !== initialFormData.nombreUsuario) {
       changes.user_name = formData.nombreUsuario;
     }
 
-    // Comparar y agregar Correo Principal si ha cambiado
     if (formData["Correo Principal"] !== initialFormData["Correo Principal"]) {
       changes.email = formData["Correo Principal"];
     }
 
     return changes;
   };
-
-  // const url = "http://localhost:8000/api/users/update";
-
-  // const token = localStorage.getItem("token");
-  // console.log(token);
 
   const updateUser = async (changes) => {
     try {
@@ -575,29 +376,6 @@ export default function InformationUser() {
                 <Form.Label>Contraseña</Form.Label>
               </Col>
               <Col md style={{ position: "relative" }}>
-                {/* <Form.Control
-                  className="text-truncate"
-                  style={{
-                    border: modifiedFields.contraseña
-                      ? "3px solid #00ff66"
-                      : "",
-                  }}
-                  type={showPassword ? "text" : "password"}
-                  name="contraseña"
-                  value={formData.contraseña}
-                  onChange={handleInputChange}
-                />
-                <i
-                  className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"}
-                  onClick={togglePasswordVisibility}
-                  style={{
-                    position: "absolute",
-                    right: "20px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    cursor: "pointer",
-                  }}
-                ></i> */}
                 <Button onClick={handleCambiar}>Cambiar Contraseña</Button>
               </Col>
             </Row>
@@ -623,78 +401,7 @@ export default function InformationUser() {
                   }}
                 />
               </Col>
-              {/* Correo Secundario */}
-
-              {/* <Col>
-                <Form.Control
-                  type="input"
-                  name="Correo Secundario"
-                  value={formData["Correo Secundario"]}
-                  onChange={handleInputChange}
-                  style={{
-                    border: modifiedFields["Correo Secundario"]
-                      ? "3px solid #00ff66"
-                      : "",
-                  }}
-                />
-              </Col> */}
             </Row>
-
-            {/* Número de celular */}
-            {/* <Row className="mb-2">
-              <Col>
-                <Form.Label>Número de celular</Form.Label>
-              </Col>
-              <Col>
-                <Form.Control
-                  type="input"
-                  name="celular"
-                  value={formData.celular}
-                  onChange={handleInputChange}
-                  style={{
-                    border: modifiedFields.celular ? "3px solid #00ff66" : "",
-                  }}
-                />
-              </Col>
-            </Row> */}
-
-            {/* NOTIFICACIONES */}
-            {/* <Row>
-              <div className="tag-container mb-3">
-                <label className="tag-label">NOTIFICACIONES</label>
-                <div>
-                  <Row>
-                    <Col>
-                      <Form.Check
-                        type="checkbox"
-                        id="Correo Principal"
-                        label="Correo Principal"
-                        checked={notificationSettings["Correo Principal"]}
-                        onChange={handleCheckboxChange}
-                      />
-                    </Col>
-                    <Col>
-                      <Form.Check
-                        type="checkbox"
-                        id="Correo Secundario"
-                        label="Correo Secundario"
-                        checked={notificationSettings["Correo Secundario"]}
-                        onChange={handleCheckboxChange}
-                      />
-                    </Col>
-                    <Col>
-                      <Form.Check
-                        type="checkbox"
-                        id="celular"
-                        label="Número de celular"
-                        checked={notificationSettings.celular}
-                        onChange={handleCheckboxChange}
-                      />
-                    </Col>
-                  </Row>
-                </div>
-              </div>
-            </Row> */}
           </div>
         </div>
         <div className="tag-container mb-3">

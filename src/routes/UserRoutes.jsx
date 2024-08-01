@@ -10,6 +10,7 @@ import RequestReservation from "../Pages/User/RequestReservation/RequestReservat
 import SeeNotifications from "../Pages/User/SeeNotifications/SeeNotifications";
 import SingleNotification from "../Pages/User/SeeNotifications/SingleNotification";
 import ProtectedRoute from "./ProtectedRoute";
+import FacultySelect from "../Pages/FacultySelect/FacultySelect";
 
 export default function UserRoutes() {
   return (
@@ -37,6 +38,7 @@ export default function UserRoutes() {
         />
         <Route path="*" element={<ErrorPage />} />
       </Route>
+      <Route path="select-faculty" element={<FacultySelect />} />
     </Routes>
   );
 }

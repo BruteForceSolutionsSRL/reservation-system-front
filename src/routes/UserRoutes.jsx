@@ -9,7 +9,6 @@ import RequestsHistory from "../Pages/RequestsHistory/RequestsHistory";
 import RequestReservation from "../Pages/User/RequestReservation/RequestReservation";
 import SeeNotifications from "../Pages/User/SeeNotifications/SeeNotifications";
 import SingleNotification from "../Pages/User/SeeNotifications/SingleNotification";
-import InformationUser from "../Pages/User/InformationUser/InformationUser";
 import ProtectedRoute from "./ProtectedRoute";
 import FacultySelect from "../Pages/FacultySelect/FacultySelect";
 
@@ -37,7 +36,6 @@ export default function UserRoutes() {
           path="notifications/:notificationId"
           element={<SingleNotification />}
         />
-        <Route path="information-user" element={<InformationUser />} />
         <Route path="*" element={<ErrorPage />} />
       </Route>
       <Route path="select-faculty" element={<FacultySelect />} />

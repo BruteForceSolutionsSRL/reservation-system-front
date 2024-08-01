@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Alert, Button, Form, Modal } from "react-bootstrap";
 import { getSubjects } from "../../../services/subjects";
 import { getCurrentDate } from "../../../utils/getCurrentDate";
@@ -16,7 +16,9 @@ import LoadingSpinner from "../../../Components/LoadingSpinner/LoadingSpinner";
 import Select from "react-select";
 
 export default function RequestReservation() {
-  const user = JSON.parse(localStorage.getItem("userInformation"));
+  const user = useMemo(() =>
+    JSON.parse(localStorage.getItem("userInformation"))
+  );
   const [loadingPage, setLoadingPage] = useState(true);
   const [groupSelected, setGroupSelected] = useState([]);
   const [optionsGroups, setOptionsGroups] = useState([]);

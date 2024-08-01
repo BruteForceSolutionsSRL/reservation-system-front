@@ -53,7 +53,7 @@ export function useFetchService() {
       const response = await fetch(url + endpoint, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token ?? ""}`,
           "Content-Type": "aplication/json",
         },
         signal: abortController.signal,

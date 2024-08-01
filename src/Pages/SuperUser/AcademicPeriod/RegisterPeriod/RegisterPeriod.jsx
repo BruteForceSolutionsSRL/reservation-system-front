@@ -12,24 +12,26 @@ function RegisterPeriod() {
   const [confirmationLoading, setConfirmationLoading] = useState(false);
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [backendError, setBackendError] = useState({});
-   const [minDate, setMinDate] = useState(null);
+  const [minDate, setMinDate] = useState(null);
   const [maxDate, setMaxDate] = useState(null);
-   const [minDateReservation, setMinDateReservation] = useState(null);
-   const [maxDateReservation, setMaxDateReservation] = useState(null);
+  const [minDateReservation, setMinDateReservation] = useState(null);
+  const [maxDateReservation, setMaxDateReservation] = useState(null);
 
   const [formData, setFormData] = useState({
+    faculty_id: "",
     gestion_name: "",
     period_name: "",
     period_duration: "",
     start_reservation: "",
   });
   const [errors, setErrors] = useState({
+    faculty_id: "",
     gestion_name: "",
     period_name: "",
     period_duration: "",
     start_reservation: "",
   });
- 
+
   const year = [
     {
       gestion_id: 1,
@@ -45,10 +47,10 @@ function RegisterPeriod() {
       gestion_id: 3,
       gestion: "GESTION 2022",
       period_duration: ["2022-01-10", "2023-01-06"],
-    }
+    },
   ];
   const [gestion, setGestion] = useState(year);
-  
+
   const periodsA = [
     { period_id: 1, period: "SEMESTRE I-2020" },
     { period_id: 2, period: "SEMESTRE II-2020" },
@@ -56,6 +58,14 @@ function RegisterPeriod() {
     { period_id: 4, period: "INVIERNO 2020" },
   ];
   const [periods, setPeriodos] = useState(periodsA);
+
+  const facultad = [
+    { faculty_id: 1, faculty_name: "FACULTAD DE CIENCIAS Y TECNOLOGIA" },
+    { faculty_id: 2, faculty_name: "FACULTAD DE CIENCIAS JURIDICAS" },
+    { faculty_id: 3, faculty_name: "FACULTAD DE CIENCIAS ECONOMIA" },
+    { faculty_id: 4, faculty_name: "FACULTAD DE CIENCIAS Y ARQUITECTURA" },
+  ];
+  const [faculty, setFaculty] = useState(facultad);
 
   useEffect(() => {
     const selectedGestion = gestion.find(
@@ -71,17 +81,16 @@ function RegisterPeriod() {
     }
   }, [formData.gestion_name, gestion]);
 
- useEffect(() => {
-   if (formData.period_duration) {
-     const [start, end] = formData.period_duration.split(" - ");
-     setMinDateReservation(new Date(start));
-     setMaxDateReservation(new Date(end));
-   } else {
-     setMinDateReservation(null);
-     setMaxDateReservation(null);
-   }
- }, [formData.period_duration]);
-
+  useEffect(() => {
+    if (formData.period_duration) {
+      const [start, end] = formData.period_duration.split(" - ");
+      setMinDateReservation(new Date(start));
+      setMaxDateReservation(new Date(end));
+    } else {
+      setMinDateReservation(null);
+      setMaxDateReservation(null);
+    }
+  }, [formData.period_duration]);
 
   const validatePeriodDuration = (value) => {
     if (!value.trim()) return "Seleccione un periodo académico.";
@@ -103,20 +112,27 @@ function RegisterPeriod() {
     return null;
   };
 
+  const validateFaculty = (value) => {
+    if (!value.trim()) return "Seleccione una facultad.";
+    return null;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     let newErrors = {};
+    newErrors.faculty_id = validateFaculty(formData.faculty_id);
+    newErrors.gestion_name = validateGestion(formData.gestion_name);
+    newErrors.period_name = validatePeriod(formData.period_name);
     newErrors.period_duration = validatePeriodDuration(
       formData.period_duration
     );
     newErrors.start_reservation = validateStartReservations(
       formData.start_reservation
     );
-    newErrors.gestion_name = validateGestion(formData.gestion_name);
-    newErrors.period_name = validatePeriod(formData.period_name);
     setErrors(newErrors);
 
     if (
+      !newErrors.faculty_id &&
       !newErrors.period_duration &&
       !newErrors.start_reservation &&
       !newErrors.gestion_name &&
@@ -127,6 +143,7 @@ function RegisterPeriod() {
   };
 
   const validators = {
+    faculty_id: validateFaculty,
     gestion_name: validateGestion,
     period_name: validatePeriod,
   };
@@ -150,34 +167,35 @@ function RegisterPeriod() {
       setErrors({ ...errors, period_duration: "" });
     }
   };
-  
-  const handleChangeStart = (value) => {
-      setStartReservation(value || null);
-      const formattedDate = value ? formatDate(value) : "";
-      setFormData({ ...formData, start_reservation: formattedDate });
-      if (errors.start_reservation) {
-        setErrors({ ...errors, start_reservation: "" });
-      }
-    };
-   const formatDate = (date) => {
-     if (!date) return "";
-     const year = date.getFullYear();
-     const month = String(date.getMonth() + 1).padStart(2, "0");
-     const day = String(date.getDate()).padStart(2, "0");
-     return `${year}-${month}-${day}`;
-   };
 
+  const handleChangeStart = (value) => {
+    setStartReservation(value || null);
+    const formattedDate = value ? formatDate(value) : "";
+    setFormData({ ...formData, start_reservation: formattedDate });
+    if (errors.start_reservation) {
+      setErrors({ ...errors, start_reservation: "" });
+    }
+  };
+  const formatDate = (date) => {
+    if (!date) return "";
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
   function clearDataForm() {
     setDates([]);
     setStartReservation(null);
     setFormData({
+      faculty_id: "",
       gestion_name: "",
       period_name: "",
       period_duration: "",
       start_reservation: "",
     });
     setErrors({
+      faculty_id: "",
       gestion_name: "",
       period_name: "",
       period_duration: "",
@@ -240,10 +258,37 @@ function RegisterPeriod() {
           <Row className="mb-3">
             <Col xs={12} md={2}>
               <Form.Group>
-                <Form.Label className="fw-bold">GESTIÓN ACADÉMICA</Form.Label>
+                <Form.Label className="fw-bold">FACULTAD</Form.Label>
               </Form.Group>
             </Col>
             <Col xs={12} md={10}>
+              <Form.Select
+                type="input"
+                name="faculty_id"
+                value={formData.faculty_id}
+                onChange={handleChange}
+                isInvalid={!!errors.faculty_id}
+              >
+                <option value="">Seleccione una falcultad</option>
+                {faculty.map((option) => (
+                  <option key={option.faculty_id} value={option.faculty_id}>
+                    {option.faculty_name}
+                  </option>
+                ))}
+              </Form.Select>
+              <Form.Control.Feedback type="invalid">
+                {errors.faculty_id}
+              </Form.Control.Feedback>
+            </Col>
+          </Row>
+
+          <Row className="mb-3">
+            <Col md={2} className="align-items-center">
+              <Form.Group>
+                <Form.Label className="fw-bold">GESTIÓN ACADÉMICO</Form.Label>
+              </Form.Group>
+            </Col>
+            <Col md={4}>
               <Form.Select
                 type="input"
                 name="gestion_name"
@@ -262,13 +307,11 @@ function RegisterPeriod() {
                 {errors.gestion_name}
               </Form.Control.Feedback>
             </Col>
-          </Row>
 
-          <Row className="mb-3">
-            <Col md={2} className="align-items-center">
-              <Form.Group>
-                <Form.Label className="fw-bold">PERIODO ACADÉMICO</Form.Label>
-              </Form.Group>
+            <Col md={2}>
+              <Form.Label className="fw-bold mb-0 ">
+                PERIODO DE ACADÉMICO
+              </Form.Label>
             </Col>
             <Col md={4}>
               <Form.Select
@@ -288,11 +331,13 @@ function RegisterPeriod() {
                 {errors.period_name}
               </Form.Control.Feedback>
             </Col>
+          </Row>
 
-            <Col md={2}>
-              <Form.Label className="fw-bold mb-0 ">
-                PERIODO DE DURACIÓN
-              </Form.Label>
+          <Row className="mb-3">
+            <Col md={2} className="align-items-center">
+              <Form.Group>
+                <Form.Label className="fw-bold">PERIODO DE DURACIÓN</Form.Label>
+              </Form.Group>
             </Col>
             <Col md={4}>
               <div className="calendar-container">
@@ -314,13 +359,11 @@ function RegisterPeriod() {
                 )}
               </div>
             </Col>
-          </Row>
 
-          <Row className="mb-3">
             <Col md={2}>
-              <Form.Group>
-                <Form.Label className="fw-bold">INICIO DE RESERVAS</Form.Label>
-              </Form.Group>
+              <Form.Label className="fw-bold mb-0 ">
+                INICIO DE RSERVAS
+              </Form.Label>
             </Col>
             <Col md={4}>
               <div className="calendar-container">

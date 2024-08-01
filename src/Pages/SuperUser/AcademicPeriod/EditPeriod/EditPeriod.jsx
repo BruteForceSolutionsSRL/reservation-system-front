@@ -4,6 +4,13 @@ import SearchBar from "../../../../Components/SearchBar/SearchBar";
 import { searchManagement } from "../../../../utils/searchManagement";
 import ReusableModal from "../../EditEnvironment/ReusableModal";
 import { Calendar } from "primereact/calendar";
+
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { es } from "date-fns/locale";
+registerLocale("es", es);
+
 import ListPeriod from "./ListPeriod";
 
 function EditPeriod() {
@@ -21,6 +28,14 @@ function EditPeriod() {
   const [confirmations, setConfirmationsModal] = useState(false);
   const [backendError, setBackendError] = useState("");
   const [confirmationLoading, setConfirmationLoading] = useState(false);
+  const [minDateReservation, setMinDateReservation] = useState(null);
+  const [maxDateReservation, setMaxDateReservation] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
+  const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     setLoading(true);
@@ -283,27 +298,27 @@ function EditPeriod() {
 
   const listA = [
     {
-      period_id: 2,
+      period_id: 1,
       status_name: "ACTIVO",
       status_period: 1,
       gestion_name: "GESTION 2024",
       period_name: "SEMESTRE II-2024",
       period_name_id: 2,
-      period_duration: ["2024-08-10", "2025-01-16"],
+      period_duration: ["2024-08-5", "2024-08-16"],
       start_reservation: "2024-08-13",
     },
     {
-      period_id: 3,
+      period_id: 2,
       status_name: "ACTIVO",
       status_period: 1,
       gestion_name: "GESTION 2024",
       period_name: "INVIERNO 2024",
       period_name_id: 3,
-      period_duration: ["2024-07-10", "2024-08-08"],
+      period_duration: ["2024-08-05", "2024-08-08"],
       start_reservation: "2024-07-13",
     },
     {
-      period_id: 1,
+      period_id: 3,
       status_name: "CERRADO",
       status_period: 2,
       gestion_name: "GESTION 2024",
@@ -322,19 +337,6 @@ function EditPeriod() {
   ];
   const [periods, setPeriodos] = useState(periodsA);
 
-  const convertToDateArray = (dateStrings) =>
-    dateStrings.map((dateStr) => new Date(dateStr));
-
-  useEffect(() => {
-    if (currentManagement) {
-      setDates(convertToDateArray(currentManagement.period_duration));
-    }
-  }, [currentManagement]);
-
-  const handleChangeDate = (e) => {
-    setDates(e.value);
-  };
-
   const getStatusNameById = (statusId) => {
     const statusOption = periodsA.find(
       (option) => option.period_id === parseInt(statusId)
@@ -342,7 +344,29 @@ function EditPeriod() {
     return statusOption ? statusOption.period : "";
   };
 
-  // console.log(dates);
+  useEffect(() => {
+    if (currentManagement) {
+      setStartDate(new Date(currentManagement.period_duration[0]));
+      setEndDate(new Date(currentManagement.period_duration[1]));
+
+      setMinDateReservation(new Date(currentManagement.period_duration[0]));
+      setMaxDateReservation(new Date(currentManagement.period_duration[1]));
+      setSelectedDate(new Date(currentManagement.start_reservation));
+    } else {
+      setMinDateReservation(null);
+      setMaxDateReservation(null);
+    }
+  }, [currentManagement]);
+
+  const handleDateChange = (dates) => {
+    const [start, end] = dates;
+    setStartDate(start);
+    setEndDate(end);
+  };
+
+  const handleDateChangeS = (dates) => {
+    setSelectedDate(dates);
+  };
 
   return (
     <div className="container mt-2">
@@ -441,14 +465,24 @@ function EditPeriod() {
                 </Form.Label>
               </Col>
               <Col md={4}>
-                <Calendar
-                  placeholder="Seleccione un periodo de duración."
-                  value={dates}
-                  onChange={(e) => handleChangeDate(e.value)}
-                  className="calendar-input"
-                  selectionMode="range"
-                  readOnlyInput
-                  hideOnRangeSelection
+                <DatePicker
+                  selectsStart
+                  selected={startDate}
+                  onChange={handleDateChange}
+                  startDate={startDate}
+                  endDate={endDate}
+                  selectsRange
+                  dateFormat="dd-MM-yyyy"
+                  locale="es"
+                  className="form-control"
+                  placeholderText="Fecha de Inicio"
+                  todayButton="Hoy"
+                  showMonthDropdown
+                  showYearDropdown
+                  scrollableYearDropdown
+                  yearDropdownItemNumber={currentYear - 1998 + 1}
+                  minDate={new Date(1998, 0, 1)}
+                  maxDate={new Date(currentYear + 1, 4, 30)}
                 />
               </Col>
             </Row>
@@ -460,14 +494,21 @@ function EditPeriod() {
                 </Form.Label>
               </Col>
               <Col md={4}>
-                <Calendar
-                  placeholder="Seleccione un periodo de duración."
-                  value={dates}
-                  onChange={(e) => handleChangeDate(e.value)}
-                  className="calendar-input"
-                  readOnlyInput
-                  hideOnRangeSelection
+                <DatePicker
+                  placeholderText="Seleccione un periodo de duración."
+                  selected={selectedDate}
+                  onChange={handleDateChangeS}
+                  dateFormat="dd-MM-yyyy"
+                  locale={es}
+                  className="form-control"
+                  todayButton="Hoy"
+                  showMonthDropdown
+                  showYearDropdown
+                  scrollableYearDropdown
+                  minDate={minDateReservation}
+                  maxDate={maxDateReservation}
                 />
+
                 {/* {errors.period_duration && (
                   <Form.Text className="text-danger">
                     {errors.period_duration}

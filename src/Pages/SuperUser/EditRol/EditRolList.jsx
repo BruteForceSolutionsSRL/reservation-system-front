@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getTeachers } from "../../../services/teachers";
+import { getUsers } from "../../../services/teachers";
 import { Spinner } from "react-bootstrap";
 import EditRol from "./EditRol";
 
@@ -8,30 +8,41 @@ export default function EditRolList() {
   const [teachers, setTeachers] = useState([]);
 
   useEffect(() => {
-    getTeachersList();
+    getUsersList();
   }, []);
 
-  const getTeachersList = async () => {
-    let { state, data } = await getTeachers().catch((err) =>
-      console.error(err)
-    );
+  // {
+  //   person_id: 1,
+  //   user_name: 'MARIA_BENITA_CESPEDES',
+  //   name: 'MARIA BENITA',
+  //   lastname: 'CESPEDES GUIZADA',
+  //   email: 'xdxdmaria.c@fcyt.umss.edu',
+  //   fullname: 'MARIA BENITA CESPEDES GUIZADA',
+  //   roles: [ 'DOCENTE' ]
+  // },
 
-    if (data) {
-      const teachersWithSubjects = await Promise.all(
-        data.map(async (teacher) => {
-          const subjects = await getSubjectsPerTeacher(teacher.person_id);
-          return { ...teacher, subjects };
-        })
-      );
-      setTeachers(teachersWithSubjects);
-    }
+  const getUsersList = async () => {
+    let { state, data } = await getUsers().catch((err) => console.error(err));
+
+    console.log("algun data", data);
+    setTeachers(data);
+    // if (data) {
+    //   const teachersWithSubjects = await Promise.all(
+    //     data.map(async (teacher) => {
+    //       const subjects = await getSubjectsPerTeacher(teacher.person_id);
+    //       return { ...teacher, subjects };
+    //     })
+    //   );
+    //   setTeachers(teachersWithSubjects);
+    // }
 
     const sampleTeacher = {
-      person_email: "docente@example.com",
-      person_fullname: "Docente Ejemplo",
+      email: "docente@example.com",
+      fullname: "Docente Ejemplo",
+      user_name: "basura",
       person_id: 456789,
-      person_lastname: "Ejemplo",
-      person_name: "Docente",
+      lastname: "Ejemplo",
+      name: "Docente",
       subjects: [
         { subject_id: 101, subject_name: "Matemáticas" },
         { subject_id: 102, subject_name: "Ciencias" },

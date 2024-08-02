@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Spinner, Form, Button, Row, Col, Modal } from "react-bootstrap";
 import Container from "react-bootstrap/Container";
-import { Calendar } from "primereact/calendar";
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { es } from "date-fns/locale";
+registerLocale("es", es);
 import "./RegisterPeriod.css";
 
 function RegisterPeriod() {
-  const [dates, setDates] = useState(null);
   const [startReservation, setStartReservation] = useState(null);
   const [cancelRegisterModal, setCancelRegisterModal] = useState(false);
   const [registerModal, setRegisterModal] = useState(false);
@@ -16,6 +19,11 @@ function RegisterPeriod() {
   const [maxDate, setMaxDate] = useState(null);
   const [minDateReservation, setMinDateReservation] = useState(null);
   const [maxDateReservation, setMaxDateReservation] = useState(null);
+
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [statusDateStar, setStatusDateStar] = useState(true);
+  const [statusGestion, setStatusGestion] = useState(true);
 
   const [formData, setFormData] = useState({
     faculty_id: "",
@@ -49,15 +57,13 @@ function RegisterPeriod() {
       period_duration: ["2022-01-10", "2023-01-06"],
     },
   ];
-  const [gestion, setGestion] = useState(year);
 
   const periodsA = [
-    { period_id: 1, period: "SEMESTRE I-2020" },
-    { period_id: 2, period: "SEMESTRE II-2020" },
-    { period_id: 3, period: "VERANO 2020" },
-    { period_id: 4, period: "INVIERNO 2020" },
+    { period_id: 1, period: "SEMESTRE I" },
+    { period_id: 2, period: "SEMESTRE II" },
+    { period_id: 3, period: "VERANO" },
+    { period_id: 4, period: "INVIERNO" },
   ];
-  const [periods, setPeriodos] = useState(periodsA);
 
   const facultad = [
     { faculty_id: 1, faculty_name: "FACULTAD DE CIENCIAS Y TECNOLOGIA" },
@@ -65,6 +71,9 @@ function RegisterPeriod() {
     { faculty_id: 3, faculty_name: "FACULTAD DE CIENCIAS ECONOMIA" },
     { faculty_id: 4, faculty_name: "FACULTAD DE CIENCIAS Y ARQUITECTURA" },
   ];
+
+  const [gestion, setGestion] = useState(year);
+  const [periods, setPeriodos] = useState(periodsA);
   const [faculty, setFaculty] = useState(facultad);
 
   useEffect(() => {
@@ -75,17 +84,35 @@ function RegisterPeriod() {
       const [start, end] = selectedGestion.period_duration;
       setMinDate(new Date(start));
       setMaxDate(new Date(end));
+      setStartReservation(null);
+      setStatusGestion(false);
+      setStartDate(null);
+      setEndDate(null);
+      setFormData({ ...formData, period_duration: ""});
+      setErrors({ ...errors, period_duration: "" });
+      setFormData({ ...formData, start_reservation: "" });
+      setErrors({ ...errors, start_reservation: "" });
     } else {
       setMinDate(null);
       setMaxDate(null);
+      setStatusGestion(true);
+      setStartDate(null);
+      setEndDate(null);
+      setStartReservation(null);
+      setStatusDateStar(true);
+      setFormData({ ...formData, period_duration: "" });
+      setErrors({ ...errors, period_duration: "" });
+      setFormData({ ...formData, start_reservation: "" });
+      setErrors({ ...errors, start_reservation: "" });
+
+      setErrors({ ...errors, period_duration: "" });
     }
   }, [formData.gestion_name, gestion]);
 
   useEffect(() => {
     if (formData.period_duration) {
-      const [start, end] = formData.period_duration.split(" - ");
-      setMinDateReservation(new Date(start));
-      setMaxDateReservation(new Date(end));
+      setMinDateReservation(new Date(formData.period_duration[0]));
+      setMaxDateReservation(new Date(formData.period_duration[1]));
     } else {
       setMinDateReservation(null);
       setMaxDateReservation(null);
@@ -93,27 +120,29 @@ function RegisterPeriod() {
   }, [formData.period_duration]);
 
   const validatePeriodDuration = (value) => {
-    if (!value.trim()) return "Seleccione un periodo académico.";
+    if (!value || value[0] == "" || value[1] == "")
+      return "Seleccione un periodo académico.";
     return null;
   };
 
   const validateStartReservations = (value) => {
+    console.log("validaro inicio Rese ", value);
     if (!value) return "Seleccione una fecha de inicio de reservas.";
     return null;
   };
 
   const validateGestion = (value) => {
-    if (!value.trim()) return "Seleccione una gestión académica.";
+    if (!value) return "Seleccione una gestión académica.";
     return null;
   };
 
   const validatePeriod = (value) => {
-    if (!value.trim()) return "Seleccione un periodo académico.";
+    if (!value) return "Seleccione un periodo académico.";
     return null;
   };
 
   const validateFaculty = (value) => {
-    if (!value.trim()) return "Seleccione una facultad.";
+    if (!value) return "Seleccione una facultad.";
     return null;
   };
 
@@ -155,27 +184,27 @@ function RegisterPeriod() {
     setErrors({ ...errors, [name]: error });
   };
 
-  const handleChangeDate = (value) => {
-    setDates(value || []);
-    const formattedDates =
-      value && value.length === 2 && value[0] && value[1]
-        ? `${formatDate(value[0])} - ${formatDate(value[1])}`
-        : "";
-
-    setFormData({ ...formData, period_duration: formattedDates });
+  const handleDateChange = (dates) => {
+    setStatusDateStar(false);
+    setStartReservation(null);
+    const [start, end] = dates;
+    setStartDate(start);
+    setEndDate(end);
+    let date = [formatDate(start), formatDate(end)];
+    setFormData({ ...formData, period_duration: date });
     if (errors.period_duration) {
       setErrors({ ...errors, period_duration: "" });
     }
   };
 
-  const handleChangeStart = (value) => {
-    setStartReservation(value || null);
-    const formattedDate = value ? formatDate(value) : "";
-    setFormData({ ...formData, start_reservation: formattedDate });
+  const handleDateChangeS = (dates) => {
+    setStartReservation(dates);
+    setFormData({ ...formData, start_reservation: formatDate(dates) });
     if (errors.start_reservation) {
       setErrors({ ...errors, start_reservation: "" });
     }
   };
+
   const formatDate = (date) => {
     if (!date) return "";
     const year = date.getFullYear();
@@ -185,8 +214,9 @@ function RegisterPeriod() {
   };
 
   function clearDataForm() {
-    setDates([]);
     setStartReservation(null);
+    setStartDate(null);
+    setEndDate(null);
     setFormData({
       faculty_id: "",
       gestion_name: "",
@@ -249,8 +279,6 @@ function RegisterPeriod() {
     clearDataForm();
     setCancelRegisterModal(false);
   }
-
-  
 
   return (
     <div>
@@ -343,16 +371,24 @@ function RegisterPeriod() {
             </Col>
             <Col md={4}>
               <div className="calendar-container">
-                <Calendar
+                <DatePicker
+                  selectsStart
+                  selected={startDate}
+                  onChange={handleDateChange}
+                  startDate={startDate}
+                  endDate={endDate}
+                  selectsRange
+                  dateFormat="dd-MM-yyyy"
+                  locale="es"
+                  className="form-control"
                   placeholder="Seleccione un periodo de duración."
-                  value={dates}
-                  onChange={(e) => handleChangeDate(e.value)}
-                  className="calendar-input"
-                  selectionMode="range"
-                  readOnlyInput
-                  hideOnRangeSelection
+                  todayButton="Hoy"
+                  showMonthDropdown
+                  showYearDropdown
+                  scrollableYearDropdown
                   minDate={minDate}
                   maxDate={maxDate}
+                  disabled={statusGestion}
                 />
                 {errors.period_duration && (
                   <Form.Text className="text-danger">
@@ -369,15 +405,19 @@ function RegisterPeriod() {
             </Col>
             <Col md={4}>
               <div className="calendar-container">
-                <Calendar
+                <DatePicker
                   placeholder="Seleccione una fecha."
-                  value={startReservation}
-                  onChange={(e) => handleChangeStart(e.value)}
-                  className="calendar-input"
-                  readOnlyInput
-                  selectionMode="single"
+                  selectsStart
+                  onChange={handleDateChangeS}
+                  selected={startReservation}
+                  dateFormat="dd-MM-yyyy"
+                  locale={es}
+                  className="form-control"
+                  todayButton="Hoy"
+                  scrollableYearDropdown
                   minDate={minDateReservation}
                   maxDate={maxDateReservation}
+                  disabled={statusDateStar}
                 />
                 {errors.start_reservation && (
                   <Form.Text className="text-danger">

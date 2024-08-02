@@ -17,7 +17,6 @@ function EditPeriod() {
   const [listManagement, setlistManagement] = useState([]);
   const [allManagement, setallManagement] = useState([]);
   const [currentManagement, setcurrentManagement] = useState(null);
-  const [dates, setDates] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [msgNoResults, setMsgNoResults] = useState("");
@@ -34,7 +33,6 @@ function EditPeriod() {
 
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
@@ -436,6 +434,7 @@ function EditPeriod() {
                   value={currentManagement.gestion_name}
                   disabled
                 />
+                
               </Col>
             </Row>
 

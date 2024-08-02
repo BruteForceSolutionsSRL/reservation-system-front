@@ -424,7 +424,7 @@ export default function RequestReservation() {
   const getSuggest = async () => {
     let dataSugg = {
       block_id: blockSelected,
-      time_slot_id: [startTime, endTime],
+      time_slot_ids: [startTime, endTime],
       quantity: quantity,
       date: dateValue,
     };

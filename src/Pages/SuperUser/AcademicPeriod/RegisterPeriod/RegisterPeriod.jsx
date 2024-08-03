@@ -32,6 +32,7 @@ function RegisterPeriod() {
     period_duration: "",
     start_reservation: "",
   });
+
   const [errors, setErrors] = useState({
     faculty_id: "",
     gestion_name: "",
@@ -84,14 +85,20 @@ function RegisterPeriod() {
       const [start, end] = selectedGestion.period_duration;
       setMinDate(new Date(start));
       setMaxDate(new Date(end));
-      setStartReservation(null);
-      setStatusGestion(false);
-      setStartDate(null);
-      setEndDate(null);
-      setFormData({ ...formData, period_duration: ""});
-      setErrors({ ...errors, period_duration: "" });
-      setFormData({ ...formData, start_reservation: "" });
-      setErrors({ ...errors, start_reservation: "" });
+      setStartReservation(null); // Resetea inicio de reserva
+      setStatusGestion(false); // Desactiva la gestión de fechas
+      setStartDate(null); // Resetea la fecha de inicio
+      setEndDate(null); // Resetea la fecha de fin
+      setFormData({
+        ...formData,
+        period_duration: "",
+        start_reservation: "",
+      }); 
+      setErrors({
+        ...errors,
+        period_duration: "",
+        start_reservation: "",
+      });
     } else {
       setMinDate(null);
       setMaxDate(null);
@@ -100,14 +107,19 @@ function RegisterPeriod() {
       setEndDate(null);
       setStartReservation(null);
       setStatusDateStar(true);
-      setFormData({ ...formData, period_duration: "" });
-      setErrors({ ...errors, period_duration: "" });
-      setFormData({ ...formData, start_reservation: "" });
-      setErrors({ ...errors, start_reservation: "" });
-
-      setErrors({ ...errors, period_duration: "" });
+      setFormData({
+        ...formData,
+        period_duration: "",
+        start_reservation: "",
+      }); 
+      setErrors({
+        ...errors,
+        period_duration: "",
+        start_reservation: "",
+      });
     }
   }, [formData.gestion_name, gestion]);
+
 
   useEffect(() => {
     if (formData.period_duration) {
@@ -120,7 +132,7 @@ function RegisterPeriod() {
   }, [formData.period_duration]);
 
   const validatePeriodDuration = (value) => {
-    if (!value || value[0] == "" || value[1] == "")
+    if (!value || value[0] === "" || value[1] === "")
       return "Seleccione un periodo académico.";
     return null;
   };
@@ -175,6 +187,8 @@ function RegisterPeriod() {
     faculty_id: validateFaculty,
     gestion_name: validateGestion,
     period_name: validatePeriod,
+    period_duration: validatePeriodDuration,
+    start_reservation: validateStartReservations,
   };
 
   const handleChange = (event) => {
@@ -186,10 +200,19 @@ function RegisterPeriod() {
 
   const handleDateChange = (dates) => {
     setStatusDateStar(false);
-    setStartReservation(null);
     const [start, end] = dates;
     setStartDate(start);
     setEndDate(end);
+
+    if (!start || !end) {
+      setFormData({ ...formData, period_duration: "" });
+      setErrors({
+        ...errors,
+        period_duration: "Seleccione un periodo académico.",
+      });
+      return;
+    }
+
     let date = [formatDate(start), formatDate(end)];
     setFormData({ ...formData, period_duration: date });
     if (errors.period_duration) {
@@ -197,9 +220,19 @@ function RegisterPeriod() {
     }
   };
 
-  const handleDateChangeS = (dates) => {
-    setStartReservation(dates);
-    setFormData({ ...formData, start_reservation: formatDate(dates) });
+  const handleDateChangeS = (date) => {
+    if (!date) {
+      setStartReservation(null);
+      setFormData({ ...formData, start_reservation: "" });
+      setErrors({
+        ...errors,
+        start_reservation: "Seleccione una fecha de inicio de reservas.",
+      });
+      return;
+    }
+
+    setStartReservation(date);
+    setFormData({ ...formData, start_reservation: formatDate(date) });
     if (errors.start_reservation) {
       setErrors({ ...errors, start_reservation: "" });
     }
@@ -400,7 +433,7 @@ function RegisterPeriod() {
 
             <Col md={2}>
               <Form.Label className="fw-bold mb-0 ">
-                INICIO DE RSERVAS
+                INICIO DE RESERVAS
               </Form.Label>
             </Col>
             <Col md={4}>

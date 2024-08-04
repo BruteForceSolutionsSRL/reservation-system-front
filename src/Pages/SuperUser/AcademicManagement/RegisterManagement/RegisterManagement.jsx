@@ -9,14 +9,12 @@ import { es } from "date-fns/locale";
 registerLocale("es", es);
 import "./RegisterManagement.css";
 
-
 function RegisterManagement() {
   const [cancelRegisterModal, setCancelRegisterModal] = useState(false);
   const [registerModal, setRegisterModal] = useState(false);
   const [confirmationLoading, setConfirmationLoading] = useState(false);
   const [confimationModal, setConfimationModal] = useState(false);
   const [backendError, setBackendError] = useState({});
-
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const currentYear = new Date().getFullYear();
@@ -61,10 +59,9 @@ function RegisterManagement() {
     newErrors.period_duration = validatePeriodDuration(
       formData.period_duration
     );
-    setErrors(newErrors);
 
+    setErrors(newErrors);
     if (!newErrors.period_duration && !newErrors.name) {
-      // Enviar al backend
       handleSaveModal();
       // console.log("datos del form", formData);
     }
@@ -194,11 +191,9 @@ function RegisterManagement() {
 
   function saveBlockClose() {
     setConfimationModal(false);
-    // console.log("datos del form", formData);
     clearDataForm();
   }
-
-  /******************** */
+  
   function cancelRegister() {
     setCancelRegisterModal(true);
   }
@@ -266,6 +261,7 @@ function RegisterManagement() {
                   yearDropdownItemNumber={currentYear - 1998 + 1}
                   minDate={new Date(1998, 0, 1)}
                   maxDate={new Date(currentYear + 1, 4, 30)}
+                  isClearable
                 />
                 {errors.period_duration && (
                   <Form.Text className="text-danger">

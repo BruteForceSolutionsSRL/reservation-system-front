@@ -20,8 +20,7 @@ function RegisterPeriod() {
   const [backendError, setBackendError] = useState({});
   const [gestion, setGestion] = useState([]);
   const [faculty, setFaculty] = useState([]);
-  
-  const [minDate, setMinDate] = useState(null);
+
   const [maxDate, setMaxDate] = useState(null);
   const [minDateReservation, setMinDateReservation] = useState(null);
   const [maxDateReservation, setMaxDateReservation] = useState(null);
@@ -52,9 +51,10 @@ function RegisterPeriod() {
     getAllManagement();
     getAllFaculties();
     // setLoading(true);
-    // Promise.all([getAllManagement()]).finally(() => setLoading(false));
+    // Promise.all([getAllManagement()]).finally(() =>
+    //   setLoading(false)
+    // );
   }, []);
-
 
   const getAllManagement = async () => {
     let bl = await getManagements();
@@ -62,54 +62,35 @@ function RegisterPeriod() {
     setGestion(bl);
   };
 
-   const getAllFaculties = async () => {
-     let bl = await getFaculties();
-     setFaculty(bl);
-   };
+  const getAllFaculties = async () => {
+    let bl = await getFaculties();
+    setFaculty(bl);
+  };
 
-  useEffect(() => {
-    const selectedGestion = gestion.find(
-      (g) =>
-        g.academic_management_id === Number(formData.academic_management_id)
-    );
-    if (selectedGestion) {
-      // const [start, end] = selectedGestion.period_duration;
-      // setMinDate(new Date(selectedGestion.initial_date));
-      setMaxDate(new Date(selectedGestion.end_date));
-      setStartReservation(null); // Resetea inicio de reserva
-      setStatusGestion(false); // Desactiva la gestión de fechas
-      setStartDate(null); // Resetea la fecha de inicio
-      setEndDate(null); // Resetea la fecha de fin
-      setFormData({
-        ...formData,
-        period_duration: "",
-        start_reservation: "",
-      });
-      setErrors({
-        ...errors,
-        period_duration: "",
-        start_reservation: "",
-      });
-    } else {
-      // setMinDate(null);
-      setMaxDate(null);
-      setStatusGestion(true);
-      setStartDate(null);
-      setEndDate(null);
-      setStartReservation(null);
-      setStatusDateStar(true);
-      setFormData({
-        ...formData,
-        period_duration: "",
-        start_reservation: "",
-      });
-      setErrors({
-        ...errors,
-        period_duration: "",
-        start_reservation: "",
-      });
-    }
-  }, [formData.academic_management_id, gestion]);
+ useEffect(() => {
+   const selectedGestion = gestion.find(
+     (g) => g.academic_management_id === Number(formData.academic_management_id)
+   );
+
+   const isGestionSelected = Boolean(formData.academic_management_id)
+   setMaxDate(isGestionSelected ? new Date(selectedGestion?.end_date) : null);
+   setStartReservation(null);
+   setStartDate(null);
+   setEndDate(null); 
+   setStatusGestion(!isGestionSelected); 
+   setStatusDateStar(!isGestionSelected);
+   setFormData((prevData) => ({
+     ...prevData,
+     period_duration: "",
+     start_reservation: "",
+   }));
+   setErrors((prevErrors) => ({
+     ...prevErrors,
+     period_duration: "",
+     start_reservation: "",
+   }));
+ }, [formData.academic_management_id, gestion]);
+
 
   useEffect(() => {
     if (formData.period_duration) {
@@ -195,15 +176,20 @@ function RegisterPeriod() {
     const [start, end] = dates;
     setStartDate(start);
     setEndDate(end);
-
-    if (!start || !end) {
-      setFormData({ ...formData, period_duration: "" });
-      setErrors({
-        ...errors,
-        period_duration: "Seleccione un periodo académico.",
-      });
-      return;
-    }
+      if (!start || !end) {
+        setStartReservation(null); 
+        setFormData({
+          ...formData,
+          period_duration: "",
+          start_reservation: "",
+        });
+        setErrors({
+          ...errors,
+          period_duration: "Seleccione un periodo académico.",
+          start_reservation: validateStartReservations(null),
+        });
+        return;
+      }
     let date = [formatDate(start), formatDate(end)];
     setFormData({ ...formData, period_duration: date });
     if (errors.period_duration) {
@@ -217,15 +203,17 @@ function RegisterPeriod() {
       setFormData({ ...formData, start_reservation: "" });
       setErrors({
         ...errors,
-        start_reservation: "Seleccione una fecha de inicio de reservas.",
+        start_reservation: validateStartReservations(null),
       });
       return;
     }
-
     setStartReservation(date);
     setFormData({ ...formData, start_reservation: formatDate(date) });
     if (errors.start_reservation) {
-      setErrors({ ...errors, start_reservation: "" });
+      setErrors({
+        ...errors,
+        start_reservation: validateStartReservations(formatDate(date)),
+      });
     }
   };
 
@@ -495,6 +483,7 @@ function RegisterPeriod() {
                   minDate={minDateReservation}
                   maxDate={maxDateReservation}
                   disabled={statusDateStar}
+                  isClearable
                 />
                 {errors.start_reservation && (
                   <Form.Text className="text-danger">

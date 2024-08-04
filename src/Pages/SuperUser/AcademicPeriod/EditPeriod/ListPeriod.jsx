@@ -41,6 +41,10 @@ const ListPeriod = ({ list, handleShowModal }) => {
                 <b className="text-primary">PERIODO ACADÉMICO: </b>
                 <b>{management.name}</b>
               </div>
+              <div>
+                <b className="text-primary">INICIO DE RESERVAS: </b>
+                <b>{management.initial_date_reservations}</b>
+              </div>
             </div>
 
             <div className="col-sm-2 align-self-center d-flex justify-content-end">

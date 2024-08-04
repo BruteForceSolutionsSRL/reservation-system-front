@@ -26,23 +26,17 @@ function EditPeriod() {
   const [confirmations, setConfirmationsModal] = useState(false);
   const [backendError, setBackendError] = useState("");
   const [confirmationLoading, setConfirmationLoading] = useState(false);
-
-  // Estado de las fechas
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(null);
-  const currentYear = new Date().getFullYear();
-  const currentDate = new Date();
-
   const [selectedDate, setSelectedDate] = useState(null);
   const [maxDateReservation, setMaxDateReservation] = useState(null);
-
+  const currentYear = new Date().getFullYear();
+  const currentDate = new Date();
   const [errors, setErrors] = useState({
     period_duration: "",
     initial_date_reservations: "",
     name: "",
   });
-
-  console.log(currentManagement);
 
   useEffect(() => {
     setLoading(true);
@@ -67,7 +61,7 @@ function EditPeriod() {
   const getAllManagement = async () => {
     let bl = await getPeriod();
     setallManagement(bl);
-    setlistManagement(bl); // Aqui se obtiene del back
+    setlistManagement(bl);
   };
 
   const handleShowModal = (management) => {
@@ -90,20 +84,15 @@ function EditPeriod() {
     setConfirmationsModal(false);
   };
 
- const handleSaveModal = () => {
-   // Verificar todos los campos de errores, incluyendo periodo de duración e inicio de reserva
-   const formHasErrors = Object.keys(errors).some((key) => errors[key]);
-   const noChangesMade = Object.keys(changedFields).length === 0;
+  const handleSaveModal = () => {
+    const formHasErrors = Object.keys(errors).some((key) => errors[key]);
+    const noChangesMade = Object.keys(changedFields).length === 0;
 
-   if (!formHasErrors && !noChangesMade) {
-     setSaveModal(true);
-     setShowModal(false);
-   } else {
-     console.log("Formulario inválido, llene todos los campos", currentManagement);
-     // Mostrar mensajes de error al usuario si es necesario
-   }
- };
-
+    if (!formHasErrors && !noChangesMade) {
+      setSaveModal(true);
+      setShowModal(false);
+    }
+  };
 
   const handleSaveCancelModal = () => {
     setSaveModal(false);
@@ -130,9 +119,7 @@ function EditPeriod() {
   };
 
   const handleSaveChanges = async () => {
-    // Validar de nuevo antes de enviar los datos
     const formHasErrors = Object.keys(errors).some((key) => errors[key]);
-
     if (!formHasErrors) {
       let editManagement = {
         name: currentManagement.name,
@@ -144,12 +131,8 @@ function EditPeriod() {
       };
 
       await savePeriod(editManagement);
-    } else {
-      console.log(
-        "Formulario inválido, llene todos los campos",
-        currentManagement
-      );
     }
+    console.log("Formulario", currentManagement);
   };
 
   const savePeriod = async (editManage) => {
@@ -160,24 +143,23 @@ function EditPeriod() {
       ).catch((error) => {
         setBackendError("Error al enviar los datos: " + error.message);
       });
-
       if (response && response.status >= 200 && response.status < 300) {
         let content = {
           status: response.status,
           data: response.data.message,
         };
         setBackendError(content);
-        setConfirmationsModal(true); // Mostrar confirmación
+        setConfirmationsModal(true);
       } else {
         let errorMsg = response?.data?.message || "Error inesperado.";
         setBackendError({ status: response.status, data: errorMsg });
-        setConfirmationsModal(true); // Mostrar error
+        setConfirmationsModal(true);
       }
       getAllManagement();
     } catch (error) {
       console.error("Error while editing management:", error);
       setBackendError({ status: 500, data: "Error inesperado al guardar." });
-      setConfirmationsModal(true); // Mostrar error
+      setConfirmationsModal(true);
     }
   };
 
@@ -267,21 +249,18 @@ function EditPeriod() {
 
   const fieldLabels = {
     period_duration: "PERIODO DE DURACIÓN",
+    initial_date_reservations: "INICIO DE RESERVAS",
+    name: "PERIODO ACADÉMICO",
   };
 
   const handleEndDateChange = (dates) => {
     const [start, end] = dates;
-    const formattedStartDate = formatDate(start);
-    const formattedEndDate = formatDate(end);
-
-    const newPeriodDuration = [formattedStartDate, formattedEndDate];
+    const newPeriodDuration = [formatDate(start), formatDate(end)];
     setEndDate(end);
-
     setcurrentManagement((prev) => ({
       ...prev,
       period_duration: newPeriodDuration,
     }));
-
     setSelectedDate(null);
     setcurrentManagement((prev) => ({
       ...prev,
@@ -289,7 +268,7 @@ function EditPeriod() {
     }));
     setcurrentManagement((prev) => ({
       ...prev,
-      end_date: formattedEndDate,
+      end_date: formatDate(end),
     }));
     setMaxDateReservation(end);
 
@@ -301,28 +280,29 @@ function EditPeriod() {
       ...prev,
       initial_date_reservations: validateStartDate(null),
     }));
+    setChangedFields((prev) => ({
+      ...prev,
+      period_duration: newPeriodDuration,
+    }));
   };
 
-const handleDateChangeS = (date) => {
-  setSelectedDate(date);
+  const handleDateChangeS = (date) => {
+    setSelectedDate(date);
 
-  const errorMessage = validateStartDate(date);
-  setErrors((prevErrors) => ({
-    ...prevErrors,
-    initial_date_reservations: errorMessage,
-  }));
-
-  setcurrentManagement((prev) => ({
-    ...prev,
-    initial_date_reservations: formatDate(date),
-  }));
-
-  setChangedFields((prev) => ({
-    ...prev,
-    initial_date_reservations: formatDate(date),
-  }));
-};
-
+    const errorMessage = validateStartDate(date);
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      initial_date_reservations: errorMessage,
+    }));
+    setcurrentManagement((prev) => ({
+      ...prev,
+      initial_date_reservations: formatDate(date),
+    }));
+    setChangedFields((prev) => ({
+      ...prev,
+      initial_date_reservations: formatDate(date),
+    }));
+  };
 
   const handleEnvironmentNameChange = (event) => {
     const { name, value } = event.target;
@@ -331,7 +311,6 @@ const handleDateChangeS = (date) => {
       .split("")
       .filter((char) => /[A-Z0-9\s\-]/.test(char))
       .join("");
-
     const errorMessage = validateEnvironmentName(filteredValue);
     setErrors((prevErrors) => ({
       ...prevErrors,
@@ -343,8 +322,6 @@ const handleDateChangeS = (date) => {
     }));
     setChangedFields((prev) => ({ ...prev, [name]: filteredValue }));
   };
-
-
 
   useEffect(() => {
     if (showModal) {
@@ -557,9 +534,6 @@ const handleDateChangeS = (date) => {
             <ul>
               {Object.keys(changedFields).map((fieldName) => {
                 let displayValue = changedFields[fieldName];
-                if (fieldName === "academic_period_id") {
-                  displayValue = getStatusNameById(displayValue);
-                }
                 return (
                   <li key={fieldName}>
                     <span style={{ color: "red" }}>
@@ -592,7 +566,7 @@ const handleDateChangeS = (date) => {
       <ReusableModal
         show={confirmations}
         handleClose={handleCloseConfirmationsModal}
-        title={backendError.status === 200 ? "¡Confirmación!" : "¡Error!"}
+        title={backendError.status === 200 ? "¡Exito!" : "¡Error!"}
         footerButtons={saveButtonsConfirmationsModal}
         backdrop="static"
       >

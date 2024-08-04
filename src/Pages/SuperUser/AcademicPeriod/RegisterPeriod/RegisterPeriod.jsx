@@ -10,6 +10,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { es } from "date-fns/locale";
 registerLocale("es", es);
 import "./RegisterPeriod.css";
+//gola
 
 function RegisterPeriod() {
   const [startReservation, setStartReservation] = useState(null);

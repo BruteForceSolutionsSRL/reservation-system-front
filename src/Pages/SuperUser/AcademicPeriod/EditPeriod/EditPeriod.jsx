@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { Spinner, Form, Button, Row, Col, Modal } from "react-bootstrap";
 import SearchBar from "../../../../Components/SearchBar/SearchBar";
-import { searchManagement } from "../../../../utils/searchManagement";
+import { searchPeriod } from "../../../../utils/searchManagement";
 import ReusableModal from "../../EditEnvironment/ReusableModal";
-
+import { getPeriod } from "../../../../services/managemet/";
+import { setPeriod } from "../../../../services/managemet/";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { es } from "date-fns/locale";
 registerLocale("es", es);
-
 import ListPeriod from "./ListPeriod";
 
 function EditPeriod() {
@@ -26,13 +26,23 @@ function EditPeriod() {
   const [confirmations, setConfirmationsModal] = useState(false);
   const [backendError, setBackendError] = useState("");
   const [confirmationLoading, setConfirmationLoading] = useState(false);
-  const [minDateReservation, setMinDateReservation] = useState(null);
-  const [maxDateReservation, setMaxDateReservation] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(null);
 
-  const [startDate, setStartDate] = useState(null);
+  // Estado de las fechas
+  const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(null);
   const currentYear = new Date().getFullYear();
+  const currentDate = new Date();
+
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [maxDateReservation, setMaxDateReservation] = useState(null);
+
+  const [errors, setErrors] = useState({
+    period_duration: "",
+    initial_date_reservations: "",
+    name: "",
+  });
+
+  console.log(currentManagement);
 
   useEffect(() => {
     setLoading(true);
@@ -44,7 +54,7 @@ function EditPeriod() {
       setlistManagement(allManagement);
       setMsgNoResults("");
     } else {
-      const results = searchManagement(allManagement, searchValue);
+      const results = searchPeriod(allManagement, searchValue);
       if (results.length < 1) {
         setMsgNoResults("No se encontraron resultados");
       } else {
@@ -55,15 +65,17 @@ function EditPeriod() {
   }, [searchValue, allManagement]);
 
   const getAllManagement = async () => {
-    // let bl = await getManagements();
-    setallManagement(listA);
-    setlistManagement(listA); //Aqui se obtiene del back
+    let bl = await getPeriod();
+    setallManagement(bl);
+    setlistManagement(bl); // Aqui se obtiene del back
   };
 
   const handleShowModal = (management) => {
     setcurrentManagement({ ...management, errors: {} });
     setShowModal(true);
     setChangedFields({});
+    setStartDate(new Date(management.initial_date));
+    setEndDate(new Date(management.end_date));
   };
 
   const handleSaveConfirmationsModal = async () => {
@@ -78,15 +90,20 @@ function EditPeriod() {
     setConfirmationsModal(false);
   };
 
-  const handleSaveModal = () => {
-    const formHasErrors = Object.keys(currentManagement.errors).some(
-      (key) => currentManagement.errors[key]
-    );
-    if (!formHasErrors) {
-      setSaveModal(true);
-      setShowModal(false);
-    }
-  };
+ const handleSaveModal = () => {
+   // Verificar todos los campos de errores, incluyendo periodo de duración e inicio de reserva
+   const formHasErrors = Object.keys(errors).some((key) => errors[key]);
+   const noChangesMade = Object.keys(changedFields).length === 0;
+
+   if (!formHasErrors && !noChangesMade) {
+     setSaveModal(true);
+     setShowModal(false);
+   } else {
+     console.log("Formulario inválido, llene todos los campos", currentManagement);
+     // Mostrar mensajes de error al usuario si es necesario
+   }
+ };
+
 
   const handleSaveCancelModal = () => {
     setSaveModal(false);
@@ -94,6 +111,9 @@ function EditPeriod() {
   };
 
   const handleCancelModal = () => {
+    setErrors({
+      period_duration: "",
+    });
     setCancelModal(true);
     setShowModal(false);
   };
@@ -110,64 +130,54 @@ function EditPeriod() {
   };
 
   const handleSaveChanges = async () => {
-    const formHasErrors = Object.keys(currentManagement.errors).some(
-      (key) => currentManagement.errors[key]
-    );
+    // Validar de nuevo antes de enviar los datos
+    const formHasErrors = Object.keys(errors).some((key) => errors[key]);
+
     if (!formHasErrors) {
-      let editManage = {
-        period_name: currentManagement.period_name,
-        period_name_id: currentManagement.period_name_id,
-        period_duration: currentManagement.period_duration,
-        start_reservation: currentManagement.start_reservation,
+      let editManagement = {
+        name: currentManagement.name,
+        date_start: formatDate(startDate),
+        date_end: formatDate(endDate),
+        initial_date_reservations: currentManagement.initial_date_reservations,
+        faculty_id: currentManagement.faculty_id,
+        academic_management_id: currentManagement.academic_management_id,
       };
 
-      console.log("editado una gestion", editManage);
-      await editManagement(editManagement);
+      await savePeriod(editManagement);
     } else {
-      // console.log("Formulario inválido, llene todos los campos");
+      console.log(
+        "Formulario inválido, llene todos los campos",
+        currentManagement
+      );
     }
   };
 
-  const editManagement = async (editManage) => {
+  const savePeriod = async (editManage) => {
     try {
-      //aqui enviar al back
-      let response = await setManagement(
-        currentManagement.management_id,
+      let response = await setPeriod(
+        currentManagement.academic_period_id,
         editManage
       ).catch((error) => {
         setBackendError("Error al enviar los datos: " + error.message);
       });
-      if (response.status >= 200 && response.status < 300) {
-        let content = {};
-        content.status = response.status;
-        content.data = response.data.message;
+
+      if (response && response.status >= 200 && response.status < 300) {
+        let content = {
+          status: response.status,
+          data: response.data.message,
+        };
         setBackendError(content);
-      } else if (response.status >= 300 && response.status < 400) {
-        let content = {};
-        content.status = response.status;
-        content.data = response.data.message;
-        setBackendError(content);
-      } else if (response.status >= 400 && response.status < 500) {
-        let content = {};
-        content.status = response.status;
-        content.data = response.data.message;
-        setBackendError(content);
-      } else if (response.status >= 500) {
-        if (response.data.message) {
-          let content = {};
-          content.status = response.status;
-          content.data = response.data.message;
-          setBackendError(content);
-        } else {
-          let content = {};
-          content.status = response.status;
-          content.data = "Ocurrio un error inesperado, intente nuevamente."; 
-          setBackendError(content);
-        }
+        setConfirmationsModal(true); // Mostrar confirmación
+      } else {
+        let errorMsg = response?.data?.message || "Error inesperado.";
+        setBackendError({ status: response.status, data: errorMsg });
+        setConfirmationsModal(true); // Mostrar error
       }
       getAllManagement();
     } catch (error) {
-      console.error("Error while editing block:", error);
+      console.error("Error while editing management:", error);
+      setBackendError({ status: 500, data: "Error inesperado al guardar." });
+      setConfirmationsModal(true); // Mostrar error
     }
   };
 
@@ -180,59 +190,25 @@ function EditPeriod() {
     return `${year}-${month}-${day}`;
   };
 
-  const validatePeriodDuration = (value) => {
+  const validateEnvironmentName = (value) => {
     if (!value.trim()) {
-      return "Seleccione un periodo de duración.";
+      return "El nombre del periodo académico es obligatorio.";
     }
-    return null;
+    return "";
   };
 
-  // const handleChangeDate = (value) => {
-  //   setDates(value || []);
-  //   const formattedDates =
-  //     value && value.length === 2 && value[0] && value[1]
-  //       ? `${formatDate(value[0])} - ${formatDate(value[1])}`
-  //       : "";
+  const validatePeriodDuration = (value) => {
+    if (!value || value.length !== 2 || !value[0] || !value[1]) {
+      return "Seleccione un periodo de duración válido.";
+    }
+    return "";
+  };
 
-  //   setFormData({
-  //     ...formData,
-  //     period_duration: formattedDates,
-  //   });
-
-  //   if (errors.period_duration) {
-  //     setErrors({
-  //       ...errors,
-  //       period_duration: "",
-  //     });
-  //   }
-  // };
-
-  // const handleInputChange = (event) => {
-  //   const { name, value } = event.target;
-  //   setcurrentManagement({
-  //     ...currentManagement,
-  //     [name]: value,
-  //     errors: {
-  //       ...currentManagement.errors,
-  //       [name]: validators[name] ? validators[name](value) : null,
-  //     },
-  //   });
-  //   setChangedFields({
-  //     ...changedFields,
-  //     [name]: value,
-  //   });
-  // };
-
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setcurrentManagement({
-      ...currentManagement,
-      [name]: value,
-    });
-    setChangedFields({
-      ...changedFields,
-      [name]: value,
-    });
+  const validateStartDate = (value) => {
+    if (!value) {
+      return "Seleccione una fecha de inicio de reserva.";
+    }
+    return "";
   };
 
   const footerButtonsModal = [
@@ -290,80 +266,94 @@ function EditPeriod() {
   ];
 
   const fieldLabels = {
-    period_name_id: "PERIODO ACADÉMICO",
+    period_duration: "PERIODO DE DURACIÓN",
   };
 
-  const listA = [
-    {
-      period_id: 1,
-      status_name: "ACTIVO",
-      status_period: 1,
-      gestion_name: "GESTION 2024",
-      period_name: "SEMESTRE II-2024",
-      period_name_id: 2,
-      period_duration: ["2024-08-5", "2024-08-16"],
-      start_reservation: "2024-08-13",
-    },
-    {
-      period_id: 2,
-      status_name: "ACTIVO",
-      status_period: 1,
-      gestion_name: "GESTION 2024",
-      period_name: "INVIERNO 2024",
-      period_name_id: 3,
-      period_duration: ["2024-08-05", "2024-08-08"],
-      start_reservation: "2024-07-13",
-    },
-    {
-      period_id: 3,
-      status_name: "CERRADO",
-      status_period: 2,
-      gestion_name: "GESTION 2024",
-      period_name: "SEMESTRE I-2024",
-      period_name_id: 1,
-      period_duration: ["2024-01-10", "2024-06-30"],
-      start_reservation: "2024-01-13",
-    },
-  ];
+  const handleEndDateChange = (dates) => {
+    const [start, end] = dates;
+    const formattedStartDate = formatDate(start);
+    const formattedEndDate = formatDate(end);
 
-  const periodsA = [
-    { period_id: 1, period: "SEMESTRE I-2020" },
-    { period_id: 2, period: "SEMESTRE II-2020" },
-    { period_id: 3, period: "VERANO 2020" },
-    { period_id: 4, period: "INVIERNO 2020" },
-  ];
-  const [periods, setPeriodos] = useState(periodsA);
+    const newPeriodDuration = [formattedStartDate, formattedEndDate];
+    setEndDate(end);
 
-  const getStatusNameById = (statusId) => {
-    const statusOption = periodsA.find(
-      (option) => option.period_id === parseInt(statusId)
-    );
-    return statusOption ? statusOption.period : "";
+    setcurrentManagement((prev) => ({
+      ...prev,
+      period_duration: newPeriodDuration,
+    }));
+
+    setSelectedDate(null);
+    setcurrentManagement((prev) => ({
+      ...prev,
+      initial_date_reservations: null,
+    }));
+    setcurrentManagement((prev) => ({
+      ...prev,
+      end_date: formattedEndDate,
+    }));
+    setMaxDateReservation(end);
+
+    setErrors((prev) => ({
+      ...prev,
+      period_duration: validatePeriodDuration(newPeriodDuration),
+    }));
+    setErrors((prev) => ({
+      ...prev,
+      initial_date_reservations: validateStartDate(null),
+    }));
   };
+
+const handleDateChangeS = (date) => {
+  setSelectedDate(date);
+
+  const errorMessage = validateStartDate(date);
+  setErrors((prevErrors) => ({
+    ...prevErrors,
+    initial_date_reservations: errorMessage,
+  }));
+
+  setcurrentManagement((prev) => ({
+    ...prev,
+    initial_date_reservations: formatDate(date),
+  }));
+
+  setChangedFields((prev) => ({
+    ...prev,
+    initial_date_reservations: formatDate(date),
+  }));
+};
+
+
+  const handleEnvironmentNameChange = (event) => {
+    const { name, value } = event.target;
+    const filteredValue = value
+      .toUpperCase()
+      .split("")
+      .filter((char) => /[A-Z0-9\s\-]/.test(char))
+      .join("");
+
+    const errorMessage = validateEnvironmentName(filteredValue);
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: errorMessage,
+    }));
+    setcurrentManagement((prev) => ({
+      ...prev,
+      [name]: filteredValue,
+    }));
+    setChangedFields((prev) => ({ ...prev, [name]: filteredValue }));
+  };
+
+
 
   useEffect(() => {
-    if (currentManagement) {
-      setStartDate(new Date(currentManagement.period_duration[0])); 
-      setEndDate(new Date(currentManagement.period_duration[1]));
-
-      setMinDateReservation(new Date(currentManagement.period_duration[0]));
-      setMaxDateReservation(new Date(currentManagement.period_duration[1]));
-      setSelectedDate(new Date(currentManagement.start_reservation));
+    if (showModal) {
+      setSelectedDate(new Date(currentManagement.initial_date_reservations));
+      setMaxDateReservation(new Date(currentManagement.end_date));
     } else {
-      setMinDateReservation(null);
       setMaxDateReservation(null);
     }
-  }, [currentManagement]);
-
-  const handleDateChange = (dates) => {
-    const [start, end] = dates;
-    setStartDate(start);
-    setEndDate(end);
-  };
-
-  const handleDateChangeS = (dates) => {
-    setSelectedDate(dates);
-  };
+  }, [showModal]);
 
   return (
     <div className="container mt-2">
@@ -420,9 +410,25 @@ function EditPeriod() {
       >
         {currentManagement && (
           <Form>
-            <Row className="mb-3 align-items-center">
-              <Col md={2} className="d-flex align-items-center">
-                <Form.Label className="fw-bold col-form-label mb-0">
+            <Row className="">
+              <Col md={2} className="">
+                <Form.Label className="fw-bold col-form-label ">
+                  FACULTAD
+                </Form.Label>
+              </Col>
+              <Col md={10}>
+                <Form.Control
+                  type="text"
+                  name="faculty_name"
+                  value={currentManagement.faculty_name}
+                  disabled
+                />
+              </Col>
+            </Row>
+
+            <Row className="mt-3 ">
+              <Col md={2} className="">
+                <Form.Label className="fw-bold col-form-label ">
                   NOMBRE DE GESTIÓN
                 </Form.Label>
               </Col>
@@ -430,64 +436,71 @@ function EditPeriod() {
                 <Form.Control
                   type="text"
                   name="gestion_name"
-                  value={currentManagement.gestion_name}
+                  value={currentManagement.academic_management_name}
                   disabled
                 />
-                
               </Col>
             </Row>
 
-            <Row className="mb-3 align-items-center">
-              <Col md={2} className="d-flex align-items-center">
-                <Form.Label className="fw-bold col-form-label mb-0">
-                  GESTIÓN ACADÉMICA
+            <Row className="mt-1 ">
+              <Col md={2} className="align-items-center">
+                <Form.Label className="fw-bold align-items-center">
+                  PERIODO ACADÉMICO
                 </Form.Label>
               </Col>
               <Col md={4}>
-                <Form.Select
-                  name="period_name_id"
-                  value={currentManagement.period_name_id}
-                  onChange={handleInputChange}
-                >
-                  {periods.map((option) => (
-                    <option key={option.period_id} value={option.period_id}>
-                      {option.period}
-                    </option>
-                  ))}
-                </Form.Select>
+                <Form.Control
+                  type="input"
+                  aria-label="Select environment type"
+                  placeholder="Ingrese un nombre de periodo academíco."
+                  name="name"
+                  value={currentManagement.name}
+                  onChange={handleEnvironmentNameChange}
+                  isInvalid={!!errors.name}
+                  autoComplete="off"
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.name}
+                </Form.Control.Feedback>
               </Col>
 
-              <Col md={2} className="d-flex align-items-center">
-                <Form.Label className="fw-bold col-form-label">
+              <Col md={2} className="align-items-center">
+                <Form.Label className="fw-bold align-items-center ">
                   PERIODO DE DURACION
                 </Form.Label>
               </Col>
               <Col md={4}>
                 <DatePicker
-                  selectsStart
-                  selected={startDate}
-                  onChange={handleDateChange}
+                  selectsRange
                   startDate={startDate}
                   endDate={endDate}
-                  selectsRange
+                  onChange={handleEndDateChange}
+                  minDate={currentDate}
+                  yearDropdownItemNumber={currentYear - 1998 + 1}
+                  maxDate={new Date(currentYear + 1, 4, 30)}
+                  selected={endDate}
                   dateFormat="dd-MM-yyyy"
                   locale="es"
                   className="form-control"
-                  placeholderText="Fecha de Inicio"
+                  placeholderText="Seleccione una fecha de fin"
                   todayButton="Hoy"
                   showMonthDropdown
                   showYearDropdown
                   scrollableYearDropdown
-                  yearDropdownItemNumber={currentYear - 1998 + 1}
-                  minDate={new Date(1998, 0, 1)}
-                  maxDate={new Date(currentYear + 1, 4, 30)}
+                  highlightDates={[startDate]}
+                  isClearable
                 />
+                {errors.period_duration && (
+                  <Form.Text className="text-danger">
+                    {errors.period_duration}
+                  </Form.Text>
+                )}
               </Col>
             </Row>
 
             <Row className="mb-3 align-items-center">
-              <Col md={2} className="d-flex align-items-center">
-                <Form.Label className="fw-bold col-form-label mb-0">
+              <Col md={2} className="">
+                <Form.Label className="fw-bold mb-0">
                   INICIO DE RESERVA
                 </Form.Label>
               </Col>
@@ -503,15 +516,15 @@ function EditPeriod() {
                   showMonthDropdown
                   showYearDropdown
                   scrollableYearDropdown
-                  minDate={minDateReservation}
+                  minDate={currentDate}
                   maxDate={maxDateReservation}
+                  isClearable
                 />
-
-                {/* {errors.period_duration && (
+                {errors.initial_date_reservations && (
                   <Form.Text className="text-danger">
-                    {errors.period_duration}
+                    {errors.initial_date_reservations}
                   </Form.Text>
-                )} */}
+                )}
               </Col>
             </Row>
           </Form>
@@ -539,12 +552,12 @@ function EditPeriod() {
         </Modal.Header>
         <Modal.Body>
           <div>
-            ¿Está seguro de actulizar el periodo acad? Se modificarán los
+            ¿Está seguro de actulizar el periodo academico? Se modificarán los
             siguientes campos:
             <ul>
               {Object.keys(changedFields).map((fieldName) => {
                 let displayValue = changedFields[fieldName];
-                if (fieldName === "period_name_id") {
+                if (fieldName === "academic_period_id") {
                   displayValue = getStatusNameById(displayValue);
                 }
                 return (

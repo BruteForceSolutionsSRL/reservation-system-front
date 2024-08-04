@@ -15,25 +15,23 @@ const ListManagement = ({ list, handleShowModal }) => {
                 <b className="col text-primary">ESTADO: </b>
                 <b
                   className={`text-light rounded p-1 ${
-                    parseInt(management.status_management) === 1
+                    parseInt(management.activated) === 1
                       ? "bg-success"
                       : "bg-danger"
                   }`}
                 >
-                  {management.status_name}
+                  {parseInt(management.activated) === 1 ? "Activo" : "Cerrado"}
                 </b>
               </div>
               <div>
                 <b className="text-primary">PERIODO DE DURACIÓN: </b>
-                <b>
-                  {`${management.period_duration[0]} - ${management.period_duration[1]}`}
-                </b>
+                <b>{`${management.initial_date} - ${management.end_date}`}</b>
               </div>
             </div>
             <div className="col-sm-4">
               <div>
                 <b className="text-primary">GESTIÓN: </b>
-                <b>{management.gestion_name}</b>
+                <b>{management.name}</b>
               </div>
             </div>
             <div className="col-sm-2 align-self-center d-flex justify-content-end">

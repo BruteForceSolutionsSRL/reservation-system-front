@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Spinner, Form, Button, Row, Col, Modal } from "react-bootstrap";
+import { storeManagement } from "../../../../services/managemet/";
 import Container from "react-bootstrap/Container";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -7,7 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { es } from "date-fns/locale";
 registerLocale("es", es);
 import "./RegisterManagement.css";
-import { storeManagement } from "../../../../services/managemet/";
+
 
 function RegisterManagement() {
   const [cancelRegisterModal, setCancelRegisterModal] = useState(false);
@@ -68,6 +69,7 @@ function RegisterManagement() {
       // console.log("datos del form", formData);
     }
   };
+  
   const handleEnvironmentNameChange = (event) => {
     const { value } = event.target;
     const transformedValue = value
@@ -360,7 +362,7 @@ function RegisterManagement() {
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            {backendError.status === 200 ? "Éxito" : "Error"}
+            {backendError.status === 200 ? "¡Éxito!" : "¡Error!"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

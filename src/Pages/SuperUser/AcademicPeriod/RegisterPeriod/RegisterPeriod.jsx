@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Spinner, Form, Button, Row, Col, Modal } from "react-bootstrap";
 import Container from "react-bootstrap/Container";
+import { storePeriod } from "../../../../services/managemet/";
+import { getManagements } from "../../../../services/managemet/";
+import { getFaculties } from "../../../../services/managemet/";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -15,6 +18,9 @@ function RegisterPeriod() {
   const [confirmationLoading, setConfirmationLoading] = useState(false);
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [backendError, setBackendError] = useState({});
+  const [gestion, setGestion] = useState([]);
+  const [faculty, setFaculty] = useState([]);
+  
   const [minDate, setMinDate] = useState(null);
   const [maxDate, setMaxDate] = useState(null);
   const [minDateReservation, setMinDateReservation] = useState(null);
@@ -24,67 +30,52 @@ function RegisterPeriod() {
   const [endDate, setEndDate] = useState(null);
   const [statusDateStar, setStatusDateStar] = useState(true);
   const [statusGestion, setStatusGestion] = useState(true);
+  const currentDate = new Date();
 
   const [formData, setFormData] = useState({
     faculty_id: "",
-    gestion_name: "",
-    period_name: "",
+    academic_management_id: "",
+    name: "",
     period_duration: "",
     start_reservation: "",
   });
 
   const [errors, setErrors] = useState({
     faculty_id: "",
-    gestion_name: "",
-    period_name: "",
+    academic_management_id: "",
+    name: "",
     period_duration: "",
     start_reservation: "",
   });
 
-  const year = [
-    {
-      gestion_id: 1,
-      gestion: "GESTION 2024",
-      period_duration: ["2024-07-10", "2024-07-26"],
-    },
-    {
-      gestion_id: 2,
-      gestion: "GESTION 2023",
-      period_duration: ["2024-07-20", "2024-07-30"],
-    },
-    {
-      gestion_id: 3,
-      gestion: "GESTION 2022",
-      period_duration: ["2022-01-10", "2023-01-06"],
-    },
-  ];
+  useEffect(() => {
+    getAllManagement();
+    getAllFaculties();
+    // setLoading(true);
+    // Promise.all([getAllManagement()]).finally(() => setLoading(false));
+  }, []);
 
-  const periodsA = [
-    { period_id: 1, period: "SEMESTRE I" },
-    { period_id: 2, period: "SEMESTRE II" },
-    { period_id: 3, period: "VERANO" },
-    { period_id: 4, period: "INVIERNO" },
-  ];
 
-  const facultad = [
-    { faculty_id: 1, faculty_name: "FACULTAD DE CIENCIAS Y TECNOLOGIA" },
-    { faculty_id: 2, faculty_name: "FACULTAD DE CIENCIAS JURIDICAS" },
-    { faculty_id: 3, faculty_name: "FACULTAD DE CIENCIAS ECONOMIA" },
-    { faculty_id: 4, faculty_name: "FACULTAD DE CIENCIAS Y ARQUITECTURA" },
-  ];
+  const getAllManagement = async () => {
+    let bl = await getManagements();
+    console.log(bl);
+    setGestion(bl);
+  };
 
-  const [gestion, setGestion] = useState(year);
-  const [periods, setPeriodos] = useState(periodsA);
-  const [faculty, setFaculty] = useState(facultad);
+   const getAllFaculties = async () => {
+     let bl = await getFaculties();
+     setFaculty(bl);
+   };
 
   useEffect(() => {
     const selectedGestion = gestion.find(
-      (g) => g.gestion_id === Number(formData.gestion_name)
+      (g) =>
+        g.academic_management_id === Number(formData.academic_management_id)
     );
     if (selectedGestion) {
-      const [start, end] = selectedGestion.period_duration;
-      setMinDate(new Date(start));
-      setMaxDate(new Date(end));
+      // const [start, end] = selectedGestion.period_duration;
+      // setMinDate(new Date(selectedGestion.initial_date));
+      setMaxDate(new Date(selectedGestion.end_date));
       setStartReservation(null); // Resetea inicio de reserva
       setStatusGestion(false); // Desactiva la gestión de fechas
       setStartDate(null); // Resetea la fecha de inicio
@@ -100,7 +91,7 @@ function RegisterPeriod() {
         start_reservation: "",
       });
     } else {
-      setMinDate(null);
+      // setMinDate(null);
       setMaxDate(null);
       setStatusGestion(true);
       setStartDate(null);
@@ -118,7 +109,7 @@ function RegisterPeriod() {
         start_reservation: "",
       });
     }
-  }, [formData.gestion_name, gestion]);
+  }, [formData.academic_management_id, gestion]);
 
   useEffect(() => {
     if (formData.period_duration) {
@@ -148,7 +139,7 @@ function RegisterPeriod() {
   };
 
   const validatePeriod = (value) => {
-    if (!value) return "Seleccione un periodo académico.";
+    if (!value) return "Ingrese un nombre de periodo academíco.";
     return null;
   };
 
@@ -161,8 +152,10 @@ function RegisterPeriod() {
     e.preventDefault();
     let newErrors = {};
     newErrors.faculty_id = validateFaculty(formData.faculty_id);
-    newErrors.gestion_name = validateGestion(formData.gestion_name);
-    newErrors.period_name = validatePeriod(formData.period_name);
+    newErrors.academic_management_id = validateGestion(
+      formData.academic_management_id
+    );
+    newErrors.name = validatePeriod(formData.name);
     newErrors.period_duration = validatePeriodDuration(
       formData.period_duration
     );
@@ -175,8 +168,8 @@ function RegisterPeriod() {
       !newErrors.faculty_id &&
       !newErrors.period_duration &&
       !newErrors.start_reservation &&
-      !newErrors.gestion_name &&
-      !newErrors.period_name
+      !newErrors.academic_management_id &&
+      !newErrors.name
     ) {
       handleSaveModal();
     }
@@ -184,8 +177,8 @@ function RegisterPeriod() {
 
   const validators = {
     faculty_id: validateFaculty,
-    gestion_name: validateGestion,
-    period_name: validatePeriod,
+    academic_management_id: validateGestion,
+    name: validatePeriod,
     period_duration: validatePeriodDuration,
     start_reservation: validateStartReservations,
   };
@@ -250,15 +243,15 @@ function RegisterPeriod() {
     setEndDate(null);
     setFormData({
       faculty_id: "",
-      gestion_name: "",
-      period_name: "",
+      academic_management_id: "",
+      name: "",
       period_duration: "",
       start_reservation: "",
     });
     setErrors({
       faculty_id: "",
-      gestion_name: "",
-      period_name: "",
+      academic_management_id: "",
+      name: "",
       period_duration: "",
       start_reservation: "",
     });
@@ -269,32 +262,65 @@ function RegisterPeriod() {
   const handleSaveCancelModal = () => setRegisterModal(false);
 
   const saveGestion = async () => {
+    console.log("datos del form", formData);
     setConfirmationLoading(true);
-    try {
-      const response = { status: 200 };
-      if (response.status === 200) {
-        setBackendError({
-          status: 200,
-          data: "Periodo académico registrado exitosamente.",
-        });
-      } else {
-        throw new Error("Error al registrar la gestión.");
-      }
-    } catch (error) {
-      setBackendError({
-        status: error.response ? error.response.status : 500,
-        data: error.response ? error.response.data : "Error del servidor.",
-      });
-    } finally {
+    let newPeriod = {
+      name: formData.name,
+      date_start: formData.period_duration[0],
+      date_end: formData.period_duration[1],
+      initial_date_reservations: formData.start_reservation,
+      faculty_id: formData.faculty_id,
+      academic_management_id: formData.academic_management_id,
+    };
+
+    console.log("se envia al back", newPeriod);
+    const response = await storePeriod(newPeriod).finally(() => {
       setConfirmationLoading(false);
-      setRegisterModal(false);
-      setConfirmationModal(true);
+    });
+    console.log("respuesta", response);
+    if (response) {
+      if (response.status >= 200 && response.status < 300) {
+        setBackendError({
+          status: response.status,
+          data: response.data.message,
+        });
+        clearDataForm();
+      } else if (response.status >= 300 && response.status < 400) {
+        setBackendError({
+          status: response.status,
+          data: response.data.message,
+        });
+      } else if (response.status >= 400 && response.status < 500) {
+        setBackendError({
+          status: response.status,
+          data: response.data.message,
+        });
+      } else if (response.status >= 500) {
+        if (response.data.message) {
+          setBackendError({
+            status: response.status,
+            data: response.data.message,
+          });
+        } else {
+          setBackendError({
+            ...backendError,
+            data: "Ocurrio un error inesperado, intente nuevamente.",
+          });
+        }
+      }
+    } else {
+      setBackendError({
+        ...backendError,
+        data: "Ocurrio un error inesperado, intente nuevamente.",
+      });
     }
+    setConfirmationLoading(false);
+    setRegisterModal(false);
+    setConfirmationModal(true);
   };
 
   function saveBlockClose() {
     setConfirmationModal(false);
-    console.log("datos del form", formData);
     clearDataForm();
   }
 
@@ -310,6 +336,25 @@ function RegisterPeriod() {
     clearDataForm();
     setCancelRegisterModal(false);
   }
+
+  const handleEnvironmentNameChange = (event) => {
+    const { value } = event.target;
+    const transformedValue = value
+      .toUpperCase()
+      .split("")
+      .filter((char) => /[A-Z0-9\s\-]/.test(char))
+      .join("");
+    setFormData({
+      ...formData,
+      name: transformedValue,
+    });
+
+    const error = validators.name(transformedValue);
+    setErrors({
+      ...errors,
+      name: error,
+    });
+  };
 
   return (
     <div>
@@ -333,7 +378,7 @@ function RegisterPeriod() {
                 <option value="">Seleccione una falcultad</option>
                 {faculty.map((option) => (
                   <option key={option.faculty_id} value={option.faculty_id}>
-                    {option.faculty_name}
+                    {option.name}
                   </option>
                 ))}
               </Form.Select>
@@ -352,44 +397,44 @@ function RegisterPeriod() {
             <Col md={4}>
               <Form.Select
                 type="input"
-                name="gestion_name"
-                value={formData.gestion_name}
+                name="academic_management_id"
+                value={formData.academic_management_id}
                 onChange={handleChange}
-                isInvalid={!!errors.gestion_name}
+                isInvalid={!!errors.academic_management_id}
               >
                 <option value="">Seleccione una gestión</option>
                 {gestion.map((option) => (
-                  <option key={option.gestion_id} value={option.gestion_id}>
-                    {option.gestion}
+                  <option
+                    key={option.academic_management_id}
+                    value={option.academic_management_id}
+                  >
+                    {option.name}
                   </option>
                 ))}
               </Form.Select>
               <Form.Control.Feedback type="invalid">
-                {errors.gestion_name}
+                {errors.academic_management_id}
               </Form.Control.Feedback>
             </Col>
 
             <Col md={2}>
               <Form.Label className="fw-bold mb-0 ">
-                PERIODO DE ACADÉMICO
+                PERIODO ACADÉMICO
               </Form.Label>
             </Col>
             <Col md={4}>
-              <Form.Select
-                name="period_name"
-                value={formData.period_name}
-                onChange={handleChange}
-                isInvalid={!!errors.period_name}
-              >
-                <option value="">Seleccione un periodo académico</option>
-                {periods.map((option) => (
-                  <option key={option.period_id} value={option.period_id}>
-                    {option.period}
-                  </option>
-                ))}
-              </Form.Select>
+              <Form.Control
+                type="input"
+                aria-label="Select environment type"
+                placeholder="Ingrese un nombre de periodo academíco."
+                name="name"
+                value={formData.name}
+                onChange={handleEnvironmentNameChange}
+                isInvalid={!!errors.name}
+                autoComplete="off"
+              />
               <Form.Control.Feedback type="invalid">
-                {errors.period_name}
+                {errors.name}
               </Form.Control.Feedback>
             </Col>
           </Row>
@@ -417,7 +462,7 @@ function RegisterPeriod() {
                   showMonthDropdown
                   showYearDropdown
                   scrollableYearDropdown
-                  minDate={minDate}
+                  minDate={currentDate}
                   maxDate={maxDate}
                   disabled={statusGestion}
                   isClearable
@@ -546,7 +591,7 @@ function RegisterPeriod() {
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            {backendError.status === 200 ? "Éxito" : "Error"}
+            {backendError.status === 200 ? "¡Éxito!" : "¡Error!"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

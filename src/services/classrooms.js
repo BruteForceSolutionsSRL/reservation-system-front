@@ -143,7 +143,7 @@ export function getEnvironments() {
     .then((response) => response.json())
     .then((data) => {
       return data;
-    });
+    }); 
 }
 
 export function getBlocks() {

@@ -3,9 +3,9 @@ import { Spinner, Form, Button, Row, Col, Modal } from "react-bootstrap";
 import SearchBar from "../../../../Components/SearchBar/SearchBar";
 import { searchManagement } from "../../../../utils/searchManagement";
 import ReusableModal from "../../EditEnvironment/ReusableModal";
-import { Calendar } from "primereact/calendar";
+import { getManagements } from "../../../../services/managemet/";
+import { setManagement } from "../../../../services/managemet/";
 import ListManagement from "./ListManagement";
-
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -16,7 +16,6 @@ function EditManagement() {
   const [listManagement, setlistManagement] = useState([]);
   const [allManagement, setallManagement] = useState([]);
   const [currentManagement, setcurrentManagement] = useState(null);
-  const [dates, setDates] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [msgNoResults, setMsgNoResults] = useState("");
@@ -27,15 +26,15 @@ function EditManagement() {
   const [confirmations, setConfirmationsModal] = useState(false);
   const [backendError, setBackendError] = useState("");
   const [confirmationLoading, setConfirmationLoading] = useState(false);
-  const [startDate, setStartDate] = useState(null);
+
+  // Estado de las fechas
+  const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(null);
-  const [minDateReservation, setMinDateReservation] = useState(null);
-  const [maxDateReservation, setMaxDateReservation] = useState(null);
-    const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear();
+  const [originalPeriodDuration, setOriginalPeriodDuration] = useState([]);
 
   const [errors, setErrors] = useState({
     period_duration: "",
-    // Otros posibles errores
   });
 
   useEffect(() => {
@@ -59,15 +58,17 @@ function EditManagement() {
   }, [searchValue, allManagement]);
 
   const getAllManagement = async () => {
-    // let bl = await getManagements();
-    setallManagement(listA);
-    setlistManagement(listA); // Aqui se obtiene del back
+    let bl = await getManagements();
+    setallManagement(bl);
+    setlistManagement(bl); // Aqui se obtiene del back
   };
 
   const handleShowModal = (management) => {
     setcurrentManagement({ ...management, errors: {} });
     setShowModal(true);
     setChangedFields({});
+    setStartDate(new Date(management.initial_date));
+    setEndDate(new Date(management.end_date));
   };
 
   const handleSaveConfirmationsModal = async () => {
@@ -75,35 +76,28 @@ function EditManagement() {
     await handleSaveChanges();
     setConfirmationLoading(false);
     setSaveModal(false);
-    setConfirmationsModal(true);
+    if (Object.keys(changedFields).length > 0) {
+      setConfirmationsModal(true);
+    }
   };
 
   const handleCloseConfirmationsModal = () => {
+    setOriginalPeriodDuration([]);
     setConfirmationsModal(false);
   };
 
   const handleSaveModal = () => {
-    const formHasErrors = Object.keys(currentManagement.errors).some(
-      (key) => currentManagement.errors[key]
-    );
+    const formHasErrors = Object.keys(errors).some((key) => errors[key]);
+
     if (!formHasErrors) {
-      setSaveModal(true);
-      setShowModal(false);
+      if (Object.keys(changedFields).length === 0) {
+        setSaveModal(false);
+      } else {
+        setSaveModal(true);
+        setShowModal(false);
+      }
     }
   };
-
-  useEffect(() => {
-    if (currentManagement) {
-      setStartDate(new Date(currentManagement.period_duration[0]));
-      setEndDate(new Date(currentManagement.period_duration[1]));
-
-      setMinDateReservation(new Date(currentManagement.period_duration[0]));
-      setMaxDateReservation(new Date(currentManagement.period_duration[1]));
-    } else {
-      setMinDateReservation(null);
-      setMaxDateReservation(null);
-    }
-  }, [currentManagement]);
 
   const handleSaveCancelModal = () => {
     setSaveModal(false);
@@ -111,9 +105,14 @@ function EditManagement() {
   };
 
   const handleCancelModal = () => {
+    setErrors({
+      period_duration: "",
+    });
     setCancelModal(true);
     setShowModal(false);
   };
+
+  
 
   const handleCancelBackModal = () => {
     setShowModal(true);
@@ -132,21 +131,21 @@ function EditManagement() {
     );
     if (!formHasErrors) {
       let editManagement = {
-        gestion_name: currentManagement.gestion_name,
-        period_duration: currentManagement.period_duration,
+        date_start: formatDate(startDate),
+        date_end: formatDate(endDate),
+        name: currentManagement.name,
       };
-
       console.log("editado una gestion", editManagement);
-      await editManagement(editManagement);
+      await saveManagement(editManagement);
     } else {
       // console.log("Formulario inválido, llene todos los campos");
     }
   };
 
-  const editManagement = async (editManage) => {
+  const saveManagement = async (editManage) => {
     try {
       let response = await setManagement(
-        currentManagement.management_id,
+        currentManagement.academic_management_id,
         editManage
       ).catch((error) => {
         setBackendError("Error al enviar los datos: " + error.message);
@@ -198,29 +197,7 @@ function EditManagement() {
     if (!value || value.length !== 2 || !value[0] || !value[1]) {
       return "Seleccione un periodo de duración válido.";
     }
-    return null;
-  };
-
-  const validateStartReservations = (value) => {
-    if (!value) return "Seleccione una fecha de inicio de reservas.";
-    return null;
-  };
-
-  const validateGestion = (value) => {
-    if (!value) return "Seleccione una gestión académica.";
-    return null;
-  };
-
-  const validatePeriod = (value) => {
-    if (!value) return "Seleccione un periodo académico.";
-    return null;
-  };
-
-  const validators = {
-    gestion_name: validateGestion,
-    period_name: validatePeriod,
-    period_duration: validatePeriodDuration,
-    start_reservation: validateStartReservations,
+    return "";
   };
 
   const footerButtonsModal = [
@@ -281,64 +258,35 @@ function EditManagement() {
     period_duration: "PERIODO DE DURACIÓN",
   };
 
-  const listA = [
-    {
-      management_id: 1,
-      status_name: "ACTIVO",
-      gestion_name: "GESTION 2025",
-      status_management: 1,
-      period_duration: ["2024-07-10", "2024-07-30"],
-    },
-    {
-      management_id: 2,
-      status_name: "ACTIVO",
-      status_management: 1,
-      gestion_name: "GESTION 2024",
-      period_duration: ["2024-07-10", "2024-07-26"],
-    },
-    {
-      management_id: 3,
-      status_name: "CERRADO",
-      gestion_name: "GESTION 2024",
-      status_management: 2,
-      period_duration: ["2024-07-10", "2024-07-26"],
-    },
-  ];
 
-  const convertToDateArray = (dateStrings) =>
-    dateStrings.map((dateStr) => new Date(dateStr));
 
-  useEffect(() => {
-    if (currentManagement) {
-      setDates(convertToDateArray(currentManagement.period_duration));
-    }
-  }, [currentManagement]);
-
-  const handleDateChange = (dates) => {
+  const handleEndDateChange = (dates) => {
     const [start, end] = dates;
-    setStartDate(start);
-    setEndDate(end);
+    const formattedStartDate = formatDate(start);
+    const formattedEndDate = formatDate(end);
 
-    if (!start || !end) {
-      setErrors({
-        ...errors,
-        period_duration: "Seleccione un periodo de duración válido.",
-      });
-      return;
-    }
-    setDates(dates);
-    const formattedDates = [formatDate(start), formatDate(end)];
-    setcurrentManagement((prevManagement) => ({
-      ...prevManagement,
-      period_duration: formattedDates,
-      errors: {
-        ...prevManagement.errors,
-        period_duration: validatePeriodDuration(dates),
-      },
+    const newPeriodDuration = [formattedStartDate, formattedEndDate];
+    const hasPeriodDurationChanged =
+      originalPeriodDuration[0] !== formattedStartDate ||
+      originalPeriodDuration[1] !== formattedEndDate;
+
+    setEndDate(end);
+    setcurrentManagement((prev) => ({
+      ...prev,
+      period_duration: newPeriodDuration,
     }));
-    if (errors.period_duration) {
-      setErrors({ ...errors, period_duration: "" });
-    }
+
+    setChangedFields((prev) => ({
+      ...prev,
+      ...(hasPeriodDurationChanged && {
+        period_duration: `${formattedStartDate} - ${formattedEndDate}`,
+      }),
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      period_duration: validatePeriodDuration(newPeriodDuration),
+    }));
   };
 
   return (
@@ -396,50 +344,48 @@ function EditManagement() {
       >
         {currentManagement && (
           <Form>
-            <Row className="mb-3 align-items-center">
-              <Col md={3} className="d-flex align-items-center">
-                <Form.Label className="fw-bold col-form-label mb-0">
+            <Row className="">
+              <Col md={3} className="">
+                <Form.Label className="fw-bold ">
                   NOMBRE DE GESTIÓN
                 </Form.Label>
               </Col>
               <Col md={9}>
                 <Form.Control
                   type="text"
-                  name="gestion_name"
-                  value={currentManagement.gestion_name}
+                  name="name"
+                  value={currentManagement.name}
                   disabled
                 />
               </Col>
             </Row>
 
-            <Row className="mb-3 align-items-center">
-              <Col md={3} className="d-flex align-items-center">
-                <Form.Label className="fw-bold col-form-label mb-0">
+            <Row className="mt-3">
+              <Col md={3} className="">
+                <Form.Label className="fw-bold ">
                   PERIODO DE DURACIÓN
                 </Form.Label>
               </Col>
               <Col md={9}>
                 <DatePicker
-                  selectsStart
-                  selected={startDate}
-                  onChange={handleDateChange}
+                  selectsRange
                   startDate={startDate}
                   endDate={endDate}
-                  selectsRange
+                  onChange={handleEndDateChange}
+                  minDate={startDate}
+                  yearDropdownItemNumber={currentYear - 1998 + 1} 
+                  maxDate={new Date(currentYear + 1, 4, 30)}
+                  selected={endDate}
                   dateFormat="dd-MM-yyyy"
                   locale="es"
                   className="form-control"
-                  placeholderText="Fecha de Inicio"
+                  placeholderText="Seleccione una fecha de fin"
                   todayButton="Hoy"
                   showMonthDropdown
                   showYearDropdown
                   scrollableYearDropdown
-                  // minDate={minDateReservation}
-                  // maxDate={maxDateReservation}
-                  yearDropdownItemNumber={currentYear - 1998 + 1}
-                  minDate={new Date(1998, 0, 1)}
-                  maxDate={new Date(currentYear + 1, 4, 30)}
-                  isClearable // Permitir que los usuarios borren las fechas seleccionadas
+                  highlightDates={[startDate]}
+                  isClearable
                 />
                 {errors.period_duration && (
                   <Form.Text className="text-danger">
@@ -473,23 +419,29 @@ function EditManagement() {
         </Modal.Header>
         <Modal.Body>
           <div>
-            ¿Está seguro de actulizar la gestión? Se modificarán los siguientes
-            campos:
+            ¿Está seguro de actualizar el período académico? Se modificarán los
+            siguientes campos:
             <ul>
-              {Object.keys(changedFields).map((fieldName) => {
-                let displayValue = changedFields[fieldName];
-                if (fieldName === "block_id") {
-                  displayValue = showBlock(displayValue);
-                }
-                return (
-                  <li key={fieldName}>
-                    <span style={{ color: "red" }}>
-                      {fieldLabels[fieldName] || fieldName}
-                    </span>
-                    : {displayValue}
-                  </li>
-                );
-              })}
+              {Object.keys(changedFields).length === 0 ? (
+                <li>No se realizaron cambios.</li>
+              ) : (
+                Object.keys(changedFields).map((fieldName) => {
+                  let displayValue = changedFields[fieldName];
+                  if (fieldName === "period_duration") {
+                    displayValue = `${formatDate(startDate)} - ${formatDate(
+                      endDate
+                    )}`;
+                  }
+                  return (
+                    <li key={fieldName}>
+                      <span style={{ color: "red" }}>
+                        {fieldLabels[fieldName] || fieldName}
+                      </span>
+                      : {displayValue}
+                    </li>
+                  );
+                })
+              )}
             </ul>
           </div>
         </Modal.Body>
@@ -522,4 +474,5 @@ function EditManagement() {
     </div>
   );
 }
+
 export default EditManagement;

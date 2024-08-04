@@ -93,7 +93,7 @@ function RegisterPeriod() {
         ...formData,
         period_duration: "",
         start_reservation: "",
-      }); 
+      });
       setErrors({
         ...errors,
         period_duration: "",
@@ -111,7 +111,7 @@ function RegisterPeriod() {
         ...formData,
         period_duration: "",
         start_reservation: "",
-      }); 
+      });
       setErrors({
         ...errors,
         period_duration: "",
@@ -119,7 +119,6 @@ function RegisterPeriod() {
       });
     }
   }, [formData.gestion_name, gestion]);
-
 
   useEffect(() => {
     if (formData.period_duration) {
@@ -212,7 +211,6 @@ function RegisterPeriod() {
       });
       return;
     }
-
     let date = [formatDate(start), formatDate(end)];
     setFormData({ ...formData, period_duration: date });
     if (errors.period_duration) {
@@ -318,7 +316,7 @@ function RegisterPeriod() {
       <h1 className="text-center mt-3 mb-3">Registrar Periodo Académico</h1>
       <Container>
         <Form onSubmit={handleSubmit} noValidate>
-          <Row className="mb-3">
+          <Row className="mb-1">
             <Col xs={12} md={2}>
               <Form.Group>
                 <Form.Label className="fw-bold">FACULTAD</Form.Label>
@@ -345,7 +343,7 @@ function RegisterPeriod() {
             </Col>
           </Row>
 
-          <Row className="mb-3">
+          <Row className="mb-1 mt-3">
             <Col md={2} className="align-items-center">
               <Form.Group>
                 <Form.Label className="fw-bold">GESTIÓN ACADÉMICO</Form.Label>
@@ -422,6 +420,7 @@ function RegisterPeriod() {
                   minDate={minDate}
                   maxDate={maxDate}
                   disabled={statusGestion}
+                  isClearable
                 />
                 {errors.period_duration && (
                   <Form.Text className="text-danger">

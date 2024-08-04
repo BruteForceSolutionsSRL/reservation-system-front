@@ -3,7 +3,6 @@ import { Spinner, Form, Button, Row, Col, Modal } from "react-bootstrap";
 import SearchBar from "../../../../Components/SearchBar/SearchBar";
 import { searchManagement } from "../../../../utils/searchManagement";
 import ReusableModal from "../../EditEnvironment/ReusableModal";
-import { Calendar } from "primereact/calendar";
 
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -162,7 +161,7 @@ function EditPeriod() {
         } else {
           let content = {};
           content.status = response.status;
-          content.data = "Ocurrio un error inesperado, intente nuevamente.";
+          content.data = "Ocurrio un error inesperado, intente nuevamente."; 
           setBackendError(content);
         }
       }
@@ -344,7 +343,7 @@ function EditPeriod() {
 
   useEffect(() => {
     if (currentManagement) {
-      setStartDate(new Date(currentManagement.period_duration[0]));
+      setStartDate(new Date(currentManagement.period_duration[0])); 
       setEndDate(new Date(currentManagement.period_duration[1]));
 
       setMinDateReservation(new Date(currentManagement.period_duration[0]));

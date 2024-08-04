@@ -187,7 +187,9 @@ export function setEnvironment(classroom_id, environmentEdited) {
 }
 
 export function storeBlock(block) {
+  
   let token = localStorage.getItem("token");
+  console.log(token);
   let responseFetch = {};
   return fetch(url + "blocks", {
     method: "POST",

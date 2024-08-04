@@ -6,6 +6,12 @@ import ReusableModal from "../../EditEnvironment/ReusableModal";
 import { Calendar } from "primereact/calendar";
 import ListManagement from "./ListManagement";
 
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { es } from "date-fns/locale";
+registerLocale("es", es);
+
 function EditManagement() {
   const [listManagement, setlistManagement] = useState([]);
   const [allManagement, setallManagement] = useState([]);
@@ -21,6 +27,16 @@ function EditManagement() {
   const [confirmations, setConfirmationsModal] = useState(false);
   const [backendError, setBackendError] = useState("");
   const [confirmationLoading, setConfirmationLoading] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [minDateReservation, setMinDateReservation] = useState(null);
+  const [maxDateReservation, setMaxDateReservation] = useState(null);
+    const currentYear = new Date().getFullYear();
+
+  const [errors, setErrors] = useState({
+    period_duration: "",
+    // Otros posibles errores
+  });
 
   useEffect(() => {
     setLoading(true);
@@ -45,7 +61,7 @@ function EditManagement() {
   const getAllManagement = async () => {
     // let bl = await getManagements();
     setallManagement(listA);
-    setlistManagement(listA); //Aqui se obtiene del back
+    setlistManagement(listA); // Aqui se obtiene del back
   };
 
   const handleShowModal = (management) => {
@@ -75,6 +91,19 @@ function EditManagement() {
       setShowModal(false);
     }
   };
+
+  useEffect(() => {
+    if (currentManagement) {
+      setStartDate(new Date(currentManagement.period_duration[0]));
+      setEndDate(new Date(currentManagement.period_duration[1]));
+
+      setMinDateReservation(new Date(currentManagement.period_duration[0]));
+      setMaxDateReservation(new Date(currentManagement.period_duration[1]));
+    } else {
+      setMinDateReservation(null);
+      setMaxDateReservation(null);
+    }
+  }, [currentManagement]);
 
   const handleSaveCancelModal = () => {
     setSaveModal(false);
@@ -166,47 +195,33 @@ function EditManagement() {
   };
 
   const validatePeriodDuration = (value) => {
-    if (!value.trim()) {
-      return "Seleccione un periodo de duración.";
+    if (!value || value.length !== 2 || !value[0] || !value[1]) {
+      return "Seleccione un periodo de duración válido.";
     }
     return null;
   };
 
-  // const handleChangeDate = (value) => {
-  //   setDates(value || []);
-  //   const formattedDates =
-  //     value && value.length === 2 && value[0] && value[1]
-  //       ? `${formatDate(value[0])} - ${formatDate(value[1])}`
-  //       : "";
+  const validateStartReservations = (value) => {
+    if (!value) return "Seleccione una fecha de inicio de reservas.";
+    return null;
+  };
 
-  //   setFormData({
-  //     ...formData,
-  //     period_duration: formattedDates,
-  //   });
+  const validateGestion = (value) => {
+    if (!value) return "Seleccione una gestión académica.";
+    return null;
+  };
 
-  //   if (errors.period_duration) {
-  //     setErrors({
-  //       ...errors,
-  //       period_duration: "",
-  //     });
-  //   }
-  // };
+  const validatePeriod = (value) => {
+    if (!value) return "Seleccione un periodo académico.";
+    return null;
+  };
 
-  // const handleInputChange = (event) => {
-  //   const { name, value } = event.target;
-  //   setcurrentManagement({
-  //     ...currentManagement,
-  //     [name]: value,
-  //     errors: {
-  //       ...currentManagement.errors,
-  //       [name]: validators[name] ? validators[name](value) : null,
-  //     },
-  //   });
-  //   setChangedFields({
-  //     ...changedFields,
-  //     [name]: value,
-  //   });
-  // };
+  const validators = {
+    gestion_name: validateGestion,
+    period_name: validatePeriod,
+    period_duration: validatePeriodDuration,
+    start_reservation: validateStartReservations,
+  };
 
   const footerButtonsModal = [
     {
@@ -299,11 +314,32 @@ function EditManagement() {
     }
   }, [currentManagement]);
 
-  const handleChangeDate = (e) => {
-    setDates(e.value);
-  };
+  const handleDateChange = (dates) => {
+    const [start, end] = dates;
+    setStartDate(start);
+    setEndDate(end);
 
-  // console.log(dates);
+    if (!start || !end) {
+      setErrors({
+        ...errors,
+        period_duration: "Seleccione un periodo de duración válido.",
+      });
+      return;
+    }
+    setDates(dates);
+    const formattedDates = [formatDate(start), formatDate(end)];
+    setcurrentManagement((prevManagement) => ({
+      ...prevManagement,
+      period_duration: formattedDates,
+      errors: {
+        ...prevManagement.errors,
+        period_duration: validatePeriodDuration(dates),
+      },
+    }));
+    if (errors.period_duration) {
+      setErrors({ ...errors, period_duration: "" });
+    }
+  };
 
   return (
     <div className="container mt-2">
@@ -383,20 +419,33 @@ function EditManagement() {
                 </Form.Label>
               </Col>
               <Col md={9}>
-                <Calendar
-                  placeholder="Seleccione un periodo de duración."
-                  value={dates}
-                  onChange={(e) => handleChangeDate(e.value)}
-                  className="calendar-input"
-                  selectionMode="range"
-                  readOnlyInput
-                  hideOnRangeSelection
+                <DatePicker
+                  selectsStart
+                  selected={startDate}
+                  onChange={handleDateChange}
+                  startDate={startDate}
+                  endDate={endDate}
+                  selectsRange
+                  dateFormat="dd-MM-yyyy"
+                  locale="es"
+                  className="form-control"
+                  placeholderText="Fecha de Inicio"
+                  todayButton="Hoy"
+                  showMonthDropdown
+                  showYearDropdown
+                  scrollableYearDropdown
+                  // minDate={minDateReservation}
+                  // maxDate={maxDateReservation}
+                  yearDropdownItemNumber={currentYear - 1998 + 1}
+                  minDate={new Date(1998, 0, 1)}
+                  maxDate={new Date(currentYear + 1, 4, 30)}
+                  isClearable // Permitir que los usuarios borren las fechas seleccionadas
                 />
-                {/* {errors.period_duration && (
+                {errors.period_duration && (
                   <Form.Text className="text-danger">
                     {errors.period_duration}
                   </Form.Text>
-                )} */}
+                )}
               </Col>
             </Row>
           </Form>

@@ -1,25 +1,32 @@
 import React, { useState } from "react";
 import { Spinner, Form, Button, Row, Col, Modal } from "react-bootstrap";
 import Container from "react-bootstrap/Container";
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { es } from "date-fns/locale";
+registerLocale("es", es);
 import "./RegisterManagement.css";
-import { Calendar } from "primereact/calendar";
+import { storeManagement } from "../../../../services/managemet/";
 
 function RegisterManagement() {
-  const [dates, setDates] = useState(null);
   const [cancelRegisterModal, setCancelRegisterModal] = useState(false);
   const [registerModal, setRegisterModal] = useState(false);
   const [confirmationLoading, setConfirmationLoading] = useState(false);
   const [confimationModal, setConfimationModal] = useState(false);
   const [backendError, setBackendError] = useState({});
 
-  console.log("dartes",dates);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const currentYear = new Date().getFullYear();
+  
   const [formData, setFormData] = useState({
-    gestion_name: "",
+    name: "",
     period_duration: "",
   });
 
   const [errors, setErrors] = useState({
-    gestion_name: "", 
+    name: "",
     period_duration: "",
   });
 
@@ -40,7 +47,7 @@ function RegisterManagement() {
   };
 
   const validatePeriodDuration = (value) => {
-    if (!value.trim()) {
+    if (!value) {
       return "Seleccione un periodo de duración.";
     }
     return null;
@@ -49,13 +56,13 @@ function RegisterManagement() {
   const handleSubmit = (e) => {
     e.preventDefault();
     let newErrors = {};
-    newErrors.gestion_name = validateNameGestion(formData.gestion_name);
+    newErrors.name = validateNameGestion(formData.name);
     newErrors.period_duration = validatePeriodDuration(
       formData.period_duration
     );
     setErrors(newErrors);
 
-    if (!newErrors.period_duration && !newErrors.gestion_name) {
+    if (!newErrors.period_duration && !newErrors.name) {
       // Enviar al backend
       handleSaveModal();
       // console.log("datos del form", formData);
@@ -70,48 +77,49 @@ function RegisterManagement() {
       .join("");
     setFormData({
       ...formData,
-      gestion_name: transformedValue,
+      name: transformedValue,
     });
 
-    const error = validators.gestion_name(transformedValue);
+    const error = validators.name(transformedValue);
     setErrors({
       ...errors,
-      gestion_name: error,
+      name: error,
     });
   };
 
-  const handleChangeDate = (value) => {
-    setDates(value || []);
-    const formattedDates =
-      value && value.length === 2 && value[0] && value[1]
-        ? `${formatDate(value[0])} - ${formatDate(value[1])}`
-        : "";
+  const handleDateChange = (dates) => {
+    const [start, end] = dates;
+    setStartDate(start);
+    setEndDate(end);
 
-    setFormData({
-      ...formData,
-      period_duration: formattedDates,
-    });
-
-    if (errors.period_duration) {
+    if (!start || !end) {
+      setFormData({ ...formData, period_duration: "" });
       setErrors({
         ...errors,
-        period_duration: "",
+        period_duration: "Seleccione un periodo académico.",
       });
+      return;
+    }
+    let date = [formatDate(start), formatDate(end)];
+    setFormData({ ...formData, period_duration: date });
+    if (errors.period_duration) {
+      setErrors({ ...errors, period_duration: "" });
     }
   };
 
   const validators = {
-    gestion_name: validateNameGestion,
+    name: validateNameGestion,
   };
 
   function clearDataForm() {
-    setDates([]);
+    setStartDate(null);
+    setEndDate(null);
     setFormData({
-      gestion_name: "",
+      name: "",
       period_duration: "",
     });
     setErrors({
-      gestion_name: "",
+      name: "",
       period_duration: "",
     });
   }
@@ -126,33 +134,65 @@ function RegisterManagement() {
 
   const saveGestion = async () => {
     setConfirmationLoading(true);
-    try {
-      // const response = await storeNewBlock(formData);
-      const response = { status: 200 };
-
-      if (response.status === 200) {
-        setBackendError({
-          status: 200,
-          data: "Gestión registrada exitosamente.",
-        });
-      } else {
-        throw new Error("Error al registrar la gestión.");
-      }
-    } catch (error) {
-      setBackendError({
-        status: error.response ? error.response.status : 500,
-        data: error.response ? error.response.data : "Error del servidor.",
-      });
-    } finally {
+    const response = await storeNewManagement(formData).finally(() => {
       setConfirmationLoading(false);
+
       setRegisterModal(false);
-      setConfimationModal(true);
+    });
+
+    if (response) {
+      if (response.status >= 200 && response.status < 300) {
+        setBackendError({
+          status: response.status,
+          data: response.data.message,
+        });
+        clearDataForm();
+      } else if (response.status >= 300 && response.status < 400) {
+        setBackendError({
+          status: response.status,
+          data: response.data.message,
+        });
+      } else if (response.status >= 400 && response.status < 500) {
+        setBackendError({
+          status: response.status,
+          data: response.data.message,
+        });
+      } else if (response.status >= 500) {
+        if (response.data.message) {
+          setBackendError({
+            status: response.status,
+            data: response.data.message,
+          });
+        } else {
+          setBackendError({
+            ...backendError,
+            data: "Ocurrio un error inesperado, intente nuevamente.",
+          });
+        }
+      }
+    } else {
+      setBackendError({
+        ...backendError,
+        data: "Ocurrio un error inesperado, intente nuevamente.",
+      });
     }
+    setConfimationModal(true);
+  };
+  
+  const storeNewManagement = async (newManagement) => {
+    let managemetNew = {
+      date_start: newManagement.period_duration[0],
+      date_end: newManagement.period_duration[1],
+      name: newManagement.name,
+    };
+    console.log("entra aqui", managemetNew);
+    let response = await storeManagement(managemetNew);
+    return response;
   };
 
   function saveBlockClose() {
     setConfimationModal(false);
-    console.log("datos del form", formData);
+    // console.log("datos del form", formData);
     clearDataForm();
   }
 
@@ -169,7 +209,6 @@ function RegisterManagement() {
     clearDataForm();
     setCancelRegisterModal(false);
   }
-  
 
   return (
     <div>
@@ -187,14 +226,14 @@ function RegisterManagement() {
                 type="input"
                 aria-label="Select environment type"
                 placeholder="Ingrese un nombre de gestión."
-                name="gestion_name"
-                value={formData.gestion_name}
+                name="name"
+                value={formData.name}
                 onChange={handleEnvironmentNameChange}
-                isInvalid={!!errors.gestion_name}
+                isInvalid={!!errors.name}
                 autoComplete="off"
               />
               <Form.Control.Feedback type="invalid">
-                {errors.gestion_name}
+                {errors.name}
               </Form.Control.Feedback>
             </Col>
           </Row>
@@ -207,14 +246,24 @@ function RegisterManagement() {
             </Col>
             <Col md={4}>
               <div className="calendar-container">
-                <Calendar
+                <DatePicker
+                  selectsStart
+                  selected={startDate}
+                  onChange={handleDateChange}
+                  startDate={startDate}
+                  endDate={endDate}
+                  selectsRange
+                  dateFormat="dd-MM-yyyy"
+                  locale="es"
+                  className="form-control"
                   placeholder="Seleccione un periodo de duración."
-                  value={dates}
-                  onChange={(e) => handleChangeDate(e.value)}
-                  className="calendar-input"
-                  selectionMode="range"
-                  readOnlyInput
-                  hideOnRangeSelection
+                  todayButton="Hoy"
+                  showMonthDropdown
+                  showYearDropdown
+                  scrollableYearDropdown
+                  yearDropdownItemNumber={currentYear - 1998 + 1}
+                  minDate={new Date(1998, 0, 1)}
+                  maxDate={new Date(currentYear + 1, 4, 30)}
                 />
                 {errors.period_duration && (
                   <Form.Text className="text-danger">

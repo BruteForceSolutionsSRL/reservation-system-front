@@ -259,7 +259,7 @@ function EditBlock() {
     return null;
   };
 
-  const validators = {
+  const validators = { 
     block_maxfloor: validateFloor,
     block_maxclassrooms: validateCantidadClassrom,
   };

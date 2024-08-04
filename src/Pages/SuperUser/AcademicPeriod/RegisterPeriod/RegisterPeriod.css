@@ -32,3 +32,9 @@
 .calendar-input {
     height: calc(1.5em + 0.75rem + 4px);
 }
+
+.react-datepicker-wrapper,
+.react-datepicker__input-container {
+  width: 100%;
+  max-width: none;
+}

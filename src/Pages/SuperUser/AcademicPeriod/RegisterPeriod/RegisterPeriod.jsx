@@ -10,7 +10,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { es } from "date-fns/locale";
 registerLocale("es", es);
 import "./RegisterPeriod.css";
-//gola
 
 function RegisterPeriod() {
   const [startReservation, setStartReservation] = useState(null);
@@ -21,11 +20,9 @@ function RegisterPeriod() {
   const [backendError, setBackendError] = useState({});
   const [gestion, setGestion] = useState([]);
   const [faculty, setFaculty] = useState([]);
-
   const [maxDate, setMaxDate] = useState(null);
   const [minDateReservation, setMinDateReservation] = useState(null);
   const [maxDateReservation, setMaxDateReservation] = useState(null);
-
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [statusDateStar, setStatusDateStar] = useState(true);

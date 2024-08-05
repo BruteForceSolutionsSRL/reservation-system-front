@@ -268,11 +268,11 @@ function BlockRegister() {
   return (
     <div className="color-font">
       <Container>
-        <h1 className="text-center py-4">Registrar Bloque</h1>
-        <Form noValidate onSubmit={handleSubmit} className="formulario">
-          <div>
-            <Row className="mb-3 align-items-center">
-              <Col md={3} className="d-flex align-items-center">
+        <h1 className="text-center mt-3">Registrar Bloque</h1>
+        <Form noValidate onSubmit={handleSubmit} className="formulario m-3">
+          <div className="mt-4">
+            <Row>
+              <Col md={3} className=" align-items-center">
                 <Form.Label className="fw-bold col-form-label mb-0">
                   NOMBRE DEL BLOQUE
                 </Form.Label>
@@ -294,7 +294,7 @@ function BlockRegister() {
             </Row>
           </div>
 
-          <Row className="mb-3">
+          <Row className="mb-3 mt-4">
             <Col md={3} className=" align-items-center">
               <Form.Label className="fw-bold col-form-label mb-0">
                 CAPACIDAD DE AULAS

@@ -113,7 +113,7 @@ function EditBlock() {
       let editedBlock = {
         block_name: currentBlock.block_name,
         block_maxfloor: currentBlock.block_maxfloor,
-        block_maxclassrooms: currentBlock.block_maxclassrooms,
+        block_maxclassrooms: currentBlock.block_maxclassrooms, 
         block_status_id: currentBlock.block_status_id,
       };
       await editBlock(editedBlock);
@@ -259,7 +259,7 @@ function EditBlock() {
     return null;
   };
 
-  const validators = {
+  const validators = { 
     block_maxfloor: validateFloor,
     block_maxclassrooms: validateCantidadClassrom,
   };

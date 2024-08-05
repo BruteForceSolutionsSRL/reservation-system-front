@@ -14,7 +14,7 @@ function EditBlock() {
   const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [msgNoResults, setMsgNoResults] = useState("");
-  const [status, setStatus] = useState([]); //para el selector de estado actualzar
+  const [status, setStatus] = useState([]);
   const [changedFields, setChangedFields] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [saveModal, setSaveModal] = useState(false);
@@ -111,9 +111,9 @@ function EditBlock() {
     );
     if (!formHasErrors) {
       let editedBlock = {
-        block_name: currentBlock.block_name,
-        block_maxfloor: currentBlock.block_maxfloor,
-        block_maxclassrooms: currentBlock.block_maxclassrooms,
+        name: currentBlock.name,
+        maxfloor: currentBlock.maxfloor,
+        maxclassrooms: currentBlock.maxclassrooms,
         block_status_id: currentBlock.block_status_id,
       };
       await editBlock(editedBlock);
@@ -237,7 +237,7 @@ function EditBlock() {
     const matchingBlock = listBlocks.find(
       (list) => list.block_id === currentBlock.block_id
     );
-    const maxClass = parseInt(matchingBlock.block_maxclassrooms);
+    const maxClass = parseInt(matchingBlock.maxclassrooms);
     if (!value) {
       return `La cantidad de ambientes actual del bloque es ${maxClass} .`;
     } else if (value < maxClass || value > 25) {
@@ -250,7 +250,7 @@ function EditBlock() {
     const matchingBlock = listBlocks.find(
       (list) => list.block_id === currentBlock.block_id
     );
-    const maxFloor = parseInt(matchingBlock.block_maxfloor);
+    const maxFloor = parseInt(matchingBlock.maxfloor);
     if (!value) {
       return `Numero de pisos actual del bloque es ${maxFloor}.`;
     } else if (value < maxFloor || value > 5) {
@@ -260,8 +260,8 @@ function EditBlock() {
   };
 
   const validators = {
-    block_maxfloor: validateFloor,
-    block_maxclassrooms: validateCantidadClassrom,
+    maxfloor: validateFloor,
+    maxclassrooms: validateCantidadClassrom,
   };
 
   const handleKeyDown = (event) => {
@@ -274,14 +274,14 @@ function EditBlock() {
     const statusOption = status.find(
       (option) => option.classroom_status_id === parseInt(statusId)
     );
-    return statusOption ? statusOption.classroom_status_name : "";
+    return statusOption ? statusOption.name : "";
   };
 
   const fieldLabels = {
     block_id: "BLOQUE",
     block_status_id: "ESTADO",
-    block_maxfloor: "NUMERO DE PISOS",
-    block_maxclassrooms: "CANTIDAD DE AULAS",
+    maxfloor: "NUMERO DE PISOS",
+    maxclassrooms: "CANTIDAD DE AULAS",
   };
 
   return (
@@ -345,9 +345,9 @@ function EditBlock() {
               <Col md={9}>
                 <Form.Control
                   type="text"
-                  name="block_name"
+                  name="name"
                   placeholder="Ingrese el nombre del Bloque"
-                  value={currentBlock.block_name}
+                  value={currentBlock.name}
                   onChange={handleInputChange}
                   disabled
                 />
@@ -364,13 +364,13 @@ function EditBlock() {
                 <Form.Control
                   onKeyDown={handleKeyDown}
                   type="number"
-                  name="block_maxclassrooms"
-                  value={currentBlock.block_maxclassrooms}
+                  name="maxclassrooms"
+                  value={currentBlock.maxclassrooms}
                   onChange={handleInputChange}
-                  isInvalid={!!currentBlock.errors?.block_maxclassrooms}
+                  isInvalid={!!currentBlock.errors?.maxclassrooms}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {currentBlock.errors?.block_maxclassrooms}
+                  {currentBlock.errors?.maxclassrooms}
                 </Form.Control.Feedback>
               </Col>
 
@@ -390,7 +390,7 @@ function EditBlock() {
                       key={option.classroom_status_id}
                       value={option.classroom_status_id}
                     >
-                      {option.classroom_status_name}
+                      {option.name}
                     </option>
                   ))}
                 </Form.Select>
@@ -407,14 +407,14 @@ function EditBlock() {
                 <Form.Control
                   onKeyDown={handleKeyDown}
                   type="number"
-                  name="block_maxfloor"
+                  name="maxfloor"
                   min={0}
-                  value={currentBlock.block_maxfloor}
+                  value={currentBlock.maxfloor}
                   onChange={handleInputChange}
-                  isInvalid={!!currentBlock.errors?.block_maxfloor}
+                  isInvalid={!!currentBlock.errors?.maxfloor}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {currentBlock.errors?.block_maxfloor}
+                  {currentBlock.errors?.maxfloor}
                 </Form.Control.Feedback>
               </Col>
             </Row>

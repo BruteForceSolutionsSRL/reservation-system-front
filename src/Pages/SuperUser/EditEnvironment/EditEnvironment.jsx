@@ -28,7 +28,7 @@ function EditEnvironment() {
   const [searchValue, setSearchValue] = useState("");
   const [msgNoResults, setMsgNoResults] = useState("");
   const [backendError, setBackendError] = useState("");
-
+  
   useEffect(() => {
     setLoading(true);
     Promise.all([
@@ -131,7 +131,7 @@ function EditEnvironment() {
       let editedEnvironment = {
         classroom_id: parseInt(currentReservation.classroom_id),
         capacity: parseInt(currentReservation.capacity),
-        type_id: parseInt(currentReservation.classroom_type_id),
+        type_id: parseInt(currentReservation.type_id),
         block_id: parseInt(currentReservation.block_id),
         floor_number: parseInt(currentReservation.floor),
         status_id: parseInt(currentReservation.classroom_status_id),
@@ -255,7 +255,7 @@ function EditEnvironment() {
       (elemento) => elemento.block_id === parseInt(key)
     );
     if (selectedElement) {
-      return selectedElement.block_maxfloor;
+      return selectedElement.maxfloor;
     }
     return 0;
   }
@@ -276,26 +276,26 @@ function EditEnvironment() {
     const block = blockOptions.find(
       (option) => option.block_id === parseInt(blockId)
     );
-    return block ? block.block_name : "";
+    return block ? block.name : "";
   };
 
   const getStatusNameById = (statusId) => {
     const statusOption = status.find(
       (option) => option.classroom_status_id === parseInt(statusId)
     );
-    return statusOption ? statusOption.classroom_status_name : "";
+    return statusOption ? statusOption.name : "";
   };
 
   const getTypeNameById = (typeId) => {
     const typeOption = typeOptions.find(
-      (option) => option.type_id === parseInt(typeId)
+      (option) => option.classroom_type_id === parseInt(typeId)
     );
-    return typeOption ? typeOption.type_name : "";
+    return typeOption ? typeOption.name : "";
   };
 
   const fieldLabels = {
     block_id: "BLOQUE",
-    classroom_type_id: "TIPO DE AMBIENTE",
+    type_id: "TIPO DE AMBIENTE",
     classroom_status_id: "ESTADO",
     floor: "PISO",
     capacity: "CAPACIDAD",
@@ -304,16 +304,16 @@ function EditEnvironment() {
   return (
     <div className="container">
       <h1 className="text-center mt-3">Lista de Ambientes</h1>
-        <SearchBar
-          value={searchValue}
-          onChange={(event) => {
-            const regex = /^[a-zA-Z0-9\s]*$/;
-            if (regex.test(event.target.value) || event.target.value === "") {
-              setSearchValue(event.target.value);
-            }
-          }}
-        />
-     
+      <SearchBar
+        value={searchValue}
+        onChange={(event) => {
+          const regex = /^[a-zA-Z0-9\s]*$/;
+          if (regex.test(event.target.value) || event.target.value === "") {
+            setSearchValue(event.target.value);
+          }
+        }}
+      />
+
       <div className="container">
         {loading ? (
           <div className="text-center">
@@ -356,7 +356,7 @@ function EditEnvironment() {
                   rows={1}
                   required
                   name="classroom_name"
-                  value={currentReservation.classroom_name}
+                  value={currentReservation.name}
                   onChange={handleInputChange}
                   disabled
                 />
@@ -373,13 +373,16 @@ function EditEnvironment() {
                 <Form.Select
                   aria-label="Select environment type"
                   required
-                  name="classroom_type_id"
-                  value={currentReservation.classroom_type_id}
+                  name="type_id"
+                  value={currentReservation.type_id}
                   onChange={handleInputChange}
                 >
                   {typeOptions.map((option) => (
-                    <option key={option.type_id} value={option.type_id}>
-                      {option.type_name}
+                    <option
+                      key={option.classroom_type_id}
+                      value={option.classroom_type_id}
+                    >
+                      {option.name}
                     </option>
                   ))}
                 </Form.Select>
@@ -428,7 +431,7 @@ function EditEnvironment() {
                       key={option.classroom_status_id}
                       value={option.classroom_status_id}
                     >
-                      {option.classroom_status_name}
+                      {option.name}
                     </option>
                   ))}
                 </Form.Select>
@@ -450,7 +453,7 @@ function EditEnvironment() {
                       >
                         {blockOptions.map((option) => (
                           <option key={option.block_id} value={option.block_id}>
-                            {option.block_name}
+                            {option.name}
                           </option>
                         ))}
                       </Form.Select>
@@ -515,7 +518,7 @@ function EditEnvironment() {
                   displayValue = getBlockNameById(displayValue);
                 } else if (fieldName === "classroom_status_id") {
                   displayValue = getStatusNameById(displayValue);
-                } else if (fieldName === "classroom_type_id") {
+                } else if (fieldName === "type_id") {
                   displayValue = getTypeNameById(displayValue);
                 }
 

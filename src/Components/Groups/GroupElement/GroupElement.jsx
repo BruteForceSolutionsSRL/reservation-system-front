@@ -52,22 +52,23 @@ export default function GroupElement(props) {
                     return (
                       <tr key={s.id_day}>
                         <td>
-                          {s.id_day === 1
+                          {s.id_day === 0
                             ? "Lunes"
-                            : s.id_day === 2
+                            : s.id_day === 1
                             ? "Martes"
-                            : s.id_day === 3
+                            : s.id_day === 2
                             ? "Miercoles"
-                            : s.id_day === 4
+                            : s.id_day === 3
                             ? "Jueves"
-                            : s.id_day === 5
+                            : s.id_day === 4
                             ? "Viernes"
-                            : s.id_day === 6
+                            : s.id_day === 5
                             ? "Sabado"
                             : "Sin horario"}
                         </td>
                         <td>{s.periods[0] + "-" + s.periods[1]}</td>
                         <td>{s.type}</td>
+                        {/* Cambiar por aulas para clases */}
                       </tr>
                     );
                   })}

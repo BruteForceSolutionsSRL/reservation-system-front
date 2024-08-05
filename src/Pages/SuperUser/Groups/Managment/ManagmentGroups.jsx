@@ -3,7 +3,6 @@ import GroupsList from "../../../../Components/Groups/GroupsList/GroupsList";
 import SearchBar from "../../../../Components/SearchBar/SearchBar";
 import { useSearchGroup } from "../../../../Hooks/useSearchGroup";
 import { listGroups } from "../groupsmocks";
-import GroupFilterModal from "../../../../Components/Groups/GroupFilterModal/GroupFilterModal.";
 import NewGroup from "../../../../Components/Groups/NewGroup";
 
 export default function ManagmentGroups() {
@@ -29,9 +28,6 @@ export default function ManagmentGroups() {
               <i className="bi bi-plus-circle fs-3 d-block"></i>
               <span>Nuevo</span>
             </button>
-            {/* <div className="align-self-center">
-              <GroupFilterModal />
-            </div> */}
           </div>
         </div>
       </div>

@@ -10,14 +10,10 @@ export default function ModalCreateSubject({ show, setShow }) {
   const [departamentSelected, setDepartamentSelected] = useState([]);
   const [levelSelected, setLevelSelected] = useState([]);
   const [studyPlans, setStudyPlans] = useState([]);
-
   const [departments, setDepartments] = useState([]);
   const [depOptions, setDepOptions] = useState([]);
-
   const [studyPlansOptions, setStudyPlansOptions] = useState([]);
-
   const [message, setMessage] = useState({});
-
   const levelsOptions = [
     {
       label: "A",
@@ -64,14 +60,12 @@ export default function ModalCreateSubject({ show, setShow }) {
   const handleClose = () => {
     setShow(false);
     setMessage({});
+    initialState();
   };
 
   const createSubject = async () => {
-    // const studyPlanIds = studyPlans.map((s) => s.value);
     const studyPlanList = [studyPlans.value];
-    studyPlanList.push();
-    const levelsList = [];
-    levelsList.push(levelSelected.label);
+    const levelsList = [levelSelected.label];
     const subject = {
       cod_sis: subjectCodSis,
       name: subjectName,
@@ -131,9 +125,6 @@ export default function ModalCreateSubject({ show, setShow }) {
     let deptsIds = [];
     deptsIds.push(event.value.department_id);
     fetchStudyPlansPerDepartments(deptsIds);
-    // Parece que el endpoint para crear materia no permite mandar un array al department_id :c
-    // const departmentsIds = event.map((d) => d.value.department_id);
-    // fetchStudyPlansPerDepartments(departmentsIds);
   };
 
   const handleChangeLevelSelected = (event) => {
@@ -242,10 +233,10 @@ export default function ModalCreateSubject({ show, setShow }) {
             className="btn btn-success"
             onClick={createSubject}
             disabled={
-              subjectName === "" &&
-              subjectCodSis === "" &&
-              departamentSelected.length === 0 &&
-              levelSelected.length === 0 &&
+              subjectName === "" ||
+              subjectCodSis === "" ||
+              departamentSelected.length === 0 ||
+              levelSelected.length === 0 ||
               studyPlans.length === 0
             }
           >

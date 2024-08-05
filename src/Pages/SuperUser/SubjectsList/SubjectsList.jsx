@@ -3,21 +3,78 @@ import SearchBar from "../../../Components/SearchBar/SearchBar";
 import SubjectElement from "../../../Components/SubjectElement/SubjectElement";
 import ModalCreateSubject from "../../../Components/SubjectElement/ModalCreateSubject";
 import { useFetchService } from "../../../Components/Hooks/useFetchService";
+import LoadingSpinner from "../../../Components/LoadingSpinner/LoadingSpinner";
+import { Toast, ToastContainer } from "react-bootstrap";
 
 export default function SubjectsList() {
   const [searchValue, setSearchValue] = useState("");
+  const [resultList, setResultList] = useState([]);
   const [showNewSubjectModal, setShowNewSubjectModal] = useState(false);
-  const { getFetch } = useFetchService();
+  const [subjects, setSubjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { getFetch, deleteFetch } = useFetchService();
+  const [showToast, setShowToast] = useState(false);
+  const [toastBody, setToastBody] = useState({});
 
   useEffect(() => {
-    fetchSubjects();
+    fetchSubjects().finally(() => setLoading(false));
   }, []);
 
   const fetchSubjects = async () => {
+    setLoading(true);
     const { status, data } = await getFetch("university-subjects");
-    console.log(status, data);
-    // Los datos no me los mandan como necesito, me mandan solamente el "name" y el "university_subject_id", necesito mas datos :/
+    if ((status >= 200) & (status < 300)) {
+      setSubjects(data);
+      setResultList(data);
+    } else {
+      setSubjects([]);
+    }
   };
+
+  const deleteSubject = async (university_subject_id, subjectName) => {
+    const { status, data } = await deleteFetch(
+      `university-subjects/${university_subject_id}`
+    );
+    if (status >= 200 && status < 300) {
+      const newToastBody = {
+        title: "Materia eliminada.",
+        body: `Se eliminó la materia ${subjectName}`,
+      };
+      setToastBody(newToastBody);
+      setShowToast(true);
+      fetchSubjects().finally(() => setLoading(false));
+    } else {
+      const newToastBody = {
+        title: "Error al eliminar",
+        body:
+          data.message ??
+          "No se pudo eliminar la materia, intentelo nuevamente mas tarde",
+      };
+      setToastBody(newToastBody);
+      setShowToast(true);
+    }
+  };
+
+  const search = (searchParam) => {
+    if (searchParam === "") {
+      return subjects;
+    } else {
+      return subjects.filter(
+        (subj) =>
+          subj.name.toLowerCase().includes(searchParam.toLowerCase()) ||
+          subj.department_name.toLowerCase().includes(searchParam.toLowerCase())
+      );
+    }
+  };
+
+  const handleChangeSearchValue = (event) => {
+    const { value } = event.target;
+    setSearchValue(value);
+    const list = search(value);
+    setResultList(list);
+  };
+
+  const handleCloseToast = () => setShowToast(false);
 
   return (
     <div>
@@ -27,7 +84,7 @@ export default function SubjectsList() {
           <div className="align-self-center flex-fill">
             <SearchBar
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
+              onChange={handleChangeSearchValue}
               onPaste={(e) => e.preventDefault()}
             />
           </div>
@@ -43,71 +100,42 @@ export default function SubjectsList() {
         </div>
       </div>
       <div className="container">
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
-        <SubjectElement />
+        {loading ? (
+          <div>
+            <LoadingSpinner />
+          </div>
+        ) : (
+          <>
+            {resultList.map((subject) => {
+              return (
+                <div key={subject.university_subject_id}>
+                  <SubjectElement subject={subject} onClick={deleteSubject} />
+                </div>
+              );
+            })}
+          </>
+        )}
       </div>
       <ModalCreateSubject
         show={showNewSubjectModal}
         setShow={setShowNewSubjectModal}
       />
+
+      <ToastContainer
+        className="p-3"
+        position={"top-end"}
+        style={{ zIndex: 1 }}
+      >
+        <Toast
+          onClose={handleCloseToast}
+          show={showToast}
+          delay={3000}
+          bg={toastBody.title === "Materia eliminada." ? "danger" : "warning"}
+          autohide
+        >
+          <Toast.Body>{toastBody.body}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </div>
   );
 }

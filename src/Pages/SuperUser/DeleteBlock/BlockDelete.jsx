@@ -6,13 +6,7 @@ import { deleteBlock } from "../../../services/blocks";
 import "./BlockDelete.css";
 
 function BlockDelete(props) {
-  const {
-    block_id,
-    block_name,
-    block_maxclassrooms,
-    block_maxfloor,
-    block_status_name,
-  } = props;
+  const { block_id, name, maxclassrooms, maxfloor, block_status_name } = props;
   const [environment, setEnvironment] = useState([]);
   const [stadisticsBlock, setStadisticsBlock] = useState([]);
   const [loadingDelete, setLoadingDelete] = useState(false);
@@ -85,17 +79,17 @@ function BlockDelete(props) {
           </div>
           <div>
             <b className="text-primary">NOMBRE: </b>
-            <b>{block_name}</b>
+            <b>{name}</b>
           </div>
         </div>
         <div className="col-sm-4">
           <div>
             <b className="text-primary">CANTIDAD DE AULAS: </b>
-            <b>{block_maxclassrooms}</b>
+            <b>{maxclassrooms}</b>
           </div>
           <div>
             <b className="text-primary">NUMERO DE PISO: </b>
-            <b>{block_maxfloor}</b>
+            <b>{maxfloor}</b>
           </div>
         </div>
 
@@ -114,7 +108,7 @@ function BlockDelete(props) {
           <h3>¿Está seguro de eliminar el bloque?</h3>
         </Modal.Header>
         <Modal.Body>
-          <h4>BLOQUE: {block_name}</h4>
+          <h4>BLOQUE: {name}</h4>
           <b>El bloque tiene los siguientes ambientes que seran eliminados:</b>
           <div className="m-3">
             {environment.length === 0 ? (
@@ -135,7 +129,7 @@ function BlockDelete(props) {
                       className="p-1 text-light rounded bg-secondary text-center"
                       style={{ minWidth: "80px", margin: "3px" }}
                     >
-                      {each.classroom_name}
+                      {each.name}
                     </div>
                   );
                 })}
@@ -149,6 +143,7 @@ function BlockDelete(props) {
           <div className="align-self-center ps-3 pe-3 pt-3">
             <div className=" d-flex justify-content-center">
               <b className="text-light bg-success rounded p-1 me-1">
+                {/* Parece que el endpoint de estados se rompio o algo, no lo testee a detalle */}
                 Aceptadas: {stadisticsBlock.accepted}
               </b>
               <b className="text-light bg-danger rounded p-1 me-1">
@@ -270,7 +265,7 @@ function BlockDelete(props) {
                     className="p-1 text-light rounded bg-secondary text-center"
                     style={{ minWidth: "80px", margin: "3px" }}
                   >
-                    {each.classroom_name}
+                    {each.name}
                   </div>
                 ))}
             </div>

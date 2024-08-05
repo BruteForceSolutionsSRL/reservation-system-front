@@ -25,17 +25,17 @@ const BlockEdit = ({ list, handleShowModal }) => {
               </div>
               <div>
                 <b className="text-primary">NOMBRE: </b>
-                <b>{block.block_name}</b>
+                <b>{block.name}</b>
               </div>
             </div>
             <div className="col-sm-4">
               <div>
                 <b className="text-primary">CANTIDAD DE AULAS: </b>
-                <b>{block.block_maxclassrooms}</b>
+                <b>{block.maxclassrooms}</b>
               </div>
               <div>
                 <b className="text-primary">NUMERO DE PISO: </b>
-                <b>{block.block_maxfloor}</b>
+                <b>{block.maxfloor}</b>
               </div>
             </div>
             <div className="col-sm-2 align-self-center d-flex justify-content-end">

@@ -75,11 +75,11 @@ export default function RequestsHistory() {
                   let content = {
                     id: each.reservation_id,
                     subject: each.subject_name,
-                    groups: each.groups,
+                    persons: each.persons,
                     reservation_date: each.reservation_date,
                     periods: each.time_slot,
                     quantity_studets: each.quantity,
-                    block: each.block_name,
+                    blocks: each.block_names,
                     classrooms: each.classrooms,
                     reason: each.reason_name,
                     state: each.reservation_status,

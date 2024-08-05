@@ -9,11 +9,11 @@ export default function ModalRequestInformation({
 }) {
   const {
     subject,
-    groups,
+    persons,
     reservation_date,
     periods,
     quantity_studets,
-    block,
+    blocks,
     classrooms,
     reason,
     state,
@@ -61,11 +61,16 @@ export default function ModalRequestInformation({
                   </tr>
                 </thead>
                 <tbody>
-                  {groups.map((each, index) => {
+                  {persons.map((each) => {
+                    const { groups } = each;
                     return (
-                      <tr key={each.group_number + "" + index}>
-                        <td>{each.teacher_name}</td>
-                        <td>{each.group_number}</td>
+                      <tr key={groups[0].group_id + each.person_id}>
+                        <td>{each.name + " " + each.last_name}</td>
+                        <td>
+                          {groups.length < 2
+                            ? groups.map((g) => g.group_number)
+                            : groups.map((g) => g.group_number + ", ")}
+                        </td>
                       </tr>
                     );
                   })}
@@ -89,7 +94,7 @@ export default function ModalRequestInformation({
             <label className="tag-label">AMBIENTE</label>
 
             <div className="pt-2 pb-2">
-              <b>BLOQUE: </b> {block ?? "Sin bloque"}
+              <b>BLOQUE: </b> {blocks.map((b) => b) ?? "Sin bloque"}
             </div>
             <div className="row">
               <div className="col-sm-2">
@@ -109,8 +114,8 @@ export default function ModalRequestInformation({
                   <tbody>
                     {classrooms.map((each) => {
                       return (
-                        <tr key={each.classroom_name}>
-                          <td>{each.classroom_name}</td>
+                        <tr key={each.classroom_id}>
+                          <td>{each.name}</td>
                           <td>{each.capacity}</td>
                         </tr>
                       );
@@ -127,7 +132,7 @@ export default function ModalRequestInformation({
       </Modal.Body>
       <Modal.Footer>
         {footerContent ?? (
-          <button onClick={() => setShow(false)} className="btn btn-seccondary">
+          <button onClick={() => setShow(false)} className="btn btn-secondary">
             Cerrar
           </button>
         )}

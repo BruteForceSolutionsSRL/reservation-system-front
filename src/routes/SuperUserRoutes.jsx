@@ -18,6 +18,9 @@ import ProtectedRoute from "./ProtectedRoute";
 import SeeNotifications from "../Pages/User/SeeNotifications/SeeNotifications";
 import SingleNotification from "../Pages/User/SeeNotifications/SingleNotification";
 import SpecialRequest from "../Pages/SuperUser/SpecialRequest/SpecialRequest";
+import ManagmentGroups from "../Pages/SuperUser/Groups/Managment/ManagmentGroups";
+import HistoryGroups from "../Pages/SuperUser/Groups/History/HistoryGroups";
+import SubjectsList from "../Pages/SuperUser/SubjectsList/SubjectsList";
 import EnterManagement from "../Pages/SuperUser/AcademicManagement/EnterManagement/EnterManagement";
 import RegisterManagement from "../Pages/SuperUser/AcademicManagement/RegisterManagement/RegisterManagement";
 import EditManagement from "../Pages/SuperUser/AcademicManagement/EditManagement/EditManagement";
@@ -52,7 +55,7 @@ export default function SuperUserRoutes() {
         <Route path="edit-management" element={<EditManagement />} />
 
         <Route path="register-period" element={<RegisterPeriod />} />
-        <Route path="edit-period" element={<EditPeriod/>} />
+        <Route path="edit-period" element={<EditPeriod />} />
 
         <Route path="*" element={<ErrorPage />} />
         <Route path="statistics-ambience" element={<StatisticsAmbience />} />
@@ -64,6 +67,9 @@ export default function SuperUserRoutes() {
           element={<SingleNotification />}
         />
         <Route path="request" element={<SpecialRequest />} />
+        <Route path="groups" element={<ManagmentGroups />} />
+        <Route path="groups/history" element={<HistoryGroups />} />
+        <Route path="subjects" element={<SubjectsList />} />
       </Route>
     </Routes>
   );

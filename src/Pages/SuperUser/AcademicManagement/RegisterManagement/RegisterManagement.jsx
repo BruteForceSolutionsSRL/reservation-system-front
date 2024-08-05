@@ -18,7 +18,7 @@ function RegisterManagement() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const currentYear = new Date().getFullYear();
-  
+
   const [formData, setFormData] = useState({
     name: "",
     period_duration: "",
@@ -66,7 +66,7 @@ function RegisterManagement() {
       // console.log("datos del form", formData);
     }
   };
-  
+
   const handleEnvironmentNameChange = (event) => {
     const { value } = event.target;
     const transformedValue = value
@@ -177,14 +177,13 @@ function RegisterManagement() {
     }
     setConfimationModal(true);
   };
-  
+
   const storeNewManagement = async (newManagement) => {
     let managemetNew = {
       date_start: newManagement.period_duration[0],
       date_end: newManagement.period_duration[1],
       name: newManagement.name,
     };
-    console.log("entra aqui", managemetNew);
     let response = await storeManagement(managemetNew);
     return response;
   };
@@ -193,7 +192,7 @@ function RegisterManagement() {
     setConfimationModal(false);
     clearDataForm();
   }
-  
+
   function cancelRegister() {
     setCancelRegisterModal(true);
   }

@@ -64,12 +64,20 @@ function EditPeriod() {
     setlistManagement(bl);
   };
 
+  const adjustDateToLocal = (date) => {
+    const localDate = new Date(date);
+    localDate.setHours(
+      localDate.getHours() + localDate.getTimezoneOffset() / 60
+    );
+    return localDate;
+  };
+
   const handleShowModal = (management) => {
     setcurrentManagement({ ...management, errors: {} });
     setShowModal(true);
     setChangedFields({});
-    setStartDate(new Date(management.initial_date));
-    setEndDate(new Date(management.end_date));
+    setStartDate(adjustDateToLocal(new Date(management.initial_date)));
+    setEndDate(adjustDateToLocal(new Date(management.end_date)));
   };
 
   const handleSaveConfirmationsModal = async () => {
@@ -171,7 +179,7 @@ function EditPeriod() {
 
     return `${year}-${month}-${day}`;
   };
-
+  
   const validateEnvironmentName = (value) => {
     if (!value.trim()) {
       return "El nombre del periodo académico es obligatorio.";
@@ -325,7 +333,9 @@ function EditPeriod() {
 
   useEffect(() => {
     if (showModal) {
-      setSelectedDate(new Date(currentManagement.initial_date_reservations));
+      setSelectedDate(
+        adjustDateToLocal(new Date(currentManagement.initial_date_reservations))
+      );
       setMaxDateReservation(new Date(currentManagement.end_date));
     } else {
       setMaxDateReservation(null);

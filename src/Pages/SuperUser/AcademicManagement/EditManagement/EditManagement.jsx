@@ -26,8 +26,6 @@ function EditManagement() {
   const [confirmations, setConfirmationsModal] = useState(false);
   const [backendError, setBackendError] = useState("");
   const [confirmationLoading, setConfirmationLoading] = useState(false);
-
-  // Estado de las fechas
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(null);
   const currentYear = new Date().getFullYear();
@@ -63,12 +61,20 @@ function EditManagement() {
     setlistManagement(bl); // Aqui se obtiene del back
   };
 
+  const adjustDateToLocal = (date) => {
+    const localDate = new Date(date);
+    localDate.setHours(
+      localDate.getHours() + localDate.getTimezoneOffset() / 60
+    );
+    return localDate;
+  };
+
   const handleShowModal = (management) => {
     setcurrentManagement({ ...management, errors: {} });
     setShowModal(true);
     setChangedFields({});
-    setStartDate(new Date(management.initial_date));
-    setEndDate(new Date(management.end_date));
+    setStartDate(adjustDateToLocal(new Date(management.initial_date)));
+    setEndDate(adjustDateToLocal(new Date(management.end_date)));
   };
 
   const handleSaveConfirmationsModal = async () => {
@@ -111,8 +117,6 @@ function EditManagement() {
     setCancelModal(true);
     setShowModal(false);
   };
-
-  
 
   const handleCancelBackModal = () => {
     setShowModal(true);
@@ -258,8 +262,6 @@ function EditManagement() {
     period_duration: "PERIODO DE DURACIÓN",
   };
 
-
-
   const handleEndDateChange = (dates) => {
     const [start, end] = dates;
     const formattedStartDate = formatDate(start);
@@ -346,9 +348,7 @@ function EditManagement() {
           <Form>
             <Row className="">
               <Col md={3} className="">
-                <Form.Label className="fw-bold ">
-                  NOMBRE DE GESTIÓN
-                </Form.Label>
+                <Form.Label className="fw-bold ">NOMBRE DE GESTIÓN</Form.Label>
               </Col>
               <Col md={9}>
                 <Form.Control
@@ -373,7 +373,7 @@ function EditManagement() {
                   endDate={endDate}
                   onChange={handleEndDateChange}
                   minDate={startDate}
-                  yearDropdownItemNumber={currentYear - 1998 + 1} 
+                  yearDropdownItemNumber={currentYear - 1998 + 1}
                   maxDate={new Date(currentYear + 1, 4, 30)}
                   selected={endDate}
                   dateFormat="dd-MM-yyyy"

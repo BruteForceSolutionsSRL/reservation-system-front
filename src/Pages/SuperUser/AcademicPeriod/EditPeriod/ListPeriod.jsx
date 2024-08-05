@@ -2,6 +2,11 @@ import { Button } from "react-bootstrap";
 import "./EditPeriod.css";
 
 const ListPeriod = ({ list, handleShowModal }) => {
+  const formatDate = (dateString) => {
+    const [year, month, day] = dateString.split("-");
+    return `${day}-${month}-${year}`;
+  };
+
   return (
     <div>
       {list.map((management, index) => (
@@ -29,7 +34,7 @@ const ListPeriod = ({ list, handleShowModal }) => {
               </div>
               <div>
                 <b className="text-primary">PERIODO DE DURACIÓN: </b>
-                <b>{`${management.initial_date} - ${management.end_date}`}</b>
+                <b>{`${formatDate(management.initial_date)} - ${formatDate(management.end_date)}`}</b>
               </div>
             </div>
             <div className="col-sm-4">
@@ -43,7 +48,7 @@ const ListPeriod = ({ list, handleShowModal }) => {
               </div>
               <div>
                 <b className="text-primary">INICIO DE RESERVAS: </b>
-                <b>{management.initial_date_reservations}</b>
+                <b>{formatDate(management.initial_date_reservations)}</b>
               </div>
             </div>
 

@@ -26,6 +26,9 @@ import RegisterManagement from "../Pages/SuperUser/AcademicManagement/RegisterMa
 import EditManagement from "../Pages/SuperUser/AcademicManagement/EditManagement/EditManagement";
 import RegisterPeriod from "../Pages/SuperUser/AcademicPeriod/RegisterPeriod/RegisterPeriod";
 import EditPeriod from "../Pages/SuperUser/AcademicPeriod/EditPeriod/EditPeriod";
+import RegisterUser from "../Pages/SuperUser/RegisterUser/RegisterUser";
+import InformationUser from "../Pages/User/InformationUser/InformationUser";
+import EditRolList from "../Pages/SuperUser/EditRol/EditRolList";
 
 export default function SuperUserRoutes() {
   return (
@@ -70,6 +73,9 @@ export default function SuperUserRoutes() {
         <Route path="groups" element={<ManagmentGroups />} />
         <Route path="groups/history" element={<HistoryGroups />} />
         <Route path="subjects" element={<SubjectsList />} />
+        <Route path="register-user" element={<RegisterUser />} />
+        <Route path="information-user" element={<InformationUser />} />
+        <Route path="edit-rol" element={<EditRolList />} />
       </Route>
     </Routes>
   );

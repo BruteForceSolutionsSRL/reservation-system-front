@@ -2,30 +2,41 @@ import { useEffect, useState } from "react";
 import { getUsers } from "../../../services/teachers";
 import { Spinner } from "react-bootstrap";
 import EditRol from "./EditRol";
+import SearchBar from "../../../Components/SearchBar/SearchBar";
 
 export default function EditRolList() {
   const [loading, setLoading] = useState(true);
   const [teachers, setTeachers] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [resultList, setResultList] = useState([]);
 
   useEffect(() => {
     getUsersList();
   }, []);
 
-  // {
-  //   person_id: 1,
-  //   user_name: 'MARIA_BENITA_CESPEDES',
-  //   name: 'MARIA BENITA',
-  //   lastname: 'CESPEDES GUIZADA',
-  //   email: 'xdxdmaria.c@fcyt.umss.edu',
-  //   fullname: 'MARIA BENITA CESPEDES GUIZADA',
-  //   roles: [ 'DOCENTE' ]
-  // },
+  const search = (event) => {
+    const { value } = event.target;
+    setSearchValue(value);
+    if (value === "") {
+      setResultList(teachers);
+    } else {
+      const result = teachers.filter(
+        (t) =>
+          t.name.toLowerCase().includes(value.toLowerCase()) ||
+          t.fullname.toLowerCase().includes(value.toLowerCase()) ||
+          t.user_name.toLowerCase().includes(value.toLowerCase()) ||
+          t.roles.some((r) => r.toLowerCase().includes(value.toLowerCase()))
+      );
+      setResultList(result);
+    }
+  };
 
   const getUsersList = async () => {
     let { state, data } = await getUsers().catch((err) => console.error(err));
 
     console.log("algun data", data);
     setTeachers(data);
+    setResultList(data);
     // if (data) {
     //   const teachersWithSubjects = await Promise.all(
     //     data.map(async (teacher) => {
@@ -35,22 +46,6 @@ export default function EditRolList() {
     //   );
     //   setTeachers(teachersWithSubjects);
     // }
-
-    const sampleTeacher = {
-      email: "docente@example.com",
-      fullname: "Docente Ejemplo",
-      user_name: "basura",
-      person_id: 456789,
-      lastname: "Ejemplo",
-      name: "Docente",
-      subjects: [
-        { subject_id: 101, subject_name: "Matemáticas" },
-        { subject_id: 102, subject_name: "Ciencias" },
-      ],
-      roles: ["ENCARGADO"], // Example role
-    };
-
-    setTeachers((prevTeachers) => [...prevTeachers, sampleTeacher]);
     setLoading(false);
   };
 
@@ -79,24 +74,32 @@ export default function EditRolList() {
   };
 
   return (
-    <div className="container mt-2">
-      <h1 className="text-center">Lista de Usuarios</h1>
-      <hr />
-      {loading ? (
-        <div className="text-center">
-          <Spinner animation="border" variant="secondary" role="status">
-            <span className="visually-hidden">Cargando...</span>
-          </Spinner>
-        </div>
-      ) : (
-        <>
-          {teachers.map((each) => (
-            <div key={each.person_id}>
-              <EditRol {...each} />
-            </div>
-          ))}
-        </>
-      )}
+    <div className="">
+      <div className="mx-2 my-3 p-3 rounded shadow position-sticky top-0 bg-white">
+        <h1 className="text-center">Lista de Usuarios</h1>
+        <SearchBar
+          value={searchValue}
+          onChange={search}
+          onPaste={(e) => e.preventDefault()}
+        />
+      </div>
+      <div className="container">
+        {loading ? (
+          <div className="text-center">
+            <Spinner animation="border" variant="secondary" role="status">
+              <span className="visually-hidden">Cargando...</span>
+            </Spinner>
+          </div>
+        ) : (
+          <>
+            {resultList.map((each) => (
+              <div key={each.person_id}>
+                <EditRol {...each} />
+              </div>
+            ))}
+          </>
+        )}
+      </div>
     </div>
   );
 }

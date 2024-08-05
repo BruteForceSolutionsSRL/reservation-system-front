@@ -326,7 +326,7 @@ export default function RegisterUser() {
             <Modal.Title>Editar Rol</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <div>
+            {/* <div>
               <b>Rol:</b>
               {["DOCENTE", "ENCARGADO"].map((roleOption) => (
                 <div className="form-check" key={roleOption}>
@@ -347,11 +347,11 @@ export default function RegisterUser() {
                   </label>
                 </div>
               ))}
-            </div>
+            </div> */}
           </Modal.Body>
 
           <Modal.Footer>
-            <Button
+            {/* <Button
               className="btn btn-primary custom-btn-primary-outline"
               variant="primary"
               onClick={handleAccept}
@@ -364,7 +364,7 @@ export default function RegisterUser() {
               onClick={handleClose}
             >
               Cerrar
-            </Button>
+            </Button> */}
           </Modal.Footer>
         </Modal>
       </Container>

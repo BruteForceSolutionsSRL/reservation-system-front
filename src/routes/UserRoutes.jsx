@@ -12,6 +12,7 @@ import SingleNotification from "../Pages/User/SeeNotifications/SingleNotificatio
 import ProtectedRoute from "./ProtectedRoute";
 import FacultySelect from "../Pages/FacultySelect/FacultySelect";
 import EnterManagement from "../Pages/SuperUser/AcademicManagement/EnterManagement/EnterManagement";
+import InformationUser from "../Pages/User/InformationUser/InformationUser";
 
 export default function UserRoutes() {
   return (
@@ -37,6 +38,7 @@ export default function UserRoutes() {
           path="notifications/:notificationId"
           element={<SingleNotification />}
         />
+        <Route path="information-user" element={<InformationUser />} />
         <Route path="enter-management" element={<EnterManagement />} />
         <Route path="*" element={<ErrorPage />} />
       </Route>

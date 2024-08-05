@@ -191,6 +191,159 @@ export default function Sidebar({ user }) {
                 </Link>
               </li>
             </ul>
+
+            <ul className="list-unstyled ">
+              <li
+                className={activeItem === "academic-management" ? "active" : ""}
+              >
+                <Link
+                  to="#"
+                  className="text-decoration-none px-3  d-block"
+                  onClick={() => handleItemClick("academic-management")}
+                >
+                  <i className="bi bi-calendar2-week fs-4 text-white"></i>
+                  <span className="text-white ps-2">Gestión académica</span>
+                </Link>
+              </li>
+              <Collapse in={openItems["academic-management"]}>
+                <div>
+                  {user === "user" && (
+                    <li
+                      className={
+                        activeItem === "enter-management"
+                          ? "active list-unstyled px-2"
+                          : "list-unstyled px-2"
+                      }
+                    >
+                      <Link
+                        to="enter-management"
+                        className="text-decoration-none px-4 py-2 d-block"
+                        onClick={() => handleItemClick("enter-management")}
+                      >
+                        <i className="bi bi-indent fs-4 text-white"></i>
+                        <span className="text-white ps-2">
+                          Ingesar a una gestion
+                        </span>
+                      </Link>
+                    </li>
+                  )}
+                  {user === "superuser" && (
+                    <li
+                      className={
+                        activeItem === "enter-management"
+                          ? "active list-unstyled px-2"
+                          : "list-unstyled px-2"
+                      }
+                    >
+                      <Link
+                        to="enter-management"
+                        className="text-decoration-none px-4 py-2 d-block"
+                        onClick={() => handleItemClick("enter-management")}
+                      >
+                        <i className="bi bi-indent fs-4 text-white"></i>
+                        <span className="text-white ps-3">
+                          Ingesar a una gestion
+                        </span>
+                      </Link>
+                    </li>
+                  )}
+                  {user === "superuser" && (
+                    <li
+                      className={
+                        activeItem === "register-management"
+                          ? "active list-unstyled px-2"
+                          : "list-unstyled px-2"
+                      }
+                    >
+                      <Link
+                        to="register-management"
+                        className="text-decoration-none px-4 py-2 d-block"
+                        onClick={() => handleItemClick("register-management")}
+                      >
+                        <i className="bi bi-calendar2-plus fs-4 text-white"></i>{" "}
+                        <span className="text-white ps-2">
+                          Registar gestion
+                        </span>
+                      </Link>
+                    </li>
+                  )}
+                  {user === "superuser" && (
+                    <li
+                      className={
+                        activeItem === "edit-management"
+                          ? "active list-unstyled px-2"
+                          : "list-unstyled px-2"
+                      }
+                    >
+                      <Link
+                        to="edit-management"
+                        className="text-decoration-none px-4 py-2 d-block"
+                        onClick={() => handleItemClick("edit-management")}
+                      >
+                        <i className="bi bi-calendar2-check fs-4 text-white"></i>{" "}
+                        <span className="text-white ps-2">Editar gestion</span>
+                      </Link>
+                    </li>
+                  )}
+                </div>
+              </Collapse>
+            </ul>
+
+            <ul className="list-unstyled ">
+              <li className={activeItem === "academic-period" ? "active" : ""}>
+                <Link
+                  to="#"
+                  className="text-decoration-none px-3  d-block"
+                  onClick={() => handleItemClick("academic-period")}
+                >
+                  <i className="bi bi-mortarboard fs-4 text-white"></i>
+                  <span className="text-white ps-2">Periodo académico</span>
+                </Link>
+              </li>
+              <Collapse in={openItems["academic-period"]}>
+                <div>
+                  {user === "superuser" && (
+                    <li
+                      className={
+                        activeItem === "register-period"
+                          ? "active list-unstyled px-2"
+                          : "list-unstyled px-2"
+                      }
+                    >
+                      <Link
+                        to="register-period"
+                        className="text-decoration-none px-4 py-2 d-block"
+                        onClick={() => handleItemClick("register-period")}
+                      >
+                        <i className="bi bi-calendar2-plus fs-4 text-white"></i>{" "}
+                        <span className="text-white ps-2">
+                          Registar periodo
+                        </span>
+                      </Link>
+                    </li>
+                  )}
+                  {user === "superuser" && (
+                    <li
+                      className={
+                        activeItem === "edit-period"
+                          ? "active list-unstyled px-2"
+                          : "list-unstyled px-2"
+                      }
+                    >
+                      <Link
+                        to="edit-period"
+                        className="text-decoration-none px-4 py-2 d-block"
+                        onClick={() => handleItemClick("edit-period")}
+                      >
+                        <i className="bi bi-calendar2-check fs-4 text-white"></i>{" "}
+                        <span className="text-white ps-2">Editar periodo</span>
+                      </Link>
+                    </li>
+                  )}
+                </div>
+              </Collapse>
+            </ul>
+
             <ul className="list-unstyled">
               <li className={activeItem === "reservations" ? "active" : ""}>
                 <Link

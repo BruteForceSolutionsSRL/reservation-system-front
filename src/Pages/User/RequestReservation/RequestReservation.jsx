@@ -180,7 +180,7 @@ export default function RequestReservation() {
   const fetchSubjects = async () => {
     const { status, data } = await getSubjects();
     if (status >= 200 && status < 300) {
-      setSubjects(data);
+      setSubjects(data.university_subjects);
     } else {
       setSubjects([]);
     }
@@ -547,14 +547,15 @@ export default function RequestReservation() {
       }
       setToInitalStateForm();
     } else if (
-      (response.status >= 300 && response.status < 400) ||
-      (response.status >= 400 && response.status < 500)
+      // (response.status >= 300 && response.status < 400) ||
+      response.status >= 400 &&
+      response.status < 500
     ) {
       setModalSendRequest({
         content: { title: "Error", body: response.data.message },
         show: true,
       });
-    } else if (response.status === 500) {
+    } else if (response.status >= 500) {
       setModalSendRequest({
         content: {
           title: "Error",

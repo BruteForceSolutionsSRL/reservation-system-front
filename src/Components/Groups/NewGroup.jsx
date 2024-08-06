@@ -172,6 +172,7 @@ export default function NewGroup({ show, setShow }) {
     const { status, data } = await getFetch("academic-periods");
     if (status >= 200 && status < 300) {
       setAcademicPeriods(data);
+      setAcademicPeriodSelected(data[0].academic_period_id);
     } else {
       setAcademicPeriods([]);
     }

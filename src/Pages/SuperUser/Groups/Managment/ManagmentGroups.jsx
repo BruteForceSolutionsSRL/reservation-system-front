@@ -1,15 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GroupsList from "../../../../Components/Groups/GroupsList/GroupsList";
 import SearchBar from "../../../../Components/SearchBar/SearchBar";
 import { useSearchGroup } from "../../../../Hooks/useSearchGroup";
 import { listGroups } from "../groupsmocks";
 import NewGroup from "../../../../Components/Groups/NewGroup";
+import { useFetchService } from "../../../../Components/Hooks/useFetchService";
 
 export default function ManagmentGroups() {
   const groupsList = listGroups;
+  const { getFetch } = useFetchService();
   const [searchValue, setSearchValue] = useState("");
   const { resultList } = useSearchGroup({ groupsList, searchValue });
   const [showNewGroupModal, setShowNewGroupModal] = useState(false);
+
+  useEffect(() => {
+    fetchGroups();
+  }, []);
+
+  const fetchGroups = async () => {
+    const { status, data } = await getFetch(`teacher-subjects/${1}`);
+    console.log("Grupos ", status, data);
+    // Necesito mas datos del endpoint :/ no me da el horario de clases, las aulas ni las carreras :/ la gestion podemos quitarlo si no se manda xd.
+  };
 
   return (
     <>

@@ -26,7 +26,7 @@ const ListEnvironment = ({ list, handleShowModal }) => {
               </div>
               <div>
                 <b className="text-primary">NOMBRE: </b>
-                <b>{reservation.classroom_name}</b>
+                <b>{reservation.name}</b>
               </div>
             </div>
             <div className="col-sm-4">
@@ -36,7 +36,7 @@ const ListEnvironment = ({ list, handleShowModal }) => {
               </div>
               <div>
                 <b className="text-primary">TIPO: </b>
-                <b>{reservation.classroom_type_name}</b>
+                <b>{reservation.type_name}</b>
               </div>
             </div>
             <div className="col-sm-2">

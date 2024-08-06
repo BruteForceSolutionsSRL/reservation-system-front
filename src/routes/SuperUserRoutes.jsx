@@ -26,6 +26,7 @@ import RegisterManagement from "../Pages/SuperUser/AcademicManagement/RegisterMa
 import EditManagement from "../Pages/SuperUser/AcademicManagement/EditManagement/EditManagement";
 import RegisterPeriod from "../Pages/SuperUser/AcademicPeriod/RegisterPeriod/RegisterPeriod";
 import EditPeriod from "../Pages/SuperUser/AcademicPeriod/EditPeriod/EditPeriod";
+import CopyPeriod from "../Pages/SuperUser/AcademicPeriod/CopyPeriod/CopyAcademicPeriod";
 import RegisterUser from "../Pages/SuperUser/RegisterUser/RegisterUser";
 import InformationUser from "../Pages/User/InformationUser/InformationUser";
 import EditRolList from "../Pages/SuperUser/EditRol/EditRolList";
@@ -59,6 +60,7 @@ export default function SuperUserRoutes() {
 
         <Route path="register-period" element={<RegisterPeriod />} />
         <Route path="edit-period" element={<EditPeriod />} />
+        <Route path="copy-period" element={<CopyPeriod />} />
 
         <Route path="*" element={<ErrorPage />} />
         <Route path="statistics-ambience" element={<StatisticsAmbience />} />

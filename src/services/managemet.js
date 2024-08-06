@@ -50,16 +50,16 @@ export function getFaculties() {
     });
 }
 
-export function setManagement(classroom_id, environmentEdited) {
+export function setManagement(management_id, managementEdited) {
   let responseFetch = {};
   let token = localStorage.getItem("token");
-  return fetch(url + `academic-managements/${classroom_id}/update`, {
+  return fetch(url + `academic-managements/${management_id}/update`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(environmentEdited),
+    body: JSON.stringify(managementEdited),
   })
     .then((response) => {
       responseFetch = { ...responseFetch, status: response.status };
@@ -71,8 +71,8 @@ export function setManagement(classroom_id, environmentEdited) {
     });
 }
 
-export function storePeriod(management) {
-    let token = localStorage.getItem("token");
+export function storePeriod(period) {
+  let token = localStorage.getItem("token");
   let responseFetch = {};
   return fetch(url + "academic-periods/store", {
     method: "POST",
@@ -80,7 +80,7 @@ export function storePeriod(management) {
       Authorization: `Bearer ${token}`,
       "Content-Type": "aplication/json",
     },
-    body: JSON.stringify(management),
+    body: JSON.stringify(period),
   })
     .then((response) => {
       responseFetch = { ...responseFetch, status: response.status };
@@ -107,16 +107,16 @@ export function getPeriod() {
     });
 }
 
-export function setPeriod(classroom_id, environmentEdited) {
+export function setPeriod(period_id, periodEdited) {
   let responseFetch = {};
   let token = localStorage.getItem("token");
-  return fetch(url + `academic-periods/${classroom_id}/update`, {
+  return fetch(url + `academic-periods/${period_id}/update`, {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(environmentEdited),
+    body: JSON.stringify(periodEdited),
   })
     .then((response) => {
       responseFetch = { ...responseFetch, status: response.status };
@@ -126,4 +126,26 @@ export function setPeriod(classroom_id, environmentEdited) {
       responseFetch = { ...responseFetch, data: data };
       return responseFetch;
     });
+}
+
+export function copyPeriod(period) {
+  let token = localStorage.getItem("token");
+  let responseFetch = {};
+  return fetch(url + "academic-periods/copy-period", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "aplication/json",
+    },
+    body: JSON.stringify(period),
+  })
+    .then((response) => {
+      responseFetch = { ...responseFetch, status: response.status };
+      return response.json();
+    })
+    .then((data) => {
+      responseFetch = { ...responseFetch, data: data };
+      return responseFetch;
+    })
+    .catch((err) => console.error(err));
 }

@@ -835,26 +835,26 @@ export default function Sidebar({ user }) {
               </li>
               <Collapse in={openItems["groups"]}>
                 <div className="bg-dark rounded">
-                  {user === "superuser" && (
-                    <>
-                      <li
-                        className={
-                          activeItem === "groups-list"
-                            ? "active list-unstyled"
-                            : "list-unstyled"
-                        }
+                  {/* {user === "superuser" && ( */}
+                  <>
+                    <li
+                      className={
+                        activeItem === "groups-list"
+                          ? "active list-unstyled"
+                          : "list-unstyled"
+                      }
+                    >
+                      <Link
+                        to={user === "superuser" ? "groups" : "groups-teacher"}
+                        className="text-decoration-none px-2 py-2 d-block text-white"
+                        onClick={() => handleItemClick("groups-list")}
                       >
-                        <Link
-                          to="groups"
-                          className="text-decoration-none px-2 py-2 d-block text-white"
-                          onClick={() => handleItemClick("groups-list")}
-                        >
-                          <div className="align-items-center">
-                            <i className="bi bi-list fs-4"></i> Lista de grupos
-                          </div>
-                        </Link>
-                      </li>
-                      <li
+                        <div className="align-items-center">
+                          <i className="bi bi-list fs-4"></i> Lista de grupos
+                        </div>
+                      </Link>
+                    </li>
+                    {/* <li
                         className={
                           activeItem === "groups-history"
                             ? "active list-unstyled"
@@ -867,13 +867,13 @@ export default function Sidebar({ user }) {
                           onClick={() => handleItemClick("groups-history")}
                         >
                           <div className="align-items-center">
-                            <i className="bi bi-clock-history fs-4"></i>{" "}
+                            <i className="bi bi-clock-history fs-4"></i>
                             Historial de grupos
                           </div>
                         </Link>
-                      </li>
-                    </>
-                  )}
+                      </li> */}
+                  </>
+                  {/* )} */}
                 </div>
               </Collapse>
             </ul>

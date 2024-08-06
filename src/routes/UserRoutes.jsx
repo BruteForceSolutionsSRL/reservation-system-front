@@ -13,6 +13,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import FacultySelect from "../Pages/FacultySelect/FacultySelect";
 import EnterManagement from "../Pages/SuperUser/AcademicManagement/EnterManagement/EnterManagement";
 import InformationUser from "../Pages/User/InformationUser/InformationUser";
+import TeacherGroups from "../Pages/User/TeacherGroups/TeacherGroups";
 
 export default function UserRoutes() {
   return (
@@ -40,6 +41,7 @@ export default function UserRoutes() {
         />
         <Route path="information-user" element={<InformationUser />} />
         <Route path="enter-management" element={<EnterManagement />} />
+        <Route path="groups-teacher" element={<TeacherGroups />} />
         <Route path="*" element={<ErrorPage />} />
       </Route>
       <Route path="select-faculty" element={<FacultySelect />} />

@@ -71,7 +71,7 @@ export default function SuperUserRoutes() {
         />
         <Route path="request" element={<SpecialRequest />} />
         <Route path="groups" element={<ManagmentGroups />} />
-        <Route path="groups/history" element={<HistoryGroups />} />
+        {/* <Route path="groups/history" element={<HistoryGroups />} /> */}
         <Route path="subjects" element={<SubjectsList />} />
         <Route path="register-user" element={<RegisterUser />} />
         <Route path="information-user" element={<InformationUser />} />

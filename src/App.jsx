@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ErrorPage from "./Components/ErrorPage/ErrorPage";
 import UserRoutes from "./routes/UserRoutes";
@@ -7,7 +7,7 @@ import Home from "./Pages/User/Homepage/Home";
 import LoginPage from "./Components/LoginPage/LoginPage";
 import { AuthProvider } from "./contexts/AuthProvider";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import RecoverPassword from "./Components/RecoverPassword/RecoverPassword"
+import RecoverPassword from "./Components/RecoverPassword/RecoverPassword";
 import "./App.css";
 
 export default function App() {

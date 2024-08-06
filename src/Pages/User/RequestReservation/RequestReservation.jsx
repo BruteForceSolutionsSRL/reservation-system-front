@@ -14,6 +14,7 @@ import { Spinner } from "react-bootstrap";
 import "./RequestReservation.css";
 import LoadingSpinner from "../../../Components/LoadingSpinner/LoadingSpinner";
 import Select from "react-select";
+import { currentDateAcademicPeriod } from "../../../utils/currentDateAcademicPeriod";
 
 export default function RequestReservation() {
   const user = useMemo(() =>
@@ -22,7 +23,7 @@ export default function RequestReservation() {
   const [loadingPage, setLoadingPage] = useState(true);
   const [groupSelected, setGroupSelected] = useState([]);
   const [optionsGroups, setOptionsGroups] = useState([]);
-  const [subjects, setSubjects] = useState(null);
+  const [subjects, setSubjects] = useState([]);
   const [subjectSelected, setSubjectSelected] = useState("");
   const [quantity, setQuantity] = useState("");
   const [quantityWarnings, setQuantityWarnings] = useState({});
@@ -43,6 +44,12 @@ export default function RequestReservation() {
   const [classroomsByBlock, setClassroomsByBlock] = useState([]);
   const [classroomsOptions, setClassroomsOptions] = useState([]);
   const [classroomsSelected, setClassroomsSelected] = useState([]);
+  const [initialDateAcademicPeriod, setInitialDateAcademicPeriod] = useState(
+    getCurrentDate()
+  );
+  const [endDateAcademicPeriod, setEndDateAcademicPeriod] = useState(
+    getCurrentDate()
+  );
   const [suggAvailable, setSuggAvailable] = useState(false);
   const [suggMessage, setSuggMessage] = useState({
     message: "",
@@ -110,6 +117,7 @@ export default function RequestReservation() {
       fetchReasons(),
       fetchTimeSlots(),
       fetchBlocks(),
+      getCurrentDateAcademicPeriod(),
     ])
       .finally(() => setLoadingPage(false))
       .catch((err) => console.error(err));
@@ -157,9 +165,25 @@ export default function RequestReservation() {
     }
   }, [blockSelected, startTime, endTime, dateValue]);
 
+  const getCurrentDateAcademicPeriod = async () => {
+    const facultyId = localStorage.getItem("faculty");
+    const { status, data } = await currentDateAcademicPeriod(facultyId);
+    if (status >= 200 && status < 300) {
+      setInitialDateAcademicPeriod(data.initial_date_reservations);
+      setEndDateAcademicPeriod(data.end_date);
+    } else {
+      setInitialDateAcademicPeriod(getCurrentDate());
+      setEndDateAcademicPeriod(getCurrentDate());
+    }
+  };
+
   const fetchSubjects = async () => {
-    const sbjs = await getSubjects();
-    setSubjects(sbjs);
+    const { status, data } = await getSubjects();
+    if (status >= 200 && status < 300) {
+      setSubjects(data);
+    } else {
+      setSubjects([]);
+    }
   };
 
   const fetchReasons = async () => {
@@ -240,8 +264,7 @@ export default function RequestReservation() {
       let classrooms = data.map((classroom) => {
         return {
           value: classroom,
-          label:
-            classroom.classroom_name + "- CAPACIDAD: " + classroom.capacity,
+          label: classroom.name + "- CAPACIDAD: " + classroom.capacity,
         };
       });
       setClassroomsSelected([]);
@@ -449,8 +472,7 @@ export default function RequestReservation() {
         let response = array.map((classroom) => {
           return {
             value: classroom,
-            label:
-              classroom.classroom_name + " - CAPACIDAD: " + classroom.capacity,
+            label: classroom.name + " - CAPACIDAD: " + classroom.capacity,
           };
         });
         return response;
@@ -692,9 +714,12 @@ export default function RequestReservation() {
                       <option value="" disabled={subjectSelected !== ""}>
                         Seleccione una opcion
                       </option>
-                      {subjects?.map((each) => {
+                      {subjects?.map((each, index) => {
                         return (
-                          <option key={each.subject_id} value={each.subject_id}>
+                          <option
+                            key={each.subject_id + each.subject_name + index}
+                            value={each.subject_id}
+                          >
                             {each.subject_name}
                           </option>
                         );
@@ -830,14 +855,14 @@ export default function RequestReservation() {
               </div>
               <div className="col-lg-3">
                 <div className="d-flex align-items-center">
-                  <b className=" pe-2">FECHA</b>
+                  <b className="pe-2">FECHA</b>
                   <Form.Control
                     type="date"
                     className="form-control"
                     value={dateValue}
                     onChange={handleDateChange}
-                    min={getCurrentDate()}
-                    max="2024-12-31"
+                    min={initialDateAcademicPeriod}
+                    max={endDateAcademicPeriod}
                   />
                 </div>
                 <Form.Control.Feedback type="invalid">
@@ -914,9 +939,8 @@ export default function RequestReservation() {
                   onChange={(e) => handleChangeBlocks(e.target)}
                   isInvalid={errorsMessages.block.isInvalid}
                   disabled={
-                    !quantity.trim() ||
-                    !startTime.trim() ||
-                    !subjectSelected.trim()
+                    !quantity.trim() || !startTime.trim()
+                    // !subjectSelected.trim()
                   }
                 >
                   <option value="" disabled={blockSelected !== ""}>

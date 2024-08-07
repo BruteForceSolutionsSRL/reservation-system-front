@@ -7,13 +7,13 @@ import {
   Modal,
   Row,
   Spinner,
-  Table,
 } from "react-bootstrap";
 import "./InformationUser.css";
 import { useState, useEffect } from "react";
 
 export default function InformationUser() {
-  const [showPasswordActual, setShowPasswordActual] = useState(false);
+  const [showconfirmacionConctrasena, setShowconfirmacionConctrasena] =
+    useState(false);
   const [showPasswordNew, setShowPasswordNew] = useState(false);
   const [changes, setChanges] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,14 +24,13 @@ export default function InformationUser() {
   const [initialFormData, setInitialFormData] = useState(null);
   const [modalContent, setModalContent] = useState({ title: "", message: "" });
   const [showResponseModal, setShowResponseModal] = useState(false);
-  const [subject, setSubject] = useState("");
   const [showCambiar, setShowCambiar] = useState(false);
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
-  const [contrasenaActual, setContrasenaActual] = useState("");
   const [contrasenaNueva, setContrasenaNueva] = useState("");
+  const [confirmacionConctrasena, setConfirmacionContrasena] = useState("");
 
   const [alertMessage, setAlertMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
@@ -83,8 +82,8 @@ export default function InformationUser() {
     setShowCambiar(true);
   };
 
-  const togglePasswordVisibilityActual = () => {
-    setShowPasswordActual(!showPasswordActual);
+  const togglePasswordVisibilityConfirmation = () => {
+    setShowconfirmacionConctrasena(!showconfirmacionConctrasena);
   };
 
   const togglePasswordVisibilityNew = () => {
@@ -97,24 +96,29 @@ export default function InformationUser() {
   };
 
   const handleCloseCambiar = () => {
-    setContrasenaActual("");
+    setConfirmacionContrasena("");
     setContrasenaNueva("");
-    setShowPasswordActual(false);
+    setShowconfirmacionConctrasena(false);
     setShowPasswordNew(false);
     setShowAlert(false);
     setShowCambiar(false);
   };
 
   const handleSendCambiar = async () => {
+    setShowAlert(false);
+    setIsLoading(true);
     const passwords = {
-      current_password: contrasenaActual,
       new_password: contrasenaNueva,
+      confirmation_password: confirmacionConctrasena,
     };
+
+    // 'new_password'
+    // 'confirmation_password'
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(URL + "URL_DEL_SERVIDOR", {
-        method: "POST",
+      const response = await fetch(URL + "auth/change/password", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -123,20 +127,25 @@ export default function InformationUser() {
       });
 
       const result = await response.json();
+      console.log(result);
 
       if (!response.ok) {
         setAlertMessage(
           result.message || "Error al validar la contraseña actual."
         );
+        setIsLoading(false);
+
         setShowAlert(true);
       } else {
         setSuccessMessage(result.message || "Contraseña cambiada con éxito.");
         setShowSuccessModal(true);
         handleCloseCambiar();
+        setIsLoading(false);
       }
     } catch (error) {
       setAlertMessage("Error de conexión con el servidor.");
       setShowAlert(true);
+      setIsLoading(false);
     }
   };
 
@@ -287,7 +296,6 @@ export default function InformationUser() {
                   style={{
                     border: modifiedFields.Nombre ? "3px solid #00ff66" : "",
                   }}
-                  disabled
                 />
               </Col>
             </Row>
@@ -305,7 +313,6 @@ export default function InformationUser() {
                   style={{
                     border: modifiedFields.Apellido ? "3px solid #00ff66" : "",
                   }}
-                  disabled
                 />
               </Col>
             </Row>
@@ -491,33 +498,11 @@ export default function InformationUser() {
               {alertMessage}
             </Alert>
           )}
+
           <Row className="mb-4">
             <Col style={{ position: "relative" }}>
               <Form.Control
-                className="text-truncate"
-                type={showPasswordActual ? "text" : "password"}
-                name="contrasenaActual"
-                placeholder="Contraseña Actual"
-                value={contrasenaActual}
-                onChange={(e) => setContrasenaActual(e.target.value)}
-              />
-              <i
-                className={showPasswordActual ? "bi bi-eye-slash" : "bi bi-eye"}
-                onClick={togglePasswordVisibilityActual}
-                style={{
-                  position: "absolute",
-                  right: "25px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  cursor: "pointer",
-                }}
-              ></i>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col style={{ position: "relative" }}>
-              <Form.Control
+                required
                 className="text-truncate"
                 type={showPasswordNew ? "text" : "password"}
                 name="contrasenaNueva"
@@ -538,8 +523,44 @@ export default function InformationUser() {
               ></i>
             </Col>
           </Row>
+          <Row>
+            <Col style={{ position: "relative" }}>
+              <Form.Control
+                required
+                className="text-truncate"
+                type={showconfirmacionConctrasena ? "text" : "password"}
+                name="confirmationContrasena"
+                placeholder="Confirmacion de Contraseña"
+                value={confirmacionConctrasena}
+                onChange={(e) => setConfirmacionContrasena(e.target.value)}
+              />
+              <i
+                className={
+                  showconfirmacionConctrasena ? "bi bi-eye-slash" : "bi bi-eye"
+                }
+                onClick={togglePasswordVisibilityConfirmation}
+                style={{
+                  position: "absolute",
+                  right: "25px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer",
+                }}
+              ></i>
+            </Col>
+          </Row>
         </Modal.Body>
         <Modal.Footer>
+          {isLoading && (
+            <Spinner
+              className="me-3"
+              as="span"
+              animation="border"
+              size="lg"
+              role="status"
+              aria-hidden="true"
+            />
+          )}
           <Button
             className="btn btn-primary custom-btn-primary-outline"
             variant="primary"

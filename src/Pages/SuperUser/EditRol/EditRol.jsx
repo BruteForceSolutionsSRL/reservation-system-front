@@ -1,47 +1,66 @@
-import { useState } from "react";
-import { Button, Col, Modal, Row } from "react-bootstrap";
+import { useState, useEffect } from "react";
+import { Button, Col, Form, Modal, Row, Spinner } from "react-bootstrap";
+import "./EditRol.css";
 
 export default function EditRol(props) {
-  const {
-    person_id,
-    user_name,
-    name,
-    lastname,
-    email,
-    fullname,
-    roles,
-    subjects,
-  } = props;
+  const { person_id, user_name, name, lastname, email, fullname, roles } =
+    props;
 
-  const [showModal, setShowModal] = useState(false);
   const [selectedRole, setSelectedRole] = useState(roles[0] || "");
   const [responseTitle, setResponseTitle] = useState("");
   const [responseMessage, setResponseMessage] = useState("");
   const [showResponseModal, setShowResponseModal] = useState(false);
+
+  const [formData, setFormData] = useState({});
+  const [initialFormData, setInitialFormData] = useState({});
+
+  const [showEditarRol, setShowEditarRol] = useState(false);
+  const [loadingModal, setLoadingModal] = useState(false);
+  const [samePerson, setSamePerson] = useState(false);
+
+  const [showModalInformacion, setShowModalInformacion] = useState(false);
   const URL = import.meta.env.VITE_REACT_API_URL;
+
+  useEffect(() => {
+    setInitialFormData({
+      person_id,
+      user_name,
+      name,
+      lastname,
+      email,
+    });
+    setFormData({
+      person_id,
+      user_name,
+      name,
+      lastname,
+      email,
+    });
+  }, [person_id, user_name, name, lastname, email]);
 
   const handleClickEdit = () => {
     setSelectedRole(roles[0] || "");
-    setShowModal(true);
-    console.log(`Editar informacion de ${fullname}, ${person_id}`);
-    console.log(props);
-    console.log(selectedRole);
+    setShowModalInformacion(true);
+    sameperson();
   };
 
-  const handleClose = () => setShowModal(false);
+  const handleClose = () => {
+    setShowModalInformacion(false);
+    handleCancelEdit();
+  };
 
   const handleRoleChange = (event) => {
     setSelectedRole(event.target.value);
   };
 
   const handleAccept = async () => {
-    const token = localStorage.getItem("token");
+    setLoadingModal(true);
 
+    const token = localStorage.getItem("token");
     const role_id = selectedRole === "DOCENTE" ? "2" : "1";
-    console.log(role_id, person_id, selectedRole);
 
     try {
-      const response = await fetch(URL + `users/${person_id}/assignRoles`, {
+      const response = await fetch(`${URL}users/${person_id}/assignRoles`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -57,28 +76,42 @@ export default function EditRol(props) {
         setResponseTitle("Éxito");
         setResponseMessage(
           responseData.message ||
-            `El rol del usuario "${responseData.fullname}" se actualizo a: "${responseData.roles[0]}"`
+            `El rol del usuario "${responseData.fullname}" se actualizó a: "${responseData.roles[0]}"`
         );
-        console.log("Rol actualizado:", responseData);
+        setLoadingModal(false);
       } else {
         setResponseTitle(`Error ${response.status}`);
-        console.error("Failed to update role");
-        console.log(props);
+        console.error("Falló al actualizar el role:", responseData);
       }
     } catch (error) {
       setResponseMessage("Error al actualizar el rol.");
       setResponseTitle("Error");
       console.error("Error:", error);
-      console.log(props);
+      setLoadingModal(false);
     }
 
-    setShowModal(false);
     setShowResponseModal(true);
   };
 
   const handleResponseModal = () => {
     setShowResponseModal(false);
+    setShowEditarRol(false);
     window.location.reload();
+  };
+
+  const handleCancelEdit = () => {
+    setFormData({ ...initialFormData });
+  };
+
+  //la misma persona
+  const sameperson = () => {
+    let person = JSON.parse(localStorage.getItem("userInformation"));
+
+    if (person.person_id === person_id) {
+      setSamePerson(true);
+    } else {
+      setSamePerson(false);
+    }
   };
 
   return (
@@ -89,30 +122,6 @@ export default function EditRol(props) {
             <b className="text-primary">NOMBRE:</b>
             <div>
               <span>{fullname}</span>
-            </div>
-          </Col>
-
-          <Col lg>
-            <b className="text-primary">MATERIAS:</b>
-            <div>
-              <span>
-                {subjects ? (
-                  subjects.length > 0 ? (
-                    subjects.map((subject) => (
-                      <div key={subject.subject_id}>
-                        <span>
-                          <strong>*</strong>
-                          {subject.subject_name}
-                        </span>
-                      </div>
-                    ))
-                  ) : (
-                    <span>No hay materias asignadas</span>
-                  )
-                ) : (
-                  <span>No hay materias asignadas</span>
-                )}
-              </span>
             </div>
           </Col>
           <Col>
@@ -126,83 +135,203 @@ export default function EditRol(props) {
               className="custom-button btn btn-primary custom-btn-primary-outline w-50"
               onClick={handleClickEdit}
             >
-              Editar Rol
+              Editar
             </Button>
           </Col>
         </Row>
       </div>
       {/* --- */}
-      <Modal show={showModal} onHide={handleClose} centered backdrop="static">
+      <Modal
+        size="lg"
+        show={showModalInformacion}
+        onHide={handleClose}
+        centered
+        backdrop="static"
+      >
         <Modal.Header closeButton>
-          <Modal.Title>Editar Rol</Modal.Title>
+          <Modal.Title>Informacion de Usuario</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div>
-            <b>ID:</b> {person_id}
-          </div>
-          <div>
-            <b>Nombre de usuario:</b> {user_name}
-          </div>
-          <div>
-            <b>Nombre:</b> {name}
-          </div>
-          <div>
-            <b>Apellido:</b> {lastname}
-          </div>
-          <div>
-            <b>Email:</b> {email}
-          </div>
-          <div>
-            <b>Nombre completo:</b> {fullname}
-          </div>
-          <div>
-            <b>Materias:</b>
-            <ul>
-              {subjects && subjects.length > 0 ? (
-                subjects.map((subject) => (
-                  <li key={subject.subject_id}>{subject.subject_name}</li>
-                ))
-              ) : (
-                <li>No hay materias asignadas</li>
-              )}
-            </ul>
-          </div>
-          <div>
-            <b>Rol:</b>
-            {["DOCENTE", "ENCARGADO"].map((roleOption) => (
-              <div className="form-check" key={roleOption}>
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  name="roleOptions"
-                  id={`${roleOption}Option`}
-                  value={roleOption}
-                  checked={selectedRole === roleOption}
-                  onChange={handleRoleChange}
-                />
-                <label
-                  className="form-check-label"
-                  htmlFor={`${roleOption}Option`}
-                >
-                  {roleOption}
-                </label>
+            <div className="tag-container mb-3">
+              <label className="tag-label">INFORMACIÓN BÁSICA</label>
+              <div>
+                <Row className="mb-2">
+                  <Col lg>
+                    <Form.Label>ID: </Form.Label>
+                  </Col>
+                  <Col>
+                    <Form.Control
+                      type="input"
+                      value={formData.person_id || ""}
+                      disabled
+                    />
+                  </Col>
+                </Row>
+                <Row className="mb-2">
+                  <Col lg>
+                    <Form.Label>Nombre: </Form.Label>
+                  </Col>
+                  <Col>
+                    <Form.Control
+                      type="input"
+                      value={formData.name || ""}
+                      disabled
+                    />
+                  </Col>
+                </Row>
+
+                <Row className="mb-2">
+                  <Col lg>
+                    <Form.Label>Apellido: </Form.Label>
+                  </Col>
+                  <Col>
+                    <Form.Control
+                      type="input"
+                      value={formData.lastname || ""}
+                      disabled
+                    />
+                  </Col>
+                </Row>
+
+                <Row className="mb-2">
+                  <Col lg>
+                    <Form.Label>Nombre de usuario: </Form.Label>
+                  </Col>
+                  <Col>
+                    <Form.Control
+                      type="input"
+                      value={formData.user_name || ""}
+                      disabled
+                    />
+                  </Col>
+                </Row>
+
+                <Row>
+                  <Col md={6}>
+                    <Form.Label>Rol:</Form.Label>
+                  </Col>
+                  <Col md={3}>
+                    <Form.Control
+                      type="text"
+                      className="text-truncate"
+                      disabled
+                      value={roles[0]}
+                    />
+                  </Col>
+                  <Col md={3}>
+                    <Button
+                      variant="primary"
+                      className="btn btn-primary custom-btn-primary-outline w-10"
+                      onClick={() => {
+                        setShowEditarRol(true);
+                      }}
+                      disabled={samePerson}
+                    >
+                      Cambiar Rol
+                    </Button>
+                  </Col>
+                </Row>
               </div>
-            ))}
+            </div>
+            <div className="tag-container mb-3">
+              <label className="tag-label">INFORMACIÓN DE CONTACTO</label>
+              <div>
+                <Row className="mb-2">
+                  <Col>
+                    <Form.Label>Correo Principal</Form.Label>
+                  </Col>
+                  <Col>
+                    <Form.Control
+                      className="text-truncate"
+                      type="email"
+                      value={formData.email || ""}
+                      disabled
+                    />
+                  </Col>
+                </Row>
+              </div>
+            </div>
           </div>
         </Modal.Body>
 
         <Modal.Footer>
           <Button
+            className="btn btn-secondary custom-btn-gray-outline"
+            variant="secondary"
+            onClick={handleClose}
+          >
+            Cerrar
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Modal editar rol */}
+
+      <Modal
+        show={showEditarRol}
+        onHide={() => setShowEditarRol(false)}
+        centered
+        backdrop="static"
+        dialogClassName="modal-innermost"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Cambiar Rol</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row>
+            <Col>
+              <b>ROL:</b>
+            </Col>
+
+            <Col>
+              <div>
+                {["DOCENTE", "ENCARGADO"].map((roleOption) => (
+                  <div className="form-check" key={roleOption}>
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="roleOptions"
+                      id={`${roleOption}Option`}
+                      value={roleOption}
+                      checked={selectedRole === roleOption}
+                      onChange={handleRoleChange}
+                    />
+                    <label
+                      className="form-check-label"
+                      htmlFor={`${roleOption}Option`}
+                    >
+                      {roleOption}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </Col>
+          </Row>
+        </Modal.Body>
+        <Modal.Footer>
+          {loadingModal && (
+            <Spinner
+              className="me-3"
+              as="span"
+              animation="border"
+              size="lg"
+              role="status"
+              aria-hidden="true"
+            />
+          )}
+
+          <Button
             className="btn btn-primary custom-btn-primary-outline"
             variant="primary"
             onClick={handleAccept}
           >
-            Aceptar
+            Cambiar
           </Button>
           <Button
             className="btn btn-secondary custom-btn-gray-outline"
             variant="secondary"
-            onClick={handleClose}
+            onClick={() => setShowEditarRol(false)}
           >
             Cerrar
           </Button>

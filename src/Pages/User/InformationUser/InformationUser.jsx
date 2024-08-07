@@ -7,13 +7,13 @@ import {
   Modal,
   Row,
   Spinner,
-  Table,
 } from "react-bootstrap";
 import "./InformationUser.css";
 import { useState, useEffect } from "react";
 
 export default function InformationUser() {
-  const [showPasswordActual, setShowPasswordActual] = useState(false);
+  const [showconfirmacionConctrasena, setShowconfirmacionConctrasena] =
+    useState(false);
   const [showPasswordNew, setShowPasswordNew] = useState(false);
   const [changes, setChanges] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,41 +24,45 @@ export default function InformationUser() {
   const [initialFormData, setInitialFormData] = useState(null);
   const [modalContent, setModalContent] = useState({ title: "", message: "" });
   const [showResponseModal, setShowResponseModal] = useState(false);
-  const [subject, setSubject] = useState("");
   const [showCambiar, setShowCambiar] = useState(false);
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
-  const [contrasenaActual, setContrasenaActual] = useState("");
   const [contrasenaNueva, setContrasenaNueva] = useState("");
+  const [confirmacionConctrasena, setConfirmacionContrasena] = useState("");
 
   const [alertMessage, setAlertMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const URL = import.meta.env.VITE_REACT_API_URL;
-  const token = localStorage.getItem("token");
 
   const [formData, setFormData] = useState({
     Nombre: "",
-    "Segundo Nombre": "",
-    "Apellido Paterno": "",
-    "Apellido Materno": "",
+    Apellido: "",
     nombreUsuario: "",
     "Correo Principal": "",
     Rol: "",
   });
 
+  const [data, setData] = useState({});
+
+  const updateData = (key, value) => {
+    setData((prevData) => ({
+      ...prevData,
+      [key]: value,
+    }));
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const originalData1String = localStorage.getItem("userInformation");
+
       if (originalData1String) {
         const originalData1 = JSON.parse(originalData1String);
 
         const updatedData = {
-          Nombre: originalData1.name.split(" ")[0],
-          "Segundo Nombre": originalData1.name.split(" ")[1] || "",
-          "Apellido Paterno": originalData1.lastname.split(" ")[0],
-          "Apellido Materno": originalData1.lastname.split(" ")[1] || "",
+          Nombre: originalData1.name,
+          Apellido: originalData1.lastname,
           nombreUsuario: originalData1.user_name,
           "Correo Principal": originalData1.email,
           Rol: originalData1.roles[0],
@@ -66,47 +70,20 @@ export default function InformationUser() {
 
         setFormData(updatedData);
         setInitialFormData(updatedData);
-
-        if (updatedData.Rol === "DOCENTE") {
-          const endpoint = `${URL}/teacher-subjects/teacher/${originalData1.person_id}`;
-          try {
-            const response = await fetch(endpoint, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            });
-            if (!response.ok) {
-              throw new Error(`Error en la solicitud: ${response.statusText}`);
-            }
-            const data = await response.json();
-            setSubject(data);
-          } catch (error) {
-            console.error("Error al realizar la solicitud:", error);
-          }
-        }
-
-        setNotificationSettings({
-          "Correo Principal": updatedData["Correo Principal"],
-        });
       } else {
-        console.log("No data found in localStorage.");
+        console.log("Sin data.");
       }
     };
 
     fetchData();
   }, []);
 
-  const [notificationSettings, setNotificationSettings] = useState({
-    "Correo Principal": formData["Correo Principal"],
-  });
-
   const handleCambiar = () => {
     setShowCambiar(true);
   };
 
-  const togglePasswordVisibilityActual = () => {
-    setShowPasswordActual(!showPasswordActual);
+  const togglePasswordVisibilityConfirmation = () => {
+    setShowconfirmacionConctrasena(!showconfirmacionConctrasena);
   };
 
   const togglePasswordVisibilityNew = () => {
@@ -119,23 +96,29 @@ export default function InformationUser() {
   };
 
   const handleCloseCambiar = () => {
-    setContrasenaActual("");
+    setConfirmacionContrasena("");
     setContrasenaNueva("");
-    setShowPasswordActual(false);
+    setShowconfirmacionConctrasena(false);
     setShowPasswordNew(false);
     setShowAlert(false);
     setShowCambiar(false);
   };
 
   const handleSendCambiar = async () => {
+    setShowAlert(false);
+    setIsLoading(true);
     const passwords = {
-      current_password: contrasenaActual,
       new_password: contrasenaNueva,
+      confirmation_password: confirmacionConctrasena,
     };
 
+    // 'new_password'
+    // 'confirmation_password'
+    const token = localStorage.getItem("token");
+
     try {
-      const response = await fetch(URL + "URL_DEL_SERVIDOR", {
-        method: "POST",
+      const response = await fetch(URL + "auth/change/password", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -144,20 +127,25 @@ export default function InformationUser() {
       });
 
       const result = await response.json();
+      console.log(result);
 
       if (!response.ok) {
         setAlertMessage(
           result.message || "Error al validar la contraseña actual."
         );
+        setIsLoading(false);
+
         setShowAlert(true);
       } else {
         setSuccessMessage(result.message || "Contraseña cambiada con éxito.");
         setShowSuccessModal(true);
         handleCloseCambiar();
+        setIsLoading(false);
       }
     } catch (error) {
       setAlertMessage("Error de conexión con el servidor.");
       setShowAlert(true);
+      setIsLoading(false);
     }
   };
 
@@ -167,9 +155,6 @@ export default function InformationUser() {
 
   const handleCancelEdit = () => {
     setFormData({ ...initialFormData });
-    setNotificationSettings({
-      "Correo Principal": initialFormData["Correo Principal"],
-    });
     setChanges(false);
     setModifiedFields({});
   };
@@ -181,8 +166,7 @@ export default function InformationUser() {
       setShow(false);
     }, 1000);
 
-    const detectedChanges = getChanges();
-    updateUser(detectedChanges);
+    updateUser(data);
   };
 
   const handleCancelClick = () => {
@@ -191,14 +175,19 @@ export default function InformationUser() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
-    setModifiedFields((prevModifiedFields) => ({
-      ...prevModifiedFields,
-      [name]: value !== initialFormData[name],
-    }));
+    setFormData((prevFormData) => {
+      const newFormData = { ...prevFormData, [name]: value };
+      const hasChanges = Object.keys(newFormData).some(
+        (key) => newFormData[key] !== initialFormData[key]
+      );
+      setChanges(hasChanges);
+
+      setModifiedFields((prevModifiedFields) => ({
+        ...prevModifiedFields,
+        [name]: value !== initialFormData[name],
+      }));
+      return newFormData;
+    });
   };
 
   const handleSaveChanges = () => {
@@ -216,42 +205,32 @@ export default function InformationUser() {
   const getChanges = () => {
     const changes = {};
 
-    const fullName = [formData.Nombre, formData["Segundo Nombre"]]
-      .filter(Boolean)
-      .join(" ");
-    const originalFullName = [
-      initialFormData.Nombre,
-      initialFormData["Segundo Nombre"],
-    ]
-      .filter(Boolean)
-      .join(" ");
-
-    if (fullName !== originalFullName) {
-      changes.name = fullName;
+    if (formData.Nombre !== initialFormData.Nombre) {
+      changes.Nombre = formData.Nombre;
+      updateData("name", changes.Nombre);
     }
 
-    if (formData["Apellido Paterno"] !== initialFormData["Apellido Paterno"]) {
-      changes.last_name = formData["Apellido Paterno"];
-    }
-
-    if (formData["Apellido Materno"] !== initialFormData["Apellido Materno"]) {
-      changes.last_name = changes.last_name
-        ? `${changes.last_name} ${formData["Apellido Materno"]}`
-        : formData["Apellido Materno"];
+    if (formData.Apellido !== initialFormData.Apellido) {
+      changes.Apellido = formData.Apellido;
+      updateData("last_name", changes.Apellido);
     }
 
     if (formData.nombreUsuario !== initialFormData.nombreUsuario) {
-      changes.user_name = formData.nombreUsuario;
+      changes["Nombre de Usuario"] = formData.nombreUsuario;
+      updateData("user_name", changes["Nombre de Usuario"]);
     }
 
     if (formData["Correo Principal"] !== initialFormData["Correo Principal"]) {
-      changes.email = formData["Correo Principal"];
+      changes["Correo Principal"] = formData["Correo Principal"];
+      updateData("email", changes["Correo Principal"]);
     }
 
     return changes;
   };
 
-  const updateUser = async (changes) => {
+  const updateUser = async (sendData) => {
+    const token = localStorage.getItem("token");
+
     try {
       const response = await fetch(URL + "users/update", {
         method: "POST",
@@ -259,21 +238,23 @@ export default function InformationUser() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(changes),
+        body: JSON.stringify(sendData),
       });
       const data = await response.json();
 
-      if (!response.ok) {
-        setModalContent({
-          title: "Error",
-          message:
-            data.message || "Error al actualizar la información del usuario.",
-        });
-      } else {
+      if (response.status >= 200 && response.status < 300) {
         setModalContent({
           title: "Éxito",
           message:
-            data.message || "Información del usuario actualizada con éxito.",
+            data.message ?? "Información del usuario actualizada con éxito.",
+        });
+        const newUserInformation = JSON.stringify(data);
+        localStorage.setItem("userInformation", newUserInformation);
+      } else {
+        setModalContent({
+          title: "Error",
+          message:
+            data.message ?? "Error al actualizar la información del usuario.",
         });
       }
     } catch (error) {
@@ -283,6 +264,15 @@ export default function InformationUser() {
       });
     }
     setShowResponseModal(true);
+  };
+
+  const handleOnClickRS = () => {
+    if (modalContent.title === "Éxito") {
+      setShowResponseModal(false);
+      window.location.reload();
+    } else {
+      setShowResponseModal(false);
+    }
   };
 
   return (
@@ -295,7 +285,7 @@ export default function InformationUser() {
           <div>
             <Row className="mb-2">
               <Col lg>
-                <Form.Label>Nombre(s)</Form.Label>
+                <Form.Label>Nombre</Form.Label>
               </Col>
               <Col>
                 <Form.Control
@@ -308,54 +298,26 @@ export default function InformationUser() {
                   }}
                 />
               </Col>
+            </Row>
+
+            <Row className="mb-2">
+              <Col lg>
+                <Form.Label>Apellido</Form.Label>
+              </Col>
               <Col>
                 <Form.Control
                   type="input"
-                  name="Segundo Nombre"
-                  value={formData["Segundo Nombre"]}
+                  name="Apellido"
+                  value={formData.Apellido}
                   onChange={handleInputChange}
                   style={{
-                    border: modifiedFields["Segundo Nombre"]
-                      ? "3px solid #00ff66"
-                      : "",
+                    border: modifiedFields.Apellido ? "3px solid #00ff66" : "",
                   }}
                 />
               </Col>
             </Row>
 
             <Row className="mb-2">
-              <Col lg>
-                <Form.Label>Apellido(s)</Form.Label>
-              </Col>
-              <Col>
-                <Form.Control
-                  type="input"
-                  name="Apellido Paterno"
-                  value={formData["Apellido Paterno"]}
-                  onChange={handleInputChange}
-                  style={{
-                    border: modifiedFields["Apellido Paterno"]
-                      ? "3px solid #00ff66"
-                      : "",
-                  }}
-                />
-              </Col>
-              <Col>
-                <Form.Control
-                  type="input"
-                  name="Apellido Materno"
-                  value={formData["Apellido Materno"]}
-                  onChange={handleInputChange}
-                  style={{
-                    border: modifiedFields["Apellido Materno"]
-                      ? "3px solid #00ff66"
-                      : "",
-                  }}
-                />
-              </Col>
-            </Row>
-
-            <Row>
               <Col lg>
                 <Form.Label>Nombre de usuario</Form.Label>
               </Col>
@@ -372,11 +334,27 @@ export default function InformationUser() {
                   }}
                 />
               </Col>
+            </Row>
+            <Row className="mb-2">
               <Col lg>
                 <Form.Label>Contraseña</Form.Label>
               </Col>
               <Col md style={{ position: "relative" }}>
-                <Button onClick={handleCambiar}>Cambiar Contraseña</Button>
+                <Button
+                  className="btn btn-primary custom-btn-primary-outline"
+                  onClick={handleCambiar}
+                >
+                  Cambiar Contraseña
+                </Button>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col lg>
+                <Form.Label>Rol</Form.Label>
+              </Col>
+              <Col>
+                <Form.Control type="text" disabled value={formData.Rol} />
               </Col>
             </Row>
           </div>
@@ -404,46 +382,6 @@ export default function InformationUser() {
             </Row>
           </div>
         </div>
-        <div className="tag-container mb-3">
-          <label className="tag-label">INFORMACIÓN ACADÉMICA</label>
-          <div>
-            <Row>
-              <Col>
-                <Form.Label>Rol</Form.Label>
-              </Col>
-              <Col>
-                <Form.Control type="input" disabled value={formData.Rol} />
-              </Col>
-            </Row>
-            {formData.Rol === "DOCENTE" && (
-              <Row>
-                <Col>
-                  <div className="table-scroll">
-                    <Table striped bordered hover className="mt-1">
-                      <thead>
-                        <tr
-                          style={{
-                            backgroundColor: "rgb(4, 94, 140)",
-                            color: "white",
-                          }}
-                        >
-                          <th className="text-center">Materia</th>
-                          <th className="text-center">Grupo</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>dato</td>
-                          <td>dato</td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </div>
-                </Col>
-              </Row>
-            )}
-          </div>
-        </div>
         <div className="d-flex justify-content-end mt-3">
           {changes && (
             <>
@@ -459,19 +397,19 @@ export default function InformationUser() {
               )}
 
               <Button
-                className="custom-btn-green custom-btn-green-outline btn btn-success"
-                variant="secondary"
-                onClick={handleCancelEdit}
-              >
-                Cancelar Edición
-              </Button>
-              <Button
                 variant="success"
-                className="custom-btn-green custom-btn-green-outline btn btn-success"
-                type="button"
+                className="btn btn-success custom-btn-green-outline mx-2"
                 onClick={handleSaveChanges}
               >
                 Guardar cambios
+              </Button>
+
+              <Button
+                variant="secondary"
+                className="btn btn-secondary custom-btn-gray-outline"
+                onClick={handleCancelEdit}
+              >
+                Cancelar Edición
               </Button>
             </>
           )}
@@ -483,16 +421,19 @@ export default function InformationUser() {
         </Modal.Header>
         <Modal.Body>
           <div>Está seguro de continuar con los siguientes cambios:</div>
-          <div>
+          <div className="mt-2">
             <ul>
               {Object.entries(changesState).map(([key, value]) => (
                 <li key={key}>
-                  <strong>{key}</strong>: {value}
+                  <Alert variant="success">
+                    <strong>{key}</strong>: {value}
+                  </Alert>
                 </li>
               ))}
             </ul>
           </div>
         </Modal.Body>
+
         <Modal.Footer>
           {loadingModal ? <Spinner animation="border" /> : ""}
 
@@ -514,6 +455,8 @@ export default function InformationUser() {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* modal de respuesta servidor */}
       <Modal
         show={showResponseModal}
         onHide={() => setShowResponseModal(false)}
@@ -526,30 +469,22 @@ export default function InformationUser() {
         <Modal.Footer>
           <Button
             variant="secondary"
-            onClick={() => setShowResponseModal(false)}
+            className="btn btn-secondary custom-btn-gray-outline"
+            onClick={handleOnClickRS}
           >
             Cerrar
           </Button>
         </Modal.Footer>
       </Modal>
 
-      {showSuccessModal && (
-        <Modal show={showSuccessModal} centered>
-          <Modal.Header closeButton>
-            <Modal.Title>Éxito</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>{successMessage}</Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseSuccessModal}>
-              Cerrar
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      )}
-
       {/* modal cambiar contraseña */}
 
-      <Modal show={showCambiar} onHide={handleCloseCambiar} centered>
+      <Modal
+        show={showCambiar}
+        onHide={handleCloseCambiar}
+        centered
+        backdrop="static"
+      >
         <Modal.Header closeButton>
           <Modal.Title>Cambiar Contraseña</Modal.Title>
         </Modal.Header>
@@ -563,33 +498,11 @@ export default function InformationUser() {
               {alertMessage}
             </Alert>
           )}
+
           <Row className="mb-4">
             <Col style={{ position: "relative" }}>
               <Form.Control
-                className="text-truncate"
-                type={showPasswordActual ? "text" : "password"}
-                name="contrasenaActual"
-                placeholder="Contraseña Actual"
-                value={contrasenaActual}
-                onChange={(e) => setContrasenaActual(e.target.value)}
-              />
-              <i
-                className={showPasswordActual ? "bi bi-eye-slash" : "bi bi-eye"}
-                onClick={togglePasswordVisibilityActual}
-                style={{
-                  position: "absolute",
-                  right: "25px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  cursor: "pointer",
-                }}
-              ></i>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col style={{ position: "relative" }}>
-              <Form.Control
+                required
                 className="text-truncate"
                 type={showPasswordNew ? "text" : "password"}
                 name="contrasenaNueva"
@@ -610,19 +523,68 @@ export default function InformationUser() {
               ></i>
             </Col>
           </Row>
+          <Row>
+            <Col style={{ position: "relative" }}>
+              <Form.Control
+                required
+                className="text-truncate"
+                type={showconfirmacionConctrasena ? "text" : "password"}
+                name="confirmationContrasena"
+                placeholder="Confirmacion de Contraseña"
+                value={confirmacionConctrasena}
+                onChange={(e) => setConfirmacionContrasena(e.target.value)}
+              />
+              <i
+                className={
+                  showconfirmacionConctrasena ? "bi bi-eye-slash" : "bi bi-eye"
+                }
+                onClick={togglePasswordVisibilityConfirmation}
+                style={{
+                  position: "absolute",
+                  right: "25px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer",
+                }}
+              ></i>
+            </Col>
+          </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={handleSendCambiar}>
+          {isLoading && (
+            <Spinner
+              className="me-3"
+              as="span"
+              animation="border"
+              size="lg"
+              role="status"
+              aria-hidden="true"
+            />
+          )}
+          <Button
+            className="btn btn-primary custom-btn-primary-outline"
+            variant="primary"
+            onClick={handleSendCambiar}
+          >
             Cambiar
           </Button>
-          <Button variant="secondary" onClick={handleCloseCambiar}>
+          <Button
+            className="btn btn-secondary custom-btn-gray-outline"
+            variant="secondary"
+            onClick={handleCloseCambiar}
+          >
             Cerrar
           </Button>
         </Modal.Footer>
       </Modal>
 
       {/* Modal de Éxito */}
-      <Modal show={showSuccessModal} onHide={handleCloseSuccessModal} centered>
+      <Modal
+        show={showSuccessModal}
+        onHide={handleCloseSuccessModal}
+        centered
+        backdrop="static"
+      >
         <Modal.Header closeButton>
           <Modal.Title>Éxito</Modal.Title>
         </Modal.Header>

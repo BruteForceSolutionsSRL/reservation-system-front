@@ -1,26 +1,90 @@
 import { useEffect, useState } from "react";
 import GroupsList from "../../../../Components/Groups/GroupsList/GroupsList";
 import SearchBar from "../../../../Components/SearchBar/SearchBar";
-import { useSearchGroup } from "../../../../Hooks/useSearchGroup";
-import { listGroups } from "../groupsmocks";
 import NewGroup from "../../../../Components/Groups/NewGroup";
 import { useFetchService } from "../../../../Components/Hooks/useFetchService";
+import LoadingSpinner from "../../../../Components/LoadingSpinner/LoadingSpinner";
 
 export default function ManagmentGroups() {
-  const groupsList = listGroups;
   const { getFetch } = useFetchService();
+  const [groupsList, setGroupsList] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-  const { resultList } = useSearchGroup({ groupsList, searchValue });
   const [showNewGroupModal, setShowNewGroupModal] = useState(false);
+  const [resultList, setResultList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchGroups();
+    Promise.all([getAllGroupsByFacultyAndCurrentAcademicPeriod()]).finally(() =>
+      setLoading(false)
+    );
   }, []);
 
-  const fetchGroups = async () => {
-    const { status, data } = await getFetch(`teacher-subjects/${1}`);
-    console.log("Grupos ", status, data);
-    // Necesito mas datos del endpoint :/ no me da el horario de clases, las aulas ni las carreras :/ la gestion podemos quitarlo si no se manda xd.
+  const search = (value) => {
+    if (value === "") {
+      setResultList(groupsList);
+    } else {
+      let valueLC = value.toLowerCase();
+      let newList = groupsList.filter(
+        (group) =>
+          group.subject_name.toLowerCase().includes(valueLC) ||
+          group.group_number.toLowerCase().includes(valueLC) ||
+          group.class_schedules.some((schedule) =>
+            schedule.classroom.name.toLowerCase().includes(valueLC)
+          )
+      );
+      setResultList(newList);
+    }
+  };
+
+  const handleChangeSearchValue = (event) => {
+    const { value } = event.target;
+    search(value);
+    setSearchValue(value);
+  };
+
+  const getAllGroupsByFacultyAndCurrentAcademicPeriod = async () => {
+    try {
+      const faculties = await getFetch(`faculties`);
+      if (faculties.status >= 200 && faculties.status < 300) {
+        const academicPeriods = [];
+        for (let i = 0; i < faculties.data.length; i++) {
+          const facultyId = faculties.data[i].faculty_id;
+          const period = await getFetch(
+            `academic-periods/actual-period?faculty_id=${facultyId}`
+          );
+          if (period.status >= 200 && period.status < 300) {
+            academicPeriods.push(period.data.academic_period_id);
+          }
+        }
+        if (academicPeriods.length > 0) {
+          let allGroups = [];
+          for (let i = 0; i < academicPeriods.length; i++) {
+            const academicPeriod = academicPeriods[i];
+            const groups = await fetchGroups(academicPeriod);
+            allGroups = [...allGroups, ...groups];
+          }
+          setGroupsList(allGroups);
+          setResultList(allGroups);
+        }
+      } else {
+        setGroupsList([]);
+        setResultList([]);
+      }
+    } catch (err) {
+      console.error(err);
+      setGroupsList([]);
+      setResultList([]);
+    }
+  };
+  const fetchGroups = async (academicPeriod) => {
+    const { status, data } = await getFetch(
+      `teacher-subjects/${academicPeriod}`
+    );
+    if (status >= 200 && status < 300) {
+      return data;
+    } else {
+      return [];
+    }
   };
 
   return (
@@ -29,11 +93,7 @@ export default function ManagmentGroups() {
         <h1 className="text-center">Lista de grupos</h1>
         <div className="d-flex">
           <div className="align-self-center flex-fill">
-            <SearchBar
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onPaste={(e) => e.preventDefault()}
-            />
+            <SearchBar value={searchValue} onChange={handleChangeSearchValue} />
           </div>
           <div className="align-self-center d-flex justify-content-end">
             <button className="btn" onClick={() => setShowNewGroupModal(true)}>
@@ -44,21 +104,37 @@ export default function ManagmentGroups() {
         </div>
       </div>
       <div className="px-2">
-        {groupsList.length < 1 ? (
-          <div>
-            <h1>No existen grupos por el momento.</h1>
+        {loading ? (
+          <div
+            className="d-flex aling-items-center justify-content-center"
+            style={{ height: "30rem" }}
+          >
+            <LoadingSpinner />
           </div>
         ) : (
           <>
-            {resultList.length < 1 ? (
+            {groupsList.length < 1 ? (
               <div
-                className="d-flex justify-content-center align-items-center"
-                style={{ height: "25rem" }}
+                className="d-flex aling-items-center justify-content-center"
+                style={{ height: "30rem" }}
               >
-                <h3 className="text-center">No se encontraron resultados.</h3>
+                <h3>No existen grupos por el momento.</h3>
               </div>
             ) : (
-              <GroupsList groupsList={resultList} />
+              <>
+                {resultList.length < 1 ? (
+                  <div
+                    className="d-flex justify-content-center align-items-center"
+                    style={{ height: "25rem" }}
+                  >
+                    <h3 className="text-center">
+                      No se encontraron resultados.
+                    </h3>
+                  </div>
+                ) : (
+                  <GroupsList groupsList={resultList} />
+                )}
+              </>
             )}
           </>
         )}

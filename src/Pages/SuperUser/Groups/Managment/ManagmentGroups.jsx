@@ -14,37 +14,76 @@ export default function ManagmentGroups() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchGroups().finally(() => setLoading(false));
+    Promise.all([getAllGroupsByFacultyAndCurrentAcademicPeriod()]).finally(() =>
+      setLoading(false)
+    );
   }, []);
 
   const search = (value) => {
-    let newList = [];
     if (value === "") {
-      return groupsList;
+      setResultList(groupsList);
     } else {
-      newList = groupsList.filter(
-        (g) =>
-          g.subject_name.toLowerCase().includes(value.toLowerCase()) ||
-          g.person.fullname.toLowerCase().includes(value.toLowerCase())
+      let valueLC = value.toLowerCase();
+      let newList = groupsList.filter(
+        (group) =>
+          group.subject_name.toLowerCase().includes(valueLC) ||
+          group.group_number.toLowerCase().includes(valueLC) ||
+          group.class_schedules.some((schedule) =>
+            schedule.classroom.name.toLowerCase().includes(valueLC)
+          )
       );
+      setResultList(newList);
     }
-    return newList;
   };
 
   const handleChangeSearchValue = (event) => {
     const { value } = event.target;
+    search(value);
     setSearchValue(value);
-    const newList = search(value);
-    setResultList(newList);
   };
 
-  const fetchGroups = async () => {
-    const { status, data } = await getFetch(`teacher-subjects/${1}`);
-    if (status >= 200 && status < 300) {
-      setGroupsList(data);
-      setResultList(data);
-    } else {
+  const getAllGroupsByFacultyAndCurrentAcademicPeriod = async () => {
+    try {
+      const faculties = await getFetch(`faculties`);
+      if (faculties.status >= 200 && faculties.status < 300) {
+        const academicPeriods = [];
+        for (let i = 0; i < faculties.data.length; i++) {
+          const facultyId = faculties.data[i].faculty_id;
+          const period = await getFetch(
+            `academic-periods/actual-period?faculty_id=${facultyId}`
+          );
+          if (period.status >= 200 && period.status < 300) {
+            academicPeriods.push(period.data.academic_period_id);
+          }
+        }
+        if (academicPeriods.length > 0) {
+          let allGroups = [];
+          for (let i = 0; i < academicPeriods.length; i++) {
+            const academicPeriod = academicPeriods[i];
+            const groups = await fetchGroups(academicPeriod);
+            allGroups = [...allGroups, ...groups];
+          }
+          setGroupsList(allGroups);
+          setResultList(allGroups);
+        }
+      } else {
+        setGroupsList([]);
+        setResultList([]);
+      }
+    } catch (err) {
+      console.error(err);
       setGroupsList([]);
+      setResultList([]);
+    }
+  };
+  const fetchGroups = async (academicPeriod) => {
+    const { status, data } = await getFetch(
+      `teacher-subjects/${academicPeriod}`
+    );
+    if (status >= 200 && status < 300) {
+      return data;
+    } else {
+      return [];
     }
   };
 

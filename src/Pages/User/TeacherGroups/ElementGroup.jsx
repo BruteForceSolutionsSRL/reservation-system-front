@@ -1,8 +1,17 @@
 import { Collapse, Table } from "react-bootstrap";
 import { useState } from "react";
-import "./GroupElement.css";
 
-export default function GroupElement(props) {
+export function ElementGroup(props) {
+  // const {
+  //   // group_id,
+  //   subject_name,
+  //   teacher_group,
+  //   group_number,
+  //   // person,
+  //   schedule,
+  //   carreers,
+  //   period,
+  // } = props;
   const {
     group_id,
     subject_name,
@@ -11,6 +20,7 @@ export default function GroupElement(props) {
     person,
     class_schedules,
   } = props;
+
   const [open, setOpen] = useState(false);
 
   return (
@@ -35,10 +45,10 @@ export default function GroupElement(props) {
           {period}
         </div> */}
       </div>
-      <div className="py-2">
+      <div className="d-flex justify-content-between py-2">
         <div
           onClick={() => setOpen(!open)}
-          className="shadow p-2 rounded border border-dark-subtle mx-1 hover-box"
+          className="shadow p-2 rounded border border-dark-subtle mx-1 hover-box w-100"
         >
           <div className="d-flex justify-content-between align-items-center">
             <span className="text-truncate">VER HORARIO DE CLASES</span>
@@ -64,7 +74,7 @@ export default function GroupElement(props) {
                   </tr>
                   {class_schedules.map((s, index) => {
                     return (
-                      <tr key={s.classroom.name + s.time_slots[0] + index}>
+                      <tr key={s + index}>
                         <td>
                           {s.day === 0
                             ? "Lunes"

@@ -136,7 +136,7 @@ export default function SingleNotification() {
       <>
         <div className="p-2">
           <b>Nombre de ambiente: </b>
-          <span>{classroom.classroom_name}</span>
+          <span>{classroom.name}</span>
         </div>
         <div className="p-2">
           <b>Capacidad: </b>
@@ -177,7 +177,7 @@ export default function SingleNotification() {
       <>
         <div className="p-2">
           <b>Nombre de bloque: </b>
-          <span>{block.block_name}</span>
+          <span>{block.name}</span>
         </div>
         <div className="p-2">
           <b>Estado: </b>
@@ -191,7 +191,7 @@ export default function SingleNotification() {
         </div>
         <div className="p-2">
           <label className="fw-bold pe-2">PISO</label>
-          <span>{block.block_maxfloor}</span>
+          <span>{block.maxfloor}</span>
         </div>
       </>
     );
@@ -345,7 +345,6 @@ export default function SingleNotification() {
         </>
       )}
 
-      {/* Quitar todos los modales y colocarlos directamente en el contenido de la notificacion. */}
       {request && (
         <ModalRequestInformation
           show={showRequest}

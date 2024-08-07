@@ -79,7 +79,7 @@ export default function SubjectsList() {
   return (
     <div>
       <div className="shadow rounded p-3 mx-2 position-sticky top-0 bg-white">
-        <h1 className="text-center">MATERIAS</h1>
+        <h1 className="text-center">Materias</h1>
         <div className="d-flex">
           <div className="align-self-center flex-fill">
             <SearchBar

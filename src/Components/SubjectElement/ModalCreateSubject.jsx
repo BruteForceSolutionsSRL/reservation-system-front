@@ -243,7 +243,7 @@ export default function ModalCreateSubject({ show, setShow }) {
             Crear
           </button>
           <button className="btn btn-secondary" onClick={handleClose}>
-            Cancelar
+            Cerrar
           </button>
         </Modal.Footer>
       </Modal>

@@ -50,11 +50,11 @@ export function getFaculties() {
     });
 }
 
-export function setManagement(management_id, managementEdited) {
+export function setManagement(management_id, managementEdited) { 
   let responseFetch = {};
   let token = localStorage.getItem("token");
   return fetch(url + `academic-managements/${management_id}/update`, {
-    method: "POST",
+    method: "PUT",
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",

@@ -20,6 +20,7 @@ function CopyAcademicPeriod() {
   const [gestion, setGestion] = useState([]);
   const [periods, setPeriods] = useState([]);
   const [maxDate, setMaxDate] = useState(null);
+  const [minDate, setMinDate] = useState(null);
   const [minDateReservation, setMinDateReservation] = useState(null);
   const [maxDateReservation, setMaxDateReservation] = useState(null);
   const [startDate, setStartDate] = useState(null);
@@ -82,6 +83,11 @@ function CopyAcademicPeriod() {
       isGestionSelected
         ? adjustDateToLocal(new Date(selectedGestion?.end_date))
         : null
+    );
+    setMinDate(
+      adjustDateToLocal(new Date(selectedGestion?.initial_date)) < currentDate
+        ? currentDate
+        : adjustDateToLocal(new Date(selectedGestion?.initial_date))
     );
     setStartReservation(null);
     setStartDate(null);
@@ -283,24 +289,24 @@ function CopyAcademicPeriod() {
       if (response.status >= 200 && response.status < 300) {
         setBackendError({
           status: response.status,
-          data: response.data,
+          data: response.data.message,
         });
         clearDataForm();
       } else if (response.status >= 300 && response.status < 400) {
         setBackendError({
           status: response.status,
-          data: response.data,
+          data: response.data.message,
         });
       } else if (response.status >= 400 && response.status < 500) {
         setBackendError({
           status: response.status,
-          data: response.data,
+          data: response.data.message,
         });
       } else if (response.status >= 500) {
         if (response.data) {
           setBackendError({
             status: response.status,
-            data: response.data,
+            data: response.data.message,
           });
         } else {
           setBackendError({
@@ -472,7 +478,7 @@ function CopyAcademicPeriod() {
                   showMonthDropdown
                   showYearDropdown
                   scrollableYearDropdown
-                  minDate={currentDate}
+                  minDate={minDate}
                   maxDate={maxDate}
                   disabled={statusGestion}
                   isClearable
@@ -496,7 +502,7 @@ function CopyAcademicPeriod() {
                   placeholder="Seleccione una fecha."
                   selectsStart
                   onChange={handleDateChangeS}
-                  selected={startReservation}
+                  selected={startReservation} 
                   dateFormat="dd-MM-yyyy"
                   locale={es}
                   className="form-control"

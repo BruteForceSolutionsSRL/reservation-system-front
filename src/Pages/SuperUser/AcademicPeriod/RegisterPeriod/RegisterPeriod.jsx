@@ -21,6 +21,7 @@ function RegisterPeriod() {
   const [gestion, setGestion] = useState([]);
   const [faculty, setFaculty] = useState([]);
   const [maxDate, setMaxDate] = useState(null);
+  const [minDate, setMinDate] = useState(null);
   const [minDateReservation, setMinDateReservation] = useState(null);
   const [maxDateReservation, setMaxDateReservation] = useState(null);
   const [startDate, setStartDate] = useState(null);
@@ -65,43 +66,57 @@ function RegisterPeriod() {
     setFaculty(bl);
   };
 
-   const adjustDateToLocal = (date) => {
-     const localDate = new Date(date);
-     localDate.setHours(
-       localDate.getHours() + localDate.getTimezoneOffset() / 60
-     );
-     return localDate;
+  const adjustDateToLocal = (date) => {
+    const localDate = new Date(date);
+    localDate.setHours(
+      localDate.getHours() + localDate.getTimezoneOffset() / 60
+    );
+    return localDate;
   };
-  
- useEffect(() => {
-   const selectedGestion = gestion.find(
-     (g) => g.academic_management_id === Number(formData.academic_management_id)
-   );
 
-   const isGestionSelected = Boolean(formData.academic_management_id)
-   setMaxDate(isGestionSelected ? adjustDateToLocal(new Date(selectedGestion?.end_date)) : null);
-   setStartReservation(null);
-   setStartDate(null);
-   setEndDate(null); 
-   setStatusGestion(!isGestionSelected); 
-   setStatusDateStar(!isGestionSelected);
-   setFormData((prevData) => ({
-     ...prevData,
-     period_duration: "",
-     start_reservation: "",
-   }));
-   setErrors((prevErrors) => ({
-     ...prevErrors,
-     period_duration: "",
-     start_reservation: "",
-   }));
- }, [formData.academic_management_id, gestion]);
+  useEffect(() => {
+    const selectedGestion = gestion.find(
+      (g) =>
+        g.academic_management_id === Number(formData.academic_management_id)
+    );
 
+    const isGestionSelected = Boolean(formData.academic_management_id);
+    setMaxDate(
+      isGestionSelected
+        ? adjustDateToLocal(new Date(selectedGestion?.end_date))
+        : null
+    );
+    setMinDate(
+      adjustDateToLocal(new Date(selectedGestion?.initial_date)) < currentDate
+        ? currentDate
+        : adjustDateToLocal(new Date(selectedGestion?.initial_date))
+    );
+    
+    setStartReservation(null);
+    setStartDate(null);
+    setEndDate(null);
+    setStatusGestion(!isGestionSelected);
+    setStatusDateStar(!isGestionSelected);
+    setFormData((prevData) => ({
+      ...prevData,
+      period_duration: "",
+      start_reservation: "",
+    }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      period_duration: "",
+      start_reservation: "",
+    }));
+  }, [formData.academic_management_id, gestion]);
 
   useEffect(() => {
     if (formData.period_duration) {
-      setMinDateReservation(adjustDateToLocal(new Date(formData.period_duration[0])));
-      setMaxDateReservation(adjustDateToLocal(new Date(formData.period_duration[1])));
+      setMinDateReservation(
+        adjustDateToLocal(new Date(formData.period_duration[0]))
+      );
+      setMaxDateReservation(
+        adjustDateToLocal(new Date(formData.period_duration[1]))
+      );
     } else {
       setMinDateReservation(null);
       setMaxDateReservation(null);
@@ -182,20 +197,20 @@ function RegisterPeriod() {
     const [start, end] = dates;
     setStartDate(start);
     setEndDate(end);
-      if (!start || !end) {
-        setStartReservation(null); 
-        setFormData({
-          ...formData,
-          period_duration: "",
-          start_reservation: "",
-        });
-        setErrors({
-          ...errors,
-          period_duration: "Seleccione un periodo académico.",
-          start_reservation: validateStartReservations(null),
-        });
-        return;
-      }
+    if (!start || !end) {
+      setStartReservation(null);
+      setFormData({
+        ...formData,
+        period_duration: "",
+        start_reservation: "",
+      });
+      setErrors({
+        ...errors,
+        period_duration: "Seleccione un periodo académico.",
+        start_reservation: validateStartReservations(null),
+      });
+      return;
+    }
     let date = [formatDate(start), formatDate(end)];
     setFormData({ ...formData, period_duration: date });
     if (errors.period_duration) {
@@ -456,7 +471,7 @@ function RegisterPeriod() {
                   showMonthDropdown
                   showYearDropdown
                   scrollableYearDropdown
-                  minDate={currentDate}
+                  minDate={minDate}
                   maxDate={maxDate}
                   disabled={statusGestion}
                   isClearable

@@ -30,7 +30,8 @@ function EditPeriod() {
   const [endDate, setEndDate] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [maxDateReservation, setMaxDateReservation] = useState(null);
-  const currentYear = new Date().getFullYear();
+  const [minDateReservation, setMinDateReservation] = useState(null);
+  const [maxDatePeriod, setMaxDatePeriod] = useState(null);
   const currentDate = new Date();
   const [errors, setErrors] = useState({
     period_duration: "",
@@ -179,7 +180,7 @@ function EditPeriod() {
 
     return `${year}-${month}-${day}`;
   };
-  
+
   const validateEnvironmentName = (value) => {
     if (!value.trim()) {
       return "El nombre del periodo académico es obligatorio.";
@@ -269,11 +270,6 @@ function EditPeriod() {
       ...prev,
       period_duration: newPeriodDuration,
     }));
-    setSelectedDate(null);
-    setcurrentManagement((prev) => ({
-      ...prev,
-      initial_date_reservations: null,
-    }));
     setcurrentManagement((prev) => ({
       ...prev,
       end_date: formatDate(end),
@@ -283,10 +279,6 @@ function EditPeriod() {
     setErrors((prev) => ({
       ...prev,
       period_duration: validatePeriodDuration(newPeriodDuration),
-    }));
-    setErrors((prev) => ({
-      ...prev,
-      initial_date_reservations: validateStartDate(null),
     }));
     setChangedFields((prev) => ({
       ...prev,
@@ -336,11 +328,44 @@ function EditPeriod() {
       setSelectedDate(
         adjustDateToLocal(new Date(currentManagement.initial_date_reservations))
       );
-      setMaxDateReservation(new Date(currentManagement.end_date));
+      setMaxDateReservation(
+        adjustDateToLocal(new Date(currentManagement.end_date))
+      );
+      setMaxDatePeriod(
+        adjustDateToLocal(
+          new Date(currentManagement.academic_management.end_date)
+        )
+      );
+      setMinDateReservation(
+        adjustDateToLocal(new Date(currentManagement?.initial_date)) <
+          currentDate
+          ? currentDate
+          : adjustDateToLocal(new Date(currentManagement?.initial_date))
+      );
     } else {
       setMaxDateReservation(null);
     }
   }, [showModal]);
+
+    useEffect(() => {
+      if (currentManagement) {
+        if (
+          adjustDateToLocal(
+            new Date(currentManagement?.initial_date_reservations)
+          ) > adjustDateToLocal(new Date(currentManagement?.end_date))
+        ) {
+          setSelectedDate(null);
+          setErrors((prev) => ({
+            ...prev,
+            initial_date_reservations: validateStartDate(null),
+          }));
+          setcurrentManagement((prev) => ({
+            ...prev,
+            initial_date_reservations: null,
+          }));
+        }
+      }
+    }, [currentManagement]);
 
   return (
     <div className="container mt-2">
@@ -462,9 +487,8 @@ function EditPeriod() {
                   startDate={startDate}
                   endDate={endDate}
                   onChange={handleEndDateChange}
-                  minDate={currentDate}
-                  yearDropdownItemNumber={currentYear - 1998 + 1}
-                  maxDate={new Date(currentYear + 1, 4, 30)}
+                  minDate={minDateReservation}
+                  maxDate={maxDatePeriod}
                   selected={endDate}
                   dateFormat="dd-MM-yyyy"
                   locale="es"
@@ -503,7 +527,7 @@ function EditPeriod() {
                   showMonthDropdown
                   showYearDropdown
                   scrollableYearDropdown
-                  minDate={currentDate}
+                  minDate={minDateReservation}
                   maxDate={maxDateReservation}
                   isClearable
                 />
@@ -544,6 +568,11 @@ function EditPeriod() {
             <ul>
               {Object.keys(changedFields).map((fieldName) => {
                 let displayValue = changedFields[fieldName];
+                if (fieldName === "period_duration") {
+                  displayValue = `${formatDate(startDate)} - ${formatDate(
+                    endDate
+                  )}`;
+                }
                 return (
                   <li key={fieldName}>
                     <span style={{ color: "red" }}>

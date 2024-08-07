@@ -18,6 +18,7 @@ function RegisterManagement() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const currentYear = new Date().getFullYear();
+  const currentDate = new Date();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -257,9 +258,8 @@ function RegisterManagement() {
                   showMonthDropdown
                   showYearDropdown
                   scrollableYearDropdown
-                  yearDropdownItemNumber={currentYear - 1998 + 1}
-                  minDate={new Date(1998, 0, 1)}
-                  maxDate={new Date(currentYear + 1, 4, 30)}
+                  minDate={currentDate}
+                  maxDate={new Date(currentYear + 1, 11, 15)}
                   isClearable
                 />
                 {errors.period_duration && (

@@ -891,8 +891,8 @@ export default function Sidebar({ user }) {
                           onClick={() => handleItemClick("register-user")}
                         >
                           <div className="align-items-center">
-                            <i className="bi bi-person-fill-add fs-4"></i> Crear
-                            Usuario
+                            <i className="bi bi-person-fill-add fs-4"></i>{" "}
+                            Registrar Usuario
                           </div>
                         </Link>
                       </li>

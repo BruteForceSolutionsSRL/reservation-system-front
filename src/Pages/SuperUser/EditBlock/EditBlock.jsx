@@ -117,8 +117,6 @@ function EditBlock() {
         block_status_id: currentBlock.block_status_id,
       };
       await editBlock(editedBlock);
-    } else {
-      // console.log("Formulario inválido, llene todos los campos");
     }
   };
 

@@ -28,7 +28,7 @@ function EditEnvironment() {
   const [searchValue, setSearchValue] = useState("");
   const [msgNoResults, setMsgNoResults] = useState("");
   const [backendError, setBackendError] = useState("");
-  
+
   useEffect(() => {
     setLoading(true);
     Promise.all([
@@ -137,8 +137,6 @@ function EditEnvironment() {
         status_id: parseInt(currentReservation.classroom_status_id),
       };
       await editEnvironment(editedEnvironment);
-    } else {
-      // console.log("Formulario inválido, llene todos los campos");
     }
   };
 

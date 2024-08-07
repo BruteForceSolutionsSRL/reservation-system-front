@@ -33,8 +33,6 @@ export default function EditRolList() {
 
   const getUsersList = async () => {
     let { state, data } = await getUsers().catch((err) => console.error(err));
-
-    console.log("algun data", data);
     setTeachers(data);
     setResultList(data);
     // if (data) {

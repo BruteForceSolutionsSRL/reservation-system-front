@@ -141,7 +141,6 @@ function EditPeriod() {
 
       await savePeriod(editManagement);
     }
-    console.log("Formulario", currentManagement);
   };
 
   const savePeriod = async (editManage) => {
@@ -347,25 +346,25 @@ function EditPeriod() {
     }
   }, [showModal]);
 
-    useEffect(() => {
-      if (currentManagement) {
-        if (
-          adjustDateToLocal(
-            new Date(currentManagement?.initial_date_reservations)
-          ) > adjustDateToLocal(new Date(currentManagement?.end_date))
-        ) {
-          setSelectedDate(null);
-          setErrors((prev) => ({
-            ...prev,
-            initial_date_reservations: validateStartDate(null),
-          }));
-          setcurrentManagement((prev) => ({
-            ...prev,
-            initial_date_reservations: null,
-          }));
-        }
+  useEffect(() => {
+    if (currentManagement) {
+      if (
+        adjustDateToLocal(
+          new Date(currentManagement?.initial_date_reservations)
+        ) > adjustDateToLocal(new Date(currentManagement?.end_date))
+      ) {
+        setSelectedDate(null);
+        setErrors((prev) => ({
+          ...prev,
+          initial_date_reservations: validateStartDate(null),
+        }));
+        setcurrentManagement((prev) => ({
+          ...prev,
+          initial_date_reservations: null,
+        }));
       }
-    }, [currentManagement]);
+    }
+  }, [currentManagement]);
 
   return (
     <div className="container mt-2">

@@ -40,7 +40,6 @@ export default function TeacherGroups() {
 
   const fetchGroupsTeacher = async () => {
     const { status, data } = await getFetch("teacher-subjects/teacher");
-    console.log(status, data);
     if (status >= 200 && status < 300) {
       setGroupsList(data);
       setResultList(data);

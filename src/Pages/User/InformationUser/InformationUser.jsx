@@ -127,7 +127,6 @@ export default function InformationUser() {
       });
 
       const result = await response.json();
-      console.log(result);
 
       if (!response.ok) {
         setAlertMessage(

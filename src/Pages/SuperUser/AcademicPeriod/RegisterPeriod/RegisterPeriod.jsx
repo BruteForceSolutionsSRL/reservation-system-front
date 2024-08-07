@@ -57,7 +57,6 @@ function RegisterPeriod() {
 
   const getAllManagement = async () => {
     let bl = await getManagements();
-    console.log(bl);
     setGestion(bl);
   };
 
@@ -91,7 +90,7 @@ function RegisterPeriod() {
         ? currentDate
         : adjustDateToLocal(new Date(selectedGestion?.initial_date))
     );
-    
+
     setStartReservation(null);
     setStartDate(null);
     setEndDate(null);
@@ -130,7 +129,6 @@ function RegisterPeriod() {
   };
 
   const validateStartReservations = (value) => {
-    console.log("validaro inicio Rese ", value);
     if (!value) return "Seleccione una fecha de inicio de reservas.";
     return null;
   };
@@ -271,7 +269,6 @@ function RegisterPeriod() {
   const handleSaveCancelModal = () => setRegisterModal(false);
 
   const saveGestion = async () => {
-    console.log("datos del form", formData);
     setConfirmationLoading(true);
     let newPeriod = {
       name: formData.name,
@@ -281,12 +278,9 @@ function RegisterPeriod() {
       faculty_id: formData.faculty_id,
       academic_management_id: formData.academic_management_id,
     };
-
-    console.log("se envia al back", newPeriod);
     const response = await storePeriod(newPeriod).finally(() => {
       setConfirmationLoading(false);
     });
-    console.log("respuesta", response);
     if (response) {
       if (response.status >= 200 && response.status < 300) {
         setBackendError({

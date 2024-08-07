@@ -19,20 +19,19 @@ function EnterManagement() {
     period_id: "",
   });
 
-const validateGestion = (value) => {
-  if (!value.trim()) {
-    return "Seleccione una gestión.";
-  }
-  return null;
-};
+  const validateGestion = (value) => {
+    if (!value.trim()) {
+      return "Seleccione una gestión.";
+    }
+    return null;
+  };
 
-const validatePeriod = (value) => {
-  if (!value.trim()) {
-    return "Seleccione un periodo academíco.";
-  }
-  return null;
-};
-
+  const validatePeriod = (value) => {
+    if (!value.trim()) {
+      return "Seleccione un periodo academíco.";
+    }
+    return null;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();

@@ -64,7 +64,6 @@ function RegisterManagement() {
     setErrors(newErrors);
     if (!newErrors.period_duration && !newErrors.name) {
       handleSaveModal();
-      // console.log("datos del form", formData);
     }
   };
 

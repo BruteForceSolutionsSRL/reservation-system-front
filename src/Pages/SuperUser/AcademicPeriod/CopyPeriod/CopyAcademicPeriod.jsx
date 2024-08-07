@@ -269,7 +269,6 @@ function CopyAcademicPeriod() {
   const handleSaveCancelModal = () => setRegisterModal(false);
 
   const savePeriod = async () => {
-    // console.log("datos del form", formData);
     setConfirmationLoading(true);
     let newPeriod = {
       academic_period_id: formData.academic_period_id,
@@ -279,12 +278,9 @@ function CopyAcademicPeriod() {
       academic_management_id: formData.academic_management_id,
       initial_date_reservations: formData.start_reservation,
     };
-
-    console.log("se envia al back", newPeriod);
     const response = await copyPeriod(newPeriod).finally(() => {
       setConfirmationLoading(false);
     });
-    console.log("respuesta", response);
     if (response) {
       if (response.status >= 200 && response.status < 300) {
         setBackendError({
@@ -324,11 +320,11 @@ function CopyAcademicPeriod() {
     setConfirmationLoading(false);
     setRegisterModal(false);
     setConfirmationModal(true);
-    };
-    
-    const selectedPeriod = periods.find(
-      (period) => period.academic_period_id == formData.academic_period_id
-    );
+  };
+
+  const selectedPeriod = periods.find(
+    (period) => period.academic_period_id == formData.academic_period_id
+  );
 
   function saveBlockClose() {
     setConfirmationModal(false);
@@ -502,7 +498,7 @@ function CopyAcademicPeriod() {
                   placeholder="Seleccione una fecha."
                   selectsStart
                   onChange={handleDateChangeS}
-                  selected={startReservation} 
+                  selected={startReservation}
                   dateFormat="dd-MM-yyyy"
                   locale={es}
                   className="form-control"

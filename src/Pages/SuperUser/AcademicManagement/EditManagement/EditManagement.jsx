@@ -139,7 +139,6 @@ function EditManagement() {
         date_end: formatDate(endDate),
         name: currentManagement.name,
       };
-      console.log("editado una gestion", editManagement);
       await saveManagement(editManagement);
     } else {
       // console.log("Formulario inválido, llene todos los campos");

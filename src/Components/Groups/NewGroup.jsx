@@ -214,10 +214,8 @@ export default function NewGroup({ show, setShow }) {
       "teacher-subjects/store/group",
       newGroup
     );
-    console.log(status, data);
     if (status >= 200 && status < 300) {
       setMessage({ type: "success", message: data.message });
-      // Fetch a groups nuevamente.
     } else {
       setMessage({
         type: "danger",

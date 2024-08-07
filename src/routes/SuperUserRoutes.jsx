@@ -54,7 +54,7 @@ export default function SuperUserRoutes() {
         <Route path="block-register" element={<BlockRegister />} />
         <Route path="edit-block" element={<EditBlock />} />
         <Route path="delete-block" element={<DeleteBlock />} />
-        <Route path="enter-management" element={<EnterManagement />} />
+        {/* <Route path="enter-management" element={<EnterManagement />} /> */}
         <Route path="register-management" element={<RegisterManagement />} />
         <Route path="edit-management" element={<EditManagement />} />
 

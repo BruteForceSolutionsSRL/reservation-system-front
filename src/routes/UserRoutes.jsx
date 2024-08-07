@@ -40,7 +40,7 @@ export default function UserRoutes() {
           element={<SingleNotification />}
         />
         <Route path="information-user" element={<InformationUser />} />
-        <Route path="enter-management" element={<EnterManagement />} />
+        {/* <Route path="enter-management" element={<EnterManagement />} /> */}
         <Route path="groups-teacher" element={<TeacherGroups />} />
         <Route path="*" element={<ErrorPage />} />
       </Route>

@@ -1,26 +1,51 @@
 import { useEffect, useState } from "react";
 import GroupsList from "../../../../Components/Groups/GroupsList/GroupsList";
 import SearchBar from "../../../../Components/SearchBar/SearchBar";
-import { useSearchGroup } from "../../../../Hooks/useSearchGroup";
-import { listGroups } from "../groupsmocks";
 import NewGroup from "../../../../Components/Groups/NewGroup";
 import { useFetchService } from "../../../../Components/Hooks/useFetchService";
+import LoadingSpinner from "../../../../Components/LoadingSpinner/LoadingSpinner";
 
 export default function ManagmentGroups() {
-  const groupsList = listGroups;
   const { getFetch } = useFetchService();
+  const [groupsList, setGroupsList] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-  const { resultList } = useSearchGroup({ groupsList, searchValue });
   const [showNewGroupModal, setShowNewGroupModal] = useState(false);
+  const [resultList, setResultList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchGroups();
+    fetchGroups().finally(() => setLoading(false));
   }, []);
+
+  const search = (value) => {
+    let newList = [];
+    if (value === "") {
+      return groupsList;
+    } else {
+      newList = groupsList.filter(
+        (g) =>
+          g.subject_name.toLowerCase().includes(value.toLowerCase()) ||
+          g.person.fullname.toLowerCase().includes(value.toLowerCase())
+      );
+    }
+    return newList;
+  };
+
+  const handleChangeSearchValue = (event) => {
+    const { value } = event.target;
+    setSearchValue(value);
+    const newList = search(value);
+    setResultList(newList);
+  };
 
   const fetchGroups = async () => {
     const { status, data } = await getFetch(`teacher-subjects/${1}`);
-    console.log("Grupos ", status, data);
-    // Necesito mas datos del endpoint :/ no me da el horario de clases, las aulas ni las carreras :/ la gestion podemos quitarlo si no se manda xd.
+    if (status >= 200 && status < 300) {
+      setGroupsList(data);
+      setResultList(data);
+    } else {
+      setGroupsList([]);
+    }
   };
 
   return (
@@ -29,11 +54,7 @@ export default function ManagmentGroups() {
         <h1 className="text-center">Lista de grupos</h1>
         <div className="d-flex">
           <div className="align-self-center flex-fill">
-            <SearchBar
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onPaste={(e) => e.preventDefault()}
-            />
+            <SearchBar value={searchValue} onChange={handleChangeSearchValue} />
           </div>
           <div className="align-self-center d-flex justify-content-end">
             <button className="btn" onClick={() => setShowNewGroupModal(true)}>
@@ -44,21 +65,37 @@ export default function ManagmentGroups() {
         </div>
       </div>
       <div className="px-2">
-        {groupsList.length < 1 ? (
-          <div>
-            <h1>No existen grupos por el momento.</h1>
+        {loading ? (
+          <div
+            className="d-flex aling-items-center justify-content-center"
+            style={{ height: "30rem" }}
+          >
+            <LoadingSpinner />
           </div>
         ) : (
           <>
-            {resultList.length < 1 ? (
+            {groupsList.length < 1 ? (
               <div
-                className="d-flex justify-content-center align-items-center"
-                style={{ height: "25rem" }}
+                className="d-flex aling-items-center justify-content-center"
+                style={{ height: "30rem" }}
               >
-                <h3 className="text-center">No se encontraron resultados.</h3>
+                <h3>No existen grupos por el momento.</h3>
               </div>
             ) : (
-              <GroupsList groupsList={resultList} />
+              <>
+                {resultList.length < 1 ? (
+                  <div
+                    className="d-flex justify-content-center align-items-center"
+                    style={{ height: "25rem" }}
+                  >
+                    <h3 className="text-center">
+                      No se encontraron resultados.
+                    </h3>
+                  </div>
+                ) : (
+                  <GroupsList groupsList={resultList} />
+                )}
+              </>
             )}
           </>
         )}

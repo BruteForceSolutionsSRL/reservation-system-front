@@ -1,15 +1,16 @@
 import { Collapse, Table } from "react-bootstrap";
 import { useState } from "react";
-import "./GroupElement.css";
 
-export default function GroupElement(props) {
+export function ElementGroup(props) {
   const {
-    group_id,
+    // group_id,
     subject_name,
-    subject_id,
+    teacher_group,
     group_number,
-    person,
-    class_schedules,
+    // person,
+    schedule,
+    carreers,
+    period,
   } = props;
   const [open, setOpen] = useState(false);
 
@@ -28,12 +29,12 @@ export default function GroupElement(props) {
       <div className="d-flex justify-content-between">
         <div>
           <b className="text-primary">DOCENTE: </b>
-          {person.fullname}
+          {teacher_group}
         </div>
-        {/* <div>
+        <div>
           <b className="text-primary">GESTIÓN: </b>
           {period}
-        </div> */}
+        </div>
       </div>
       <div className="py-2">
         <div
@@ -58,13 +59,11 @@ export default function GroupElement(props) {
                   <tr>
                     <th>DIA</th>
                     <th>HORARIO</th>
-                    <th>AULA</th>
-                    <th>BLOQUE</th>
-                    <th>PISO</th>
+                    <th>TIPO</th>
                   </tr>
-                  {class_schedules.map((s, index) => {
+                  {schedule.map((s, index) => {
                     return (
-                      <tr key={s.classroom.name + s.time_slots[0] + index}>
+                      <tr key={s.classroom.name + s.periods[0] + index}>
                         <td>
                           {s.day === 0
                             ? "Lunes"
@@ -80,14 +79,8 @@ export default function GroupElement(props) {
                             ? "Sabado"
                             : "Sin horario"}
                         </td>
-                        <td>{s.time_slots[0] + " - " + s.time_slots[1]}</td>
-                        <td>{s.classroom.name}</td>
-                        <td>{s.classroom.block_name}</td>
-                        <td>
-                          {s.classroom.floor === 0
-                            ? "PLANTA BAJA"
-                            : s.classroom.floor}
-                        </td>
+                        <td>{s.periods[0] + " - " + s.periods[1]}</td>
+                        <td>{s.type}</td>
                       </tr>
                     );
                   })}
@@ -97,7 +90,7 @@ export default function GroupElement(props) {
           </Collapse>
         </div>
 
-        {/* <div
+        <div
           onClick={() => setOpen(!open)}
           className="shadow p-2 rounded border border-dark-subtle mx-1 hover-box w-50"
         >
@@ -114,7 +107,7 @@ export default function GroupElement(props) {
             </span>
           </div>
 
-          <Collapse in={open}>
+          {/* <Collapse in={open}>
             <div className="pt-2 w-100 overflow-x-auto">
               <Table bordered>
                 <thead>
@@ -135,8 +128,8 @@ export default function GroupElement(props) {
                 </tbody>
               </Table>
             </div>
-          </Collapse>
-        </div> */}
+          </Collapse> */}
+        </div>
       </div>
     </div>
   );

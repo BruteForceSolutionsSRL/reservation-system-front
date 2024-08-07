@@ -14,8 +14,8 @@ export function useSearchGroup({ groupsList, searchValue }) {
     } else {
       return groupsList.filter(
         (g) =>
-          (g.group_id + "").toLowerCase().includes(searchValue.toLowerCase()) ||
-          g.subject_name.toLowerCase().includes(searchValue.toLowerCase())
+          g.subject_name.toLowerCase().includes(searchValue.toLowerCase()) ||
+          g.person.fullname.toLowerCase().includes(searchValue.toLowerCase())
       );
     }
   };

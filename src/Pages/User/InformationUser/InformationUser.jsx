@@ -247,7 +247,6 @@ export default function InformationUser() {
           message:
             data.message ?? "Error al actualizar la información del usuario.",
         });
-        fetchData();
       }
     } catch (error) {
       setModalContent({

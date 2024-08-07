@@ -220,7 +220,7 @@ export default function StatisticsElement(props) {
                   type="date"
                   value={startDate ?? ""}
                   min="2024-03-01"
-                  max="2024-12-31"
+                  max="2999-12-31"
                   onChange={(e) => setStartDate(e.target.value)}
                 />
               </Form.Group>
@@ -232,7 +232,7 @@ export default function StatisticsElement(props) {
                   type="date"
                   value={endDate ?? ""}
                   min="2024-03-01"
-                  max="2024-12-31"
+                  max="2999-12-31"
                   onChange={(e) => setEndDate(e.target.value)}
                 />
               </Form.Group>

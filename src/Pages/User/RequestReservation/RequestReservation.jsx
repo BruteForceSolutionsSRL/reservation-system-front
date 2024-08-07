@@ -521,13 +521,26 @@ export default function RequestReservation() {
     );
     if (response.status >= 200 && response.status < 300) {
       if (response.status === 201) {
-        setModalSendRequest({
-          content: {
-            title: "Solicitud de reserva rechazada",
-            body: response.data.message,
-          },
-          show: true,
-        });
+        if (
+          response.data.message ===
+          "La solicitud de reserva se encuentra en estado pendiente, le llegara un correo de aceptacion/rechazo por parte del encargado."
+        ) {
+          setModalSendRequest({
+            content: {
+              title: "Solicitud de reserva pendiente",
+              body: response.data.message,
+            },
+            show: true,
+          });
+        } else {
+          setModalSendRequest({
+            content: {
+              title: "Solicitud de reserva rechazada",
+              body: response.data.message,
+            },
+            show: true,
+          });
+        }
       } else if (response.status === 202) {
         setModalSendRequest({
           content: {
@@ -1115,6 +1128,8 @@ export default function RequestReservation() {
               "Solicitud de reserva pendiente" ||
               modalSendRequest.content.title ===
                 "Solicitud de reserva aceptada" ||
+              modalSendRequest.content.title ===
+                "Solicitud de reserva rechazada" ||
               modalSendRequest.content.title === "Error") && (
               <Modal.Footer>
                 {loadingSendRequest && (

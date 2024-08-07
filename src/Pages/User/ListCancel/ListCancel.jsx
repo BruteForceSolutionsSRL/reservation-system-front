@@ -74,10 +74,10 @@ export default function ListCancel() {
                     {requests.length > 0 && (
                       <>
                         <h3>Pendientes</h3>
-                        {requests.map((each) => {
+                        {requests.map((each, index) => {
                           if (each.reservation_status === "PENDIENTE") {
                             return (
-                              <div key={each.reservation_id}>
+                              <div key={each.reservation_id + index}>
                                 <ElementCancel
                                   {...each}
                                   reload={(change) => setReload(change)}
@@ -91,10 +91,10 @@ export default function ListCancel() {
                     {reservations.length > 0 && (
                       <>
                         <h3>Aceptadas</h3>
-                        {reservations.map((each) => {
+                        {reservations.map((each, index) => {
                           if (each.reservation_status === "ACEPTADO") {
                             return (
-                              <div key={each.reservation_id}>
+                              <div key={each.reservation_id + index}>
                                 <ElementCancel
                                   {...each}
                                   reload={(change) => setReload(change)}

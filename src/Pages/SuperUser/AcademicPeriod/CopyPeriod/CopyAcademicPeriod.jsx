@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Spinner, Form, Button, Row, Col, Modal } from "react-bootstrap";
 import Container from "react-bootstrap/Container";
-import { storePeriod } from "../../../../services/managemet/";
+import { copyPeriod } from "../../../../services/managemet/";
 import { getManagements } from "../../../../services/managemet/";
-import { getFaculties } from "../../../../services/managemet/";
+import { getPeriod } from "../../../../services/managemet/";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { es } from "date-fns/locale";
 registerLocale("es", es);
-import "./RegisterPeriod.css";
 
-function RegisterPeriod() {
+function CopyAcademicPeriod() {
   const [startReservation, setStartReservation] = useState(null);
   const [cancelRegisterModal, setCancelRegisterModal] = useState(false);
   const [registerModal, setRegisterModal] = useState(false);
@@ -19,7 +18,7 @@ function RegisterPeriod() {
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [backendError, setBackendError] = useState({});
   const [gestion, setGestion] = useState([]);
-  const [faculty, setFaculty] = useState([]);
+  const [periods, setPeriods] = useState([]);
   const [maxDate, setMaxDate] = useState(null);
   const [minDate, setMinDate] = useState(null);
   const [minDateReservation, setMinDateReservation] = useState(null);
@@ -31,7 +30,7 @@ function RegisterPeriod() {
   const currentDate = new Date();
 
   const [formData, setFormData] = useState({
-    faculty_id: "",
+    academic_period_id: "",
     academic_management_id: "",
     name: "",
     period_duration: "",
@@ -39,7 +38,7 @@ function RegisterPeriod() {
   });
 
   const [errors, setErrors] = useState({
-    faculty_id: "",
+    academic_period_id: "",
     academic_management_id: "",
     name: "",
     period_duration: "",
@@ -48,7 +47,7 @@ function RegisterPeriod() {
 
   useEffect(() => {
     getAllManagement();
-    getAllFaculties();
+    getAllPeriods();
     // setLoading(true);
     // Promise.all([getAllManagement()]).finally(() =>
     //   setLoading(false)
@@ -57,13 +56,12 @@ function RegisterPeriod() {
 
   const getAllManagement = async () => {
     let bl = await getManagements();
-    console.log(bl);
     setGestion(bl);
   };
 
-  const getAllFaculties = async () => {
-    let bl = await getFaculties();
-    setFaculty(bl);
+  const getAllPeriods = async () => {
+    let bl = await getPeriod();
+    setPeriods(bl);
   };
 
   const adjustDateToLocal = (date) => {
@@ -91,7 +89,6 @@ function RegisterPeriod() {
         ? currentDate
         : adjustDateToLocal(new Date(selectedGestion?.initial_date))
     );
-    
     setStartReservation(null);
     setStartDate(null);
     setEndDate(null);
@@ -125,12 +122,11 @@ function RegisterPeriod() {
 
   const validatePeriodDuration = (value) => {
     if (!value || value[0] === "" || value[1] === "")
-      return "Seleccione un periodo académico.";
+      return "Seleccione un rango de fecha de duracion.";
     return null;
   };
 
   const validateStartReservations = (value) => {
-    console.log("validaro inicio Rese ", value);
     if (!value) return "Seleccione una fecha de inicio de reservas.";
     return null;
   };
@@ -141,19 +137,21 @@ function RegisterPeriod() {
   };
 
   const validatePeriod = (value) => {
-    if (!value) return "Ingrese un nombre de periodo academíco.";
+    if (!value) return "Ingrese un nombre para el nuevo perido académico";
     return null;
   };
 
-  const validateFaculty = (value) => {
-    if (!value) return "Seleccione una facultad.";
+  const validateSelectorPeriods = (value) => {
+    if (!value) return "Seleccione un periodo académico para copiar.";
     return null;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     let newErrors = {};
-    newErrors.faculty_id = validateFaculty(formData.faculty_id);
+    newErrors.academic_period_id = validateSelectorPeriods(
+      formData.academic_period_id
+    );
     newErrors.academic_management_id = validateGestion(
       formData.academic_management_id
     );
@@ -167,7 +165,7 @@ function RegisterPeriod() {
     setErrors(newErrors);
 
     if (
-      !newErrors.faculty_id &&
+      !newErrors.academic_period_id &&
       !newErrors.period_duration &&
       !newErrors.start_reservation &&
       !newErrors.academic_management_id &&
@@ -178,7 +176,7 @@ function RegisterPeriod() {
   };
 
   const validators = {
-    faculty_id: validateFaculty,
+    academic_period_id: validateSelectorPeriods,
     academic_management_id: validateGestion,
     name: validatePeriod,
     period_duration: validatePeriodDuration,
@@ -206,7 +204,7 @@ function RegisterPeriod() {
       });
       setErrors({
         ...errors,
-        period_duration: "Seleccione un periodo académico.",
+        period_duration: "",
         start_reservation: validateStartReservations(null),
       });
       return;
@@ -251,14 +249,14 @@ function RegisterPeriod() {
     setStartDate(null);
     setEndDate(null);
     setFormData({
-      faculty_id: "",
+      academic_period_id: "",
       academic_management_id: "",
       name: "",
       period_duration: "",
       start_reservation: "",
     });
     setErrors({
-      faculty_id: "",
+      academic_period_id: "",
       academic_management_id: "",
       name: "",
       period_duration: "",
@@ -270,20 +268,20 @@ function RegisterPeriod() {
 
   const handleSaveCancelModal = () => setRegisterModal(false);
 
-  const saveGestion = async () => {
-    console.log("datos del form", formData);
+  const savePeriod = async () => {
+    // console.log("datos del form", formData);
     setConfirmationLoading(true);
     let newPeriod = {
-      name: formData.name,
+      academic_period_id: formData.academic_period_id,
       date_start: formData.period_duration[0],
       date_end: formData.period_duration[1],
-      initial_date_reservations: formData.start_reservation,
-      faculty_id: formData.faculty_id,
+      name: formData.name,
       academic_management_id: formData.academic_management_id,
+      initial_date_reservations: formData.start_reservation,
     };
 
     console.log("se envia al back", newPeriod);
-    const response = await storePeriod(newPeriod).finally(() => {
+    const response = await copyPeriod(newPeriod).finally(() => {
       setConfirmationLoading(false);
     });
     console.log("respuesta", response);
@@ -305,7 +303,7 @@ function RegisterPeriod() {
           data: response.data.message,
         });
       } else if (response.status >= 500) {
-        if (response.data.message) {
+        if (response.data) {
           setBackendError({
             status: response.status,
             data: response.data.message,
@@ -326,7 +324,11 @@ function RegisterPeriod() {
     setConfirmationLoading(false);
     setRegisterModal(false);
     setConfirmationModal(true);
-  };
+    };
+    
+    const selectedPeriod = periods.find(
+      (period) => period.academic_period_id == formData.academic_period_id
+    );
 
   function saveBlockClose() {
     setConfirmationModal(false);
@@ -367,40 +369,38 @@ function RegisterPeriod() {
 
   return (
     <div>
-      <h1 className="text-center mt-3 mb-3">Registrar Periodo Académico</h1>
+      <h1 className="text-center mt-3">Copiar Periodo Académico</h1>
       <Container>
         <Form onSubmit={handleSubmit} noValidate>
-          <Row className="mb-1">
+          <Row className="mb-1 mt-3">
             <Col xs={12} md={2}>
               <Form.Group>
-                <Form.Label className="fw-bold">FACULTAD</Form.Label>
+                <Form.Label className="fw-bold">
+                  NOMBRE DEL NUEVO PERIODO ACADÉMICO
+                </Form.Label>
               </Form.Group>
             </Col>
             <Col xs={12} md={10}>
-              <Form.Select
+              <Form.Control
                 type="input"
-                name="faculty_id"
-                value={formData.faculty_id}
-                onChange={handleChange}
-                isInvalid={!!errors.faculty_id}
-              >
-                <option value="">Seleccione una falcultad</option>
-                {faculty.map((option) => (
-                  <option key={option.faculty_id} value={option.faculty_id}>
-                    {option.name}
-                  </option>
-                ))}
-              </Form.Select>
+                aria-label="Select environment type"
+                placeholder="Ingrese un nombre de periodo académico."
+                name="name"
+                value={formData.name}
+                onChange={handleEnvironmentNameChange}
+                isInvalid={!!errors.name}
+                autoComplete="off"
+              />
               <Form.Control.Feedback type="invalid">
-                {errors.faculty_id}
+                {errors.name}
               </Form.Control.Feedback>
             </Col>
           </Row>
 
-          <Row className="mb-1 mt-3">
+          <Row className="">
             <Col md={2} className="align-items-center">
               <Form.Group>
-                <Form.Label className="fw-bold">GESTIÓN ACADÉMICO</Form.Label>
+                <Form.Label className="fw-bold">GESTIÓN ACADÉMICA</Form.Label>
               </Form.Group>
             </Col>
             <Col md={4}>
@@ -426,35 +426,42 @@ function RegisterPeriod() {
               </Form.Control.Feedback>
             </Col>
 
-            <Col md={2}>
+            <Col md={2} className="align-items-center">
               <Form.Label className="fw-bold mb-0 ">
-                PERIODO ACADÉMICO
+                PERIODO ACADÉMICO A COPIAR
               </Form.Label>
             </Col>
             <Col md={4}>
-              <Form.Control
+              <Form.Select
                 type="input"
-                aria-label="Select environment type"
-                placeholder="Ingrese un nombre de periodo academíco."
-                name="name"
-                value={formData.name}
-                onChange={handleEnvironmentNameChange}
-                isInvalid={!!errors.name}
-                autoComplete="off"
-              />
+                name="academic_period_id"
+                value={formData.academic_period_id}
+                onChange={handleChange}
+                isInvalid={!!errors.academic_period_id}
+              >
+                <option value="">Seleccione un periodo académico</option>
+                {periods.map((option) => (
+                  <option
+                    key={option.academic_period_id}
+                    value={option.academic_period_id}
+                  >
+                    {option.name}
+                  </option>
+                ))}
+              </Form.Select>
               <Form.Control.Feedback type="invalid">
-                {errors.name}
+                {errors.academic_period_id}
               </Form.Control.Feedback>
             </Col>
           </Row>
 
-          <Row className="mb-3">
+          <Row className="mb-3 mt-2">
             <Col md={2} className="align-items-center">
               <Form.Group>
                 <Form.Label className="fw-bold">PERIODO DE DURACIÓN</Form.Label>
               </Form.Group>
             </Col>
-            <Col md={4}>
+            <Col md={4} className="align-items-center">
               <div className="calendar-container">
                 <DatePicker
                   selectsStart
@@ -484,8 +491,8 @@ function RegisterPeriod() {
               </div>
             </Col>
 
-            <Col md={2}>
-              <Form.Label className="fw-bold mb-0 ">
+            <Col md={2} className="align-items-center">
+              <Form.Label className="fw-bold col-form-label">
                 INICIO DE RESERVAS
               </Form.Label>
             </Col>
@@ -495,7 +502,7 @@ function RegisterPeriod() {
                   placeholder="Seleccione una fecha."
                   selectsStart
                   onChange={handleDateChangeS}
-                  selected={startReservation}
+                  selected={startReservation} 
                   dateFormat="dd-MM-yyyy"
                   locale={es}
                   className="form-control"
@@ -520,7 +527,7 @@ function RegisterPeriod() {
               type="submit"
               className="me-3 custom-btn-green custom-btn-green-outline btn btn-success"
             >
-              Registrar
+              Realizar copia
             </Button>
             <Button
               variant="secondary"
@@ -540,10 +547,10 @@ function RegisterPeriod() {
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>Cancelar Registro</Modal.Title>
+          <Modal.Title>¡Cancelar copía!</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div>¿Está seguro de cancelar el registro?</div>
+          <div>¿Está seguro de cancelar el copía de la gestión académica?</div>
         </Modal.Body>
         <Modal.Footer>
           <Button
@@ -572,7 +579,14 @@ function RegisterPeriod() {
           <Modal.Title>¡Confirmación!</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div>¿Está seguro de registrar un nuevo periodo académico?</div>
+          {selectedPeriod ? (
+            <p>
+              ¿Está seguro de realizar una copía del periodo académico{" "}
+              {selectedPeriod.name}?
+            </p>
+          ) : (
+            <p>No se encontró el periodo académico.</p>
+          )}
         </Modal.Body>
         <Modal.Footer>
           {confirmationLoading && (
@@ -580,7 +594,7 @@ function RegisterPeriod() {
               <Spinner animation="border" role="status" />
             </div>
           )}
-          <Button className="custom-btn-primary-outline" onClick={saveGestion}>
+          <Button className="custom-btn-primary-outline" onClick={savePeriod}>
             Aceptar
           </Button>
           <Button
@@ -620,4 +634,4 @@ function RegisterPeriod() {
   );
 }
 
-export default RegisterPeriod;
+export default CopyAcademicPeriod;

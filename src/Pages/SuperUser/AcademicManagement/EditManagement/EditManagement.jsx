@@ -293,7 +293,7 @@ function EditManagement() {
 
   return (
     <div className="container mt-2">
-      <h1 className="text-center">Gestiones Académicas</h1>
+      <h1 className="text-center">Lista de Gestiones Académicas</h1>
       <SearchBar
         value={searchValue}
         onChange={(event) => {
@@ -373,8 +373,7 @@ function EditManagement() {
                   endDate={endDate}
                   onChange={handleEndDateChange}
                   minDate={startDate}
-                  yearDropdownItemNumber={currentYear - 1998 + 1}
-                  maxDate={new Date(currentYear + 1, 4, 30)}
+                  maxDate={new Date(currentYear + 1, 11, 15)}
                   selected={endDate}
                   dateFormat="dd-MM-yyyy"
                   locale="es"

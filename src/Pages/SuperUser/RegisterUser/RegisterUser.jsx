@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Form, Button, Container, Row, Col, Modal } from "react-bootstrap";
-
+import { editarRol } from "../../../services/teachers";
 export default function RegisterUser() {
   const URL = import.meta.env.VITE_REACT_API_URL;
   const [showPassword, setShowPassword] = useState(false);
@@ -24,11 +24,16 @@ export default function RegisterUser() {
     show: false,
     title: "",
     message: "",
+    onclose: () => {},
   });
 
   const handleCloseModal = () => {
     setModalInfo({ ...modalInfo, show: false });
-    // window.location.reload();
+  };
+
+  const onReaload = () => {
+    setModalInfo({ ...modalInfo, show: false });
+    window.location.reload();
   };
 
   const handleChange = (e) => {
@@ -66,101 +71,34 @@ export default function RegisterUser() {
           show: true,
           title: "Error de Registro",
           message: data.message,
+          onclose: handleCloseModal,
         });
-        // throw new Error("Registration failed");
       } else {
         setModalInfo({
           show: true,
           title: "Registro Exitoso",
           message:
             data.message || "El usuario ha sido registrado exitosamente.",
+          onclose: handleCloseModal,
         });
+        const editarRolResponse = await editarRol(data.person.person_id);
 
-        //show editar
-      }
-
-      //   const data = await response.json();
-      //   setModalInfo({
-      //     show: true,
-      //     title: "Registro Exitoso",
-      //     message: data.message || "El usuario ha sido registrado exitosamente.",
-      //   });
-      console.log("Registration successful:", data);
-      //   setNewUser(data);
-      setNewUser(data.person.person_id);
-      //   console.log(data.person.person_id);
-      if (newUser) {
-        editRol(data.person.person_id);
-      }
-    } catch (error) {
-      setModalInfo({
-        show: true,
-        title: "Error de Registro",
-        message: response.message,
-      });
-      console.error("Registration error:", error);
-    }
-  };
-
-  const editRol = async (personID) => {
-    const token = localStorage.getItem("token");
-    // const url = ;
-
-    const role_id = selectedRole === "DOCENTE" ? "1" : "2";
-    // console.log(role_id, person_id);
-
-    try {
-      const response = await fetch(URL + `/users/${personID}/assignRoles`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ role_ids: [role_id] }),
-      });
-
-      const responseData = await response.json();
-
-      //   setModalInfo({
-      //     show: true,
-      //     title: "Error de Registro",
-      //     message: responseData.message,
-      //   });
-      //   setResponseMessage(responseData.message);
-
-      if (response.ok) {
-        setModalInfo({
-          show: true,
-          title: "Éxito",
-          message: responseData.message,
-        });
-        // setResponseTitle("Éxito");
-        // console.log("Rol actualizado:", responseData);
-      } else {
-        setModalInfo({
-          show: true,
-          title: `Error ${response.status}`,
-          message: responseData.message,
-        });
-        // setResponseTitle(`Error ${response.status}`);
-        // console.error("Failed to update role");
-        // console.log(props);
+        if (editarRolResponse.status === 200) {
+          setModalInfo({
+            show: true,
+            title: "Éxito",
+            message:
+              editarRolResponse.message ||
+              `El rol del usuario "${editarRolResponse.data.fullname}" se actualizo a: "${editarRolResponse.data.roles}"`,
+            onclose: onReaload,
+          });
+        } else {
+          console.error("Error de asignacion de rol:", editarRolResponse.data);
+        }
       }
     } catch (error) {
-      setModalInfo({
-        show: true,
-        title: "Error",
-        message: "Error al actualizar el rol.",
-      });
-
-      //   setResponseMessage("Error al actualizar el rol.");
-      //   setResponseTitle("Error");
-      //   console.error("Error:", error);
-      //   console.log(props);
+      console.error("Error de registro:", error);
     }
-
-    setShowModal(false);
-    setShowResponseModal(true);
   };
 
   const handleClose = () => setShowModal(false);
@@ -281,8 +219,8 @@ export default function RegisterUser() {
                       style={{
                         position: "absolute",
                         right: "35px",
-                        top: "65%",
-                        transform: "translateY(-50%)",
+                        top: "50%",
+                        transform: "translateY(20%)",
                         cursor: "pointer",
                       }}
                     ></i>
@@ -302,71 +240,19 @@ export default function RegisterUser() {
           </div>
         </Form>
 
-        <ServerMessageModal
+        {/* <ServerMessageModal
           show={modalInfo.show}
           title={modalInfo.title}
           message={modalInfo.message}
           onClose={handleCloseModal}
-        />
+        /> */}
 
         <ServerMessageModal
           show={modalInfo.show}
           title={modalInfo.title}
           message={modalInfo.message}
-          onClose={handleCloseModal}
+          onClose={modalInfo.onclose}
         />
-
-        <Modal
-          show={showModal}
-          // onHide={handleClose}
-          centered
-          backdrop="static"
-        >
-          <Modal.Header>
-            <Modal.Title>Editar Rol</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {/* <div>
-              <b>Rol:</b>
-              {["DOCENTE", "ENCARGADO"].map((roleOption) => (
-                <div className="form-check" key={roleOption}>
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="roleOptions"
-                    id={`${roleOption}Option`}
-                    value={roleOption}
-                    checked={selectedRole === roleOption}
-                    onChange={handleRoleChange}
-                  />
-                  <label
-                    className="form-check-label"
-                    htmlFor={`${roleOption}Option`}
-                  >
-                    {roleOption}
-                  </label>
-                </div>
-              ))}
-            </div> */}
-          </Modal.Body>
-
-          <Modal.Footer>
-            {/* <Button
-              className="btn btn-primary custom-btn-primary-outline"
-              variant="primary"
-              onClick={handleAccept}
-            >
-              Aceptar
-            </Button>
-            <Button
-              className="btn btn-secondary custom-btn-gray-outline"
-              variant="secondary"
-              onClick={handleClose}
-            >
-              Cerrar
-            </Button> */}
-          </Modal.Footer>
-        </Modal>
       </Container>
     </>
   );
@@ -374,14 +260,18 @@ export default function RegisterUser() {
 
 function ServerMessageModal({ show, title, message, onClose }) {
   return (
-    <Modal show={show} onHide={onClose} centered>
+    <Modal show={show} onHide={onClose} centered backdrop="static">
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>{message}</Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>
-          Close
+        <Button
+          className="custom-btn-gray-outline btn btn-secondary"
+          variant="secondary"
+          onClick={onClose}
+        >
+          Cerrar
         </Button>
       </Modal.Footer>
     </Modal>

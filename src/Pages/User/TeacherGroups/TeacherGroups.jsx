@@ -15,6 +15,29 @@ export default function TeacherGroups() {
     fetchGroupsTeacher().finally(() => setLoading(false));
   }, []);
 
+  const handleChangeSearchValue = (event) => {
+    const { value } = event.target;
+    setSearchValue(value);
+    search(value);
+  };
+
+  const search = (value) => {
+    if (value === "") {
+      setResultList(groupsList);
+    } else {
+      let valueLC = value.toLowerCase();
+      let newList = groupsList.filter(
+        (group) =>
+          group.subject_name.toLowerCase().includes(valueLC) ||
+          group.group_number.toLowerCase().includes(valueLC) ||
+          group.class_schedules.some((schedule) =>
+            schedule.classroom.name.toLowerCase().includes(valueLC)
+          )
+      );
+      setResultList(newList);
+    }
+  };
+
   const fetchGroupsTeacher = async () => {
     const { status, data } = await getFetch("teacher-subjects/teacher");
     console.log(status, data);
@@ -25,17 +48,14 @@ export default function TeacherGroups() {
       setGroupsList([]);
     }
   };
+
   return (
     <>
       <div className="mx-2 p-3 shadow rounded position-sticky top-0 bg-white">
         <h1 className="text-center">Lista de grupos</h1>
         <div className="d-flex">
           <div className="align-self-center flex-fill">
-            <SearchBar
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onPaste={(e) => e.preventDefault()}
-            />
+            <SearchBar value={searchValue} onChange={handleChangeSearchValue} />
           </div>
         </div>
       </div>
@@ -69,8 +89,12 @@ export default function TeacherGroups() {
                   </div>
                 ) : (
                   <>
-                    {resultList.map((g) => {
-                      return <ElementGroup {...g} />;
+                    {resultList.map((g, index) => {
+                      return (
+                        <div key={g + index}>
+                          <ElementGroup {...g} />
+                        </div>
+                      );
                     })}
                   </>
                 )}

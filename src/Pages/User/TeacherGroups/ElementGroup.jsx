@@ -2,16 +2,25 @@ import { Collapse, Table } from "react-bootstrap";
 import { useState } from "react";
 
 export function ElementGroup(props) {
+  // const {
+  //   // group_id,
+  //   subject_name,
+  //   teacher_group,
+  //   group_number,
+  //   // person,
+  //   schedule,
+  //   carreers,
+  //   period,
+  // } = props;
   const {
-    // group_id,
+    group_id,
     subject_name,
-    teacher_group,
+    subject_id,
     group_number,
-    // person,
-    schedule,
-    carreers,
-    period,
+    person,
+    class_schedules,
   } = props;
+
   const [open, setOpen] = useState(false);
 
   return (
@@ -29,17 +38,17 @@ export function ElementGroup(props) {
       <div className="d-flex justify-content-between">
         <div>
           <b className="text-primary">DOCENTE: </b>
-          {teacher_group}
+          {person.fullname}
         </div>
-        <div>
+        {/* <div>
           <b className="text-primary">GESTIÓN: </b>
           {period}
-        </div>
+        </div> */}
       </div>
-      <div className="py-2">
+      <div className="d-flex justify-content-between py-2">
         <div
           onClick={() => setOpen(!open)}
-          className="shadow p-2 rounded border border-dark-subtle mx-1 hover-box"
+          className="shadow p-2 rounded border border-dark-subtle mx-1 hover-box w-100"
         >
           <div className="d-flex justify-content-between align-items-center">
             <span className="text-truncate">VER HORARIO DE CLASES</span>
@@ -59,11 +68,13 @@ export function ElementGroup(props) {
                   <tr>
                     <th>DIA</th>
                     <th>HORARIO</th>
-                    <th>TIPO</th>
+                    <th>AULA</th>
+                    <th>BLOQUE</th>
+                    <th>PISO</th>
                   </tr>
-                  {schedule.map((s, index) => {
+                  {class_schedules.map((s, index) => {
                     return (
-                      <tr key={s.classroom.name + s.periods[0] + index}>
+                      <tr key={s + index}>
                         <td>
                           {s.day === 0
                             ? "Lunes"
@@ -79,8 +90,14 @@ export function ElementGroup(props) {
                             ? "Sabado"
                             : "Sin horario"}
                         </td>
-                        <td>{s.periods[0] + " - " + s.periods[1]}</td>
-                        <td>{s.type}</td>
+                        <td>{s.time_slots[0] + " - " + s.time_slots[1]}</td>
+                        <td>{s.classroom.name}</td>
+                        <td>{s.classroom.block_name}</td>
+                        <td>
+                          {s.classroom.floor === 0
+                            ? "PLANTA BAJA"
+                            : s.classroom.floor}
+                        </td>
                       </tr>
                     );
                   })}
@@ -90,7 +107,7 @@ export function ElementGroup(props) {
           </Collapse>
         </div>
 
-        <div
+        {/* <div
           onClick={() => setOpen(!open)}
           className="shadow p-2 rounded border border-dark-subtle mx-1 hover-box w-50"
         >
@@ -107,7 +124,7 @@ export function ElementGroup(props) {
             </span>
           </div>
 
-          {/* <Collapse in={open}>
+          <Collapse in={open}>
             <div className="pt-2 w-100 overflow-x-auto">
               <Table bordered>
                 <thead>
@@ -128,8 +145,8 @@ export function ElementGroup(props) {
                 </tbody>
               </Table>
             </div>
-          </Collapse> */}
-        </div>
+          </Collapse>
+        </div> */}
       </div>
     </div>
   );

@@ -42,10 +42,10 @@ export default function RecoverPassword () {
         if (status >= 200 && status < 300) {
             setErrMessage("")
             const { access_token, person, refresh_token } = data;
-            if (person.person_roles[0] === "DOCENTE") {
+            if (person.roles[0] === "DOCENTE") {
                 login({ role: "user" });
                 navigate("/user/home");
-            } else if (user.person_roles[0] === "ENCARGADO") {
+            } else if (user.roles[0] === "ENCARGADO") {
                 login({ role: "superuser" });
                 navigate("/superuser/home");
             }

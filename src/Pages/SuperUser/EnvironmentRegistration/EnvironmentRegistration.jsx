@@ -63,10 +63,7 @@ const EnvironmentRegistration = () => {
         return response.json();
       })
       .then((data) => {
-        const optionsWithDefault = [
-          { block_id: "", block_name: "Seleccione..." },
-          ...data,
-        ];
+        const optionsWithDefault = [...data];
         setBlockOptions(optionsWithDefault);
       })
       .catch((error) => {
@@ -89,10 +86,7 @@ const EnvironmentRegistration = () => {
         return response.json();
       })
       .then((data) => {
-        const optionsWithDefault = [
-          { type_id: "", type_name: "Seleccione..." },
-          ...data,
-        ];
+        const optionsWithDefault = [...data];
         setTypeOptions(optionsWithDefault);
       })
       .catch((error) => {

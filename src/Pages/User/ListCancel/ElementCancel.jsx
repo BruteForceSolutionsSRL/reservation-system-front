@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Spinner } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 
@@ -6,6 +6,7 @@ export default function ElementCancel(props) {
   const URL = import.meta.env.VITE_REACT_API_URL;
   const [show, setShow] = useState(false);
   const [loadingSpinner, setLoadingSpinner] = useState(false);
+  const [mine, setMine] = useState(false);
 
   const {
     reservation_id,
@@ -13,10 +14,25 @@ export default function ElementCancel(props) {
     quantity,
     reservation_date,
     time_slot,
-    groups,
+    persons,
     classrooms,
     reason_name,
   } = props;
+
+  useEffect(() => {
+    createdByMe();
+  }, []);
+
+  const createdByMe = () => {
+    let me = JSON.parse(localStorage.getItem("userInformation"));
+    persons.map((p) => {
+      if (p.created_by_me === 1) {
+        if (me.person_id === p.person_id) {
+          setMine(true);
+        }
+      }
+    });
+  };
 
   const cancelRequest = async () => {
     setLoadingSpinner(true);
@@ -45,7 +61,7 @@ export default function ElementCancel(props) {
   return (
     <>
       <div
-        className="row border border-black rounded p-2 mb-2"
+        className="row border border-black rounded p-2 my-2 shadow bg-white"
         style={{ minWidth: "400px" }}
       >
         <div className="col-sm-5">
@@ -59,22 +75,18 @@ export default function ElementCancel(props) {
           </div>
           <div>
             <b className="text-primary">GRUPOS: </b>
-            {groups.map((teacher, index) => {
+            {persons.map((p, index) => {
               return (
-                <b key={index + teacher.teacher_name}>
-                  {teacher.teacher_name + ", "}
+                <b key={index + p.person_id}>
+                  {p.name + " " + p.last_name + ", "}
                 </b>
               );
             })}
           </div>
           <div>
-            <b className="text-primary">AMBIENTES</b>{" "}
+            <b className="text-primary">AMBIENTES</b>
             {classrooms.map((classroom, index) => {
-              return (
-                <b key={index + classroom.classroom_name}>
-                  {classroom.classroom_name + ", "}
-                </b>
-              );
+              return <b key={classroom + index}>{classroom.name + ", "}</b>;
             })}
           </div>
         </div>
@@ -88,7 +100,7 @@ export default function ElementCancel(props) {
             <b>{reservation_date}</b>
           </div>
           <div className="col">
-            <b className="text-primary">MOTIVO DE RESERVA: </b>{" "}
+            <b className="text-primary">MOTIVO DE RESERVA: </b>
             <b>{reason_name}</b>
           </div>
         </div>
@@ -105,7 +117,7 @@ export default function ElementCancel(props) {
             className="custom-btn-red-outline text-truncate"
             onClick={() => setShow(true)}
           >
-            Cancelar solicitud
+            {mine ? "Cancelar reserva" : "Retirarse"}
           </Button>
         </div>
       </div>
@@ -120,7 +132,9 @@ export default function ElementCancel(props) {
           <Modal.Title id="request-modal">Solicitud de reserva</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div>¿Esta seguro de cancelar la solicitud?</div>
+          <div>
+            ¿Esta seguro de{mine ? " cancelar " : " retirarse "}la solicitud?
+          </div>
         </Modal.Body>
         <Modal.Footer>
           {loadingSpinner && (

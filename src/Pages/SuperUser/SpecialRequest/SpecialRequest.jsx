@@ -47,11 +47,16 @@ export default function SpecialRequest() {
   const [modalContent, setModalContent] = useState({});
 
   const [loadingRequest, setLoadingRequest] = useState(false);
+  const [faculties, setFaculties] = useState([]);
+  const [facultySelected, setFacultySelected] = useState(0);
 
   useEffect(() => {
-    Promise.all([fetchTimeSlots(), fetchReasons(), fetchBlocks()]).finally(() =>
-      setLoadingPage(false)
-    );
+    Promise.all([
+      fetchTimeSlots(),
+      fetchReasons(),
+      fetchBlocks(),
+      fetchFaculties(),
+    ]).finally(() => setLoadingPage(false));
     return () => {
       abortController.forEach((controller) => controller.abort());
     };
@@ -78,6 +83,15 @@ export default function SpecialRequest() {
     return abortController;
   };
 
+  const fetchFaculties = async () => {
+    const newAbortController = createAbortController();
+    const { status, data } = await getFetch("faculties", newAbortController);
+    if (status >= 200 && status < 300) {
+      setFaculties(data);
+      setFacultySelected(data[0].faculty_id);
+    }
+  };
+
   const fetchTimeSlots = async () => {
     const newAbortController = createAbortController();
     let { status, data } = await getTimeSlots(newAbortController);
@@ -99,7 +113,7 @@ export default function SpecialRequest() {
     let { status, data } = await getReasons(newAbortController);
     if (status >= 200 && status < 300) {
       setReasons(data);
-      setSelectedReason(data[0].reason_id);
+      setSelectedReason(data[0].reservation_reason_id);
     } else {
       setReasons([]);
     }
@@ -123,7 +137,7 @@ export default function SpecialRequest() {
         let formatedBlocks = options.map((block) => {
           return {
             value: block,
-            label: block.block_name,
+            label: block.name,
           };
         });
         setBlockOptions(formatedBlocks);
@@ -136,7 +150,7 @@ export default function SpecialRequest() {
               ...totalClassrooms,
               {
                 value: classroom.classroom_id,
-                label: classroom.classroom_name,
+                label: classroom.name,
               },
             ]);
           });
@@ -226,13 +240,14 @@ export default function SpecialRequest() {
       date_end: formatDate(dates[1]),
       reason_id: selectedReason,
       observation: description,
-      classroom_id: allowClassroomsSelect
+      classroom_ids: allowClassroomsSelect
         ? selectedClassrooms.map(({ value }) => value)
         : [],
-      time_slot_id: [selectedStartSlot, selectedEndSlot],
+      time_slot_ids: [selectedStartSlot, selectedEndSlot],
       block_id: selectedBlocks.map((block) => {
         return block.value.block_id;
       }),
+      faculty_id: facultySelected,
     };
 
     let { status, data } = await postFetch(
@@ -458,14 +473,33 @@ export default function SpecialRequest() {
                 >
                   {reasons.map((reason) => {
                     return (
-                      <option key={reason.reason_id} value={reason.reason_id}>
-                        {reason.reason_name}
+                      <option
+                        key={reason.reservation_reason_id}
+                        value={reason.reservation_reason_id}
+                      >
+                        {reason.name}
                       </option>
                     );
                   })}
                 </select>
               </div>
             </div>
+          </div>
+          <div className="d-flex">
+            <b className="pe-2 ">FACULTAD: </b>
+            <select
+              className="form-select"
+              value={facultySelected}
+              onChange={(e) => setFacultySelected(e.target.value)}
+            >
+              {faculties.map((f) => {
+                return (
+                  <option value={f.faculty_id} key={f.faculty_id}>
+                    {f.name}
+                  </option>
+                );
+              })}
+            </select>
           </div>
           <div className="py-2">
             <b className="">DESCRIPCION DE LA RESERVA</b>

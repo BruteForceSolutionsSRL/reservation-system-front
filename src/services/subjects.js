@@ -1,18 +1,19 @@
 const url = import.meta.env.VITE_REACT_API_URL;
 
-export function getSubjects() {
+export async function getSubjects() {
   let token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("userInformation"));
-  return fetch(url + `teacher-subjects/teacher/${user.person_id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "aplication/json",
-    },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      return data;
-    });
+  const response = await fetch(
+    url + `teacher-subjects/teacher/${user.person_id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "aplication/json",
+      },
+    }
+  );
+  const data = await response.json();
+  return { status: response.status, data: data };
 }
 
 export function getAllSubjects() {

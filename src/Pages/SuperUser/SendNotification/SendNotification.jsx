@@ -50,7 +50,7 @@ export default function SendNotification() {
       let teachers = response.data.map((person) => {
         return {
           value: person.person_id,
-          label: person.person_fullname,
+          label: person.fullname,
         };
       });
       teachers.unshift({ value: "TODOS", label: "TODOS" });
@@ -332,7 +332,12 @@ export default function SendNotification() {
           </div>
         </Form>
       </div>
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered backdrop="static">
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        centered
+        backdrop="static"
+      >
         <Modal.Header closeButton>
           <h3>{modalContent.title}</h3>
         </Modal.Header>

@@ -1,0 +1,8 @@
+.modal-innermost .modal-content {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  background-color: #ffffff;
+}
+
+.modal-innermost .modal-dialog {
+  z-index: 1070; /* Ajusta según sea necesario */
+}

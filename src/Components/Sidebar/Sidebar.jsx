@@ -127,7 +127,7 @@ export default function Sidebar({ user }) {
             />
           </div>
           <span className="d-block text-center text-truncate user-select-none fs-5 fw-semibold">
-            {userInformation.name + " " + userInformation.last_name}
+            {userInformation.fullname}
           </span>
           <span className="d-block text-center text-truncate user-select-none fs-6 fst-italic">
             {userInformation.email}
@@ -191,7 +191,193 @@ export default function Sidebar({ user }) {
                 </Link>
               </li>
             </ul>
-            <ul className="list-unstyled ">
+
+            {user === "superuser" && (
+              <ul className="list-unstyled ">
+                <li
+                  className={
+                    activeItem === "academic-management" ? "active" : ""
+                  }
+                >
+                  <Link
+                    to="#"
+                    className="text-decoration-none px-3  d-block"
+                    onClick={() => handleItemClick("academic-management")}
+                  >
+                    <i className="bi bi-calendar2-week fs-4 text-white"></i>
+                    <span className="text-white ps-2">Gestión académica</span>
+                  </Link>
+                </li>
+                <Collapse in={openItems["academic-management"]}>
+                  <div className="bg-dark rounded m-1 py-1">
+                    {/* {user === "user" && (
+                      <li
+                        className={
+                          activeItem === "enter-management"
+                            ? "active list-unstyled px-2"
+                            : "list-unstyled px-2"
+                        }
+                      >
+                        <Link
+                          to="enter-management"
+                          className="text-decoration-none px-4 py-2 d-block"
+                          onClick={() => handleItemClick("enter-management")}
+                        >
+                          <i className="bi bi-indent fs-4 text-white"></i>
+                          <span className="text-white ps-2">
+                            Ingesar a una gestion
+                          </span>
+                        </Link>
+                      </li>
+                    )}
+                    {user === "superuser" && (
+                      <li
+                        className={
+                          activeItem === "enter-management"
+                            ? "active list-unstyled px-2"
+                            : "list-unstyled px-2"
+                        }
+                      >
+                        <Link
+                          to="enter-management"
+                          className="text-decoration-none px-4 py-2 d-block"
+                          onClick={() => handleItemClick("enter-management")}
+                        >
+                          <i className="bi bi-indent fs-4 text-white"></i>
+                          <span className="text-white ps-3">
+                            Ingesar a una gestion
+                          </span>
+                        </Link>
+                      </li>
+                    )} */}
+                    {user === "superuser" && (
+                      <li
+                        className={
+                          activeItem === "register-management"
+                            ? "active list-unstyled"
+                            : "list-unstyled"
+                        }
+                      >
+                        <Link
+                          to="register-management"
+                          className="text-decoration-none px-2 py-2 d-block"
+                          onClick={() => handleItemClick("register-management")}
+                        >
+                          <i className="bi bi-calendar2-plus fs-4 text-white"></i>
+                          <span className="text-white ps-2">
+                            Registar gestion
+                          </span>
+                        </Link>
+                      </li>
+                    )}
+                    {user === "superuser" && (
+                      <li
+                        className={
+                          activeItem === "edit-management"
+                            ? "active list-unstyled"
+                            : "list-unstyled"
+                        }
+                      >
+                        <Link
+                          to="edit-management"
+                          className="text-decoration-none px-2 py-2 d-block"
+                          onClick={() => handleItemClick("edit-management")}
+                        >
+                          <i className="bi bi-calendar2-check fs-4 text-white"></i>{" "}
+                          <span className="text-white ps-2">
+                            Editar gestion
+                          </span>
+                        </Link>
+                      </li>
+                    )}
+                  </div>
+                </Collapse>
+              </ul>
+            )}
+
+            {user === "superuser" && (
+              <ul className="list-unstyled ">
+                <li
+                  className={activeItem === "academic-period" ? "active" : ""}
+                >
+                  <Link
+                    to="#"
+                    className="text-decoration-none px-3  d-block"
+                    onClick={() => handleItemClick("academic-period")}
+                  >
+                    <i className="bi bi-mortarboard fs-4 text-white"></i>
+                    <span className="text-white ps-2">Periodo académico</span>
+                  </Link>
+                </li>
+                <Collapse in={openItems["academic-period"]}>
+                  <div className="bg-dark rounded m-1 py-1">
+                    {user === "superuser" && (
+                      <li
+                        className={
+                          activeItem === "register-period"
+                            ? "active list-unstyled"
+                            : "list-unstyled"
+                        }
+                      >
+                        <Link
+                          to="register-period"
+                          className="text-decoration-none px-2 py-2 d-block"
+                          onClick={() => handleItemClick("register-period")}
+                        >
+                          <i className="bi bi-calendar2-plus fs-4 text-white"></i>
+                          <span className="text-white ps-2">
+                            Registar periodo
+                          </span>
+                        </Link>
+                      </li>
+                    )}
+                    {user === "superuser" && (
+                      <li
+                        className={
+                          activeItem === "edit-period"
+                            ? "active list-unstyled"
+                            : "list-unstyled"
+                        }
+                      >
+                        <Link
+                          to="edit-period"
+                          className="text-decoration-none px-2 py-2 d-block"
+                          onClick={() => handleItemClick("edit-period")}
+                        >
+                          <i className="bi bi-calendar2-check fs-4 text-white"></i>
+                          <span className="text-white ps-2">
+                            Editar periodo
+                          </span>
+                        </Link>
+                      </li>
+                    )}
+
+                    {user === "superuser" && (
+                      <li
+                        className={
+                          activeItem === "copy-period"
+                            ? "active list-unstyled"
+                            : "list-unstyled"
+                        }
+                      >
+                        <Link
+                          to="copy-period"
+                          className="text-decoration-none px-2 py-2 d-block"
+                          onClick={() => handleItemClick("copy-period")}
+                        >
+                          <i className="bi bi-copy fs-4 text-white"></i>
+                          <span className="text-white ps-2">
+                            Copiar periodo
+                          </span>
+                        </Link>
+                      </li>
+                    )}
+                  </div>
+                </Collapse>
+              </ul>
+            )}
+
+            <ul className="list-unstyled">
               <li className={activeItem === "reservations" ? "active" : ""}>
                 <Link
                   to="#"
@@ -203,18 +389,18 @@ export default function Sidebar({ user }) {
                 </Link>
               </li>
               <Collapse in={openItems["reservations"]}>
-                <div>
+                <div className="bg-dark rounded m-1 py-1">
                   {user === "user" && (
                     <li
                       className={
                         activeItem === "enviroment-request"
-                          ? "active list-unstyled px-2"
-                          : "list-unstyled px-2"
+                          ? "active list-unstyled"
+                          : "list-unstyled"
                       }
                     >
                       <Link
                         to="enviroment-request"
-                        className="text-decoration-none px-4 py-2 d-block"
+                        className="text-decoration-none px-2 py-2 d-block"
                         onClick={() => handleItemClick("enviroment-request")}
                       >
                         <i className="bi bi-bookmark-plus fs-4 text-white"></i>
@@ -228,17 +414,17 @@ export default function Sidebar({ user }) {
                     <li
                       className={
                         activeItem === "request"
-                          ? "active list-unstyled px-2"
-                          : "list-unstyled px-2"
+                          ? "active list-unstyled"
+                          : "list-unstyled"
                       }
                     >
                       <Link
                         to="request"
-                        className="text-decoration-none px-4 py-2 d-block"
+                        className="text-decoration-none px-2 py-2 d-block"
                         onClick={() => handleItemClick("request")}
                       >
                         <i className="bi bi-bookmark-plus fs-4 text-white"></i>
-                        <span className="text-white ps-3">Nueva solicitud</span>
+                        <span className="text-white ps-2">Nueva solicitud</span>
                       </Link>
                     </li>
                   )}
@@ -246,16 +432,16 @@ export default function Sidebar({ user }) {
                     <li
                       className={
                         activeItem === "request-attention"
-                          ? "active list-unstyled px-2"
-                          : "list-unstyled px-2"
+                          ? "active list-unstyled"
+                          : "list-unstyled"
                       }
                     >
                       <Link
                         to="attention-list"
-                        className="text-decoration-none px-4 py-2 d-block"
+                        className="text-decoration-none px-2 py-2 d-block"
                         onClick={() => handleItemClick("request-attention")}
                       >
-                        <i className="bi bi-person-workspace fs-4 text-white"></i>{" "}
+                        <i className="bi bi-person-workspace fs-4 text-white"></i>
                         <span className="text-white ps-2">
                           Atender solicitudes pendientes
                         </span>
@@ -266,18 +452,18 @@ export default function Sidebar({ user }) {
                     <li
                       className={
                         activeItem === "special-request-attention"
-                          ? "active list-unstyled px-2"
-                          : "list-unstyled px-2"
+                          ? "active list-unstyled"
+                          : "list-unstyled"
                       }
                     >
                       <Link
                         to="special-attention-list"
-                        className="text-decoration-none px-4 py-2 d-block"
+                        className="text-decoration-none px-2 py-2 d-block"
                         onClick={() =>
                           handleItemClick("special-request-attention")
                         }
                       >
-                        <i className="bi bi-clipboard-check fs-4 text-white"></i>{" "}
+                        <i className="bi bi-clipboard-check fs-4 text-white"></i>
                         <span className="text-white ps-2">
                           Lista de reservas
                         </span>
@@ -295,7 +481,7 @@ export default function Sidebar({ user }) {
                     >
                       <Link
                         to="list-cancel"
-                        className="text-decoration-none px-4 py-2 d-block text-white"
+                        className="text-decoration-none px-2 py-2 d-block text-white"
                         onClick={() => handleItemClick("list-requests")}
                       >
                         <i className="bi bi-bookmark-x fs-4"></i> Cancelar
@@ -313,7 +499,7 @@ export default function Sidebar({ user }) {
                     >
                       <Link
                         to="request-history"
-                        className="text-decoration-none px-4 py-2 d-block text-white"
+                        className="text-decoration-none px-2 py-2 d-block text-white"
                         onClick={() => handleItemClick("request-history")}
                       >
                         <i className="bi bi-book fs-4"></i> Historial de
@@ -331,20 +517,23 @@ export default function Sidebar({ user }) {
                   className="text-decoration-none px-3 d-block "
                   onClick={() => handleItemClick("environments")}
                 >
-                  <i className="bi bi-clipboard-data fs-4  text-white"></i>{" "}
+                  <i className="bi bi-clipboard-data fs-4 text-white"></i>
                   <span className="text-white ps-2">Uso de ambientes</span>
                 </Link>
               </li>
               <Collapse in={openItems["environments"]}>
-                <div id="example-collapse-text">
+                <div
+                  id="example-collapse-text"
+                  className="bg-dark rounded m-1 py-1"
+                >
                   <li
-                    className={`list-unstyled px-3 ${
+                    className={`list-unstyled  ${
                       activeItem === "disponibility" ? "active" : ""
                     }`}
                   >
                     <Link
                       to="environments-disponibility"
-                      className="text-decoration-none px-3 py-2 d-block"
+                      className="text-decoration-none px-2 py-2 d-block"
                       onClick={() => handleItemClick("disponibility")}
                     >
                       <i
@@ -360,13 +549,13 @@ export default function Sidebar({ user }) {
                   <li
                     className={
                       activeItem === "statistics"
-                        ? "active list-unstyled px-2"
-                        : "list-unstyled px-3"
+                        ? "active list-unstyled"
+                        : "list-unstyled"
                     }
                   >
                     <Link
                       to="statistics-ambience"
-                      className="text-decoration-none px-3 py-2 d-block"
+                      className="text-decoration-none px-2 py-2 d-block"
                       onClick={() => handleItemClick("statistics")}
                     >
                       <i className="bi bi-graph-up fs-4 text-white"></i>
@@ -388,7 +577,7 @@ export default function Sidebar({ user }) {
                     onClick={() => handleItemClick("management")}
                   >
                     <div className="d-flex justify-content-start align-items-center">
-                      <i className="bi bi-houses fs-4  text-white"></i>
+                      <i className="bi bi-houses fs-4 text-white"></i>
                       <span className="text-white ps-2">
                         Gestión de Ambiente
                       </span>
@@ -396,17 +585,17 @@ export default function Sidebar({ user }) {
                   </Link>
                 </li>
                 <Collapse in={openItems["management"]}>
-                  <div>
+                  <div className="bg-dark rounded m-1 py-1">
                     <li
                       className={
                         activeItem === "enviroment-register"
-                          ? "active list-unstyled px-2"
-                          : "list-unstyled px-2"
+                          ? "active list-unstyled"
+                          : "list-unstyled"
                       }
                     >
                       <Link
                         to="environment-register"
-                        className="text-decoration-none px-4 py-2 d-block"
+                        className="text-decoration-none px-2 py-2 d-block"
                         onClick={() => handleItemClick("enviroment-register")}
                       >
                         <div className="align-items-center text-white">
@@ -418,13 +607,13 @@ export default function Sidebar({ user }) {
                     <li
                       className={
                         activeItem === "edit-environment"
-                          ? "active list-unstyled px-2"
-                          : "list-unstyled px-2"
+                          ? "active list-unstyled"
+                          : "list-unstyled"
                       }
                     >
                       <Link
                         to="edit-environment"
-                        className="text-decoration-none px-4 py-2 d-block text-white"
+                        className="text-decoration-none px-2 py-2 d-block text-white"
                         onClick={() => handleItemClick("edit-environment")}
                       >
                         <i className="bi bi-house-gear fs-4"></i> Editar
@@ -434,13 +623,13 @@ export default function Sidebar({ user }) {
                     <li
                       className={
                         activeItem === "delete-environment"
-                          ? "active list-unstyled px-2"
-                          : "list-unstyled px-2"
+                          ? "active list-unstyled"
+                          : "list-unstyled"
                       }
                     >
                       <Link
                         to="delete-environment"
-                        className="text-decoration-none px-4 py-2 d-block text-white"
+                        className="text-decoration-none px-2 py-2 d-block text-white"
                         onClick={() => handleItemClick("delete-environment")}
                       >
                         <i className="bi bi-house-x fs-4"></i> Eliminar ambiente
@@ -470,17 +659,17 @@ export default function Sidebar({ user }) {
                   </Link>
                 </li>
                 <Collapse in={openItems["management-block"]}>
-                  <div>
+                  <div className="bg-dark rounded m-1 py-1">
                     <li
                       className={
                         activeItem === "block-register"
-                          ? "active list-unstyled px-2"
-                          : "list-unstyled px-2"
+                          ? "active list-unstyled"
+                          : "list-unstyled"
                       }
                     >
                       <Link
                         to="block-register"
-                        className="text-decoration-none px-4 py-2 d-block"
+                        className="text-decoration-none px-2 py-2 d-block"
                         onClick={() => handleItemClick("block-register")}
                       >
                         <div className="align-items-center text-white">
@@ -492,13 +681,13 @@ export default function Sidebar({ user }) {
                     <li
                       className={
                         activeItem === "edit-block"
-                          ? "active list-unstyled px-2"
-                          : "list-unstyled px-2"
+                          ? "active list-unstyled"
+                          : "list-unstyled"
                       }
                     >
                       <Link
                         to="edit-block"
-                        className="text-decoration-none px-4 py-2 d-block text-white"
+                        className="text-decoration-none px-2 py-2 d-block text-white"
                         onClick={() => handleItemClick("edit-block")}
                       >
                         <i className="bi bi-building-gear fs-4"></i> Editar
@@ -508,13 +697,13 @@ export default function Sidebar({ user }) {
                     <li
                       className={
                         activeItem === "delete-block"
-                          ? "active list-unstyled px-2"
-                          : "list-unstyled px-2"
+                          ? "active list-unstyled"
+                          : "list-unstyled"
                       }
                     >
                       <Link
                         to="delete-block"
-                        className="text-decoration-none px-4 py-2 d-block text-white"
+                        className="text-decoration-none px-2 py-2 d-block text-white"
                         onClick={() => handleItemClick("delete-block")}
                       >
                         <i className="bi bi-building-x fs-4"></i> Eliminar
@@ -541,21 +730,21 @@ export default function Sidebar({ user }) {
                   </Link>
                 </li>
                 <Collapse in={openItems["report"]}>
-                  <div>
+                  <div className="bg-dark rounded m-1 py-1">
                     <li
                       className={
                         activeItem === "generate-report"
-                          ? "active list-unstyled px-2"
-                          : "list-unstyled px-2"
+                          ? "active list-unstyled"
+                          : "list-unstyled"
                       }
                     >
                       <Link
                         to="generate-report"
-                        className="text-decoration-none px-4 py-2 d-block text-white"
+                        className="text-decoration-none px-2 py-2 d-block text-white"
                         onClick={() => handleItemClick("generate-report")}
                       >
                         <div className="align-items-center">
-                          <i className="bi bi-file-earmark-spreadsheet fs-4"></i>{" "}
+                          <i className="bi bi-file-earmark-spreadsheet fs-4"></i>
                           Generar Reporte
                         </div>
                       </Link>
@@ -576,18 +765,18 @@ export default function Sidebar({ user }) {
                 </Link>
               </li>
               <Collapse in={openItems["notifications"]}>
-                <div>
+                <div className="bg-dark rounded m-1 py-1">
                   {user === "superuser" && (
                     <li
                       className={
                         activeItem === "send-notification"
-                          ? "active list-unstyled px-2"
-                          : "list-unstyled px-2"
+                          ? "active list-unstyled"
+                          : "list-unstyled"
                       }
                     >
                       <Link
                         to="send-notification"
-                        className="text-decoration-none px-4 py-2 d-block text-white"
+                        className="text-decoration-none px-2 py-2 d-block text-white"
                         onClick={() => handleItemClick("send-notification")}
                       >
                         <div className="align-items-center">
@@ -599,17 +788,185 @@ export default function Sidebar({ user }) {
                   <li
                     className={
                       activeItem === "notifications-list"
-                        ? "active list-unstyled px-2"
-                        : "list-unstyled px-2"
+                        ? "active list-unstyled"
+                        : "list-unstyled"
                     }
                   >
                     <Link
                       to="notifications-list"
-                      className="text-decoration-none px-4 py-2 d-block text-white"
+                      className="text-decoration-none px-2 py-2 d-block text-white"
                       onClick={() => handleItemClick("notifications-list")}
                     >
                       <div className="align-items-center">
                         <i className="bi bi-inbox fs-4"></i> Ver notificationes
+                      </div>
+                    </Link>
+                  </li>
+                </div>
+              </Collapse>
+            </ul>
+            {user === "superuser" && (
+              <ul className="list-unstyled">
+                <li className={activeItem === "subjects" ? "active" : ""}>
+                  <Link
+                    to="#"
+                    className="text-decoration-none px-3 d-block"
+                    onClick={() => handleItemClick("subjects")}
+                  >
+                    <i className="bi bi-journals fs-4  text-white"></i>
+                    <span className="text-white ps-2">Materias</span>
+                  </Link>
+                </li>
+                <Collapse in={openItems["subjects"]}>
+                  <div className="bg-dark rounded">
+                    {user === "superuser" && (
+                      <li
+                        className={
+                          activeItem === "subjects-list"
+                            ? "active list-unstyled"
+                            : "list-unstyled"
+                        }
+                      >
+                        <Link
+                          to="subjects"
+                          className="text-decoration-none px-2 py-2 d-block text-white"
+                          onClick={() => handleItemClick("subjects-list")}
+                        >
+                          <div className="align-items-center">
+                            <i className="bi bi-list fs-4"></i> Lista de
+                            materias
+                          </div>
+                        </Link>
+                      </li>
+                    )}
+                  </div>
+                </Collapse>
+              </ul>
+            )}
+            <ul className="list-unstyled">
+              <li className={activeItem === "groups" ? "active" : ""}>
+                <Link
+                  to="#"
+                  className="text-decoration-none px-3 d-block"
+                  onClick={() => handleItemClick("groups")}
+                >
+                  <i className="bi bi-collection fs-4 text-white"></i>
+                  <span className="text-white ps-2">Grupos</span>
+                </Link>
+              </li>
+              <Collapse in={openItems["groups"]}>
+                <div className="bg-dark rounded">
+                  {/* {user === "superuser" && ( */}
+                  <>
+                    <li
+                      className={
+                        activeItem === "groups-list"
+                          ? "active list-unstyled"
+                          : "list-unstyled"
+                      }
+                    >
+                      <Link
+                        to={user === "superuser" ? "groups" : "groups-teacher"}
+                        className="text-decoration-none px-2 py-2 d-block text-white"
+                        onClick={() => handleItemClick("groups-list")}
+                      >
+                        <div className="align-items-center">
+                          <i className="bi bi-list fs-4"></i> Lista de grupos
+                        </div>
+                      </Link>
+                    </li>
+                    {/* <li
+                        className={
+                          activeItem === "groups-history"
+                            ? "active list-unstyled"
+                            : "list-unstyled"
+                        }
+                      >
+                        <Link
+                          to="groups/history"
+                          className="text-decoration-none px-2 py-2 d-block text-white"
+                          onClick={() => handleItemClick("groups-history")}
+                        >
+                          <div className="align-items-center">
+                            <i className="bi bi-clock-history fs-4"></i>
+                            Historial de grupos
+                          </div>
+                        </Link>
+                      </li> */}
+                  </>
+                  {/* )} */}
+                </div>
+              </Collapse>
+            </ul>
+
+            <ul className="list-unstyled">
+              <li className={activeItem === "usuario" ? "active" : ""}>
+                <Link
+                  to="#"
+                  className="text-decoration-none px-3 d-block"
+                  onClick={() => handleItemClick("usuario")}
+                >
+                  <i className="bi bi-person-gear fs-4  text-white"></i>
+                  <span className="text-white ps-2">Usuario</span>
+                </Link>
+              </li>
+              <Collapse in={openItems["usuario"]}>
+                <div className="bg-dark rounded m-1 py-1">
+                  {user === "superuser" && (
+                    <>
+                      <li
+                        className={
+                          activeItem === "register-user"
+                            ? "active list-unstyled"
+                            : "list-unstyled"
+                        }
+                      >
+                        <Link
+                          to="register-user"
+                          className="text-decoration-none px-2 py-2 d-block text-white"
+                          onClick={() => handleItemClick("register-user")}
+                        >
+                          <div className="align-items-center">
+                            <i className="bi bi-person-fill-add fs-4 me-2"></i>
+                            Registrar Usuario
+                          </div>
+                        </Link>
+                      </li>
+                      <li
+                        className={
+                          activeItem === "edit-rol"
+                            ? "active list-unstyled"
+                            : "list-unstyled"
+                        }
+                      >
+                        <Link
+                          to="edit-rol"
+                          className="text-decoration-none px-2 py-2 d-block text-white"
+                          onClick={() => handleItemClick("edit-rol")}
+                        >
+                          <div className="align-items-center">
+                            <i className="bi bi-person-fill-add fs-4 me-2"></i>
+                            Editar Rol
+                          </div>
+                        </Link>
+                      </li>
+                    </>
+                  )}
+                  <li
+                    className={
+                      activeItem === "information-user"
+                        ? "active list-unstyled"
+                        : "list-unstyled"
+                    }
+                  >
+                    <Link
+                      to="information-user"
+                      className="text-decoration-none px-2 py-2 d-block text-white"
+                      onClick={() => handleItemClick("information-user")}
+                    >
+                      <div className="align-items-center">
+                        <i className="bi bi-person fs-4 me-2"></i> Perfil
+                        usuario
                       </div>
                     </Link>
                   </li>
@@ -639,7 +996,7 @@ export default function Sidebar({ user }) {
                     alt="icon"
                   />
                   <span className="text-truncate user-select-none w-40 text-white">
-                    {userInformation.name + " " + userInformation.last_name}
+                    {userInformation.fullname}
                   </span>
                 </div>
               </OverlayTrigger>
@@ -679,7 +1036,7 @@ export default function Sidebar({ user }) {
           <Modal.Title>{modalContent.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="pt-3 pb-3">
+          <div className="py-3">
             <span>{modalContent.body}</span>
           </div>
         </Modal.Body>

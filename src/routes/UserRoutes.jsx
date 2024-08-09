@@ -10,6 +10,10 @@ import RequestReservation from "../Pages/User/RequestReservation/RequestReservat
 import SeeNotifications from "../Pages/User/SeeNotifications/SeeNotifications";
 import SingleNotification from "../Pages/User/SeeNotifications/SingleNotification";
 import ProtectedRoute from "./ProtectedRoute";
+import FacultySelect from "../Pages/FacultySelect/FacultySelect";
+import EnterManagement from "../Pages/SuperUser/AcademicManagement/EnterManagement/EnterManagement";
+import InformationUser from "../Pages/User/InformationUser/InformationUser";
+import TeacherGroups from "../Pages/User/TeacherGroups/TeacherGroups";
 
 export default function UserRoutes() {
   return (
@@ -35,8 +39,12 @@ export default function UserRoutes() {
           path="notifications/:notificationId"
           element={<SingleNotification />}
         />
+        <Route path="information-user" element={<InformationUser />} />
+        {/* <Route path="enter-management" element={<EnterManagement />} /> */}
+        <Route path="groups-teacher" element={<TeacherGroups />} />
         <Route path="*" element={<ErrorPage />} />
       </Route>
+      <Route path="select-faculty" element={<FacultySelect />} />
     </Routes>
   );
 }

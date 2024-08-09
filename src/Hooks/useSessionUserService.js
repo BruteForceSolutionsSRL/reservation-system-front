@@ -7,7 +7,7 @@ export function useSessionUserService() {
   const loginUser = async (email, password, abortController) => {
     let responseFetch = {};
     try {
-      let response = await fetch(url + "login", {
+      let response = await fetch(url + "auth/incomplete/login", {
         method: "POST",
         headers: {
           "Content-Type": "aplication/json",
@@ -71,7 +71,7 @@ export function useSessionUserService() {
     let responseFetch = {};
     let token = localStorage.getItem("token");
     try {
-      let response = await fetch(url + "token/status", {
+      let response = await fetch(url + "auth/token/status", {
         headers: {
           "Content-Type": "aplication/json",
           Authorization: `Bearer ${token}`,

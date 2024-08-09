@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Spinner from "react-bootstrap/Spinner";
 import AttentionRequest from "./AttentionRequest";
+import ConfigModal from "./ConfigModal";
 
 export default function AttentionList() {
   const URL = import.meta.env.VITE_REACT_API_URL;
@@ -8,6 +9,7 @@ export default function AttentionList() {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [reload, setReload] = useState(false);
+  const [showConfig, setShowConfig] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -41,6 +43,18 @@ export default function AttentionList() {
     <div className="container">
       <div>
         <h1 className="text-center mt-2">Atender solicitudes pendientes</h1>
+        <div className="d-flex justify-content-end">
+          <div className="d-flex align-items-center">
+            <div>
+              <button className="btn" onClick={() => setShowConfig(true)}>
+                <i className="bi bi-gear fs-3"></i>
+              </button>
+            </div>
+            <div>
+              <span className="fs-4">Ajustes</span>
+            </div>
+          </div>
+        </div>
       </div>
       <hr />
       {loading === true ? (
@@ -75,6 +89,7 @@ export default function AttentionList() {
           })}
         </div>
       )}
+      <ConfigModal showConfig={showConfig} setShowConfig={setShowConfig} />
     </div>
   );
 }

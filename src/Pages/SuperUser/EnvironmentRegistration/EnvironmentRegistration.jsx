@@ -63,10 +63,7 @@ const EnvironmentRegistration = () => {
         return response.json();
       })
       .then((data) => {
-        const optionsWithDefault = [
-          { block_id: "", block_name: "Seleccione..." },
-          ...data, // add Seleccione...
-        ];
+        const optionsWithDefault = [...data];
         setBlockOptions(optionsWithDefault);
       })
       .catch((error) => {
@@ -89,10 +86,7 @@ const EnvironmentRegistration = () => {
         return response.json();
       })
       .then((data) => {
-        const optionsWithDefault = [
-          { type_id: "", type_name: "Seleccione..." },
-          ...data, // add Seleccione...
-        ];
+        const optionsWithDefault = [...data];
         setTypeOptions(optionsWithDefault);
       })
       .catch((error) => {
@@ -146,7 +140,7 @@ const EnvironmentRegistration = () => {
   const handleEnvironmentTypeChange = (event) => {
     const value = event.target.value;
     setEnvironmentType(value);
-    setTypeError(value === ""); //error if empty
+    setTypeError(value === "");
   };
 
   const handleEnvironmentCapacityChange = (event) => {
@@ -176,30 +170,24 @@ const EnvironmentRegistration = () => {
     );
 
     if (selectedBlock) {
-      setMaxFloor(selectedBlock.block_maxfloor);
+      setMaxFloor(selectedBlock.maxfloor);
     } else {
       setMaxFloor("");
     }
   };
 
-  //effect to perform actions after updating maxFloor
   useEffect(() => {
-    // console.log("Valor actual de maxFloor:", maxFloor);
-
     if (maxFloor !== "") {
-      // console.log("Piso máximo:", maxFloor);
     }
   }, [maxFloor]);
 
   const handleFloorChange = (event) => {
     const enteredFloor = parseInt(event.target.value, 10);
     setEnvironmentFloor(enteredFloor);
-    //const isValidRange = parseInt(value, 10) >= 0 //&& parseInt(value, 10) <= 200;
-
     if (!isNaN(enteredFloor) && enteredFloor <= maxFloor && enteredFloor >= 0) {
-      setFloorError(false); // valid floor
+      setFloorError(false);
     } else {
-      setFloorError(true); // invalid floor
+      setFloorError(true);
       setEnvironmentFloor("");
     }
   };
@@ -439,15 +427,18 @@ const EnvironmentRegistration = () => {
                 </Col>
                 <Col xs={12} md={10}>
                   <Form.Select
-                    aria-label="Select environment type"
                     value={environmentType}
                     onChange={handleEnvironmentTypeChange}
                     isInvalid={typeError}
                     required
                   >
+                    <option value="">Seleccione un tipo de ambiente</option>
                     {typeOptions.map((option) => (
-                      <option key={option.type_id} value={option.type_id}>
-                        {option.type_name}
+                      <option
+                        key={option.classroom_type_id}
+                        value={option.classroom_type_id}
+                      >
+                        {option.name}
                       </option>
                     ))}
                   </Form.Select>
@@ -503,12 +494,13 @@ const EnvironmentRegistration = () => {
                           isInvalid={blockError && environmentBlock === ""}
                           required
                         >
+                          <option value="">Seleccione un tipo de bloque</option>
                           {blockOptions.map((option) => (
                             <option
                               key={option.block_id}
                               value={option.block_id}
                             >
-                              {option.block_name}
+                              {option.name}
                             </option>
                           ))}
                         </Form.Select>

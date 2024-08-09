@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Alert, Button, Form, Modal } from "react-bootstrap";
 import { getSubjects } from "../../../services/subjects";
 import { getCurrentDate } from "../../../utils/getCurrentDate";
@@ -14,13 +14,16 @@ import { Spinner } from "react-bootstrap";
 import "./RequestReservation.css";
 import LoadingSpinner from "../../../Components/LoadingSpinner/LoadingSpinner";
 import Select from "react-select";
+import { currentDateAcademicPeriod } from "../../../utils/currentDateAcademicPeriod";
 
 export default function RequestReservation() {
-  const user = JSON.parse(localStorage.getItem("userInformation"));
+  const user = useMemo(() =>
+    JSON.parse(localStorage.getItem("userInformation"))
+  );
   const [loadingPage, setLoadingPage] = useState(true);
   const [groupSelected, setGroupSelected] = useState([]);
   const [optionsGroups, setOptionsGroups] = useState([]);
-  const [subjects, setSubjects] = useState(null);
+  const [subjects, setSubjects] = useState([]);
   const [subjectSelected, setSubjectSelected] = useState("");
   const [quantity, setQuantity] = useState("");
   const [quantityWarnings, setQuantityWarnings] = useState({});
@@ -41,6 +44,12 @@ export default function RequestReservation() {
   const [classroomsByBlock, setClassroomsByBlock] = useState([]);
   const [classroomsOptions, setClassroomsOptions] = useState([]);
   const [classroomsSelected, setClassroomsSelected] = useState([]);
+  const [initialDateAcademicPeriod, setInitialDateAcademicPeriod] = useState(
+    getCurrentDate()
+  );
+  const [endDateAcademicPeriod, setEndDateAcademicPeriod] = useState(
+    getCurrentDate()
+  );
   const [suggAvailable, setSuggAvailable] = useState(false);
   const [suggMessage, setSuggMessage] = useState({
     message: "",
@@ -108,6 +117,7 @@ export default function RequestReservation() {
       fetchReasons(),
       fetchTimeSlots(),
       fetchBlocks(),
+      getCurrentDateAcademicPeriod(),
     ])
       .finally(() => setLoadingPage(false))
       .catch((err) => console.error(err));
@@ -155,9 +165,25 @@ export default function RequestReservation() {
     }
   }, [blockSelected, startTime, endTime, dateValue]);
 
+  const getCurrentDateAcademicPeriod = async () => {
+    const facultyId = localStorage.getItem("faculty");
+    const { status, data } = await currentDateAcademicPeriod(facultyId);
+    if (status >= 200 && status < 300) {
+      setInitialDateAcademicPeriod(data.initial_date_reservations);
+      setEndDateAcademicPeriod(data.end_date);
+    } else {
+      setInitialDateAcademicPeriod(getCurrentDate());
+      setEndDateAcademicPeriod(getCurrentDate());
+    }
+  };
+
   const fetchSubjects = async () => {
-    const sbjs = await getSubjects();
-    setSubjects(sbjs);
+    const { status, data } = await getSubjects();
+    if (status >= 200 && status < 300) {
+      setSubjects(data.university_subjects);
+    } else {
+      setSubjects([]);
+    }
   };
 
   const fetchReasons = async () => {
@@ -176,7 +202,7 @@ export default function RequestReservation() {
   const fetchBlocks = async () => {
     const { status, data } = await getBlocks();
     let blocksWithClassrooms = data.filter(
-      ({ block_classrooms }) => block_classrooms.length > 0
+      ({ classrooms }) => classrooms.length > 0
     );
     if (status >= 200 && status < 300) {
       setBlocks(blocksWithClassrooms);
@@ -229,7 +255,7 @@ export default function RequestReservation() {
   const fetchClassroomsByBlock = async () => {
     let requestData = {
       block_id: blockSelected,
-      time_slot_id: [startTime, endTime],
+      time_slot_ids: [startTime, endTime],
       quantity: quantity,
       date: dateValue,
     };
@@ -238,8 +264,7 @@ export default function RequestReservation() {
       let classrooms = data.map((classroom) => {
         return {
           value: classroom,
-          label:
-            classroom.classroom_name + "- CAPACIDAD: " + classroom.capacity,
+          label: classroom.name + "- CAPACIDAD: " + classroom.capacity,
         };
       });
       setClassroomsSelected([]);
@@ -422,7 +447,7 @@ export default function RequestReservation() {
   const getSuggest = async () => {
     let dataSugg = {
       block_id: blockSelected,
-      time_slot_id: [startTime, endTime],
+      time_slot_ids: [startTime, endTime],
       quantity: quantity,
       date: dateValue,
     };
@@ -447,8 +472,7 @@ export default function RequestReservation() {
         let response = array.map((classroom) => {
           return {
             value: classroom,
-            label:
-              classroom.classroom_name + " - CAPACIDAD: " + classroom.capacity,
+            label: classroom.name + " - CAPACIDAD: " + classroom.capacity,
           };
         });
         return response;
@@ -482,13 +506,14 @@ export default function RequestReservation() {
     let classroomIds = classrooms.map(({ value }) => value.classroom_id);
     let request = {
       subject_id: subjectSelected,
-      group_id: groupNumbers,
+      teacher_subject_ids: groupNumbers,
       block_id: blockSelected,
-      classroom_id: classroomIds,
-      time_slot_id: [parseInt(startTime), parseInt(endTime)],
+      classroom_ids: classroomIds,
+      time_slot_ids: [parseInt(startTime), parseInt(endTime)],
       quantity: quantity,
       date: dateValue,
-      reason_id: reasonSelected,
+      reservation_reason_id: reasonSelected,
+      faculty_id: 1,
     };
 
     let response = await sendRequest(request).finally(() =>
@@ -496,13 +521,26 @@ export default function RequestReservation() {
     );
     if (response.status >= 200 && response.status < 300) {
       if (response.status === 201) {
-        setModalSendRequest({
-          content: {
-            title: "Solicitud de reserva rechazada",
-            body: response.data.message,
-          },
-          show: true,
-        });
+        if (
+          response.data.message ===
+          "La solicitud de reserva se encuentra en estado pendiente, le llegara un correo de aceptacion/rechazo por parte del encargado."
+        ) {
+          setModalSendRequest({
+            content: {
+              title: "Solicitud de reserva pendiente",
+              body: response.data.message,
+            },
+            show: true,
+          });
+        } else {
+          setModalSendRequest({
+            content: {
+              title: "Solicitud de reserva rechazada",
+              body: response.data.message,
+            },
+            show: true,
+          });
+        }
       } else if (response.status === 202) {
         setModalSendRequest({
           content: {
@@ -522,14 +560,15 @@ export default function RequestReservation() {
       }
       setToInitalStateForm();
     } else if (
-      (response.status >= 300 && response.status < 400) ||
-      (response.status >= 400 && response.status < 500)
+      // (response.status >= 300 && response.status < 400) ||
+      response.status >= 400 &&
+      response.status < 500
     ) {
       setModalSendRequest({
         content: { title: "Error", body: response.data.message },
         show: true,
       });
-    } else if (response.status === 500) {
+    } else if (response.status >= 500) {
       setModalSendRequest({
         content: {
           title: "Error",
@@ -689,9 +728,12 @@ export default function RequestReservation() {
                       <option value="" disabled={subjectSelected !== ""}>
                         Seleccione una opcion
                       </option>
-                      {subjects?.map((each) => {
+                      {subjects?.map((each, index) => {
                         return (
-                          <option key={each.subject_id} value={each.subject_id}>
+                          <option
+                            key={each.subject_id + each.subject_name + index}
+                            value={each.subject_id}
+                          >
                             {each.subject_name}
                           </option>
                         );
@@ -784,8 +826,11 @@ export default function RequestReservation() {
                       </option>
                       {reasons?.map((each) => {
                         return (
-                          <option key={each.reason_id} value={each.reason_id}>
-                            {each.reason_name}
+                          <option
+                            key={each.reservation_reason_id}
+                            value={each.reservation_reason_id}
+                          >
+                            {each.name}
                           </option>
                         );
                       })}
@@ -824,14 +869,14 @@ export default function RequestReservation() {
               </div>
               <div className="col-lg-3">
                 <div className="d-flex align-items-center">
-                  <b className=" pe-2">FECHA</b>
+                  <b className="pe-2">FECHA</b>
                   <Form.Control
                     type="date"
                     className="form-control"
                     value={dateValue}
                     onChange={handleDateChange}
-                    min={getCurrentDate()}
-                    max="2024-07-06"
+                    min={initialDateAcademicPeriod}
+                    max={endDateAcademicPeriod}
                   />
                 </div>
                 <Form.Control.Feedback type="invalid">
@@ -908,9 +953,8 @@ export default function RequestReservation() {
                   onChange={(e) => handleChangeBlocks(e.target)}
                   isInvalid={errorsMessages.block.isInvalid}
                   disabled={
-                    !quantity.trim() ||
-                    !startTime.trim() ||
-                    !subjectSelected.trim()
+                    !quantity.trim() || !startTime.trim()
+                    // !subjectSelected.trim()
                   }
                 >
                   <option value="" disabled={blockSelected !== ""}>
@@ -919,7 +963,7 @@ export default function RequestReservation() {
                   {blocks.map((each) => {
                     return (
                       <option key={each.block_id} value={each.block_id}>
-                        {each.block_name}
+                        {each.name}
                       </option>
                     );
                   })}
@@ -1084,6 +1128,8 @@ export default function RequestReservation() {
               "Solicitud de reserva pendiente" ||
               modalSendRequest.content.title ===
                 "Solicitud de reserva aceptada" ||
+              modalSendRequest.content.title ===
+                "Solicitud de reserva rechazada" ||
               modalSendRequest.content.title === "Error") && (
               <Modal.Footer>
                 {loadingSendRequest && (

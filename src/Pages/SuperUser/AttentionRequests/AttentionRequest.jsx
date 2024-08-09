@@ -31,8 +31,8 @@ export default function AttentionRequest(props) {
     quantity,
     reservation_date,
     time_slot,
-    groups,
-    block_name,
+    persons,
+    block_names,
     classrooms,
     reason_name,
     priority,
@@ -149,47 +149,58 @@ export default function AttentionRequest(props) {
   return (
     <>
       <div
-        className={`row border border-${
+        className={`row border shadow border-${
           priority ? "danger" : "black"
         } rounded p-2 mb-2`}
         style={{ minWidth: "400px" }}
       >
-        <div className="col-sm-5">
-          <div className="">
-            <b className="text-primary ">ID: </b>
-            <b>{reservation_id}</b>
+        <div className="d-flex">
+          <div className="flex-fill">
+            <div className="d-flex">
+              <div className="pe-3">
+                <b className="text-primary ">ID: </b>
+                <b>{reservation_id}</b>
+              </div>
+              <div className="pe-3">
+                <b className="text-primary">MATERIA: </b>
+                <b>{subject_name}</b>
+              </div>
+              {priority ? (
+                <div className="pe-3">
+                  <span class="badge text-bg-danger">PRIORIDAD</span>
+                </div>
+              ) : (
+                ""
+              )}
+            </div>
+            <div className="d-flex">
+              <div className="pe-3">
+                <b className="text-primary">CAPACIDAD DE ESTUDIANTES: </b>
+                <b>{quantity}</b>
+              </div>
+              <div className="pe-3">
+                <b className="text-primary">FECHA DE RESERVA: </b>
+                <b>{reservation_date}</b>
+              </div>
+            </div>
+            <div className="">
+              <div>
+                <b className="text-primary">PERIODOS: </b>
+                <b>
+                  {time_slot[0]} - {time_slot[1]}
+                </b>
+              </div>
+            </div>
           </div>
-          <div>
-            <b className="text-primary">MATERIAS(S): </b>
-            <b>{subject_name}</b>
+          <div className="align-self-center">
+            <Button
+              variant="primary"
+              className="custom-btn-primary-outline text-truncate"
+              onClick={handleShowModal}
+            >
+              Atender
+            </Button>
           </div>
-        </div>
-        <div className="col-sm-3">
-          <div>
-            <b className="text-primary">CAPACIDAD DE ESTUDIANTES: </b>
-            <b>{quantity}</b>
-          </div>
-          <div>
-            <b className="text-primary">FECHA DE RESERVA: </b>
-            <b>{reservation_date}</b>
-          </div>
-        </div>
-        <div className="col-sm-2">
-          <div>
-            <b className="text-primary">PERIODOS: </b>
-            <b>
-              {time_slot[0]} - {time_slot[1]}
-            </b>
-          </div>
-        </div>
-        <div className="col-sm-2 align-self-center d-flex justify-content-end">
-          <Button
-            variant="primary"
-            className="custom-btn-primary-outline text-truncate"
-            onClick={handleShowModal}
-          >
-            Atender
-          </Button>
         </div>
       </div>
       <Modal
@@ -224,11 +235,11 @@ export default function AttentionRequest(props) {
                     </tr>
                   </thead>
                   <tbody>
-                    {groups.map((each) => {
+                    {persons.map((each) => {
                       return (
-                        <tr key={each.group_number}>
-                          <td>{each.teacher_name}</td>
-                          <td>{each.group_number}</td>
+                        <tr key={each.groups[0].group_number}>
+                          <td>{each.name + " " + each.last_name}</td>
+                          <td>{each.groups[0].group_number}</td>
                         </tr>
                       );
                     })}
@@ -240,8 +251,8 @@ export default function AttentionRequest(props) {
             <div className="pb-3">
               <b>FECHA DE RESERVA: </b> {reservation_date}
             </div>
-            <div className="pb-3">
-              <b>PERIODOS: </b> {time_slot[0]}-{time_slot[1]}
+            <div className="pb-3 d-flex ">
+              <b>PERIODOS: </b> {time_slot[0]} - {time_slot[1]}
             </div>
             {conflicts.quantity === "" ? (
               ""
@@ -257,7 +268,7 @@ export default function AttentionRequest(props) {
               <label className="tag-label">AMBIENTE</label>
 
               <div className="pt-2 pb-2">
-                <b>BLOQUE: </b> {block_name}
+                <b>BLOQUE: </b> {block_names.map((b) => b)}
               </div>
               {conflicts.classroom.message === "" ? (
                 ""
@@ -291,8 +302,8 @@ export default function AttentionRequest(props) {
                     <tbody>
                       {classrooms.map((each) => {
                         return (
-                          <tr key={each.classroom_name}>
-                            <td>{each.classroom_name}</td>
+                          <tr key={each.classroom_id + each.name}>
+                            <td>{each.name}</td>
                             <td>{each.capacity}</td>
                           </tr>
                         );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ErrorPage from "./Components/ErrorPage/ErrorPage";
 import UserRoutes from "./routes/UserRoutes";
@@ -7,6 +7,8 @@ import Home from "./Pages/User/Homepage/Home";
 import LoginPage from "./Components/LoginPage/LoginPage";
 import { AuthProvider } from "./contexts/AuthProvider";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import RecoverPassword from "./Components/RecoverPassword/RecoverPassword";
+import ConfirmParticipation from "./Pages/User/ConfirmParticipation/ConfirmParticipation"
 import "./App.css";
 
 export default function App() {
@@ -15,6 +17,8 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/recover-password/:code" element={<RecoverPassword />} />
+          <Route path="/confirm/participation/:token" element={<ConfirmParticipation />} />
           <Route path="/" element={<Home />} />
           <Route
             path="/user/*"

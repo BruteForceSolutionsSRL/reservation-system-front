@@ -4,11 +4,11 @@ import "./EditEnvironment.css";
 
 const ListEnvironment = ({ list, handleShowModal }) => {
   return (
-    <div>
+    <div className="m-3">
       {list.map((reservation, index) => (
         <div key={index} style={{ minWidth: "300px" }}>
           <div
-            className="row border border-black rounded p-2 mb-2"
+            className="row border border-black rounded p-2 mb-2" 
             style={{ minWidth: "400px" }}
           >
             <div className="col-sm-4">
@@ -26,7 +26,7 @@ const ListEnvironment = ({ list, handleShowModal }) => {
               </div>
               <div>
                 <b className="text-primary">NOMBRE: </b>
-                <b>{reservation.classroom_name}</b>
+                <b>{reservation.name}</b>
               </div>
             </div>
             <div className="col-sm-4">
@@ -36,7 +36,7 @@ const ListEnvironment = ({ list, handleShowModal }) => {
               </div>
               <div>
                 <b className="text-primary">TIPO: </b>
-                <b>{reservation.classroom_type_name}</b>
+                <b>{reservation.type_name}</b>
               </div>
             </div>
             <div className="col-sm-2">

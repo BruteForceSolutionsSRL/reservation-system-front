@@ -59,7 +59,7 @@ export default function GenerateReport() {
   const fetchReservationStatuses = async () => {
     const reservationStatuses = await getReservationStatuses();
     const tmpReservationStatuses = reservationStatuses.filter((rs) => {
-      const status = rs.reservation_status_name.toUpperCase();
+      const status = rs.name.toUpperCase();
       return (
         status === "ACEPTADO" ||
         status === "ACCEPTED" ||
@@ -298,7 +298,7 @@ export default function GenerateReport() {
                     {blocks.map((block) => {
                       return (
                         <option key={block.block_id} value={block.block_id}>
-                          {block.block_name}
+                          {block.name}
                         </option>
                       );
                     })}
@@ -344,7 +344,7 @@ export default function GenerateReport() {
                           key={reservationStatus.reservation_status_id}
                           value={reservationStatus.reservation_status_id}
                         >
-                          {reservationStatus.reservation_status_name}
+                          {reservationStatus.name}
                         </option>
                       );
                     })}
@@ -365,7 +365,7 @@ export default function GenerateReport() {
                           key={subject.university_subject_id}
                           value={subject.university_subject_id}
                         >
-                          {subject.university_subject_name}
+                          {subject.name}
                         </option>
                       );
                     })}

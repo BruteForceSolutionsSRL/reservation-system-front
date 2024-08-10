@@ -11,20 +11,19 @@ function HandleSpecialRequests(props) {
   const [showRefuseModal, setShowRefuseModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [spinnerInModal, setSpinnerInModal] = useState(false);
-
   const [error, setError] = useState({});
 
   const {
     reservation_id,
     quantity,
     time_slot,
-    block_name,
+    block_names,
     classrooms,
-    observation,
-    reservation_status,
     reason_name,
-    date_end,
+    reservation_status,
+    observation,
     date_start,
+    date_end,
   } = props;
 
   const handleShowModal = () => {
@@ -91,8 +90,8 @@ function HandleSpecialRequests(props) {
         <div className="col-sm-4">
           <div>
             <b className="text-primary">BLOQUE: </b>
-            {block_name.map((name, index) => {
-              if (block_name.length === 1) {
+            {block_names.map((name, index) => {
+              if (block_names.length === 1) {
                 return <b key={name + index}>{name}</b>;
               } else {
                 return <b key={name + index}>{name + ", "}</b>;
@@ -164,8 +163,8 @@ function HandleSpecialRequests(props) {
 
               <div className="pt-2 pb-2">
                 <b>BLOQUE: </b>
-                {block_name.map((name, index) => {
-                  if (block_name.length === 1) {
+                {block_names.map((name, index) => {
+                  if (block_names.length === 1) {
                     return <span key={name + index}>{name}</span>;
                   } else {
                     return <span key={name + index}>{name + ", "}</span>;
@@ -196,7 +195,7 @@ function HandleSpecialRequests(props) {
                             className="p-1 text-light rounded bg-secondary text-center"
                             style={{ minWidth: "80px", margin: "3px" }}
                           >
-                            {each.classroom_name}
+                            {each.name}
                           </div>
                         );
                       })}

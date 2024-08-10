@@ -37,8 +37,7 @@ ChartJS.register(
 );
 
 export default function StatisticsElement(props) {
-  const { classroom_name, classroom_status_name, classroom_id, block_name } =
-    props;
+  const { name, classroom_status_name, classroom_id, block_name } = props;
 
   // Chart data
   const [pendingData, setPendingData] = useState([]);
@@ -67,6 +66,7 @@ export default function StatisticsElement(props) {
       date_end: endDate,
     };
     const response = await getDataPerRange(dataBody);
+    console.log(response);
     if (response.status >= 200 && response.status < 300) {
       processChartData(response.data);
       setErrors({ show: false, message: response.data.message });
@@ -189,7 +189,7 @@ export default function StatisticsElement(props) {
       <Card className="p-4 mb-4">
         <Card.Header className="bg-primary">
           <div className="d-flex justify-content-between">
-            <h4 className="text-light">{classroom_name}</h4>
+            <h4 className="text-light">{name}</h4>
             <div>
               <b className="badge text-bg-secondary align-self-center">
                 {block_name}
@@ -220,7 +220,7 @@ export default function StatisticsElement(props) {
                   type="date"
                   value={startDate ?? ""}
                   min="2024-03-01"
-                  max="2024-12-31"
+                  max="2999-12-31"
                   onChange={(e) => setStartDate(e.target.value)}
                 />
               </Form.Group>
@@ -232,7 +232,7 @@ export default function StatisticsElement(props) {
                   type="date"
                   value={endDate ?? ""}
                   min="2024-03-01"
-                  max="2024-12-31"
+                  max="2999-12-31"
                   onChange={(e) => setEndDate(e.target.value)}
                 />
               </Form.Group>
